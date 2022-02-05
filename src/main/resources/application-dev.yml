@@ -1,0 +1,9 @@
+#spring:
+#  cloud:
+#    kubernetes:
+#      discovery:
+#        all-namespaces: true
+#
+#
+#  main:
+#    allow-bean-definition-overriding: true
