@@ -65,7 +65,7 @@
                             <password>Elpsy4783</password>
                             <url>registry.elpsykongroo.com</url>
                         </publishRegistry>
-                        <certPath>C:\Users\Labman4\Desktop\log\acme</certPath>
+<!--                        <certPath>C:\Users\Labman4\Desktop\log\acme</certPath>-->
                     </docker>
                 </configuration>
             </plugin>
