@@ -25,10 +25,10 @@
 <!--            <groupId>org.springframework.cloud</groupId>-->
 <!--            <artifactId>spring-cloud-starter-kubernetes-fabric8-all</artifactId>-->
 <!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-kubernetes-client-all</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-kubernetes-client-all</artifactId>
+        </dependency>
        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -44,18 +44,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-<!--                    <layers>-->
-<!--                        <enabled>true</enabled>-->
-<!--                    </layers>-->
                     <image>
                         <name>
                             registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
                         </name>
                         <publish>true</publish>
-<!--                        <env>-->
-<!--                            <HTTP_PROXY>http://api.elpsykongroo.com:10809</HTTP_PROXY>-->
-<!--                            <HTTPS_PROXY>https://api.elpsykongroo.com:10809</HTTPS_PROXY>-->
-<!--                        </env>-->
                     </image>
                     <docker>
                         <host>https://elpsykongroo.com:2376</host>
@@ -66,21 +59,20 @@
                             <url>registry.elpsykongroo.com</url>
                         </publishRegistry>
                         <certPath>/var/lib/jenkins/ssl/</certPath>
-<!--                        <certPath>C:\Users\Labman4\Desktop\log\acme</certPath>-->
                     </docker>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-<!--    <dependencyManagement>-->
-<!--        <dependencies>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.cloud</groupId>-->
-<!--                <artifactId>spring-cloud-dependencies</artifactId>-->
-<!--                <version>2021.0.0</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
-<!--        </dependencies>-->
-<!--    </dependencyManagement>-->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2021.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
