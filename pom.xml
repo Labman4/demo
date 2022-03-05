@@ -6,7 +6,7 @@
 
     <groupId>com.elpsykongroo</groupId>
     <artifactId>demo</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -58,7 +58,7 @@
                             <password>Elpsy4783</password>
                             <url>registry.elpsykongroo.com</url>
                         </publishRegistry>
-                        <certPath>/var/lib/jenkins/ssl/</certPath>
+                                                <certPath>/var/lib/jenkins/ssl/</certPath>
                     </docker>
                 </configuration>
             </plugin>
