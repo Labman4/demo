@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: registry.elpsykongroo.com/library/demo
-  pullPolicy: IfNotPresent
+  pullPolicy: always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.0.2"
 
