@@ -63,7 +63,7 @@
                 <configuration>
                     <image>
                         <name>
-                            registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
+                            registry.elpsykongroo.com:5000/library/${project.artifactId}:${project.version}
                         </name>
                         <publish>true</publish>
                     </image>
@@ -73,7 +73,7 @@
                         <publishRegistry>
                             <username>admin</username>
                             <password>Elpsy4783</password>
-                            <url>registry.elpsykongroo.com</url>
+                            <url>registry.elpsykongroo.com:5000</url>
                         </publishRegistry>
                                                 <certPath>/var/lib/jenkins/ssl/</certPath>
                     </docker>
