@@ -33,6 +33,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: mysql-secret
+              mountPath: "/var/mysql-secret"
+            - name: redis-secret
+              mountPath: "/var/redis-secret"
           ports:
             - name: http
               containerPort: 80
@@ -40,6 +45,20 @@ spec:
             - name: https
               containerPort: 443
               protocol: TCP
+{{/*        -   {{- range $key, $value := .Values.course }}*/}}
+{{/*            {{ $key }}: {{ $value | quote }}*/}}
+{{/*            {{- end }}*/}}
+        - env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "dev"
+            - name: MYSQL_IP
+              value: "192.168.1.106"
+            - name: MYSQL_PORT
+              value: "3306"
+            - name: REDIS_IP
+              value: "192.168.1.106"
+            - name: REDIS_PORT
+              value: "6379"
           # livenessProbe:
           #   httpGet:
           #     path: /
@@ -51,6 +70,15 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
+      volumes:
+      - name: mysql-secret
+        secret:
+          secretName: mysql-secret
+          defaultMode: 0400
+      - name: redis-secret
+        secret:
+          secretName: redis-secret
+          defaultMode: 0400
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}

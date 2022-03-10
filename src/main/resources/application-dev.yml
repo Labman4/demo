@@ -10,4 +10,11 @@ spring:
 
   main:
     allow-bean-definition-overriding: true
-
+  datasource:
+    url: jdbc:mysql://${MYSQL_IP}:${MYSQL_PORT}/demo
+    #username: labroom
+    #password: elpsy4783
+  redis:
+    host: ${REDIS_IP}
+    port: ${REDIS_PORT}
+    #password: elpsy4783
