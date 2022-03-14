@@ -27,6 +27,15 @@ spec:
       serviceAccountName: {{ include "demo.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: mysql-secret
+          secret:
+            secretName: mysql-secret
+            defaultMode: 0400
+        - name: redis-secret
+          secret:
+            secretName: redis-secret
+            defaultMode: 0400
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -70,15 +79,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
-      volumes:
-      - name: mysql-secret
-        secret:
-          secretName: mysql-secret
-          defaultMode: 0400
-      - name: redis-secret
-        secret:
-          secretName: redis-secret
-          defaultMode: 0400
+
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
