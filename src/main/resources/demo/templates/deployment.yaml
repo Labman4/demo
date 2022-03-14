@@ -57,7 +57,7 @@ spec:
 {{/*        -   {{- range $key, $value := .Values.course }}*/}}
 {{/*            {{ $key }}: {{ $value | quote }}*/}}
 {{/*            {{- end }}*/}}
-        - env:
+          env:
             - name: SPRING_PROFILES_ACTIVE
               value: "dev"
             - name: MYSQL_IP
@@ -68,6 +68,21 @@ spec:
               value: "192.168.1.106"
             - name: REDIS_PORT
               value: "6379"
+            - name: MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: username
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: password
           # livenessProbe:
           #   httpGet:
           #     path: /
