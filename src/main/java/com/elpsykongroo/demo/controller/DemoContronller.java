@@ -23,7 +23,6 @@ public class DemoContronller {
 
     @GetMapping("")
     public String access() {
-
         System.out.println(demoService.test());
         redisTemplate.getClientList();
         return "0";
