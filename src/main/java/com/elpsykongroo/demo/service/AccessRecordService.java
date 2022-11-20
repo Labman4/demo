@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.constant;
+package com.elpsykongroo.demo.service;
 
-/**
- * @author labman4
- */
 
-public interface Constant {
-	String SUCCESS_CODE = "200";
-	String SUCCESS_MSG = "success";
-	String ERROR_CODE = "500";
-	Integer  ACCESS_ERROR_CODE = 401;
+import java.util.List;
 
-	String ERROR_MSG = "error";
-	Integer LIMIT_RESPONSE_CODE = 429;
-	Integer EMPTY_RESPONSE_CODE = 404;
+import javax.servlet.http.HttpServletRequest;
 
-	Long REDIS_LOCK_WAIT_TIME = 5L;
+import com.elpsykongroo.demo.common.CommonResponse;
+import com.elpsykongroo.demo.document.AccessRecord;
 
-	Long REDIS_LOCK_LEASE_TIME = 3L;
+import org.springframework.stereotype.Service;
+
+
+@Service
+public interface AccessRecordService {
+
+	CommonResponse<AccessRecord> findAll(String pageNumber, String pageSize, String sort);
+
+	CommonResponse<List<AccessRecord>> filterUserAgent(String path);
+
+	CommonResponse<Integer> deleteRecord(String sourceIP, String ids);
+
+	void saveAcessRecord(HttpServletRequest request);
+
 }

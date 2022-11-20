@@ -1,0 +1,49 @@
+server:
+  shutdown: graceful
+  port: 8443
+#  http:
+#    port: 8889
+spring:
+  profiles:
+    active: prod
+#  config:
+#    activate:
+#      on-profile:
+#        - prod
+#    import:
+#      - application-prod.yaml
+  application:
+    name: demo
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${AUTH_URL}:9000/oauth2/jwks
+#  liquibase:
+#    change-log: classpath:liquibase/changelog/*.sql
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: demo
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health
+
+#  trace:
+#    http:
+#      enabled: true
+
+#mybatis:
+#  mapper-locations: classpath:mapper/*.xml
+
+

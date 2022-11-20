@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.constant;
+package com.elpsykongroo.demo.document;
 
-/**
- * @author labman4
- */
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public interface Constant {
-	String SUCCESS_CODE = "200";
-	String SUCCESS_MSG = "success";
-	String ERROR_CODE = "500";
-	Integer  ACCESS_ERROR_CODE = 401;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 
-	String ERROR_MSG = "error";
-	Integer LIMIT_RESPONSE_CODE = 429;
-	Integer EMPTY_RESPONSE_CODE = 404;
+@Document(indexName = "ip_black")
+@Data
+@NoArgsConstructor
+public class IPManage {
+	private @Id String id;
+	private String address;
 
-	Long REDIS_LOCK_WAIT_TIME = 5L;
+	private boolean isBlack;
 
-	Long REDIS_LOCK_LEASE_TIME = 3L;
+	public IPManage(String addres) {
+		this.address = addres;
+		this.isBlack = true;
+	}
+
+	public IPManage(String addres, boolean black) {
+		this.address = addres;
+		this.isBlack = black;
+	}
 }

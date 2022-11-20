@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.constant;
+package com.elpsykongroo.demo.exception;
 
-/**
- * @author labman4
- */
+public class ElasticException extends RuntimeException {
+	private static final long serialVersionUID = 5639223247225972389L;
 
-public interface Constant {
-	String SUCCESS_CODE = "200";
-	String SUCCESS_MSG = "success";
-	String ERROR_CODE = "500";
-	Integer  ACCESS_ERROR_CODE = 401;
+	public ElasticException() {
 
-	String ERROR_MSG = "error";
-	Integer LIMIT_RESPONSE_CODE = 429;
-	Integer EMPTY_RESPONSE_CODE = 404;
+	}
 
-	Long REDIS_LOCK_WAIT_TIME = 5L;
+	public ElasticException(Throwable cause) {
+		super(cause);
+	}
 
-	Long REDIS_LOCK_LEASE_TIME = 3L;
+	public ElasticException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public ElasticException(String message) {
+		super(message);
+	}
 }

@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.constant;
+package com.elpsykongroo.demo.repo;
 
-/**
- * @author labman4
- */
+import java.util.List;
 
-public interface Constant {
-	String SUCCESS_CODE = "200";
-	String SUCCESS_MSG = "success";
-	String ERROR_CODE = "500";
-	Integer  ACCESS_ERROR_CODE = 401;
+import com.elpsykongroo.demo.document.AccessRecord;
 
-	String ERROR_MSG = "error";
-	Integer LIMIT_RESPONSE_CODE = 429;
-	Integer EMPTY_RESPONSE_CODE = 404;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-	Long REDIS_LOCK_WAIT_TIME = 5L;
 
-	Long REDIS_LOCK_LEASE_TIME = 3L;
+public interface AccessRecordRepo extends ElasticsearchRepository<AccessRecord, String> {
+
+
+	List<AccessRecord> findBySourceIP(String sourceip);
+
+	List<AccessRecord> findByRequestHeaderContaining(String path);
+
+	List<AccessRecord> findByUserAgentLike(String path);
+
 }

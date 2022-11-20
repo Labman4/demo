@@ -4,6 +4,10 @@ metadata:
   name: {{ include "demo.fullname" . }}
   labels:
     {{- include "demo.labels" . | nindent 4 }}
+  {{- with .Values.podAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -11,6 +15,7 @@ spec:
   selector:
     matchLabels:
       {{- include "demo.selectorLabels" . | nindent 6 }}
+      app: {{ .Chart.Name }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,6 +24,7 @@ spec:
       {{- end }}
       labels:
         {{- include "demo.selectorLabels" . | nindent 8 }}
+        app: {{ .Chart.Name }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -27,74 +33,50 @@ spec:
       serviceAccountName: {{ include "demo.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      volumes:
-        - name: mysql-secret
-          secret:
-            secretName: mysql-secret
-            defaultMode: 0400
-        - name: redis-secret
-          secret:
-            secretName: redis-secret
-            defaultMode: 0400
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          volumeMounts:
-            - name: mysql-secret
-              mountPath: "/var/mysql-secret"
-            - name: redis-secret
-              mountPath: "/var/redis-secret"
           ports:
-            - name: http
-              containerPort: 80
+            - name: metrics
+              containerPort: 9464
               protocol: TCP
             - name: https
-              containerPort: 443
+              containerPort: 8443
               protocol: TCP
-{{/*        -   {{- range $key, $value := .Values.course }}*/}}
-{{/*            {{ $key }}: {{ $value | quote }}*/}}
-{{/*            {{- end }}*/}}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: https
+            initialDelaySeconds: 30
+            failureThreshold: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: https
+            initialDelaySeconds: 30
+            failureThreshold: 10
+            timeoutSeconds: 3
+            periodSeconds: 5
           env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: "dev"
-            - name: MYSQL_IP
-              value: "192.168.1.106"
-            - name: MYSQL_PORT
-              value: "3306"
-            - name: REDIS_IP
-              value: "192.168.1.106"
-            - name: REDIS_PORT
-              value: "6379"
-            - name: MYSQL_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: username
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mysql-secret
-                  key: password
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: redis-secret
-                  key: password
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
+            {{- if .Values.extraEnv }}{{ toYaml .Values.extraEnv | trim | nindent 12 }}{{ end }}
+            {{- if or (.Values.existingSecrets) (.Values.secrets) }}
+#            - name: MICRONAUT_ENVIRONMENTS
+#              value: secrets
+#            - name: MICRONAUT_CONFIG_FILES
+#              value: /app/application.yaml,/app/application-secrets.yml
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.extraVolumeMounts }}
+              {{ toYaml .Values.extraVolumeMounts | trim | nindent 12 }}
+            {{ end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
-
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -105,4 +87,20 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- if .Values.extraVolumes  }}{{ toYaml .Values.extraVolumes | trim | nindent 6 }}{{ end }}
+      {{- if .Values.configuration }}
+        - name: config
+          configMap:
+            name: {{ template "demo.fullname" . }}
+      {{- end }}
+      {{- if or (.Values.existingSecrets) (.Values.secrets) }}
+        - name: secrets
+          secret:
+            {{- if .Values.existingSecrets }}
+            secretName: {{ .Values.existingSecrets }}
+            {{- else }}
+            secretName: {{ template "demo.fullname" . }}-secrets
+            {{- end }}
       {{- end }}

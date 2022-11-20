@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.constant;
+package com.elpsykongroo.demo.repo;
 
-/**
- * @author labman4
- */
-
-public interface Constant {
-	String SUCCESS_CODE = "200";
-	String SUCCESS_MSG = "success";
-	String ERROR_CODE = "500";
-	Integer  ACCESS_ERROR_CODE = 401;
-
-	String ERROR_MSG = "error";
-	Integer LIMIT_RESPONSE_CODE = 429;
-	Integer EMPTY_RESPONSE_CODE = 404;
-
-	Long REDIS_LOCK_WAIT_TIME = 5L;
-
-	Long REDIS_LOCK_LEASE_TIME = 3L;
+public interface IPRepoCustom {
+	String patchBlack(String addr, Boolean isBlack);
 }
