@@ -256,6 +256,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if (!ip.equals(address.getHostName()) && exist(address.getHostName(), isBlack) == 0) {
 					String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
 							.getAddress();
+					updataCache(isBlack);
 					log.info("Update blacklist domain when blackIP domain change, {} -> {}", ip, newAddress);
 				}
 			}
@@ -263,12 +264,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 		else {
 			for (InetAddress address: inetAddress) {
 				if (exist(address.getHostName(), isBlack) > 0) {
-					log.info("hostname in blacklist:{}", address.getHostName());
+					log.info("hostname in list:{}", address.getHostName());
 					flag = true;
 				}
 			}
 		}
-		log.info("flag:{}, black:{}", isBlack, flag);
+		log.info("flag:{}, black:{}", flag, isBlack);
 		return flag;
 	}
 }
