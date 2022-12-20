@@ -3,22 +3,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.elpsykongroo</groupId>
     <artifactId>demo</artifactId>
-    <version>0.0.1</version>
-
+    <version>0.0.2</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.1</version>
+        <version>3.0.0</version>
         <relativePath/>
     </parent>
     <properties>
         <maven-checkstyle-plugin.failsOnError>true</maven-checkstyle-plugin.failsOnError>
         <maven-checkstyle-plugin.failsOnViolation>true</maven-checkstyle-plugin.failsOnViolation>
         <maven-checkstyle-plugin.includeTestSourceDirectory>true</maven-checkstyle-plugin.includeTestSourceDirectory>
-        <jakarta-json.version>2.0.1</jakarta-json.version>
+<!--        <jakarta-json.version>2.0.1</jakarta-json.version>-->
     </properties>
     <dependencies>
         <dependency>
@@ -28,19 +26,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.json</groupId>
-            <artifactId>jakarta.json-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -113,25 +98,26 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.tomcat.embed</groupId>
-                    <artifactId>tomcat-embed-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.tomcat.embed</groupId>
-                    <artifactId>tomcat-embed-websocket</artifactId>
-                </exclusion>
-            </exclusions>
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.apache.tomcat.embed</groupId>-->
+<!--                    <artifactId>tomcat-embed-core</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.apache.tomcat.embed</groupId>-->
+<!--                    <artifactId>tomcat-embed-websocket</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-coyote</artifactId>
+            <version>10.1.1</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.tomcat.experimental</groupId>
-            <artifactId>tomcat-embed-programmatic</artifactId>
-            <version>9.0.68</version>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+            <version>10.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>
@@ -141,14 +127,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.data</groupId>-->
-<!--            <artifactId>spring-data-jdbc</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-cache</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-elasticsearch</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-reactor-netty -->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
@@ -252,58 +234,10 @@
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
 
 <!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-api</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-sdk</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-sdk-trace</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-sdk-extension-autoconfigure-spi</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-semconv</artifactId>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-exporter-logging</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-exporter-otlp</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry.instrumentation</groupId>-->
-<!--            <artifactId>opentelemetry-instrumentation-annotations</artifactId>-->
-<!--            <version>1.18.0-alpha</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-extension-trace-propagators</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
 <!--            <groupId>org.liquibase</groupId>-->
 <!--            <artifactId>liquibase-core</artifactId>-->
 <!--            <version>4.16.1</version>-->
 <!--        </dependency>-->
-        <dependency>
-            <groupId>org.springframework.experimental</groupId>
-            <artifactId>spring-native</artifactId>
-            <version>0.12.1</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 
         <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core -->
 <!--        <dependency>-->
@@ -312,25 +246,16 @@
 <!--            <version>3.0.0</version>-->
 <!--        </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.springframework.security.oauth/spring-security-oauth2 -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.security.oauth</groupId>-->
-<!--            <artifactId>spring-security-oauth2</artifactId>-->
-<!--            <version>2.5.2.RELEASE</version>-->
-<!--        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.springframework.security.oauth.boot/spring-security-oauth2-autoconfigure -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.security.oauth.boot</groupId>-->
-<!--            <artifactId>spring-security-oauth2-autoconfigure</artifactId>-->
-<!--            <version>2.6.8</version>-->
-<!--        </dependency>-->
+
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-resource-server</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.security</groupId>-->
-<!--            <artifactId>spring-security-config</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-jose</artifactId>
@@ -393,8 +318,8 @@
                                     <HTTPS_PROXY>http://192.168.1.106:1080</HTTPS_PROXY>
                                     <BP_JVM_VERSION>11.0.16</BP_JVM_VERSION>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-                                    <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
-                                    <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/workspace/BOOT-INF/classes/opentelemetry-javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>
+<!--                                    <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>-->
+<!--                                    <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/workspace/BOOT-INF/classes/opentelemetry-javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
                                 </env>
                                 <name>
                                     registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
@@ -468,28 +393,28 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.19.0</version>
             </plugin>
-            <plugin>
-                <groupId>org.springframework.experimental</groupId>
-                <artifactId>spring-aot-maven-plugin</artifactId>
-                <version>0.12.1</version>
-                <configuration>
-                    <mode>native</mode>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-generate</id>
-                        <goals>
-                            <goal>test-generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.experimental</groupId>-->
+<!--                <artifactId>spring-aot-maven-plugin</artifactId>-->
+<!--                <version>0.12.1</version>-->
+<!--                <configuration>-->
+<!--&lt;!&ndash;                    <mode>native</mode>&ndash;&gt;-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>generate</id>-->
+<!--                        <goals>-->
+<!--                            <goal>generate</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                    <execution>-->
+<!--                        <id>test-generate</id>-->
+<!--                        <goals>-->
+<!--                            <goal>test-generate</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -504,13 +429,13 @@
 <!--                            <buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>-->
                         </buildpacks>
                         <env>
-                            <HTTP_PROXY>http://192.168.1.106:1080</HTTP_PROXY>
-                            <HTTPS_PROXY>http://192.168.1.106:1080</HTTPS_PROXY>
-                            <BP_JVM_VERSION>11.0.16</BP_JVM_VERSION>
+<!--                            <HTTP_PROXY>http://192.168.1.106:1080</HTTP_PROXY>-->
+<!--                            <HTTPS_PROXY>http://192.168.1.106:1080</HTTPS_PROXY>-->
+                            <BP_JVM_VERSION>17.0.4</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
-                            <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
-                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>
-                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>--enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+<!--                            <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>-->
+<!--                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
+<!--                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-->
                         </env>
                         <name>
                             registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
@@ -519,7 +444,7 @@
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                     </image>
                     <docker>
-                        <host>unix:///run/user/1000/podman/podman.sock</host>
+                        <host>unix:///run/podman/podman.sock</host>
                         <bindHostToBuilder>true</bindHostToBuilder>
                         <publishRegistry>
                             <username>admin</username>

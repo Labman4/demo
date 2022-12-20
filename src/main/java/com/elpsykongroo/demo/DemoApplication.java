@@ -17,14 +17,13 @@
 package com.elpsykongroo.demo;
 
 import org.mybatis.spring.annotation.MapperScan;
-import org.mybatis.spring.nativex.MyBatisResourcesScan;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MyBatisResourcesScan(typeAliasesPackages = "com.elpsykongroo.demo.entity", mapperLocationPatterns = "mapper/**/*Mapper.xml")
-@MapperScan(basePackages = "com.elpsykongroo.demo.mapper", sqlSessionTemplateRef = "sqlSessionTemplate")
+//@MyBatisResourcesScan(typeAliasesPackages = "com.elpsykongroo.demo.entity", mapperLocationPatterns = "mapper/**/*Mapper.xml")
+//@MapperScan(basePackages = "com.elpsykongroo.demo.mapper", sqlSessionTemplateRef = "sqlSessionTemplate")
 //@ServletComponentScan
 public class DemoApplication {
 	public static void main(String[] args) {

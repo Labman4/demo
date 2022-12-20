@@ -30,12 +30,14 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http.cors().and()
+//				.requiresChannel(channel ->
+//						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
-//						.antMatchers("/**").permitAll()
-						.antMatchers("/actuator/**").permitAll()
-						.antMatchers(HttpMethod.GET, "/public/*").permitAll()
-//						.antMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")
-//						.antMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
+//						.requestMatchers("/**").permitAll()
+						.requestMatchers("/actuator/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/public/*").permitAll()
+//						.requestMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")
+//						.requestMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
 						.anyRequest().authenticated()
 				)
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);

@@ -20,13 +20,11 @@ import com.elpsykongroo.demo.constant.Constant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import org.springframework.nativex.hint.TypeAccess;
-import org.springframework.nativex.hint.TypeHint;
-import org.springframework.stereotype.Component;
+ import org.springframework.stereotype.Component;
 
-@TypeHint(types = {
-		CommonResponse.class
-}, access = { TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS })
+//@TypeHint(types = {
+//		CommonResponse.class
+//}, access = { TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS })
 @Component
 @Data
 @NoArgsConstructor

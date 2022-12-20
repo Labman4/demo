@@ -21,7 +21,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.constant.Constant;
@@ -59,8 +59,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 	@Autowired
 	private RedisTemplate redisTemplate;
 
-	@Autowired
-	private DemoMapper demoMapper;
+//	@Autowired
+//	private DemoMapper demoMapper;
 
 	/*
 	 * X-Forwarded-For
