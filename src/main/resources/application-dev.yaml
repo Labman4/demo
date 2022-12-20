@@ -1,81 +1,73 @@
 spring:
-#  cloud:
-#    kubernetes:
-#      discovery:
-#        enabled: false
-#        all-namespaces: true
-#      #        master-url: https://kubernetes.default.svc
-#      #      include-not-ready-addresses: true
-#        discovery-server-url: ${DISCOVERY_URL}
-#    discovery:
-#      client:
-#        health-indicator:
-#          enabled: false
-  #
+  #  cloud:
+  #    kubernetes:
+  #      discovery:
+  #        enabled: true
+  #        all-namespaces: true
+  #        #        master-url: https://kubernetes.default.svc
+  #        #      include-not-ready-addresses: true
+  #        discovery-server-url: ${DISCOVERY_URL}
+  #    discovery:
+  #      client:
+  #        health-indicator:
+  #          enabled: false
+
   main:
     allow-bean-definition-overriding: true
   datasource:
     url: jdbc:mysql://${MYSQL_IP}:${MYSQL_PORT}/demo
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
-  redis:
-    clientType: ${REDIS_TYPE}
-    password: ${REDIS_PASSWORD}
-    cluster:
-      nodes: ${REDIS_NODE}
-
-#    sentinel:
-#      master: mymaster
-#      nodes: ${REDIS_NODE}
-#      password: ${REDIS_PASSWORD}
-    lettuce:
-      pool:
-        enabled: false
-        maxIdle: 5
-        minIdle: 1
-        maxActive: 5
-        maxWait: 5
-        timeBetweenEvictionRuns: 100000
-    jedis:
-      pool:
-        enabled: true
-        maxIdle: 5
-        minIdle: 1
-        maxActive: 5
-        maxWait: 5
-        timeBetweenEvictionRuns: 100000
-
+  data:
+    redis:
+      client-type: ${REDIS_TYPE:LETTUCE}
+      password: ${REDIS_PASSWORD:elpsy4783}
+      cluster:
+        nodes: ${REDIS_NODE}
+      lettuce:
+        pool:
+          enabled: false
+          maxIdle: 10
+          minIdle: 1
+          maxActive: 5
+          maxWait: 5
+          timeBetweenEvictionRuns: 100000
+      jedis:
+        pool:
+          enabled: true
+          maxIdle: 5
+          minIdle: 1
+          maxActive: 5
+          maxWait: 5
+          timeBetweenEvictionRuns: 100000
 
   kafka:
-    bootstrap-servers: ${KAFKA_URL:kafka.elpsykongroo.com:9094}
+    bootstrap-servers: ${KAFKA_URL}
     security:
       protocol: ssl
-#    ssl:
-#      trust-store-location: ${JKS}
-#      trust-store-password: ${JKS_PASS}
+    ssl:
+      trust-store-location: ${JKS}
+      trust-store-password: ${JKS_PASS}
     consumer:
-      security:
-        protocol: ssl
+      #      security:
+      #        protocol: ssl
       auto-offset-reset: earliest
-#  elasticsearch:
-#    rest:
-#      uris:
-#        - elasticsearch.elpsykongroo.com:9200
-#      username: elastic
-#      password: P7v84A00JsTUui436OtIn0U8
+#
 #  data:
 #    elasticsearch:
-#
 #      client:
 #        reactive:
-#          endpoints: elasticsearch.elpsykongroo.com:443
+#          endpoints: elasticsearch.elpsykongroo.com:9200
 #          username: elastic
-#          password: P7v84A00JsTUui436OtIn0U8
-#          use-ssl: true
-#      repositories:
-#        enabled: true
-ELASTICSEARCH_URL: ${ES_URL}
+#          password: Elpsy4783
+#          use-ssl: false
+ELASTICSEARCH_URL: ${ES_URL:elasticsearch.elpsykongroo.com:443}
 ELASTICSEARCH_USER: ${ES_USER:elastic}
-ELASTICSEARCH_PASS: ${ES_PASS}
+ELASTICSEARCH_PASS: ${ES_PASS:Elpsy4783}
 
-
+#FILTER_PATH: ${FILTER_PATH:/}
+#RECORD_EXCLUDE_PATH: ${RECORD_EXCLUDE_PATH;/actuator}
+IP_HEADER: ${IP_HEADER:}
+#REQUEST_LIMIT: ${REQUEST_LIMIT}
+#REQUEST_DURATION_SPEED: ${REQUEST_DURATION_SPEED:10}
+#REQUEST_DURATION: ${REQUEST_DURATION:1}

@@ -1,24 +1,20 @@
 server:
+  http2:
+    enabled: false
   shutdown: graceful
   port: 8443
-#  http:
-#    port: 8889
+
 spring:
   profiles:
-    active: prod
-#  config:
-#    activate:
-#      on-profile:
-#        - prod
-#    import:
-#      - application-prod.yaml
+    active:
+      - ${ENV:prod}
   application:
     name: demo
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://${AUTH_URL}:9000/oauth2/jwks
+          jwk-set-uri: ${AUTH_URL:https://auth.elpsykongroo.com}/oauth2/jwks
 #  liquibase:
 #    change-log: classpath:liquibase/changelog/*.sql
 management:
@@ -45,5 +41,20 @@ management:
 
 #mybatis:
 #  mapper-locations: classpath:mapper/*.xml
+---
+spring:
+  config:
+    activate:
+      on-profile:
+        - prod
+#    import:
+#      - application-prod.yaml
+server:
+  ssl:
+    enabled: ${SSL:true}
+    certificate: ${TLS_CERT}
+    certificate-private-key: ${TLS_KEY}
 
-
+#    key-store: ${SSL_JKS:}
+#    key-store-password: ${SSL_PASS:elpsy4783}
+#    key-alias: api
