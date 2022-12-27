@@ -7,12 +7,15 @@ on:
         description: 'Environment to run the workflow against'
         type: environment
         required: true
-
+  pull_request:
+    branches: [ master ]
 jobs:
 
   build:
 
     runs-on: self-hosted
+    
+    environment: ${{ github.event.inputs.environment || 'dev' }}
 
     steps:
       - name: Checkout Code
