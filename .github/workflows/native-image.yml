@@ -1,4 +1,4 @@
-name: CI Native Image Buildpacks workflow
+name: Native Image agent workflow
 
 on:
   workflow_dispatch:
@@ -7,31 +7,21 @@ on:
         description: 'Environment to run the workflow against'
         type: environment
         required: true
-  pull_request:
-    branches: [ master ]
+  push:
+    branches:
+    - develop
 jobs:
-
   build:
-
-    runs-on: self-hosted
-    
-    environment: ${{ github.event.inputs.environment || 'dev' }}
-
+    runs-on: self-hosted 
+    environment: ${{ github.event.inputs.environment || 'native' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
-          
-      - uses: graalvm/setup-graalvm@01b9840538b867061986ea406d1b79c91a701d17
-        with:
-          version: 'latest'
-          java-version: '17'
-          components: 'native-image'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache: maven
+        
       - name: fix native config usr agent
         run: |
           mvn package 
-          mvn spring-boot:proess-aot
+          mvn spring-boot:process-aot
           mvn package
           java -Dspring.aot.enabled=true -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image -jar  target/demo-0.0.2.jar
       - name: update native config
@@ -42,6 +32,6 @@ jobs:
 #       - name: Build Native Image with Buildpacks
 #         run: |
 #           mvn clean -Pnative package
-      
+
       
 
