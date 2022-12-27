@@ -31,7 +31,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import com.elpsykongroo.demo.config.RequestConfig;
-import com.elpsykongroo.demo.constant.Constant;
 import com.elpsykongroo.demo.service.AccessRecordService;
 import com.elpsykongroo.demo.service.IPManagerService;
 import com.elpsykongroo.demo.utils.PathUtils;
@@ -42,6 +41,7 @@ import io.github.bucket4j.Refill;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component("ThrottlingFilter")
@@ -117,7 +117,7 @@ public class ThrottlingFilter implements Filter {
 		else {
 			blackFlag = true;
 			errorMsg = "yours IP is our blacklist";
-			httpResponse.setStatus(Constant.EMPTY_RESPONSE_CODE);
+			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
 			httpResponse.setContentType("text/plain");
 		}
 	}
@@ -150,7 +150,7 @@ public class ThrottlingFilter implements Filter {
 			}
 			else {
 				// limit is exceeded
-				httpResponse.setStatus(Constant.LIMIT_RESPONSE_CODE);
+				httpResponse.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
 				httpResponse.setHeader("X-Rate-Limit-Retry-After-Seconds", "" + TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill()));
 				httpResponse.setContentType("text/plain");
 				errorMsg = "Too many requests";
@@ -163,7 +163,7 @@ public class ThrottlingFilter implements Filter {
 	private boolean isPublic(String requestUri, ServletRequest request, HttpServletResponse servletResponse) throws UnknownHostException {
 		if (!PathUtils.beginWithPath(requestConfig.getPath().getNonPrivate(), requestUri)) {
 			if (!ipMangerService.blackOrWhiteList((HttpServletRequest) request, "false")) {
-				servletResponse.setStatus(Constant.ACCESS_ERROR_CODE);
+				servletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 				servletResponse.setContentType("text/plain");
 				errorMsg = "no access";
 				return false;

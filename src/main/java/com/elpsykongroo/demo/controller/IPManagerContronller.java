@@ -20,12 +20,12 @@ package com.elpsykongroo.demo.controller;
 import java.net.UnknownHostException;
 
 import com.elpsykongroo.demo.common.CommonResponse;
-import com.elpsykongroo.demo.constant.Constant;
 import com.elpsykongroo.demo.service.IPManagerService;
 import com.elpsykongroo.demo.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,9 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class IPManagerContronller {
 	@Autowired
 	private IPManagerService ipManagerService;
-
-	@Autowired
-	private CommonResponse commonResponse;
 
 	@PutMapping("/manage/add")
 	public String addBlacklist(@RequestParam("address") String address, @RequestParam("black") String isBlack) {
@@ -62,8 +59,8 @@ public class IPManagerContronller {
 			ipManagerService.patch(addresses, isBlack, ids);
 		}
 		catch (UnknownHostException e) {
-			return JsonUtils.toJson(commonResponse.error(Constant.ERROR_CODE, "unknown host"));
+			return JsonUtils.toJson(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), "unknown host"));
 		}
-		return JsonUtils.toJson(commonResponse.success("done"));
+		return JsonUtils.toJson(CommonResponse.success("done"));
 	}
 }

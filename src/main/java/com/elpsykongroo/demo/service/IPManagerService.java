@@ -33,9 +33,9 @@ public interface IPManagerService {
 
 	CommonResponse<List<String>> add(String address, String isBlack);
 
-	CommonResponse<IPManage> list(String isBlack, String pageNumber, String pageSize);
+	CommonResponse<List<IPManage>> list(String isBlack, String pageNumber, String pageSize);
 
-	CommonResponse<IPManage> patch(String addresses, String isBlack, String ids) throws UnknownHostException;
+	CommonResponse<String> patch(String addresses, String isBlack, String ids) throws UnknownHostException;
 
 	String accessIP(HttpServletRequest request, String type);
 

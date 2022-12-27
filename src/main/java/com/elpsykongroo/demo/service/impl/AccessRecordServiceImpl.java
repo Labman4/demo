@@ -55,16 +55,13 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 //    private RedissonClient redissonClient;
 
 	@Autowired
-	private CommonResponse commonResponse;
-
-	@Autowired
 	private RequestConfig requestConfig;
 
 	public void saveAcessRecord(HttpServletRequest request) {
 		String recordExcludePath = requestConfig.getPath().getExclude().getRecord();
 		if (!(StringUtils.isNotEmpty(recordExcludePath) && beginWithPath(recordExcludePath, request.getRequestURI()))) {
 			Map<String, String> result = new HashMap<>();
-			Enumeration headerNames = request.getHeaderNames();
+			Enumeration<String> headerNames = request.getHeaderNames();
 			while (headerNames.hasMoreElements()) {
 				String key = (String) headerNames.nextElement();
 				String value = request.getHeader(key);
@@ -87,14 +84,14 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	}
 
 	@Override
-	public CommonResponse<AccessRecord> findAll(String pageNo, String pageSize, String order) {
+	public CommonResponse<List<AccessRecord>> findAll(String pageNo, String pageSize, String order) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
 		if ("1".equals(order)) {
 			sort = Sort.by(Sort.Direction.ASC, "timestamp");
 		}
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize), sort);
 		Page<AccessRecord> records = accessRecordRepo.findAll(pageable);
-		return commonResponse.success(records.get().toList());
+		return CommonResponse.success(records.get().toList());
 	}
 
 	@Override
@@ -118,14 +115,14 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		catch (Exception e) {
 			throw new ElasticException(e);
 		}
-		return commonResponse.success(recordIds.size());
+		return CommonResponse.success(recordIds.size());
 	}
 
 
 	@Override
 	public CommonResponse<List<AccessRecord>> filterUserAgent(String path) {
 		List<AccessRecord> accessRecords = accessRecordRepo.findByUserAgentLike(path);
-		return commonResponse.success(accessRecords);
+		return CommonResponse.success(accessRecords);
 	}
 
 	private boolean beginWithPath(String paths, String url) {

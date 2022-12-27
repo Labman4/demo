@@ -16,11 +16,14 @@
 
 package com.elpsykongroo.demo.common;
 
-import com.elpsykongroo.demo.constant.Constant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
- import org.springframework.stereotype.Component;
+import java.io.Serial;
+import java.io.Serializable;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 //@TypeHint(types = {
 //		CommonResponse.class
@@ -28,30 +31,33 @@ import lombok.NoArgsConstructor;
 @Component
 @Data
 @NoArgsConstructor
-public class CommonResponse<T> {
+public class CommonResponse<T> implements Serializable{
 
-	private String code;
+	@Serial
+	private static final long serialVersionUID = 4018364510993114709L;
+	
+	private Integer code;
 
 	private String msg;
 
 	private T data;
 
-	public CommonResponse(String code, String msg) {
+	public CommonResponse(Integer code, String msg) {
 		this.code = code;
 		this.msg = msg;
 	}
 
-	public CommonResponse(String code, String msg, T data) {
+	public CommonResponse(Integer code, String msg, T data) {
 		this.code = code;
 		this.msg = msg;
 		this.data = data;
 	}
 
-	public CommonResponse<T> success(T data) {
-		return new CommonResponse<T>(Constant.SUCCESS_CODE, Constant.SUCCESS_MSG, data);
+	public static <T> CommonResponse<T> success(T data) {
+		return new CommonResponse<T>(HttpStatus.OK.value(),HttpStatus.OK.getReasonPhrase() , data);
 	}
 
-	public CommonResponse<T> error(String code, String msg) {
+	public static <T> CommonResponse<T> error(Integer code, String msg) {
 		return new CommonResponse<T>(code, msg);
 	}
 }

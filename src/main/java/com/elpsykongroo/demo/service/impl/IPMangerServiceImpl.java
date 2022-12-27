@@ -26,7 +26,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.config.RequestConfig;
 import com.elpsykongroo.demo.config.RequestConfig.Header;
-import com.elpsykongroo.demo.constant.Constant;
 import com.elpsykongroo.demo.document.IPManage;
 import com.elpsykongroo.demo.exception.ElasticException;
 import com.elpsykongroo.demo.repo.IPRepo;
@@ -41,6 +40,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -53,9 +53,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 //    @Autowired
 //    private RedissonClient redissonClient;
-
-	@Autowired
-	private CommonResponse commonResponse;
 
 	@Autowired
 	private RedisTemplate redisTemplate;
@@ -76,12 +73,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 	 * */
 	
 	@Override
-	public CommonResponse<IPManage> list(String isBlack, String pageNumber, String pageSize) {
+	public CommonResponse<List<IPManage>> list(String isBlack, String pageNumber, String pageSize) {
 		List<IPManage> ipManages = null;
 		if ("".equals(isBlack)) {
 			Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
 			Page<IPManage> ipManage = ipRepo.findAll(pageable);
-			return commonResponse.success(ipManage.get().toList());
+			return CommonResponse.success(ipManage.get().toList());
 		}
 		else if ("true".equals(isBlack)) {
 			ipManages = ipRepo.findByIsBlackTrue();
@@ -89,16 +86,16 @@ public class IPMangerServiceImpl implements IPManagerService {
 		else {
 			ipManages = ipRepo.findByIsBlackFalse();
 		}
-		return commonResponse.success(ipManages);
+		return CommonResponse.success(ipManages);
 	}
 
 	@Override
-	public CommonResponse<IPManage> patch(String addresses, String isBlack, String ids) throws UnknownHostException {
+	public CommonResponse<String> patch(String addresses, String isBlack, String ids) throws UnknownHostException {
 		String[] addr = addresses.split(",");
 		if (StringUtils.isNotEmpty(ids)) {
 			ipRepo.deleteById(ids);
 			updataCache(isBlack);
-			return commonResponse.success("done");
+			return CommonResponse.success("done");
 		}
 		for (String ad: addr) {
 			InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
@@ -108,7 +105,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 			}
 		}
 		updataCache(isBlack);
-		return commonResponse.success("done");
+		return CommonResponse.success("done");
 	}
 
 	private void deleteIPManage(String isBlack, String ad) {
@@ -158,14 +155,14 @@ public class IPMangerServiceImpl implements IPManagerService {
 //            return commonResponse.error(Constant.ERROR_CODE, "please retry");
 		}
 		catch (UnknownHostException e) {
-			return commonResponse.error(Constant.ERROR_CODE, "unknown host");
+			return CommonResponse.error(HttpStatus.BAD_REQUEST.value(), "unknown host");
 		}
 		catch (ElasticException e) {
-			return commonResponse.error(Constant.ERROR_CODE, "service timeout");
+			return CommonResponse.error(HttpStatus.SERVICE_UNAVAILABLE.value(), "service timeout");
 		}
 		log.info("black result------------:{}", addresses);
 		updataCache(isBlack);
-		return commonResponse.success(addresses);
+		return CommonResponse.success(addresses);
 	}
 
 	private Long exist(String ad, String isBlack) {
@@ -261,7 +258,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		else {
 			for (InetAddress address: inetAddress) {
 				if (exist(address.getHostName(), isBlack) > 0) {
-					log.info("hostname in list:{}", address.getHostName());
+					log.info("hostname in list");
 					flag = true;
 				}
 			}
