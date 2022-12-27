@@ -30,8 +30,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import com.elpsykongroo.demo.config.RequestConfig;
 import com.elpsykongroo.demo.constant.Constant;
-import com.elpsykongroo.demo.repo.IPRepo;
 import com.elpsykongroo.demo.service.AccessRecordService;
 import com.elpsykongroo.demo.service.IPManagerService;
 import com.elpsykongroo.demo.utils.PathUtils;
@@ -39,66 +39,38 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.Refill;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component("ThrottlingFilter")
-@Slf4j
 public class ThrottlingFilter implements Filter {
 	private String errorMsg;
 	private boolean limitFlag = false;
 	private boolean publicFlag = true;
 	private boolean blackFlag = false;
 
-	@Value("${GLOBAL_REQUEST_LIMIT:1000}")
-	private Long globalOverdraft;
-
-	@Value("${GLOBAL_REQUEST_DURATION_SPEED:100}")
-	private Long globalTokens;
-
-	@Value("${GLOBAL_REQUEST_DURATION:1}")
-	private Long globalDuration;
-	@Value("${REQUEST_LIMIT:100}")
-	private Long overdraft;
-	@Value("${REQUEST_DURATION_SPEED:10}")
-	private Long tokens;
-	@Value("${REQUEST_DURATION:1}")
-	private Long duration;
-	@Value("${FILTER_PATH:/}")
-	private String filtertPath;
-
-	@Value("${EXCLUDE_PATH:/actuator}")
-	private String excludePath;
-
-	@Value("${LIMIT_PATH:/}")
-	private String limitPath;
-	@Value("${PUBLIC_PATH:/public}")
-	private String publicPath;
-
 	@Autowired
-	private IPRepo ipRepo;
+	private RequestConfig requestConfig;
+
 	@Autowired
 	private AccessRecordService accessRecordService;
+
 	@Autowired
 	private IPManagerService ipMangerService;
 
-	@Autowired
-	private RedisTemplate redisTemplate;
-
 	private Bucket createNewBucket() {
-		Refill refill = Refill.greedy(tokens, Duration.ofSeconds(duration));
-		Bandwidth limit = Bandwidth.classic(overdraft, refill);
+		Refill refill = Refill.greedy(requestConfig.getLimit().getScope().getSpeed(),
+					    Duration.ofSeconds(requestConfig.getLimit().getScope().getDuration()));
+		Bandwidth limit = Bandwidth.classic(requestConfig.getLimit().getScope().getTokens(), refill);
 		return Bucket.builder().addLimit(limit).build();
 	}
 
 	private Bucket createGlobalNewBucket() {
-		Refill refill = Refill.greedy(globalTokens, Duration.ofSeconds(globalDuration));
-		Bandwidth limit = Bandwidth.classic(globalDuration, refill);
+		Refill refill = Refill.greedy(requestConfig.getLimit().getGlobal().getSpeed(), 
+						Duration.ofSeconds(requestConfig.getLimit().getGlobal().getDuration()));
+		Bandwidth limit = Bandwidth.classic(requestConfig.getLimit().getGlobal().getTokens(), refill);
 		return Bucket.builder().addLimit(limit).build();
 	}
 
@@ -109,12 +81,17 @@ public class ThrottlingFilter implements Filter {
 		HttpSession session = httpRequest.getSession(true);
 		String requestUri = httpRequest.getRequestURI();
 		errorMsg = "";
+		String limitPath = requestConfig.getPath().getLimit();
 		if (StringUtils.isNotEmpty(limitPath) && PathUtils.beginWithPath(limitPath, requestUri)) {
-			limitFlag = limitByBucket("global", limitPath, httpResponse, session, requestUri);
+			limitFlag = limitByBucket("global", httpResponse, session);
 			accessRecordService.saveAcessRecord(httpRequest);
+			String filtertPath = requestConfig.getPath().getFilter();
+			String excludePath = requestConfig.getPath().getFilter();
 			if (limitFlag) {
-				if (StringUtils.isNotEmpty(filtertPath) && PathUtils.beginWithPath(filtertPath, requestUri) && !PathUtils.beginWithPath(excludePath, requestUri)) {
-					filterPath(filterChain, httpRequest, httpResponse, session, requestUri);
+				if (StringUtils.isNotEmpty(filtertPath)
+						&& PathUtils.beginWithPath(filtertPath, requestUri)
+						&& !PathUtils.beginWithPath(excludePath, requestUri)) {
+					filterPath(httpRequest, httpResponse, session, requestUri);
 				}
 			}
 		}
@@ -126,26 +103,26 @@ public class ThrottlingFilter implements Filter {
 		}
 	}
 
-	private void filterPath(FilterChain filterChain, HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri) throws UnknownHostException {
-		if (limitByBucket("", filtertPath, httpResponse, session, requestUri)) {
-			blackOrWhite(filterChain, httpRequest, httpResponse, requestUri);
+	private void filterPath(HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri) throws UnknownHostException {
+		if (limitByBucket("", httpResponse, session)) {
+			blackOrWhite(httpRequest, httpResponse, requestUri);
 		}
 	}
 
-	private void blackOrWhite(FilterChain filterChain, HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri) throws UnknownHostException {
+	private void blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri) throws UnknownHostException {
 		if (!ipMangerService.blackOrWhiteList(httpRequest, "true")) {
 			blackFlag = false;
-			publicFlag = isPublic(requestUri, httpRequest, httpResponse, filterChain);
+			publicFlag = isPublic(requestUri, httpRequest, httpResponse);
 		}
 		else {
 			blackFlag = true;
+			errorMsg = "yours IP is our blacklist";
 			httpResponse.setStatus(Constant.EMPTY_RESPONSE_CODE);
 			httpResponse.setContentType("text/plain");
-			errorMsg = ("yours IP is our blacklist");
 		}
 	}
 
-	private boolean limitByBucket(String scope, String path, HttpServletResponse httpResponse, HttpSession session, String requestUri) {
+	private boolean limitByBucket(String scope, HttpServletResponse httpResponse, HttpSession session) {
 		String appKey = session.getId();
 		Bucket bucket = (Bucket) session.getAttribute("throttler-" + appKey);
 		if (bucket == null) {
@@ -183,8 +160,8 @@ public class ThrottlingFilter implements Filter {
 		}
 	}
 
-	private boolean isPublic(String requestUri, ServletRequest request, HttpServletResponse servletResponse, FilterChain filterChain) throws UnknownHostException {
-		if (!PathUtils.beginWithPath(publicPath, requestUri)) {
+	private boolean isPublic(String requestUri, ServletRequest request, HttpServletResponse servletResponse) throws UnknownHostException {
+		if (!PathUtils.beginWithPath(requestConfig.getPath().getNonPrivate(), requestUri)) {
 			if (!ipMangerService.blackOrWhiteList((HttpServletRequest) request, "false")) {
 				servletResponse.setStatus(Constant.ACCESS_ERROR_CODE);
 				servletResponse.setContentType("text/plain");

@@ -38,7 +38,9 @@ public class AccessRecordContronller {
 	private AccessRecordService accessRecordService;
 
 	@GetMapping("/access")
-	public String getAccessRecord(@RequestParam("pageNumber") String pageNumber, @RequestParam("pageSize") String pageSize, @RequestParam("order") String order) {
+	public String getAccessRecord(@RequestParam("pageNumber") String pageNumber,
+								  @RequestParam("pageSize") String pageSize,
+								  @RequestParam("order") String order) {
 		return JsonUtils.toJson(accessRecordService.findAll(pageNumber, pageSize, order));
 	}
 	@DeleteMapping("/delete")

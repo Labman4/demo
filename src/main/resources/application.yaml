@@ -1,6 +1,6 @@
 server:
   http2:
-    enabled: false
+    enabled: true
   shutdown: graceful
   port: 8443
 
@@ -15,33 +15,50 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${AUTH_URL:https://auth.elpsykongroo.com}/oauth2/jwks
+#mybatis:
+#  mapper-locations: classpath:mapper/*.xml
 #  liquibase:
-#    change-log: classpath:liquibase/changelog/*.sql
+# change-log: classpath:liquibase/changelog/*.sql
+logging:
+#  log4j2:
+#    config:
+#      override:
+#        - classpath:log4j2-spring.xml
+  level:
+#    org:
+#      springframework:
+#        web:
+#          filter:
+#            CommonsRequestLoggingFilter: DEBUG
+    web: ${LOG_LEVEL:info}
+---
 management:
+  httpexchanges:
+    recording:
+      enabled: ${HTTP_RECORD:false}
   endpoint:
     health:
       probes:
         enabled: true
     prometheus:
       enabled: true
+    httpexchanges:
+      enabled: true
   metrics:
-    export:
-      prometheus:
-        enabled: true
     tags:
       application: demo
   endpoints:
     web:
       exposure:
-        include: prometheus, health
+        include: ${ENDPOINTS_WEB:health,prometheus,httpexchanges}
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_HOST:localhost:9411}
+  tracing:
+    enabled: ${TRACE_ENABLED:false}
+    sampling:
+      probability: ${TRACE_SAMPLING:1.0}
 
-#  trace:
-#    http:
-#      enabled: true
-
-#mybatis:
-#  mapper-locations: classpath:mapper/*.xml
----
 spring:
   config:
     activate:
@@ -51,7 +68,7 @@ spring:
 #      - application-prod.yaml
 server:
   ssl:
-    enabled: ${SSL:true}
+    enabled: ${SSL:false}
     certificate: ${TLS_CERT}
     certificate-private-key: ${TLS_KEY}
 

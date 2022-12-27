@@ -18,14 +18,13 @@ package com.elpsykongroo.demo.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 public final class JsonUtils {
 	private JsonUtils() {
 		throw new IllegalStateException("Utility class");
 	}
 
-	private static final Gson gson = new Gson();
+//	private static final Gson gson = new Gson();
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 	public static String toJson(Object o) {
@@ -38,7 +37,7 @@ public final class JsonUtils {
 
 	}
 
-	public static String toString(Object o) {
-		return gson.toJson(o);
-	}
+//	public static String toString(Object o) {
+//		return gson.toJson(o);
+//	}
 }
