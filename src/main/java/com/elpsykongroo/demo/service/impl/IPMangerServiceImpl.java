@@ -21,46 +21,47 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
-import com.elpsykongroo.demo.constant.Constant;
+import com.elpsykongroo.demo.config.RequestConfig;
+import com.elpsykongroo.demo.config.RequestConfig.Header;
 import com.elpsykongroo.demo.document.IPManage;
 import com.elpsykongroo.demo.exception.ElasticException;
-import com.elpsykongroo.demo.mapper.DemoMapper;
-import com.elpsykongroo.demo.repo.AccessRecordRepo;
 import com.elpsykongroo.demo.repo.IPRepo;
 import com.elpsykongroo.demo.service.IPManagerService;
 import com.elpsykongroo.demo.utils.PathUtils;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class IPMangerServiceImpl implements IPManagerService {
-	@Autowired
 	private IPRepo ipRepo;
-	@Autowired
-	private AccessRecordRepo accessRecordRepo;
 
+	public IPMangerServiceImpl(IPRepo ipRepo) {
+		this.ipRepo = ipRepo;
+	}
 //    @Autowired
 //    private RedissonClient redissonClient;
 
 	@Autowired
-	private CommonResponse commonResponse;
-
-	@Autowired
 	private RedisTemplate redisTemplate;
 
-	@Autowired
-	private DemoMapper demoMapper;
+    @Autowired
+	private RequestConfig requestConfig;
+
+//	@Autowired
+//	private DemoMapper demoMapper;
 
 	/*
 	 * X-Forwarded-For
@@ -70,23 +71,14 @@ public class IPMangerServiceImpl implements IPManagerService {
 	 * HTTP_X_FORWARDED_FOR
 	 *
 	 * */
-	@Value("${IP_HEADER}")
-	private String sourceHeader;
-
-	@Value("${BLACK_HEADER}")
-	private String blackHeader;
-
-	@Value("${WHITE_HEADER}")
-	private String whiteHeader;
-
-	@Value("${RECORD_EXCLUDE_PATH}")
-	private String recordExcludePath;
+	
 	@Override
-	public CommonResponse<IPManage> list(String isBlack, String pageNumber, String pageSize) {
+	public CommonResponse<List<IPManage>> list(String isBlack, String pageNumber, String pageSize) {
 		List<IPManage> ipManages = null;
 		if ("".equals(isBlack)) {
-			Page<IPManage> ipManage = ipRepo.findAll(PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize)));
-			return commonResponse.success(ipManage);
+			Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
+			Page<IPManage> ipManage = ipRepo.findAll(pageable);
+			return CommonResponse.success(ipManage.get().toList());
 		}
 		else if ("true".equals(isBlack)) {
 			ipManages = ipRepo.findByIsBlackTrue();
@@ -94,16 +86,16 @@ public class IPMangerServiceImpl implements IPManagerService {
 		else {
 			ipManages = ipRepo.findByIsBlackFalse();
 		}
-		return commonResponse.success(ipManages);
+		return CommonResponse.success(ipManages);
 	}
 
 	@Override
-	public CommonResponse<IPManage> patch(String addresses, String isBlack, String ids) throws UnknownHostException {
+	public CommonResponse<String> patch(String addresses, String isBlack, String ids) throws UnknownHostException {
 		String[] addr = addresses.split(",");
 		if (StringUtils.isNotEmpty(ids)) {
 			ipRepo.deleteById(ids);
 			updataCache(isBlack);
-			return commonResponse.success("done");
+			return CommonResponse.success("done");
 		}
 		for (String ad: addr) {
 			InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
@@ -113,7 +105,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 			}
 		}
 		updataCache(isBlack);
-		return commonResponse.success("done");
+		return CommonResponse.success("done");
 	}
 
 	private void deleteIPManage(String isBlack, String ad) {
@@ -163,14 +155,14 @@ public class IPMangerServiceImpl implements IPManagerService {
 //            return commonResponse.error(Constant.ERROR_CODE, "please retry");
 		}
 		catch (UnknownHostException e) {
-			return commonResponse.error(Constant.ERROR_CODE, "unknown host");
+			return CommonResponse.error(HttpStatus.BAD_REQUEST.value(), "unknown host");
 		}
 		catch (ElasticException e) {
-			return commonResponse.error(Constant.ERROR_CODE, "service timeout");
+			return CommonResponse.error(HttpStatus.SERVICE_UNAVAILABLE.value(), "service timeout");
 		}
 		log.info("black result------------:{}", addresses);
 		updataCache(isBlack);
-		return commonResponse.success(addresses);
+		return CommonResponse.success(addresses);
 	}
 
 	private Long exist(String ad, String isBlack) {
@@ -209,16 +201,18 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	@Override
 	public String accessIP(HttpServletRequest request, String headerType) {
-		String[] headers = sourceHeader.split(",");
+		Header header = requestConfig.getHeader();
+		String[] headers = header.getIp().split(",");
+		
 		if ("black".equals(headerType)) {
-			headers = blackHeader.split(",");
+			headers = header.getBlack().split(",");
 		}
 		if ("white".equals(headerType)) {
-			headers = whiteHeader.split(",");
+			headers = header.getWhite().split(",");
 		}
 		String ip = null;
-		for (String header: headers) {
-			ip = request.getHeader(header);
+		for (String head: headers) {
+			ip = request.getHeader(head);
 			if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
 				continue;
 			}
@@ -226,7 +220,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
-		if (!PathUtils.beginWithPath(recordExcludePath, request.getRequestURI())) {
+		if (!PathUtils.beginWithPath(requestConfig.getPath().getExclude().getRecord(), request.getRequestURI())) {
 			log.info("ip------------{}", ip);
 		}
 		return ip;
@@ -256,6 +250,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if (!ip.equals(address.getHostName()) && exist(address.getHostName(), isBlack) == 0) {
 					String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
 							.getAddress();
+					updataCache(isBlack);
 					log.info("Update blacklist domain when blackIP domain change, {} -> {}", ip, newAddress);
 				}
 			}
@@ -263,12 +258,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 		else {
 			for (InetAddress address: inetAddress) {
 				if (exist(address.getHostName(), isBlack) > 0) {
-					log.info("hostname in blacklist:{}", address.getHostName());
+					log.info("hostname in list");
 					flag = true;
 				}
 			}
 		}
-		log.info("flag:{}, black:{}", isBlack, flag);
+		log.info("flag:{}, black:{}", flag, isBlack);
 		return flag;
 	}
 }

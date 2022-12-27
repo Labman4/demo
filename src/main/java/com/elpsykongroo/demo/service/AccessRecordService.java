@@ -19,18 +19,17 @@ package com.elpsykongroo.demo.service;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.document.AccessRecord;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public interface AccessRecordService {
 
-	CommonResponse<AccessRecord> findAll(String pageNumber, String pageSize, String sort);
+	CommonResponse<List<AccessRecord>> findAll(String pageNumber, String pageSize, String sort);
 
 	CommonResponse<List<AccessRecord>> filterUserAgent(String path);
 

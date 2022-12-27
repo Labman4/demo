@@ -17,6 +17,7 @@
 
 package com.elpsykongroo.demo.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,16 +27,19 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+	@Value("${request.path.permit}")
+	private String permit_path;
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		// @formatter:off
 		http.cors().and()
+//				.requiresChannel(channel ->
+//						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
-//						.antMatchers("/**").permitAll()
-						.antMatchers("/actuator/**").permitAll()
-						.antMatchers(HttpMethod.GET, "/public/*").permitAll()
-//						.antMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")
-//						.antMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
+						.requestMatchers(permit_path).permitAll()
+						.requestMatchers(HttpMethod.GET, "/public/*").permitAll()
+//						.requestMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")
+//						.requestMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
 						.anyRequest().authenticated()
 				)
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);

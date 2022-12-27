@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.constant;
+package com.elpsykongroo.demo.config;
 
-/**
- * @author labman4
- */
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public interface Constant {
-	String SUCCESS_CODE = "200";
-	String SUCCESS_MSG = "success";
-	String ERROR_CODE = "500";
-	Integer  ACCESS_ERROR_CODE = 401;
-
-	String ERROR_MSG = "error";
-	Integer LIMIT_RESPONSE_CODE = 429;
-	Integer EMPTY_RESPONSE_CODE = 404;
-
-	Long REDIS_LOCK_WAIT_TIME = 5L;
-
-	Long REDIS_LOCK_LEASE_TIME = 3L;
+@Configuration
+public class TraceConfig {
+   @Bean
+   public HttpExchangeRepository httpExchangeRepository() {
+       return new InMemoryHttpExchangeRepository();
+   }
 }

@@ -20,12 +20,12 @@ package com.elpsykongroo.demo.controller;
 import java.net.UnknownHostException;
 
 import com.elpsykongroo.demo.common.CommonResponse;
-import com.elpsykongroo.demo.constant.Constant;
 import com.elpsykongroo.demo.service.IPManagerService;
 import com.elpsykongroo.demo.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -42,16 +42,14 @@ public class IPManagerContronller {
 	@Autowired
 	private IPManagerService ipManagerService;
 
-	@Autowired
-	private CommonResponse commonResponse;
-
 	@PutMapping("/manage/add")
 	public String addBlacklist(@RequestParam("address") String address, @RequestParam("black") String isBlack) {
-		log.info("add black sourceIP:{}", address);
+		log.info("add sourceIP:{}, black:{}", address, isBlack);
 		return JsonUtils.toJson(ipManagerService.add(address, isBlack));
 	}
 	@GetMapping("/manage/list")
 	public String blacklist(@RequestParam("black") String isBlack, @RequestParam("pageNumber") String pageNumber, @RequestParam("pageSize") String pageSize) {
+		log.info("black:{}, pageNumber:{}, pageSize:{}", isBlack, pageNumber, pageSize );
 		return JsonUtils.toJson(ipManagerService.list(isBlack, pageNumber, pageSize));
 	}
 
@@ -61,8 +59,8 @@ public class IPManagerContronller {
 			ipManagerService.patch(addresses, isBlack, ids);
 		}
 		catch (UnknownHostException e) {
-			return JsonUtils.toJson(commonResponse.error(Constant.ERROR_CODE, "unknown host"));
+			return JsonUtils.toJson(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), "unknown host"));
 		}
-		return JsonUtils.toJson(commonResponse.success("done"));
+		return JsonUtils.toJson(CommonResponse.success("done"));
 	}
 }

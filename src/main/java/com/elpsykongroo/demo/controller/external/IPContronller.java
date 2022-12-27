@@ -16,9 +16,7 @@
 
 package com.elpsykongroo.demo.controller.external;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.demo.service.IPManagerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +33,7 @@ public class IPContronller {
 
 	@CrossOrigin(origins = "*")
 	@GetMapping("/ip")
-	public String accessIP(HttpServletRequest request, HttpServletResponse response) {
+	public String accessIP(HttpServletRequest request) {
 		return ipManagerService.accessIP(request, "");
 	}
 }

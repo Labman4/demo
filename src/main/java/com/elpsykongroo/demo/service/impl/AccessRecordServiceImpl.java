@@ -25,9 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
+import com.elpsykongroo.demo.config.RequestConfig;
 import com.elpsykongroo.demo.document.AccessRecord;
 import com.elpsykongroo.demo.exception.ElasticException;
 import com.elpsykongroo.demo.repo.AccessRecordRepo;
@@ -36,56 +37,31 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-
-/**
- * <p>IPMangerServiceImlp class.</p>
- *
- * @author labman1
- * @version $Id: $Id
- */
 @Service
 @Slf4j
 public class AccessRecordServiceImpl implements AccessRecordService {
-	@Autowired
 	private AccessRecordRepo accessRecordRepo;
 
+	public AccessRecordServiceImpl(AccessRecordRepo accessRecordRepo) {
+		this.accessRecordRepo = accessRecordRepo;
+	}
 //    @Autowired
 //    private RedissonClient redissonClient;
 
 	@Autowired
-	private CommonResponse commonResponse;
-
-	@Autowired
-	private RedisTemplate redisTemplate;
-
-	/*
-	 * X-Forwarded-For
-	 * Proxy-Client-IP
-	 * WL-Proxy-Client-IP
-	 * HTTP_CLIENT_IP
-	 * HTTP_X_FORWARDED_FOR
-	 *
-	 * */
-	@Value("${IP_HEADER}")
-	private String sourceHeader;
-
-	@Value("${BLACK_HEADER}")
-	private String blackHeader;
-
-
-	@Value("${RECORD_EXCLUDE_PATH}")
-	private String recordExcludePath;
+	private RequestConfig requestConfig;
 
 	public void saveAcessRecord(HttpServletRequest request) {
+		String recordExcludePath = requestConfig.getPath().getExclude().getRecord();
 		if (!(StringUtils.isNotEmpty(recordExcludePath) && beginWithPath(recordExcludePath, request.getRequestURI()))) {
 			Map<String, String> result = new HashMap<>();
-			Enumeration headerNames = request.getHeaderNames();
+			Enumeration<String> headerNames = request.getHeaderNames();
 			while (headerNames.hasMoreElements()) {
 				String key = (String) headerNames.nextElement();
 				String value = request.getHeader(key);
@@ -108,12 +84,14 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	}
 
 	@Override
-	public CommonResponse<AccessRecord> findAll(String pageNo, String pageSize, String order) {
+	public CommonResponse<List<AccessRecord>> findAll(String pageNo, String pageSize, String order) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
 		if ("1".equals(order)) {
 			sort = Sort.by(Sort.Direction.ASC, "timestamp");
 		}
-		return commonResponse.success(accessRecordRepo.findAll(PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize), sort)));
+		Pageable pageable = PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize), sort);
+		Page<AccessRecord> records = accessRecordRepo.findAll(pageable);
+		return CommonResponse.success(records.get().toList());
 	}
 
 	@Override
@@ -137,14 +115,14 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		catch (Exception e) {
 			throw new ElasticException(e);
 		}
-		return commonResponse.success(recordIds.size());
+		return CommonResponse.success(recordIds.size());
 	}
 
 
 	@Override
 	public CommonResponse<List<AccessRecord>> filterUserAgent(String path) {
 		List<AccessRecord> accessRecords = accessRecordRepo.findByUserAgentLike(path);
-		return commonResponse.success(accessRecords);
+		return CommonResponse.success(accessRecords);
 	}
 
 	private boolean beginWithPath(String paths, String url) {
