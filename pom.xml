@@ -399,26 +399,26 @@
                         <plugin>
                             <groupId>org.springframework.boot</groupId>
                             <artifactId>spring-boot-maven-plugin</artifactId>
-                            <!-- <executions>
+                            <executions>
                                <execution>
                                    <id>build-image</id>
                                    <goals>
                                        <goal>build-image-no-fork</goal>
                                    </goals>
                                </execution>
-                            </executions> -->
+                            </executions>
                         </plugin>
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
                             <artifactId>native-maven-plugin</artifactId>
-                            <executions>
+                            <!-- <executions>
                                 <execution>
                                     <id>build-image</id>
                                     <goals>
                                         <goal>compile-no-fork</goal>
                                     </goals>
                                 </execution>  
-                            </executions>
+                            </executions> -->
                         </plugin>
                     </plugins>
                 </pluginManagement>
