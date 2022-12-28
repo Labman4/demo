@@ -16,12 +16,11 @@
 
 package com.elpsykongroo.demo.exception;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class ElasticException extends RuntimeException {
 	private static final long serialVersionUID = 5639223247225972389L;
-
-	public ElasticException() {
-
-	}
 
 	public ElasticException(Throwable cause) {
 		super(cause);

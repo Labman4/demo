@@ -395,7 +395,8 @@
   "name":"com.elpsykongroo.demo.config.OtelCustomizerProviderConfig$$SpringCGLIB$$0",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
+  "allDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}]
 },
 {
   "name":"com.elpsykongroo.demo.config.RedisConfiguration",
@@ -407,7 +408,8 @@
   "name":"com.elpsykongroo.demo.config.RedisConfiguration$$SpringCGLIB$$0",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
+  "allDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}]
 },
 {
   "name":"com.elpsykongroo.demo.config.RedisConfiguration$$SpringCGLIB$$1",
@@ -504,7 +506,8 @@
   "name":"com.elpsykongroo.demo.config.RequestLoggingFilterConfig$$SpringCGLIB$$0",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
+  "allDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}]
 },
 {
   "name":"com.elpsykongroo.demo.config.SecurityConfig",
@@ -517,7 +520,8 @@
   "name":"com.elpsykongroo.demo.config.SecurityConfig$$SpringCGLIB$$0",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
+  "allDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}]
 },
 {
   "name":"com.elpsykongroo.demo.config.SecurityConfig$$SpringCGLIB$$1",
@@ -537,7 +541,8 @@
   "name":"com.elpsykongroo.demo.config.ServerConfig$$SpringCGLIB$$0",
   "allDeclaredFields":true,
   "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
+  "allDeclaredConstructors":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}]
 },
 {
   "name":"com.elpsykongroo.demo.config.ServerConfig$$SpringCGLIB$$1",
@@ -554,6 +559,7 @@
 {
   "name":"com.elpsykongroo.demo.config.TraceConfig$$SpringCGLIB$$0",
   "allDeclaredFields":true,
+  "fields":[{"name":"CGLIB$FACTORY_DATA"}],
   "methods":[
     {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
     {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }
@@ -5125,6 +5131,10 @@
   "name":"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataConfiguration$ReactiveRestClientConfiguration",
   "queryAllDeclaredMethods":true,
   "queriedMethods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchRepositoriesAutoConfiguration",
