@@ -34,6 +34,7 @@ jobs:
           java -Dspring.aot.enabled=true -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image -jar  target/demo-0.0.2.jar
       - name: update native config
         run: |
+          git status
           git add -A
           git commit -m "fix native config"
           git push origin develop:native
