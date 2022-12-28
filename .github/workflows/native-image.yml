@@ -28,7 +28,7 @@ jobs:
       
       - name: run agent with test
         run: |
-          mvn -Pnative -Dagent=true test
+          mvn -Pnative package
           
 #       - name: fix native config usr agent
 #         run: |
