@@ -1,4 +1,4 @@
-name: Native Image agent workflow
+name: native-image agent workflow
 
 on:
   workflow_dispatch:
@@ -16,8 +16,16 @@ jobs:
     environment: ${{ github.event.inputs.environment || 'native' }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
-        
+        uses: actions/checkout@3.2.0
+      
+      - uses: graalvm/setup-graalvm@d01f5f519f35cf82b318133761fd8b674632a8fe
+        with:
+          version: 'latest'
+          java-version: '17'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: maven
+          
       - name: fix native config usr agent
         run: |
           mvn package 
