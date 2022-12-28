@@ -1,4 +1,4 @@
-name: native-image agent workflow
+name: Native image
 
 on:
   workflow_dispatch:
@@ -25,19 +25,23 @@ jobs:
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: maven
+      
+      - name: run agent with test
+        run: |
+          mvn -Pnative -Dagent=true test
           
-      - name: fix native config usr agent
-        run: |
-          mvn package 
-          mvn spring-boot:process-aot
-          mvn package
-          java -Dspring.aot.enabled=true -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image -jar  target/demo-0.0.2.jar
-      - name: update native config
-        run: |
-          git status
-          git add -A
-          git commit -m "fix native config"
-          git push origin develop:native
+#       - name: fix native config usr agent
+#         run: |
+#           mvn package 
+#           mvn spring-boot:process-aot
+#           mvn package
+#           java -Dspring.aot.enabled=true -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image -jar  target/demo-0.0.2.jar
+#       - name: update native config
+#         run: |
+#           git status
+#           git add -A
+#           git commit -m "fix native config"
+#           git push origin develop:native
 #       - name: Build Native Image with Buildpacks
 #         run: |
 #           mvn clean -Pnative package
