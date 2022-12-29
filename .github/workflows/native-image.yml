@@ -39,7 +39,7 @@ jobs:
           mvn -PnativeTest package -DskipNativeTests
           
   call-coverage_report:  
-    uses: .github/.github/workflows/codacy-coverage.yml@89d6c85cfafaec52c72b6c5e8b2878d33104c699
+    uses: Labman4/reporter/.github/workflows/codacy-coverage.yml@89d6c85cfafaec52c72b6c5e8b2878d33104c699
     secrets: inherit      
     
 #       - name: fix native config usr agent
