@@ -40,7 +40,6 @@ jobs:
           
   call-coverage_report:  
     uses: Labman4/reporter/.github/workflows/codacy-coverage.yml@1.3.0
-    secrets: inherit      
     
 #       - name: fix native config usr agent
 #         run: |
