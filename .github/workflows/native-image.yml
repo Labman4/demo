@@ -36,7 +36,7 @@ jobs:
           
       - name: build native by test with agent
         run: |
-          mvn -PnativeTest package 
+          mvn -PnativeTest package -DskipNativeTests
           
 #       - name: fix native config usr agent
 #         run: |
