@@ -33,12 +33,14 @@ jobs:
         uses: allenevans/set-env@b68e0a75c99b96b43963b54bc2be13e2f103ad87
         with:
           DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
+          NativeImageArgs: --verbose
           
       - name: build native by test with agent
         run: |
           mvn -PnativeTest package -DskipNativeTests
           
-  call-coverage_report:  
+  coverage_report:  
+    needs: build
     uses: Labman4/reporter/.github/workflows/codacy-coverage.yml@coverage
     
 #       - name: fix native config usr agent
