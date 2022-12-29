@@ -23,7 +23,7 @@ spring:
       client-type: ${REDIS_TYPE:LETTUCE}
       password: ${REDIS_PASSWORD:elpsy4783}
       cluster:
-        nodes: ${REDIS_NODE:redis:6379}
+        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
         pool:
           enabled: false
@@ -55,6 +55,7 @@ spring:
       #      security:
       #        protocol: ssl
       auto-offset-reset: earliest
+
   elasticsearch:
     uris:
       - ${ES_URL:192.168.1.106:9200}
@@ -63,13 +64,13 @@ spring:
 request:
   limit:
     global:
-      tokens: ${GLOBAL_REQUEST_LIMIT}
-      duration: ${GLOBAL_REQUEST_DURATION}
-      speed: ${GLOBAL_REQUEST_DURATION_SPEED}
+      tokens: ${GLOBAL_REQUEST_LIMIT:1000}
+      duration: ${GLOBAL_REQUEST_DURATION:1}
+      speed: ${GLOBAL_REQUEST_DURATION_SPEED:100}
     scope:
-      tokens: ${REQUEST_LIMIT}
-      duration: ${REQUEST_DURATION}
-      speed: ${REQUEST_DURATION_SPEED}
+      tokens: ${REQUEST_LIMIT:100}
+      duration: ${REQUEST_DURATION:1}
+      speed: ${REQUEST_DURATION_SPEED:10}
   path:
     permit: ${PERMIT_PATH:/**}
     nonPrivate: ${PUBLIC_PATH:/}
