@@ -28,10 +28,15 @@ jobs:
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: maven
-      
-      - name: run agent with test
+    
+      - name: set-env
+        uses: allenevans/set-env@b68e0a75c99b96b43963b54bc2be13e2f103ad87
+        with:
+          DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
+          
+      - name: build native by test with agent
         run: |
-          mvn -Pnative package
+          mvn -Pnative package -Dagent=true
           
 #       - name: fix native config usr agent
 #         run: |
