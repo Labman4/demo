@@ -12,7 +12,7 @@ on:
     - develop
   pull_request:
     branches:
-    - master
+    - native
 jobs:
   build:
     runs-on: self-hosted 
