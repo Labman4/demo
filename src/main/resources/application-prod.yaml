@@ -23,7 +23,7 @@ spring:
       client-type: ${REDIS_TYPE:LETTUCE}
       password: ${REDIS_PASSWORD:elpsy4783}
       cluster:
-        nodes: ${REDIS_NODE:192.168.1.106:6379}
+        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
         pool:
           enabled: false
@@ -58,7 +58,7 @@ spring:
 
   elasticsearch:
     uris:
-      - ${ES_URL:192.168.1.106:9200}
+      - ${ES_URL:elasticsearch-master.elastic.svc.cluster.local:9200}
     username: ${ES_USER:elastic}
     password: ${ES_PASS:Elpsy4783}
 request:
