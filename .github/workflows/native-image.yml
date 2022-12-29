@@ -12,7 +12,7 @@ on:
     - develop
   pull_request:
     branches:
-    - master
+    - native-image
 jobs:
   build:
     runs-on: self-hosted 
@@ -36,7 +36,7 @@ jobs:
           
       - name: build native by test with agent
         run: |
-          mvn -PnativeTest package 
+          mvn -PnativeTest package -DskipNativeTests
           
 #       - name: fix native config usr agent
 #         run: |
