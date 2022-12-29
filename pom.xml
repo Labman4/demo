@@ -413,11 +413,7 @@
                                         <goal>compile-no-fork</goal>
                                     </goals>
                                 </execution>  
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.graalvm.buildtools</groupId>
-                            <artifactId>native-maven-plugin</artifactId>
+                            </executions> -->
                             <configuration>
                                 <skipNativeTests>true</skipNativeTests>
                             </configuration>
