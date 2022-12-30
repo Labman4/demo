@@ -43,8 +43,8 @@ jobs:
         run: |
           native-image --macro:native-image-configure-launcher
           native-image-configure generate --input-dir=target/native/agent-output/test \
-          --input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
-          --output-dir=src/main/resources/META-INF/native-image \
+          #--input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
+          --output-dir=src/main/resources/META-INF/native-image 
           #--input-dir=target/native/agent-output/main \
 
       - name: build native image
