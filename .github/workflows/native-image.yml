@@ -20,7 +20,15 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
-      
+        
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+            
       - name: Set up Graalvm
         uses: graalvm/setup-graalvm@d01f5f519f35cf82b318133761fd8b674632a8fe
         with:
@@ -39,7 +47,7 @@ jobs:
       - name: web-test
         run: |
           mvn -Pnative,nativeTest -Dagent=true test 
-          
+
       - name: merge native config
         run: |
           native-image --macro:native-image-configure-launcher
@@ -49,7 +57,19 @@ jobs:
 
       - name: build native image
         run: |
-          mvn -PnativeTest package -DskipNativeTests
+          mvn -PnativeTest package -DskipTests
+          
+      - name: git commit
+        run: |
+          git config --local user.email "github-actions[bot]@labman4.github.com"
+          git config --local user.name  "github-actions[bot]"
+          git commit -a -m "update and merge native config"
+          
+      - name: GitHub Push
+        uses: ad-m/github-push-action@40bf560936a8022e68a3c00e7d2abefaf01305a6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: native-image
           
   coverage_report:  
     needs: build
