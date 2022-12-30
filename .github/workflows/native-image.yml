@@ -35,13 +35,9 @@ jobs:
           DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
           NativeImageArgs: --verbose
           
-      - name: aot
-        run: |
-          mvn -Pnative spring-boot:process-aot 
-          
       - name: web-test
         run: |
-          mvn -PnativeTest -Dagent=true test 
+          mvn -Pnative,nativeTest -Dagent=true test 
           
       - name: merge native config
         run: |
