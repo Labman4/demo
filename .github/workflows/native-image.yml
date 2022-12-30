@@ -35,7 +35,22 @@ jobs:
           DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
           NativeImageArgs: --verbose
           
-      - name: build native by test with agent
+      - name: aot
+        run: |
+          mvn -Pnative spring-boot:process-aot 
+          
+      - name: web-test
+        run: |
+          mvn -PnativeTest -Dagent=true test 
+          
+      - name: merge native config
+          native-image --macro:native-image-configure-launcher
+          native-image-configure generate --input-dir=target/native/agent-output/test \
+          --input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
+          --output-dir=src/main/resources/META-INF/native-image \
+          #--input-dir=target/native/agent-output/main \
+
+      - name: build native image
         run: |
           mvn -PnativeTest package -DskipNativeTests
           
