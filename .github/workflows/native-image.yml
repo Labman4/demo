@@ -72,7 +72,7 @@ jobs:
           
   coverage_report:  
     needs: build
-    uses: Labman4/reporter/.github/workflows/codacy-coverage.yml@coverage
+    uses: Labman4/reporter/.github/workflows/coverage-reporter.yml@coverage
     
 #       - name: fix native config usr agent
 #         run: |
