@@ -21,7 +21,8 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
       
-      - uses: graalvm/setup-graalvm@d01f5f519f35cf82b318133761fd8b674632a8fe
+      - name: Set up Graalvm
+        uses: graalvm/setup-graalvm@d01f5f519f35cf82b318133761fd8b674632a8fe
         with:
           version: 'latest'
           java-version: '17'
@@ -33,12 +34,25 @@ jobs:
         uses: allenevans/set-env@b68e0a75c99b96b43963b54bc2be13e2f103ad87
         with:
           DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
+          NativeImageArgs: --verbose
           
-      - name: build native by test with agent
+      - name: web-test
+        run: |
+          mvn -Pnative,nativeTest -Dagent=true test 
+          
+      - name: merge native config
+        run: |
+          native-image --macro:native-image-configure-launcher
+          native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
+          #--input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
+          #--input-dir=target/native/agent-output/main \
+
+      - name: build native image
         run: |
           mvn -PnativeTest package -DskipNativeTests
           
-  call-coverage_report:  
+  coverage_report:  
+    needs: build
     uses: Labman4/reporter/.github/workflows/codacy-coverage.yml@coverage
     
 #       - name: fix native config usr agent
