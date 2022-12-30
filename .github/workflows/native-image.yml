@@ -44,6 +44,7 @@ jobs:
           mvn -PnativeTest -Dagent=true test 
           
       - name: merge native config
+        run: |
           native-image --macro:native-image-configure-launcher
           native-image-configure generate --input-dir=target/native/agent-output/test \
           --input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
