@@ -21,6 +21,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
       
+      - name: Set up Graalvm
       - uses: graalvm/setup-graalvm@d01f5f519f35cf82b318133761fd8b674632a8fe
         with:
           version: 'latest'
@@ -42,9 +43,8 @@ jobs:
       - name: merge native config
         run: |
           native-image --macro:native-image-configure-launcher
-          native-image-configure generate --input-dir=target/native/agent-output/test \
+          native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
           #--input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
-          --output-dir=src/main/resources/META-INF/native-image 
           #--input-dir=target/native/agent-output/main \
 
       - name: build native image
