@@ -17,7 +17,8 @@
         <maven-checkstyle-plugin.failsOnViolation>true</maven-checkstyle-plugin.failsOnViolation>
         <maven-checkstyle-plugin.includeTestSourceDirectory>true</maven-checkstyle-plugin.includeTestSourceDirectory>
         <maven.compiler.source>${java.specification.version}</maven.compiler.source>
-        <maven.compiler.target>${java.specification.version}</maven.compiler.target> 
+        <maven.compiler.target>${java.specification.version}</maven.compiler.target>
+        <!-- <start-class>com.elpsykongroo.demo.DemoApplication</start-class> -->
         <!-- <agentConfig>src/main/resources/META-INF/native-image/com.elpsykongroo/demo</agentConfig> -->
     </properties>
     <dependencies>
@@ -172,10 +173,10 @@
            <groupId>org.springframework.boot</groupId>
            <artifactId>spring-boot-starter-webflux</artifactId>
        </dependency>
-       <dependency>
+       <!-- <dependency>
            <groupId>io.projectreactor.netty</groupId>
            <artifactId>reactor-netty</artifactId>
-       </dependency>
+       </dependency> -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -270,10 +271,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-jose</artifactId>
         </dependency>
         <dependency>
@@ -316,34 +313,33 @@
                         <extensions>true</extensions>
                         <executions>
                           <execution>
-                            <id>build-native</id>
-                            <goals>
-                              <goal>compile-no-fork</goal>
-                            </goals>
-                            <phase>package</phase>
-                          </execution>
-                          <execution>
                             <id>test-native</id>
                             <goals>
                               <goal>test</goal>
                             </goals>
                             <phase>test</phase>
                           </execution>
+                          <execution>
+                            <id>add-reachability-metadata</id>
+                            <goals>
+                                <goal>add-reachability-metadata</goal>
+                            </goals>
+                        </execution>
                         </executions>
                         <configuration>
-                             <!--<configurationFileDirectories>
+                            <!--<configurationFileDirectories>
                                 <dir>/src/main/resources/META-INF/native-image/com/elpsykongroo</dir>
                             </configurationFileDirectories> -->
-                            <agent>
-                                <!-- <enabled>true</enabled> -->
-                                <!-- <options name="main">
+                            <!--<agent>
+                                <enabled>true</enabled> 
+                                   <options name="main">
                                    <option>-agentlib:native-image-agent=config-merge-dir=${agentConfig}</option>
                                    <option>experimental-class-define-support</option>
                                 </options>
                                 <options name="test">
                                     <option>access-filter-file=${basedir}/access-filter.json</option>
-                                </options>  -->
-                            </agent>
+                                </options>  
+                            </agent> -->
                         </configuration> 
                     </plugin>
                     <plugin>
@@ -357,63 +353,13 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <image>
-                                <buildpacks>
-                                    <!--                            <buildpack>gcr.io/paketo-buildpacks/graalvm</buildpack>-->
-                                    <!--                            <buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>-->
-                                </buildpacks>
-                                <env>
-<!--                                    <HTTP_PROXY>http://192.168.1.106:1080</HTTP_PROXY>-->
-<!--                                    <HTTPS_PROXY>http://192.168.1.106:1080</HTTPS_PROXY>-->
-                                    <BP_JVM_VERSION>17.0.4</BP_JVM_VERSION>
-                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-<!--                                    <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>-->
-<!--                                    <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/workspace/BOOT-INF/classes/opentelemetry-javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
-                                </env>
-                                <name>
-                                    registry.elpsykongroo.com/library/${project.artifactId}:${project.version}-native
-                                </name>
-                                <publish>true</publish>
-                                <pullPolicy>IF_NOT_PRESENT</pullPolicy>
-                            </image>
-                            <docker>
-                                <host>unix:///run/user/1000/podman/podman.sock</host>
-                                <bindHostToBuilder>true</bindHostToBuilder>
-                                <publishRegistry>
-                                    <username>admin</username>
-                                    <password>Elpsy4783</password>
-                                    <url>registry.elpsykongroo.com</url>
-                                </publishRegistry>
-                            </docker>
-                        </configuration>
                     </plugin>
                 </plugins>
                 <pluginManagement>
                     <plugins>
-                        <!-- <plugin>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-maven-plugin</artifactId>
-                            <executions>
-                               <execution>
-                                   <id>build-image</id>
-                                   <goals>
-                                       <goal>build-image-no-fork</goal>
-                                   </goals>
-                               </execution>
-                            </executions>
-                        </plugin> -->
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
                             <artifactId>native-maven-plugin</artifactId>
-                            <!-- <executions>
-                                <execution>
-                                    <id>build-image</id>
-                                    <goals>
-                                        <goal>compile-no-fork</goal>
-                                    </goals>
-                                </execution>  
-                            </executions> -->
                             <configuration>
                                 <skipNativeTests>true</skipNativeTests>
                             </configuration>
@@ -424,9 +370,6 @@
         </profile>
         <profile>
             <id>nativeTest</id> 
-            <properties>
-                <classifier>exec</classifier>
-            </properties> 
             <build>
                 <plugins>
                     <plugin>
@@ -439,21 +382,31 @@
                                     <goal>test</goal>
                                 </goals>
                             </execution>
-                        </executions>
+                            <execution>
+                                <id>add-reachability-metadata</id>
+                                <goals>
+                                    <goal>add-reachability-metadata</goal>
+                                </goals>
+                            </execution>
+                        </executions>                          
                         <configuration>
-                             <!--<configurationFileDirectories>
+                            <skipNativeTests>true</skipNativeTests>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                            </metadataRepository>
+                            <!--<configurationFileDirectories>
                                 <dir>/src/main/resources/META-INF/native-image/com/elpsykongroo</dir>
                             </configurationFileDirectories> -->
-                            <agent>
-                                <!-- <enabled>true</enabled> -->
-                                <!-- <options name="main">
-                                   <option>-agentlib:native-image-agent=config-merge-dir=${agentConfig}</option>
-                                   <option>experimental-class-define-support</option>
+                            <!-- <agent>
+                                <enabled>true</enabled> 
+                                <options name="main">
+                                <option>-agentlib:native-image-agent=config-merge-dir=${agentConfig}</option>
+                                <option>experimental-class-define-support</option>
                                 </options>
                                 <options name="test">
                                     <option>access-filter-file=${basedir}/access-filter.json</option>
-                                </options>  -->
-                            </agent>
+                                </options>  
+                            </agent> -->
                         </configuration> 
                     </plugin>
                     <plugin>
@@ -466,18 +419,24 @@
                                     <goal>process-test-aot</goal>
                                 </goals>
                             </execution>
+                            <execution>
+                                <id>build-image</id>
+                                <goals>
+                                    <goal>build-image-no-fork</goal>
+                                </goals>
+                            </execution>
                         </executions>
                         <configuration>
+                            <jvmArguments>
+                                -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/
+                            </jvmArguments>
                             <image>
-                                <buildpacks>
-                                    <!--                            <buildpack>gcr.io/paketo-buildpacks/graalvm</buildpack>-->
-                                    <!--                            <buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>-->
-                                </buildpacks>
+                                <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
+                                <buildpacks></buildpacks>
                                 <env>
-<!--                                    <HTTP_PROXY>http://192.168.1.106:1080</HTTP_PROXY>-->
-<!--                                    <HTTPS_PROXY>http://192.168.1.106:1080</HTTPS_PROXY>-->
-                                    <BP_JVM_VERSION>17.0.4</BP_JVM_VERSION>
+                                    <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+                                    	
 <!--                                    <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>-->
 <!--                                    <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/workspace/BOOT-INF/classes/opentelemetry-javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
                                 </env>
@@ -499,29 +458,6 @@
                         </configuration>
                     </plugin>
                 </plugins>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-maven-plugin</artifactId>
-                            <executions>
-                               <execution>
-                                   <id>build-image</id>
-                                   <goals>
-                                       <goal>build-image-no-fork</goal>
-                                   </goals>
-                               </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.graalvm.buildtools</groupId>
-                            <artifactId>native-maven-plugin</artifactId>
-                            <configuration>
-                                <skipNativeTests>true</skipNativeTests>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
             </build>
         </profile>
     </profiles>
@@ -576,47 +512,19 @@
                     </execution>
                 </executions>
             </plugin>     
-            <!-- <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-agent-config</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.build.directory}/native/agent-output/main"/>
-                                <mkdir dir="${project.build.directory}/native/agent-output/test"/>
-                                <copy todir="${project.build.directory}/native/agent-output/main">
-                                    <fileset dir="${project.build.directory}/native/agent-output/test" />
-                                </copy>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin> -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
 <!--                        <builder>paketobuildpacks/builder:full</builder>-->
-                        <buildpacks>
-<!--                            <buildpack>gcr.io/paketo-buildpacks/graalvm</buildpack>-->
-<!--                            <buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>-->
-                        </buildpacks>
                         <env>
 <!--                            <HTTP_PROXY>http://192.168.1.106:1080</HTTP_PROXY>-->
 <!--                            <HTTPS_PROXY>http://192.168.1.106:1080</HTTPS_PROXY>-->
                             <BP_JVM_VERSION>17.0.4</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
 <!--                            <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>-->
-<!--                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-Xmx=300M</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
-
-                            <!--                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
+<!--                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
 <!--                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-->
                         </env>
                         <name>
