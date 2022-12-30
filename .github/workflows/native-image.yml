@@ -36,13 +36,12 @@ jobs:
           java-version: '17'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache: maven
+#           cache: maven
     
       - name: set-env
         uses: allenevans/set-env@b68e0a75c99b96b43963b54bc2be13e2f103ad87
         with:
           DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
-          NativeImageArgs: --verbose
           
       - name: web-test
         run: |
@@ -57,7 +56,7 @@ jobs:
 
       - name: build native image
         run: |
-          mvn -PnativeTest package -DskipTests
+          mvn -Pnative,nativeTest package -DskipTests
           
       - name: git commit
         run: |
