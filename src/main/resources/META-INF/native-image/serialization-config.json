@@ -10,6 +10,9 @@
       "name":"org.apache.http.impl.auth.RFC2617Scheme"
     },
     {
+      "name":"org.junit.platform.launcher.TestIdentifier$SerializedForm"
+    },
+    {
       "condition":{"typeReachable":"org.springframework.data.redis.cache.RedisCacheManager"},
       "name":"org.springframework.cache.support.NullValue"
     }
