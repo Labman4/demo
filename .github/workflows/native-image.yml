@@ -44,6 +44,7 @@ jobs:
           DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
   test:
     runs-on: self-hosted
+    needs: set_up
     steps:
       - name: Web test
         run: |
@@ -58,6 +59,7 @@ jobs:
 
   build:
     runs-on: self-hosted
+    needs: test
     environment: ${{ github.event.inputs.environment || 'native' }}
     steps:
       - name: Build native image
