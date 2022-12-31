@@ -1,2 +1,2 @@
-native-config:
+automerge:
 - any: ['src/**/*.json']
