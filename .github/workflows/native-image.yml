@@ -15,7 +15,7 @@ on:
     
 jobs:
   set_up:
-    runs-on: self-hosted 
+    runs-on: [self-hosted, ubuntu-latest]
     steps:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
@@ -25,6 +25,7 @@ jobs:
         with:
           version: 'latest'
           java-version: '17'
+          set-java-home: 'true'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
@@ -33,7 +34,7 @@ jobs:
   build:
     environment: ${{ github.event.inputs.environment || 'native-image' }}
     needs: set_up
-    runs-on: self-hosted 
+    runs-on: [self-hosted, ubuntu-latest]
     steps: 
       - name: Build native image
         run: |
@@ -41,7 +42,7 @@ jobs:
           
   test:
     needs: set_up
-    runs-on: self-hosted 
+    runs-on: [self-hosted, ubuntu-latest] 
     steps:  
       - name: env
         run: |
@@ -51,12 +52,6 @@ jobs:
           java --version
           gu --version
           native-image --version
-          
-      - name: Set env
-        run: |
-          echo "GRAALVM_HOME=/home/labman1/actions-runner/_work/_tool/graalvm-ce-java17-linux/22.3.0/x64/graalvm-ce-java17-22.3.0" >> $GITHUB_ENV
-          echo "JAVA_HOME=/home/labman1/actions-runner/_work/_tool/graalvm-ce-java17-linux/22.3.0/x64/graalvm-ce-java17-22.3.0" >> $GITHUB_ENV
-          echo "NATIVE_IMAGE_CONFIG_FILE=/tmp/native-image-options.properties" >> $GITHUB_ENV
           
       - name: Web test
         run: |
