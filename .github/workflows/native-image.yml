@@ -16,7 +16,7 @@ on:
 jobs:
   build:
     runs-on: self-hosted 
-    environment: ${{ github.event.inputs.environment || 'native-image' }}
+#     environment: ${{ github.event.inputs.environment || 'native-image' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
@@ -36,6 +36,7 @@ jobs:
           mvn -Pnative,nativeTest package -DskipTests
           
   test:
+    needs: build
     runs-on: self-hosted 
     steps:  
       - name: env
