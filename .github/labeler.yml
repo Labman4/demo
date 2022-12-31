@@ -1,0 +1,2 @@
+native-config:
+- any: ['src/**/*.json']
