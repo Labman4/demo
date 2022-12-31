@@ -61,8 +61,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test
-          path: |
-            target/surefire-reports/TEST-*.xml
+          path: '**/target/surefire-reports/TEST-*.xml'
           
       - name: Merge native config
         run: |
@@ -86,7 +85,7 @@ jobs:
     uses: Labman4/workflow/.github/workflows/super-linter.yml@super-linter
     
   codeql:
-    uses: Labman4/workflow/.github/workflows/codeql-java.yaml@codeql-java
+    uses: Labman4/workflow/.github/workflows/codeql-java.yml@codeql-java
 
 
       
