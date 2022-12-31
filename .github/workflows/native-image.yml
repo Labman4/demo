@@ -15,7 +15,7 @@ on:
     
 jobs:
   set_up:
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: [self-hosted]
     steps:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
@@ -25,7 +25,7 @@ jobs:
         with:
           version: 'latest'
           java-version: '17'
-          cache: maven
+#          cache: maven
           set-java-home: 'true'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -34,8 +34,8 @@ jobs:
   
   build:
     environment: ${{ github.event.inputs.environment || 'native-image' }}
-    needs: set_up
-    runs-on: [self-hosted, ubuntu-latest]
+    needs: test
+    runs-on: [self-hosted]
     steps: 
       - name: Build native image
         run: |
@@ -43,7 +43,7 @@ jobs:
           
   test:
     needs: set_up
-    runs-on: [self-hosted, ubuntu-latest] 
+    runs-on: [self-hosted] 
     steps:  
       - name: env
         run: |
@@ -69,7 +69,6 @@ jobs:
         run: |
           native-image --macro:native-image-configure-launcher
           native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
-          #--input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
           #--input-dir=target/native/agent-output/main 
      
   merge_config:  
