@@ -25,6 +25,7 @@ jobs:
         with:
           version: 'latest'
           java-version: '17'
+          cache: maven
           set-java-home: 'true'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
