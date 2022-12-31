@@ -36,7 +36,7 @@ jobs:
           java-version: '17'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-#           cache: maven
+          cache: maven
 
       - name: Set env
         uses: allenevans/set-env@b68e0a75c99b96b43963b54bc2be13e2f103ad87
