@@ -31,7 +31,15 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
           native-image-pr-reports: 'true'
-  
+          
+      - name: env
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          gu --version
+          native-image --version
+          
   build:
     environment: ${{ github.event.inputs.environment || 'native-image' }}
     needs: test
@@ -47,13 +55,7 @@ jobs:
     steps:  
       - name: env
         run: |
-          echo "${{ env.GRAALVM_HOME }}" 
-          echo "GRAALVM_HOME: $GRAALVM_HOME"
-          echo "JAVA_HOME: $JAVA_HOME"
-          java --version
-          gu --version
-          native-image --version
-          
+       
       - name: Web test
         run: |
           mvn -Pnative,nativeTest -Dagent=true test 
@@ -76,7 +78,7 @@ jobs:
     uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
     
   coverage_report:  
-    needs: test
+    needs: merge_config
     uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
 
 
