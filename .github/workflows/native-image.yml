@@ -38,41 +38,45 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 #           cache: maven
     
-      - name: set-env
+      - name: Set-env
         uses: allenevans/set-env@b68e0a75c99b96b43963b54bc2be13e2f103ad87
         with:
           DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
           
-      - name: web-test
+      - name: Web-test
         run: |
           mvn -Pnative,nativeTest -Dagent=true test 
 
-      - name: merge native config
+      - name: Merge native config
         run: |
           native-image --macro:native-image-configure-launcher
           native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
           #--input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
           #--input-dir=target/native/agent-output/main \
 
-      - name: build native image
+      - name: Build native image
         run: |
           mvn -Pnative,nativeTest package -DskipTests
+    
+#       - name: git commit
+#         run: |
+#           git config --local user.email "github-actions[bot]@labman4.github.com"
+#           git config --local user.name  "github-actions[bot]"
+#           git commit -a -m "update and merge native config"
           
-      - name: git commit
-        run: |
-          git config --local user.email "github-actions[bot]@labman4.github.com"
-          git config --local user.name  "github-actions[bot]"
-          git commit -a -m "update and merge native config"
-          
-      - name: GitHub Push
-        uses: ad-m/github-push-action@40bf560936a8022e68a3c00e7d2abefaf01305a6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: native-image
-          
+#       - name: GitHub Push
+#         uses: ad-m/github-push-action@40bf560936a8022e68a3c00e7d2abefaf01305a6
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           branch: native-image
+     
+  create_merge_request:  
+#    needs: build
+    uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
+    
   coverage_report:  
-    needs: build
-    uses: Labman4/reporter/.github/workflows/coverage-reporter.yml@coverage
+#    needs: build
+    uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
     
 #       - name: fix native config usr agent
 #         run: |
