@@ -15,7 +15,7 @@ on:
     - native-image
     
 jobs:
-  set_up:
+  init:
     runs-on: [self-hosted]
     steps:
       - name: Checkout Code
@@ -38,19 +38,10 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
           gu --version
-          native-image --version
-          
-  build:
-    environment: ${{ github.event.inputs.environment || 'native-image' }}
-    needs: test
-    runs-on: [self-hosted]
-    steps: 
-      - name: Build native image
-        run: |
-          mvn -Pnative,nativeTest package -DskipTests
+          native-image --version    
           
   test:
-    needs: set_up
+    needs: init
     runs-on: [self-hosted] 
     steps:        
       - name: Web test
@@ -69,15 +60,26 @@ jobs:
           native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
           #--input-dir=target/native/agent-output/main 
   
-     
+  build:
+    environment: ${{ github.event.inputs.environment || 'native-image' }}
+    needs: test
+    runs-on: [self-hosted]
+    steps: 
+      - name: Build native image
+        run: |
+          mvn -Pnative,nativeTest package -DskipTests   
   merge:  
     needs: build
     uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
     
-  automerge:
+  label:
     needs: merge
-    uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
+    uses: Labman4/workflow/.github/workflows/labeler.yml@labeler   
  
+  automerge:
+    needs: label
+    uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
+    
   codescan:
     uses: Labman4/workflow/.github/workflows/codescan-java.yml@codescan-java
     
@@ -85,7 +87,4 @@ jobs:
     needs: test
     uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
     
-  label:
-    needs: test
-    uses: Labman4/workflow/.github/workflows/labeler.yml@labeler
-      
+  
