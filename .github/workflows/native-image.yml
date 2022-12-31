@@ -1,5 +1,4 @@
 name: Native image
-
 on:
   workflow_dispatch:
     inputs:
@@ -16,6 +15,7 @@ on:
     
 jobs:
   build:
+    needs: test
     runs-on: self-hosted 
     environment: ${{ github.event.inputs.environment || 'native-image' }}
     steps:
@@ -29,9 +29,30 @@ jobs:
           java-version: '17'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-#           cache: maven
           native-image-job-reports: 'true'
           native-image-pr-reports: 'true'
+                    
+      - name: Build native image
+        run: |
+          mvn -Pnative,nativeTest package -DskipTests
+          
+  test:
+    runs-on: self-hosted 
+    steps:  
+      - name: env
+        run: |
+          echo "${{ env.GRAALVM_HOME }}" 
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          gu --version
+          native-image --version
+          
+      - name: Set env
+        run: |
+          echo "GRAALVM_HOME=/home/labman1/actions-runner/_work/_tool/graalvm-ce-java17-linux/22.3.0/x64/graalvm-ce-java17-22.3.0" >> $GITHUB_ENV
+          echo "JAVA_HOME=/home/labman1/actions-runner/_work/_tool/graalvm-ce-java17-linux/22.3.0/x64/graalvm-ce-java17-22.3.0" >> $GITHUB_ENV
+          echo "NATIVE_IMAGE_CONFIG_FILE=/tmp/native-image-options.properties >> $GITHUB_ENV
           
       - name: Web test
         run: |
@@ -50,43 +71,15 @@ jobs:
           native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
           #--input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
           #--input-dir=target/native/agent-output/main 
-    
-      - name: Set env
-        uses: allenevans/set-env@b68e0a75c99b96b43963b54bc2be13e2f103ad87
-        with:
-          DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
-          
-      - name: Build native image
-        run: |
-          mvn -Pnative,nativeTest package -DskipTests
      
   merge_config:  
     needs: build
     uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
     
   coverage_report:  
-    needs: build
+    needs: test
     uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
 
-#       - name: git commit
-#         run: |
-#           git config --local user.email "github-actions[bot]@labman4.github.com"
-#           git config --local user.name  "github-actions[bot]"
-#           git commit -a -m "update and merge native config"
-          
-#       - name: GitHub Push
-#         uses: ad-m/github-push-action@40bf560936a8022e68a3c00e7d2abefaf01305a6
-#         with:
-#           github_token: ${{ secrets.GITHUB_TOKEN }}
-#           branch: native-image
-
-#       - name: fix native config usr agent
-#         run: |
-#           mvn package 
-#           mvn spring-boot:process-aot
-#           mvn package
-#           java -Dspring.aot.enabled=true -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image -jar  target/demo-0.0.2.jar
-#       - name: update native config
 
 
       
