@@ -14,9 +14,8 @@ on:
     - native-image
     
 jobs:
-  build:
+  set_up:
     runs-on: self-hosted 
-#     environment: ${{ github.event.inputs.environment || 'native-image' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
@@ -30,13 +29,18 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
           native-image-pr-reports: 'true'
-                    
+  
+  build:
+    environment: ${{ github.event.inputs.environment || 'native-image' }}
+    needs: set_up
+    runs-on: self-hosted 
+    steps: 
       - name: Build native image
         run: |
           mvn -Pnative,nativeTest package -DskipTests
           
   test:
-    needs: build
+    needs: set_up
     runs-on: self-hosted 
     steps:  
       - name: env
@@ -52,7 +56,7 @@ jobs:
         run: |
           echo "GRAALVM_HOME=/home/labman1/actions-runner/_work/_tool/graalvm-ce-java17-linux/22.3.0/x64/graalvm-ce-java17-22.3.0" >> $GITHUB_ENV
           echo "JAVA_HOME=/home/labman1/actions-runner/_work/_tool/graalvm-ce-java17-linux/22.3.0/x64/graalvm-ce-java17-22.3.0" >> $GITHUB_ENV
-          echo "NATIVE_IMAGE_CONFIG_FILE=/tmp/native-image-options.properties >> $GITHUB_ENV
+          echo "NATIVE_IMAGE_CONFIG_FILE=/tmp/native-image-options.properties" >> $GITHUB_ENV
           
       - name: Web test
         run: |
