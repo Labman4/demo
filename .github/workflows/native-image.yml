@@ -73,19 +73,15 @@ jobs:
     needs: build
     uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
     
-  coverage:  
-    needs: merge
-    uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
-    
   automerge:
     needs: merge
     uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
+ 
+  codescan:
+    uses: Labman4/workflow/.github/workflows/codescan.yml@codescan-java
     
-  linter:
-    uses: Labman4/workflow/.github/workflows/super-linter.yml@super-linter
+#   coverage:  
+#     needs: merge
+#     uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
     
-  codeql:
-    uses: Labman4/workflow/.github/workflows/codeql-java.yml@codeql-java
-
-
       
