@@ -78,7 +78,7 @@ jobs:
     uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
  
   codescan:
-    uses: Labman4/workflow/.github/workflows/codescan.yml@codescan-java
+    uses: Labman4/workflow/.github/workflows/codescan-java.yml@codescan-java
     
 #   coverage:  
 #     needs: merge
