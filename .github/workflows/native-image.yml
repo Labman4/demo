@@ -80,8 +80,8 @@ jobs:
   codescan:
     uses: Labman4/workflow/.github/workflows/codescan-java.yml@codescan-java
     
-#   coverage:  
-#     needs: merge
-#     uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
+  coverage:  
+    needs: test
+    uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
     
       
