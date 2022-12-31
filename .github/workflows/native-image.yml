@@ -14,9 +14,9 @@ on:
     branches:
     - native-image
 jobs:
-  build:
+  set_up:
     runs-on: self-hosted 
-    environment: ${{ github.event.inputs.environment || 'native' }}
+#     environment: ${{ github.event.inputs.environment || 'native' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
@@ -37,13 +37,15 @@ jobs:
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 #           cache: maven
-    
-      - name: Set-env
+
+      - name: Set env
         uses: allenevans/set-env@b68e0a75c99b96b43963b54bc2be13e2f103ad87
         with:
           DOCKER_HOST: unix:///run/user/1000/podman//podman.sock
-          
-      - name: Web-test
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Web test
         run: |
           mvn -Pnative,nativeTest -Dagent=true test 
 
@@ -52,12 +54,24 @@ jobs:
           native-image --macro:native-image-configure-launcher
           native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
           #--input-dir=target/spring-aot/resources/META-INF/native-image/com.elpsykongroo/demo  \
-          #--input-dir=target/native/agent-output/main \
+          #--input-dir=target/native/agent-output/main 
 
+  build:
+    runs-on: self-hosted
+    environment: ${{ github.event.inputs.environment || 'native' }}
+    steps:
       - name: Build native image
         run: |
           mvn -Pnative,nativeTest package -DskipTests
+     
+  merge_config:  
+    needs: build
+    uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
     
+  coverage_report:  
+    needs: test
+    uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
+
 #       - name: git commit
 #         run: |
 #           git config --local user.email "github-actions[bot]@labman4.github.com"
@@ -69,15 +83,7 @@ jobs:
 #         with:
 #           github_token: ${{ secrets.GITHUB_TOKEN }}
 #           branch: native-image
-     
-  create_merge_request:  
-#    needs: build
-    uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
-    
-  coverage_report:  
-#    needs: build
-    uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
-    
+
 #       - name: fix native config usr agent
 #         run: |
 #           mvn package 
@@ -85,13 +91,6 @@ jobs:
 #           mvn package
 #           java -Dspring.aot.enabled=true -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image -jar  target/demo-0.0.2.jar
 #       - name: update native config
-#         run: |
-#           git status
-#           git add -A
-#           git commit -m "fix native config"
-#           git push origin develop:native
-#       - name: Build Native Image with Buildpacks
-#         run: |
-#           mvn clean -Pnative package
+
 
       
