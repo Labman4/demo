@@ -26,14 +26,13 @@ jobs:
         with:
           version: 'latest'
           java-version: '17'
-#          cache: maven
           set-java-home: 'true'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
           native-image-pr-reports: 'true'
           
-      - name: env
+      - name: Env
         run: |
           echo "GRAALVM_HOME: $GRAALVM_HOME"
           echo "JAVA_HOME: $JAVA_HOME"
@@ -53,10 +52,7 @@ jobs:
   test:
     needs: set_up
     runs-on: [self-hosted] 
-    steps:  
-      - name: env
-        run: |
-       
+    steps:        
       - name: Web test
         run: |
           mvn -Pnative,nativeTest -Dagent=true test 
@@ -74,19 +70,23 @@ jobs:
           native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
           #--input-dir=target/native/agent-output/main 
      
-  merge_config:  
+  merge:  
     needs: build
     uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
     
   coverage:  
-    needs: merge_config
+    needs: merge
     uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
     
   automerge:
-    needs: merge_config
+    needs: merge
     uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
     
-
+  linter:
+    uses: Labman4/workflow/.github/workflows/super-linter.yml@super-linter
+    
+  codeql:
+    uses: Labman4/workflow/.github/workflows/codeql-java.yaml@codeql-java
 
 
       
