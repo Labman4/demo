@@ -68,6 +68,7 @@ jobs:
           native-image --macro:native-image-configure-launcher
           native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
           #--input-dir=target/native/agent-output/main 
+  
      
   merge:  
     needs: build
@@ -84,4 +85,7 @@ jobs:
     needs: test
     uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
     
+  label:
+    needs: test
+    uses: Labman4/workflow/.github/workflows/labeler.yml@labeler
       
