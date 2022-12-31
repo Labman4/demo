@@ -9,6 +9,7 @@ on:
   push:
     branches:
     - develop
+    
   pull_request:
     branches:
     - native-image
@@ -77,9 +78,14 @@ jobs:
     needs: build
     uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
     
-  coverage_report:  
+  coverage:  
     needs: merge_config
     uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
+    
+  automerge:
+    needs: merge_config
+    uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
+    
 
 
 
