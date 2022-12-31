@@ -1,0 +1,17 @@
+name: Native builder
+on: 
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run the workflow against'
+        type: environment
+        required: true
+jobs:
+  build:
+    environment: ${{ github.event.inputs.environment || 'native-image' }}
+    runs-on: [self-hosted]
+    steps: 
+      - name: Build native image
+        run: |
+          mvn -Pnative,nativeTest package -DskipTests   
