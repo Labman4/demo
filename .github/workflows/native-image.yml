@@ -15,7 +15,6 @@ on:
     
 jobs:
   build:
-    needs: test
     runs-on: self-hosted 
     environment: ${{ github.event.inputs.environment || 'native-image' }}
     steps:
