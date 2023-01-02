@@ -9,86 +9,20 @@ on:
   push:
     branches:
     - develop
+    - native-image
     
   pull_request:
     branches:
     - native-image
     
 jobs:
-  init:
-    runs-on: [ubuntu-latest]
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
-            
-      - name: Set up Graalvm
-        uses: graalvm/setup-graalvm@d01f5f519f35cf82b318133761fd8b674632a8fe
-        with:
-          version: 'latest'
-          java-version: '17'
-          set-java-home: 'true'
-          components: 'native-image'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          native-image-job-reports: 'true'
-          native-image-pr-reports: 'true'
-          
-      - name: Env
-        run: |
-          echo "GRAALVM_HOME: $GRAALVM_HOME"
-          echo "JAVA_HOME: $JAVA_HOME"
-          java --version
-          gu --version
-          native-image --version    
-          
-  test:
-    needs: init
-    runs-on: [ubuntu-latest] 
-    steps:        
-      - name: Web test
-        run: |
-          mvn -Pnative,nativeTest -Dagent=true test 
-      
-      - name: Upload junit report artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: test
-          path: '**/target/surefire-reports/TEST-*.xml'
-          
-      - name: Merge native config
-        run: |
-          native-image --macro:native-image-configure-launcher
-          native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
-          #--input-dir=target/native/agent-output/main 
-  
-#   build:
-#     environment: ${{ github.event.inputs.environment || 'native-image' }}
-#     needs: test
-#     runs-on: [self-hosted]
-#     steps: 
-#       - name: Build native image
-#         run: |
-#           mvn -Pnative,nativeTest package -DskipTests   
-  merge:  
-    needs: test
-    uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request
+  native:
+    uses: Labman4/workflow/.github/workflows/native-image.yml@native-image
+
     
-  label:
-    needs: merge
-    uses: Labman4/workflow/.github/workflows/labeler.yml@labeler   
- 
-  automerge:
-    needs: label
-    uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
-   
-  build:
-    needs: automerge
-    uses: ./.github/workflows/build-native-image.yml
-    
-  codescan:
-    uses: Labman4/workflow/.github/workflows/codescan-java.yml@codescan-java
-    
-  coverage:  
-    needs: test
-    uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
+          
+      -
+          
+
     
   
