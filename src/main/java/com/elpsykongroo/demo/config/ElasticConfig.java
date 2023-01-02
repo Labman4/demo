@@ -26,7 +26,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import javax.net.ssl.SSLContext;
 import java.time.Duration;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableElasticsearchRepositories("com.elpsykongroo.demo.repo")
 public class ElasticConfig extends ElasticsearchConfiguration {
    @Autowired

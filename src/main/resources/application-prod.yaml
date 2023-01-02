@@ -94,7 +94,7 @@ service:
     pass: ${ES_PASS:Elpsy4783}
     ssl:
       type: self
-      ca: ${ES_CA_CRT:file:/var/ssl/es/ca.crt}
+      ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
       cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
       key: ${ES_TLS_KEY:/var/ssl/es/tls.key}
     timeout:
