@@ -12,6 +12,11 @@ jobs:
     environment: ${{ github.event.inputs.environment || 'native-image' }}
     runs-on: [self-hosted]
     steps: 
+      - name: Download report artifact
+        uses: actions/download-artifact@v3.0.1
+        with:
+          name:  ${{ env.name }}-build
+      
       - name: Build native image
         run: |
           mvn -Pnative,nativeTest package -DskipTests   
