@@ -20,10 +20,12 @@ spring:
     password: ${MYSQL_PASSWORD:elpsy4783}
   data:
     redis:
+      host: redis.elpsykongroo.com
+      ssl: true
       client-type: ${REDIS_TYPE:LETTUCE}
       password: ${REDIS_PASSWORD:elpsy4783}
-      cluster:
-        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
+      # cluster:
+      #   nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
         pool:
           enabled: false
@@ -41,7 +43,7 @@ spring:
           maxWait: 5
           timeBetweenEvictionRuns: 100000
 
-    elasticsearch:
+    elasticsearch:        
       repositories:
         enabled: true
   kafka:
@@ -55,12 +57,6 @@ spring:
       #      security:
       #        protocol: ssl
       auto-offset-reset: earliest
-
-  elasticsearch:
-    uris:
-      - ${ES_URL:192.168.1.106:9200}
-    username: ${ES_USER:elastic}
-    password: ${ES_PASS:Elpsy4783}
 request:
   limit:
     global:
@@ -84,4 +80,21 @@ request:
     black: ${BLACK_HEADER:x-forward-for}
     white: ${WHITE_HEADER:x-forward-for}
 
-    
+service:
+  ssl:
+    ca:  ${CA_CRT}
+    cert:  ${TLS_CERT}
+    key:  ${TLS_KEY}
+  es:
+    nodes: ${ES_URL:elasticsearch.elpsykongroo.com:443}
+    user: ${ES_USER:elastic}
+    pass: ${ES_PASS:Elpsy4783}
+    ssl:
+      type: public
+      ca: ${ES_CA_CRT:ca.crt}
+      cert: ${ES_TLS_CERT:tls.crt}
+      key: ${ES_TLS_KEY:tls.key}
+    timeout:
+      connect: ${ES_CONNECT_TIME:10}
+      socket: ${ES_SOCKET_TIME:10}
+

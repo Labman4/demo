@@ -159,6 +159,11 @@
             <version>10.1.1</version>
         </dependency> -->
         <dependency>
+            <groupId>io.github.hakky54</groupId>
+            <artifactId>sslcontext-kickstart-for-pem</artifactId>
+            <version>7.4.9</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
@@ -482,8 +487,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-<!--                    <compilerArgument>-Xlint:unchecked</compilerArgument>-->
-<!--                    <compilerArgument>-Xlint:deprecation</compilerArgument>-->
+                   <compilerArgument>-Xlint:unchecked</compilerArgument>
+                   <!-- <compilerArgument>-Xlint:deprecation</compilerArgument> -->
                 </configuration>
             </plugin>
         </plugins>

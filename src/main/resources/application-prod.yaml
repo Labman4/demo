@@ -72,14 +72,31 @@ request:
       duration: ${REQUEST_DURATION:1}
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
-    permit: ${PERMIT_PATH:/**}
-    nonPrivate: ${PUBLIC_PATH:/}
+    permit: ${PERMIT_PATH:/public}
+    nonPrivate: ${PUBLIC_PATH:/public}
     limit: ${LIMIT_PATH:/}
     exclude:
-      all: ${EXCLUDE_PATH:/}
+      all: ${EXCLUDE_PATH:/actuator}
       record: ${RECORD_EXCLUDE_PATH:/actuator}
     filter: ${FILTER_PATH:/}
   header:
     ip: ${IP_HEADER:x-forward-for}
     black: ${BLACK_HEADER:x-forward-for}
     white: ${WHITE_HEADER:x-forward-for}
+service:
+  ssl:
+    ca:  ${CA_CRT:ca.crt}
+    cert:  ${TLS_CERT:tls.crt}
+    key:  ${TLS_KEY:tls.key}
+  es:
+    nodes: ${ES_URL:elasticsearch-master:9200}
+    user: ${ES_USER:elastic}
+    pass: ${ES_PASS:Elpsy4783}
+    ssl:
+      type: self
+      ca: ${ES_CA_CRT:file:/var/ssl/es/ca.crt}
+      cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
+      key: ${ES_TLS_KEY:/var/ssl/es/tls.key}
+    timeout:
+      connect: ${ES_CONNECT_TIME:10}
+      socket: ${ES_SOCKET_TIME:10}

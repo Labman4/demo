@@ -19,18 +19,18 @@ package com.elpsykongroo.demo.exception;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class ElasticException extends RuntimeException {
+public class ServiceException extends RuntimeException {
 	private static final long serialVersionUID = 5639223247225972389L;
 
-	public ElasticException(Throwable cause) {
+	public ServiceException(Throwable cause) {
 		super(cause);
 	}
 
-	public ElasticException(String message, Throwable cause) {
+	public ServiceException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public ElasticException(String message) {
+	public ServiceException(String message) {
 		super(message);
 	}
 }

@@ -25,12 +25,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.elpsykongroo.demo.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.config.RequestConfig;
 import com.elpsykongroo.demo.document.AccessRecord;
-import com.elpsykongroo.demo.exception.ElasticException;
 import com.elpsykongroo.demo.repo.AccessRecordRepo;
 import com.elpsykongroo.demo.service.AccessRecordService;
 import lombok.extern.slf4j.Slf4j;
@@ -58,49 +58,54 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	private RequestConfig requestConfig;
 
 	public void saveAcessRecord(HttpServletRequest request) {
-		String recordExcludePath = requestConfig.getPath().getExclude().getRecord();
-		if (!(StringUtils.isNotEmpty(recordExcludePath) && beginWithPath(recordExcludePath, request.getRequestURI()))) {
-			Map<String, String> result = new HashMap<>();
-			Enumeration<String> headerNames = request.getHeaderNames();
-			while (headerNames.hasMoreElements()) {
-				String key = (String) headerNames.nextElement();
-				String value = request.getHeader(key);
-				result.put(key, value);
+		try {
+			String recordExcludePath = requestConfig.getPath().getExclude().getRecord();
+			if (!(StringUtils.isNotEmpty(recordExcludePath) && beginWithPath(recordExcludePath, request.getRequestURI()))) {
+				Map<String, String> result = new HashMap<>();
+				Enumeration<String> headerNames = request.getHeaderNames();
+				while (headerNames.hasMoreElements()) {
+					String key = (String) headerNames.nextElement();
+					String value = request.getHeader(key);
+					result.put(key, value);
+				}
+				AccessRecord record = new AccessRecord();
+				record.setRequestHeader(result);
+				record.setAccessPath(request.getRequestURI());
+				record.setSourceIP(request.getRemoteAddr());
+				record.setTimestamp(new Date());
+				record.setUserAgent(request.getHeader("user-agent"));
+				log.info("request header------------{} ", result);
 			}
-			AccessRecord record = new AccessRecord();
-			record.setRequestHeader(result);
-			record.setAccessPath(request.getRequestURI());
-			record.setSourceIP(request.getRemoteAddr());
-			record.setTimestamp(new Date());
-			record.setUserAgent(request.getHeader("user-agent"));
-			try {
-				accessRecordRepo.save(record);
-			}
-			catch (RuntimeException e) {
-				log.info("timeout");
-			}
-			log.info("request header------------{} ", result);
+		} catch (Exception e) {
+			throw new ServiceException(e);
 		}
 	}
 
 	@Override
 	public CommonResponse<List<AccessRecord>> findAll(String pageNo, String pageSize, String order) {
-		Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
-		if ("1".equals(order)) {
-			sort = Sort.by(Sort.Direction.ASC, "timestamp");
+		Page<AccessRecord> records = null;
+		try {
+			Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
+			if ("1".equals(order)) {
+				sort = Sort.by(Sort.Direction.ASC, "timestamp");
+			}
+			Pageable pageable = PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize), sort);
+			records = accessRecordRepo.findAll(pageable);
+		} catch (NumberFormatException e) {
+			throw new ServiceException(e);
 		}
-		Pageable pageable = PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize), sort);
-		Page<AccessRecord> records = accessRecordRepo.findAll(pageable);
 		return CommonResponse.success(records.get().toList());
 	}
 
 	@Override
 	public CommonResponse<Integer> deleteRecord(String sourceIP, String ids) {
-		List<String> recordIds = new ArrayList<>();
-		if (StringUtils.isNotEmpty(ids)) {
-			recordIds = Arrays.asList(ids.split(","));
-		}
+		List<String> recordIds = null;
 		try {
+			recordIds = new ArrayList<>();
+			if (StringUtils.isNotEmpty(ids)) {
+				recordIds = Arrays.asList(ids.split(","));
+			}
+
 			if (StringUtils.isNotEmpty(sourceIP)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(sourceIP);
 				for (InetAddress addr: inetAddresses) {
@@ -111,9 +116,8 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				}
 			}
 			accessRecordRepo.deleteAllById(recordIds);
-		}
-		catch (Exception e) {
-			throw new ElasticException(e);
+		} catch (Exception e) {
+			throw new ServiceException(e);
 		}
 		return CommonResponse.success(recordIds.size());
 	}
@@ -121,7 +125,12 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	@Override
 	public CommonResponse<List<AccessRecord>> filterUserAgent(String path) {
-		List<AccessRecord> accessRecords = accessRecordRepo.findByUserAgentLike(path);
+		List<AccessRecord> accessRecords = null;
+		try {
+			accessRecords = accessRecordRepo.findByUserAgentLike(path);
+		} catch (Exception e) {
+			throw new ServiceException(e);
+		}
 		return CommonResponse.success(accessRecords);
 	}
 

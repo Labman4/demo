@@ -17,17 +17,16 @@
 package com.elpsykongroo.demo.service.impl;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.elpsykongroo.demo.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.config.RequestConfig;
 import com.elpsykongroo.demo.config.RequestConfig.Header;
 import com.elpsykongroo.demo.document.IPManage;
-import com.elpsykongroo.demo.exception.ElasticException;
 import com.elpsykongroo.demo.repo.IPRepo;
 import com.elpsykongroo.demo.service.IPManagerService;
 import com.elpsykongroo.demo.utils.PathUtils;
@@ -40,7 +39,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -90,21 +88,25 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	@Override
-	public CommonResponse<String> patch(String addresses, String isBlack, String ids) throws UnknownHostException {
-		String[] addr = addresses.split(",");
-		if (StringUtils.isNotEmpty(ids)) {
-			ipRepo.deleteById(ids);
-			updataCache(isBlack);
-			return CommonResponse.success("done");
-		}
-		for (String ad: addr) {
-			InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
-			for (InetAddress inetAd: inetAddresses) {
-				deleteIPManage(isBlack, inetAd.getHostAddress());
-				deleteIPManage(isBlack, inetAd.getHostName());
+	public CommonResponse<String> patch(String addresses, String isBlack, String ids) throws ServiceException {
+		try {
+			String[] addr = addresses.split(",");
+			if (StringUtils.isNotEmpty(ids)) {
+				ipRepo.deleteById(ids);
+				updataCache(isBlack);
+				return CommonResponse.success("done");
 			}
+			for (String ad: addr) {
+				InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
+				for (InetAddress inetAd: inetAddresses) {
+					deleteIPManage(isBlack, inetAd.getHostAddress());
+					deleteIPManage(isBlack, inetAd.getHostName());
+				}
+			}
+			updataCache(isBlack);
+		} catch (Exception e) {
+			throw new ServiceException(e.getMessage());
 		}
-		updataCache(isBlack);
 		return CommonResponse.success("done");
 	}
 
@@ -118,13 +120,14 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	@Override
-	public CommonResponse<List<String>> add(String addrs, String isBlack) {
-		List<String> addresses = new ArrayList<>();
-		Boolean flag = false;
-		if ("true".equals(isBlack)) {
-			flag = true;
-		}
+	public CommonResponse<List<String>> add(String addrs, String isBlack) throws ServiceException {
+		List<String> addresses = null;
 		try {
+			addresses = new ArrayList<>();
+			Boolean flag = false;
+			if ("true".equals(isBlack)) {
+				flag = true;
+			}
 //            RLock lock = redissonClient.getLock("blackList");
 ////            lock.tryLockAsync().get()
 //            if (lock.tryLock(Constant.REDIS_LOCK_WAIT_TIME, Constant.REDIS_LOCK_LEASE_TIME, TimeUnit.SECONDS)) {
@@ -153,15 +156,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 //            }
 //        } catch (InterruptedException e) {
 //            return commonResponse.error(Constant.ERROR_CODE, "please retry");
+
+			log.info("black result------------:{}", addresses);
+			updataCache(isBlack);
+		} catch (Exception e) {
+			throw new ServiceException(e);
 		}
-		catch (UnknownHostException e) {
-			return CommonResponse.error(HttpStatus.BAD_REQUEST.value(), "unknown host");
-		}
-		catch (ElasticException e) {
-			return CommonResponse.error(HttpStatus.SERVICE_UNAVAILABLE.value(), "service timeout");
-		}
-		log.info("black result------------:{}", addresses);
-		updataCache(isBlack);
 		return CommonResponse.success(addresses);
 	}
 
@@ -226,42 +226,47 @@ public class IPMangerServiceImpl implements IPManagerService {
 		return ip;
 	}
 
-	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack) throws UnknownHostException {
-		Object list = null;
+	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack) throws ServiceException {
 		boolean flag = false;
-		String ip = "";
-		if ("true".equals(isBlack)) {
-			ip = accessIP(request, "black");
-			list = redisTemplate.opsForValue().get("blacklist");
-		}
-		else {
-			ip = accessIP(request, "white");
-			list = redisTemplate.opsForValue().get("whitelist");
-		}
-		if (list != null) {
-			if (list.toString().contains(ip)) {
-				flag = true;
+		try {
+			Object list = null;
+			flag = false;
+			String ip = "";
+			if ("true".equals(isBlack)) {
+				ip = accessIP(request, "black");
+				list = redisTemplate.opsForValue().get("blacklist");
 			}
-		}
-		InetAddress[] inetAddress = InetAddress.getAllByName(ip);
-		if (exist(ip, isBlack) > 0) {
-			flag = true;
-			for (InetAddress address: inetAddress) {
-				if (!ip.equals(address.getHostName()) && exist(address.getHostName(), isBlack) == 0) {
-					String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
-							.getAddress();
-					updataCache(isBlack);
-					log.info("Update blacklist domain when blackIP domain change, {} -> {}", ip, newAddress);
-				}
+			else {
+				ip = accessIP(request, "white");
+				list = redisTemplate.opsForValue().get("whitelist");
 			}
-		}
-		else {
-			for (InetAddress address: inetAddress) {
-				if (exist(address.getHostName(), isBlack) > 0) {
-					log.info("hostname in list");
+			if (list != null) {
+				if (list.toString().contains(ip)) {
 					flag = true;
 				}
 			}
+			InetAddress[] inetAddress = InetAddress.getAllByName(ip);
+			if (exist(ip, isBlack) > 0) {
+				flag = true;
+				for (InetAddress address: inetAddress) {
+					if (!ip.equals(address.getHostName()) && exist(address.getHostName(), isBlack) == 0) {
+						String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
+								.getAddress();
+						updataCache(isBlack);
+						log.info("Update blacklist domain when blackIP domain change, {} -> {}", ip, newAddress);
+					}
+				}
+			}
+			else {
+				for (InetAddress address: inetAddress) {
+					if (exist(address.getHostName(), isBlack) > 0) {
+						log.info("hostname in list");
+						flag = true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new ServiceException(e);
 		}
 		log.info("flag:{}, black:{}", flag, isBlack);
 		return flag;
