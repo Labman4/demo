@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     environment: ${{ github.event.inputs.environment || 'native-image' }}
-    runs-on: [self-hosted]
+    runs-on: [ubuntu-latest]
     steps: 
       - name: Download report artifact
         uses: actions/download-artifact@v3.0.1
@@ -19,4 +19,4 @@ jobs:
       
       - name: Build native image
         run: |
-          mvn -Pnative,nativeTest package -DskipTests   
+          mvn -Pnative,nativeTest package -DskipTests  -P prod
