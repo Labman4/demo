@@ -15,8 +15,8 @@ on:
     - native-image
     
 jobs:
-  set_up:
-    runs-on: [self-hosted]
+  init:
+    runs-on: [ubuntu-latest]
     steps:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
@@ -38,20 +38,11 @@ jobs:
           echo "JAVA_HOME: $JAVA_HOME"
           java --version
           gu --version
-          native-image --version
-          
-  build:
-    environment: ${{ github.event.inputs.environment || 'native-image' }}
-    needs: test
-    runs-on: [self-hosted]
-    steps: 
-      - name: Build native image
-        run: |
-          mvn -Pnative,nativeTest package -DskipTests
+          native-image --version    
           
   test:
-    needs: set_up
-    runs-on: [self-hosted] 
+    needs: init
+    runs-on: [ubuntu-latest] 
     steps:        
       - name: Web test
         run: |
@@ -69,15 +60,30 @@ jobs:
           native-image-configure generate --input-dir=target/native/agent-output/test --output-dir=src/main/resources/META-INF/native-image
           #--input-dir=target/native/agent-output/main 
   
-     
+#   build:
+#     environment: ${{ github.event.inputs.environment || 'native-image' }}
+#     needs: test
+#     runs-on: [self-hosted]
+#     steps: 
+#       - name: Build native image
+#         run: |
+#           mvn -Pnative,nativeTest package -DskipTests   
   merge:  
-    needs: build
-    uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request-self
+    needs: test
+    uses: Labman4/workflow/.github/workflows/pull-request.yml@pull-request
     
-  automerge:
+  label:
     needs: merge
-    uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
+    uses: Labman4/workflow/.github/workflows/labeler.yml@labeler   
  
+  automerge:
+    needs: label
+    uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
+   
+  build:
+    needs: automerge
+    uses: ./.github/workflows/build-native-image.yml
+    
   codescan:
     uses: Labman4/workflow/.github/workflows/codescan-java.yml@codescan-java
     
@@ -85,7 +91,4 @@ jobs:
     needs: test
     uses: Labman4/workflow/.github/workflows/coverage-reporter.yml@coverage
     
-  label:
-    needs: test
-    uses: Labman4/workflow/.github/workflows/labeler.yml@labeler
-      
+  
