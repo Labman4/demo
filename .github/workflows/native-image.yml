@@ -16,7 +16,7 @@ on:
     
 jobs:
   init:
-    runs-on: [pull-request]
+    runs-on: [ubuntu-latest]
     steps:
       - name: Checkout Code
         uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
@@ -42,7 +42,7 @@ jobs:
           
   test:
     needs: init
-    runs-on: [pull-request] 
+    runs-on: [ubuntu-latest] 
     steps:        
       - name: Web test
         run: |
