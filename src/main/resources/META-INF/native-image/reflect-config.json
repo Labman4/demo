@@ -523,8 +523,7 @@
   "queryAllDeclaredMethods":true,
   "methods":[
     {"name":"addBlacklist","parameterTypes":["java.lang.String","java.lang.String"] }, 
-    {"name":"blacklist","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
-    {"name":"updateBlacklist","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }
+    {"name":"blacklist","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }
   ]
 },
 {
