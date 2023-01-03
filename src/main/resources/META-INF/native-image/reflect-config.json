@@ -343,22 +343,6 @@
   "methods":[{"name":"clientConfiguration","parameterTypes":[] }]
 },
 {
-  "name":"com.elpsykongroo.demo.config.ElasticConfig$$SpringCGLIB$$0",
-  "allDeclaredFields":true,
-  "methods":[
-    {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }
-  ]
-},
-{
-  "name":"com.elpsykongroo.demo.config.ElasticConfig$$SpringCGLIB$$1",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
-  "name":"com.elpsykongroo.demo.config.ElasticConfig$$SpringCGLIB$$2",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
   "name":"com.elpsykongroo.demo.config.RedisConfiguration",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true
@@ -6106,10 +6090,6 @@
   ]
 },
 {
-  "name":"org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration$$SpringCGLIB$$0",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
   "name":"org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -6199,10 +6179,6 @@
     {"name":"elasticsearchEntityMapper","parameterTypes":["org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext","org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions"] }, 
     {"name":"elasticsearchMappingContext","parameterTypes":["org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions"] }
   ]
-},
-{
-  "name":"org.springframework.data.elasticsearch.config.ElasticsearchConfigurationSupport$$SpringCGLIB$$0",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
 },
 {
   "name":"org.springframework.data.elasticsearch.core.AbstractElasticsearchTemplate",
@@ -6379,11 +6355,29 @@
   ]
 },
 {
+  "name":"org.springframework.data.elasticsearch.core.document.Document",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.data.elasticsearch.core.document.MapDocument",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
   "name":"org.springframework.data.elasticsearch.core.event.AfterConvertCallback",
   "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.data.elasticsearch.core.event.AfterLoadCallback",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.data.elasticsearch.core.event.AfterSaveCallback",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.data.elasticsearch.core.event.BeforeConvertCallback",
   "queryAllDeclaredMethods":true
 },
 {
