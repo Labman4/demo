@@ -7,7 +7,8 @@ on:
     - main
     
 jobs:
-  uses: Labman4/workflow/.github/workflows/codescan-java.yml@codescan-java
+  codescan:
+    uses: Labman4/workflow/.github/workflows/codescan-java.yml@codescan-java
 
 
     
