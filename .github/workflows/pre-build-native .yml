@@ -1,4 +1,4 @@
-name: Native image
+name: Prepare build (native)
 on:
   workflow_dispatch:
     inputs:
@@ -6,16 +6,12 @@ on:
         description: 'Environment to run the workflow against'
         type: environment
         required: true
-    
   pull_request:
     branches:
-    - main
-    
+    - main 
 jobs:
   native:
     uses: Labman4/workflow/.github/workflows/native-image.yml@native-image
-    with:
-      configuration-path: .github/labeler.yml
  
 
     
