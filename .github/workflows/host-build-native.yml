@@ -1,4 +1,4 @@
-name: Just build (native)
+name: Just build native (host)
 on: 
   workflow_dispatch:
     inputs:
@@ -7,5 +7,5 @@ on:
         type: environment
         required: true
 jobs:
-  build:
-    uses: Labman4/workflow/.github/workflows/build-native-image.yml@native-image
+  host_build:
+    uses: Labman4/workflow/.github/workflows/host-build-native.yml@native-image
