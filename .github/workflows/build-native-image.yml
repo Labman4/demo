@@ -1,4 +1,4 @@
-name: Native builder
+name: Just build (native)
 on: 
   workflow_dispatch:
     inputs:
@@ -7,5 +7,5 @@ on:
         type: environment
         required: true
 jobs:
-  pre-build:
-    uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks
+  build:
+    uses: Labman4/workflow/.github/workflows/build-native-image.yml@native-image
