@@ -12,3 +12,7 @@ jobs:
     - uses: actions/labeler@v4
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  automerge:
+    needs: triage
+    uses: Labman4/workflow/.github/workflows/automerge.yml@automerge
