@@ -7,5 +7,5 @@ on:
         type: environment
         required: true
 jobs:
-  host_build:
+  build:
     uses: Labman4/workflow/.github/workflows/host-build-native.yml@native-image
