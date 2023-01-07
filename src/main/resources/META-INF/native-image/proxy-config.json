@@ -1,9 +1,12 @@
 [
   {
-    "interfaces":["com.elpsykongroo.demo.repo.AccessRecordRepo","org.springframework.data.repository.Repository","org.springframework.transaction.interceptor.TransactionalProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"]
+    "interfaces":["com.elpsykongroo.demo.repo.IPListRepo","org.springframework.data.repository.Repository","org.springframework.transaction.interceptor.TransactionalProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"]
   },
   {
-    "interfaces":["com.elpsykongroo.demo.repo.IPRepo","org.springframework.data.repository.Repository","org.springframework.transaction.interceptor.TransactionalProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"]
+    "interfaces":["com.elpsykongroo.demo.repo.elasticsearch.AccessRecordRepo","org.springframework.data.repository.Repository","org.springframework.transaction.interceptor.TransactionalProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"]
+  },
+  {
+    "interfaces":["com.elpsykongroo.demo.repo.elasticsearch.IPRepo","org.springframework.data.repository.Repository","org.springframework.transaction.interceptor.TransactionalProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"]
   },
   {
     "interfaces":["io.lettuce.core.api.sync.RedisCommands","io.lettuce.core.cluster.api.sync.RedisClusterCommands"]
@@ -21,6 +24,15 @@
     "interfaces":["org.springframework.data.elasticsearch.annotations.Field"]
   },
   {
+    "interfaces":["org.springframework.data.redis.connection.RedisConnection"]
+  },
+  {
+    "interfaces":["org.springframework.data.redis.core.RedisHash"]
+  },
+  {
+    "interfaces":["org.springframework.test.context.ActiveProfiles"]
+  },
+  {
     "interfaces":["org.springframework.test.context.BootstrapWith"]
   },
   {
@@ -31,5 +43,8 @@
   },
   {
     "interfaces":["org.springframework.web.bind.annotation.RequestParam"]
+  },
+  {
+    "interfaces":["org.testcontainers.dockerclient.RootlessDockerClientProviderStrategy$LibC"]
   }
 ]
