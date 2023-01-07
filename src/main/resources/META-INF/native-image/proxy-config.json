@@ -12,6 +12,9 @@
     "interfaces":["io.lettuce.core.api.sync.RedisCommands","io.lettuce.core.cluster.api.sync.RedisClusterCommands"]
   },
   {
+    "interfaces":["io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands"]
+  },
+  {
     "interfaces":["org.springframework.boot.actuate.endpoint.annotation.EndpointExtension"]
   },
   {
@@ -24,7 +27,7 @@
     "interfaces":["org.springframework.data.elasticsearch.annotations.Field"]
   },
   {
-    "interfaces":["org.springframework.data.redis.connection.RedisConnection"]
+    "interfaces":["org.springframework.data.redis.connection.RedisClusterConnection","org.springframework.data.redis.connection.DefaultedRedisClusterConnection","org.springframework.data.redis.connection.RedisConnection"]
   },
   {
     "interfaces":["org.springframework.data.redis.core.RedisHash"]
@@ -43,8 +46,5 @@
   },
   {
     "interfaces":["org.springframework.web.bind.annotation.RequestParam"]
-  },
-  {
-    "interfaces":["org.testcontainers.dockerclient.RootlessDockerClientProviderStrategy$LibC"]
   }
 ]
