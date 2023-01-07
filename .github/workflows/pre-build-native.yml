@@ -9,8 +9,6 @@ on:
   pull_request:
     branches:
     - main 
-  push:
-    branch: native-image
 jobs:
   native:
     uses: Labman4/workflow/.github/workflows/native-image.yml@native-image
