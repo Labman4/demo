@@ -518,7 +518,7 @@
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                     </image>
                     <docker>
-                        <host>unix:///run/podman/podman.sock</host>
+                        <host>unix:///run/user/1000/podman/podman.sock</host>
                         <bindHostToBuilder>true</bindHostToBuilder>
                         <publishRegistry>
                             <username>robot$github_bot</username>
