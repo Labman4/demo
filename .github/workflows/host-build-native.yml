@@ -18,10 +18,9 @@ jobs:
 
   build:
     uses: Labman4/workflow/.github/workflows/host-build-native.yml@native-image
-    with:
-      secret:
-        vault_token: "{{ secrets.VAULT_TOKEN }}"
-        vault_uri: "{{ secrets.VAULT_URI }}"
-        vault_path: "{{ secrets.VAULT_PATH }}"
-        secrets_path: "{{ secrets.SECRETS_PATH }}"
-      
+    secrets:
+      vault_token: "{{ secrets.VAULT_TOKEN }}"
+      vault_uri: "{{ secrets.VAULT_URI }}"
+      vault_path: "{{ secrets.VAULT_PATH }}"
+      secrets_path: "{{ secrets.SECRETS_PATH }}"
+
