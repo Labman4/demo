@@ -507,6 +507,10 @@
                         <env>
                             <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                                --initialize-at-build-time=ch.qos.logback.classic.Logger
+                            </BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                            ch.qos.logback.classic.Logger
                             <!-- <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
                             <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>
                             <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS> -->
