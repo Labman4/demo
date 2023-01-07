@@ -75,9 +75,6 @@
   "name":"[Ljava.lang.CharSequence;"
 },
 {
-  "name":"[Ljava.lang.Class;"
-},
-{
   "name":"[Ljava.lang.Comparable;"
 },
 {
@@ -648,6 +645,27 @@
   ]
 },
 {
+  "name":"com.elpsykongroo.demo.testconfig.RedisConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.elpsykongroo.demo.testconfig.RedisConfig$$SpringCGLIB$$0",
+  "allDeclaredFields":true,
+  "methods":[
+    {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
+    {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }
+  ]
+},
+{
+  "name":"com.elpsykongroo.demo.testconfig.RedisConfig$$SpringCGLIB$$1",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
+},
+{
+  "name":"com.elpsykongroo.demo.testconfig.RedisConfig$$SpringCGLIB$$2",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
+},
+{
   "name":"com.elpsykongroo.demo.web.WebClientTest",
   "allDeclaredFields":true,
   "allDeclaredClasses":true,
@@ -913,20 +931,6 @@
   "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["com.github.dockerjava.api.command.InspectExecResponse"] }]
-},
-{
-  "name":"com.github.dockerjava.api.command.InspectImageResponse",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.github.dockerjava.api.command.RootFS",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"com.github.dockerjava.api.command.SyncDockerCmd",
@@ -1282,41 +1286,10 @@
   "queryAllDeclaredMethods":true
 },
 {
-  "name":"com.github.dockerjava.api.model.PullResponseItem",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"com.github.dockerjava.api.model.ResourceVersion",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true
-},
-{
-  "name":"com.github.dockerjava.api.model.ResponseItem",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
-},
-{
-  "name":"com.github.dockerjava.api.model.ResponseItem$AuxDetail",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
-},
-{
-  "name":"com.github.dockerjava.api.model.ResponseItem$ErrorDetail",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
-},
-{
-  "name":"com.github.dockerjava.api.model.ResponseItem$ProgressDetail",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"com.github.dockerjava.api.model.RestartPolicy",
@@ -1518,10 +1491,6 @@
 {
   "name":"com.sun.crypto.provider.GaloisCounterMode$AESGCM",
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.sun.jna.CallbackProxy",
-  "methods":[{"name":"callback","parameterTypes":["java.lang.Object[]"] }]
 },
 {
   "name":"com.sun.management.GarbageCollectionNotificationInfo"
@@ -2220,7 +2189,8 @@
 },
 {
   "name":"io.lettuce.core.cluster.api.sync.RedisClusterCommands",
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
 },
 {
   "name":"io.lettuce.core.event.connection.JfrConnectEvent",
@@ -2251,16 +2221,6 @@
   "name":"io.lettuce.core.event.connection.JfrDisconnectedEvent",
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ConnectionEventSupport"] }]
-},
-{
-  "name":"io.lettuce.core.event.connection.JfrReconnectAttemptEvent",
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ReconnectAttemptEvent"] }]
-},
-{
-  "name":"io.lettuce.core.event.connection.JfrReconnectFailedEvent",
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ReconnectFailedEvent"] }]
 },
 {
   "name":"io.lettuce.core.metrics.MicrometerOptions",
@@ -3056,12 +3016,7 @@
 {
   "name":"java.lang.Object",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "methods":[
-    {"name":"equals","parameterTypes":["java.lang.Object"] }, 
-    {"name":"hashCode","parameterTypes":[] }, 
-    {"name":"toString","parameterTypes":[] }
-  ]
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"java.lang.OutOfMemoryError"
@@ -3093,8 +3048,7 @@
 },
 {
   "name":"java.lang.Throwable",
-  "allDeclaredFields":true,
-  "methods":[{"name":"addSuppressed","parameterTypes":["java.lang.Throwable"] }]
+  "allDeclaredFields":true
 },
 {
   "name":"java.lang.Void",
@@ -3111,32 +3065,6 @@
 {
   "name":"java.lang.constant.ConstantDesc",
   "queryAllDeclaredMethods":true
-},
-{
-  "name":"java.lang.invoke.MethodHandle",
-  "methods":[
-    {"name":"bindTo","parameterTypes":["java.lang.Object"] }, 
-    {"name":"invokeWithArguments","parameterTypes":["java.lang.Object[]"] }
-  ]
-},
-{
-  "name":"java.lang.invoke.MethodHandles",
-  "methods":[
-    {"name":"lookup","parameterTypes":[] }, 
-    {"name":"privateLookupIn","parameterTypes":["java.lang.Class","java.lang.invoke.MethodHandles$Lookup"] }
-  ]
-},
-{
-  "name":"java.lang.invoke.MethodHandles$Lookup",
-  "methods":[
-    {"name":"findSpecial","parameterTypes":["java.lang.Class","java.lang.String","java.lang.invoke.MethodType","java.lang.Class"] }, 
-    {"name":"in","parameterTypes":["java.lang.Class"] }, 
-    {"name":"unreflectSpecial","parameterTypes":["java.lang.reflect.Method","java.lang.Class"] }
-  ]
-},
-{
-  "name":"java.lang.invoke.MethodType",
-  "methods":[{"name":"methodType","parameterTypes":["java.lang.Class","java.lang.Class[]"] }]
 },
 {
   "name":"java.lang.invoke.TypeDescriptor$OfField",
@@ -3213,13 +3141,6 @@
 {
   "name":"java.lang.reflect.GenericDeclaration",
   "queryAllPublicMethods":true
-},
-{
-  "name":"java.lang.reflect.Method",
-  "methods":[
-    {"name":"isDefault","parameterTypes":[] }, 
-    {"name":"isVarArgs","parameterTypes":[] }
-  ]
 },
 {
   "name":"java.lang.reflect.Type",
@@ -3506,6 +3427,12 @@
 },
 {
   "name":"okhttp3.OkHttpClient"
+},
+{
+  "name":"org.HdrHistogram.Histogram"
+},
+{
+  "name":"org.LatencyUtils.PauseDetector"
 },
 {
   "name":"org.apache.catalina.core.ApplicationContextFacade",
@@ -4968,12 +4895,23 @@
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[
+    {"name":"getCluster","parameterTypes":[] }, 
     {"name":"getJedis","parameterTypes":[] }, 
     {"name":"getLettuce","parameterTypes":[] }, 
     {"name":"setClientType","parameterTypes":["org.springframework.boot.autoconfigure.data.redis.RedisProperties$ClientType"] }, 
-    {"name":"setHost","parameterTypes":["java.lang.String"] }, 
-    {"name":"setPort","parameterTypes":["int"] }, 
+    {"name":"setCluster","parameterTypes":["org.springframework.boot.autoconfigure.data.redis.RedisProperties$Cluster"] }, 
     {"name":"setSsl","parameterTypes":["boolean"] }
+  ]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.data.redis.RedisProperties$Cluster",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getNodes","parameterTypes":[] }, 
+    {"name":"setNodes","parameterTypes":["java.util.List"] }
   ]
 },
 {
@@ -6109,6 +6047,14 @@
 {
   "name":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.test.context.TestComponent",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.test.context.TestConfiguration",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizerFactory",
@@ -9931,6 +9877,10 @@
   "name":"org.synchronoss.cloud.nio.multipart.NioMultipartParser"
 },
 {
+  "name":"org.testcontainers.dockerclient.UnixSocketClientProviderStrategy",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"org.testcontainers.junit.jupiter.Container",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
@@ -9996,14 +9946,6 @@
 },
 {
   "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.InspectContainerCmdImpl",
-  "allDeclaredFields":true
-},
-{
-  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.InspectExecCmdImpl",
-  "allDeclaredFields":true
-},
-{
-  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.InspectImageCmdImpl",
   "allDeclaredFields":true
 },
 {
