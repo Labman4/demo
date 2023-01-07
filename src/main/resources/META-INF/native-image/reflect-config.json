@@ -30,6 +30,45 @@
   "name":"[Lcom.fasterxml.jackson.databind.ser.Serializers;"
 },
 {
+  "name":"[Lcom.github.dockerjava.api.model.Bind;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.Capability;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.Device;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.ExposedPort;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.Link;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.LxcConf;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.PortBinding;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.Ports$Binding;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.Ulimit;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.Volume;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.VolumeBind;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.VolumeRW;"
+},
+{
+  "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
+},
+{
   "name":"[Ljava.io.Serializable;"
 },
 {
@@ -70,13 +109,19 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"[Lorg.springframework.data.elasticsearch.annotations.IndexPrefixes;"
+},
+{
   "name":"[Lorg.springframework.util.ConcurrentReferenceHashMap$Segment;"
 },
 {
   "name":"[Lorg.springframework.web.bind.annotation.RequestMethod;"
 },
 {
-  "name":"[Lsun.security.pkcs.SignerInfo;"
+  "name":"[Lorg.testcontainers.shaded.com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;"
+},
+{
+  "name":"[Lorg.testcontainers.shaded.com.google.common.collect.ImmutableMapEntry;"
 },
 {
   "name":"[S"
@@ -343,11 +388,6 @@
   "methods":[{"name":"clientConfiguration","parameterTypes":[] }]
 },
 {
-  "name":"com.elpsykongroo.demo.config.RedisConfiguration",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
-},
-{
   "name":"com.elpsykongroo.demo.config.RequestConfig",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -428,22 +468,6 @@
   "name":"com.elpsykongroo.demo.config.SecurityConfig",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true
-},
-{
-  "name":"com.elpsykongroo.demo.config.SecurityConfig$$SpringCGLIB$$0",
-  "allDeclaredFields":true,
-  "methods":[
-    {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }
-  ]
-},
-{
-  "name":"com.elpsykongroo.demo.config.SecurityConfig$$SpringCGLIB$$1",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
-  "name":"com.elpsykongroo.demo.config.SecurityConfig$$SpringCGLIB$$2",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
 },
 {
   "name":"com.elpsykongroo.demo.config.ServiceConfig",
@@ -534,7 +558,7 @@
   "methods":[{"name":"accessIP","parameterTypes":["jakarta.servlet.http.HttpServletRequest"] }]
 },
 {
-  "name":"com.elpsykongroo.demo.document.AccessRecord",
+  "name":"com.elpsykongroo.demo.domain.AccessRecord",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
@@ -550,7 +574,14 @@
   ]
 },
 {
-  "name":"com.elpsykongroo.demo.document.IPManage",
+  "name":"com.elpsykongroo.demo.domain.IPList",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.elpsykongroo.demo.domain.IPManage",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
@@ -569,12 +600,17 @@
   "methods":[{"name":"doFilter","parameterTypes":["jakarta.servlet.ServletRequest","jakarta.servlet.ServletResponse","jakarta.servlet.FilterChain"] }]
 },
 {
-  "name":"com.elpsykongroo.demo.repo.AccessRecordRepo",
+  "name":"com.elpsykongroo.demo.repo.IPListRepo",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
 },
 {
-  "name":"com.elpsykongroo.demo.repo.IPRepo",
+  "name":"com.elpsykongroo.demo.repo.elasticsearch.AccessRecordRepo",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"com.elpsykongroo.demo.repo.elasticsearch.IPRepo",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
 },
@@ -593,7 +629,6 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "methods":[
-    {"name":"<init>","parameterTypes":["com.elpsykongroo.demo.repo.AccessRecordRepo"] }, 
     {"name":"deleteRecord","parameterTypes":["java.lang.String","java.lang.String"] }, 
     {"name":"filterUserAgent","parameterTypes":["java.lang.String"] }, 
     {"name":"findAll","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
@@ -605,7 +640,6 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "methods":[
-    {"name":"<init>","parameterTypes":["com.elpsykongroo.demo.repo.IPRepo"] }, 
     {"name":"accessIP","parameterTypes":["jakarta.servlet.http.HttpServletRequest","java.lang.String"] }, 
     {"name":"add","parameterTypes":["java.lang.String","java.lang.String"] }, 
     {"name":"blackOrWhiteList","parameterTypes":["jakarta.servlet.http.HttpServletRequest","java.lang.String"] }, 
@@ -622,9 +656,10 @@
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
-    {"name":"ipTest","parameterTypes":["org.springframework.test.web.reactive.server.WebTestClient"] }, 
-    {"name":"recordTest","parameterTypes":["org.springframework.test.web.reactive.server.WebTestClient"] }, 
-    {"name":"testWithRedis","parameterTypes":["org.springframework.test.web.reactive.server.WebTestClient"] }
+    {"name":"destroy","parameterTypes":[] }, 
+    {"name":"overrideTestProperties","parameterTypes":["org.springframework.test.context.DynamicPropertyRegistry"] }, 
+    {"name":"setUp","parameterTypes":[] }, 
+    {"name":"web","parameterTypes":[] }
   ]
 },
 {
@@ -765,6 +800,663 @@
   "methods":[{"name":"setupModule","parameterTypes":["com.fasterxml.jackson.databind.Module$SetupContext"] }]
 },
 {
+  "name":"com.github.dockerjava.api.command.AsyncDockerCmd",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.command.CreateContainerCmd",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.command.CreateContainerResponse",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setId","parameterTypes":["java.lang.String"] }, 
+    {"name":"setWarnings","parameterTypes":["java.lang.String[]"] }
+  ]
+},
+{
+  "name":"com.github.dockerjava.api.command.DockerCmd",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.command.ExecCreateCmd",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.command.ExecCreateCmdResponse",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.ExecStartCmd",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.command.GraphData",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.GraphDriver",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.HealthState",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.command.HealthStateLog",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.command.InspectContainerResponse",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.InspectContainerResponse$ContainerState",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["com.github.dockerjava.api.command.InspectContainerResponse"] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.InspectContainerResponse$Mount",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.InspectContainerResponse$Node",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "queryAllPublicConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.command.InspectExecResponse",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.InspectExecResponse$Container",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "queryAllPublicConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.command.InspectExecResponse$ProcessConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["com.github.dockerjava.api.command.InspectExecResponse"] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.InspectImageResponse",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.RootFS",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.command.SyncDockerCmd",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.AccessMode",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.AuthConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getAuth","parameterTypes":[] }, 
+    {"name":"getEmail","parameterTypes":[] }, 
+    {"name":"getIdentitytoken","parameterTypes":[] }, 
+    {"name":"getPassword","parameterTypes":[] }, 
+    {"name":"getRegistryAddress","parameterTypes":[] }, 
+    {"name":"getRegistrytoken","parameterTypes":[] }, 
+    {"name":"getStackOrchestrator","parameterTypes":[] }, 
+    {"name":"getUsername","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.github.dockerjava.api.model.Bind",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.BindOptions",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.BindPropagation",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Binds",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"fromPrimitive","parameterTypes":["java.lang.String[]"] }, 
+    {"name":"toPrimitive","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.github.dockerjava.api.model.BlkioRateDevice",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.BlkioWeightDevice",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Capability",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.ClusterInfo",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.ContainerConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.ContainerNetwork",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.ContainerNetwork$Ipam",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Device",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.DeviceRequest",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.DockerObject",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"getRawValues","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.Driver",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.ExposedPort",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.ExposedPorts",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"fromPrimitive","parameterTypes":["java.util.Map"] }, 
+    {"name":"toPrimitive","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.github.dockerjava.api.model.ExternalCA",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.ExternalCAProtocol",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.HealthCheck",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.HostConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getAutoRemove","parameterTypes":[] }, 
+    {"name":"getBlkioDeviceReadBps","parameterTypes":[] }, 
+    {"name":"getBlkioDeviceReadIOps","parameterTypes":[] }, 
+    {"name":"getBlkioDeviceWriteBps","parameterTypes":[] }, 
+    {"name":"getBlkioDeviceWriteIOps","parameterTypes":[] }, 
+    {"name":"getBlkioWeight","parameterTypes":[] }, 
+    {"name":"getBlkioWeightDevice","parameterTypes":[] }, 
+    {"name":"getCapAdd","parameterTypes":[] }, 
+    {"name":"getCapDrop","parameterTypes":[] }, 
+    {"name":"getCgroup","parameterTypes":[] }, 
+    {"name":"getCgroupParent","parameterTypes":[] }, 
+    {"name":"getCgroupnsMode","parameterTypes":[] }, 
+    {"name":"getConsoleSize","parameterTypes":[] }, 
+    {"name":"getContainerIDFile","parameterTypes":[] }, 
+    {"name":"getCpuCount","parameterTypes":[] }, 
+    {"name":"getCpuPercent","parameterTypes":[] }, 
+    {"name":"getCpuPeriod","parameterTypes":[] }, 
+    {"name":"getCpuQuota","parameterTypes":[] }, 
+    {"name":"getCpuRealtimePeriod","parameterTypes":[] }, 
+    {"name":"getCpuRealtimeRuntime","parameterTypes":[] }, 
+    {"name":"getCpuShares","parameterTypes":[] }, 
+    {"name":"getCpusetCpus","parameterTypes":[] }, 
+    {"name":"getCpusetMems","parameterTypes":[] }, 
+    {"name":"getDeviceCgroupRules","parameterTypes":[] }, 
+    {"name":"getDeviceRequests","parameterTypes":[] }, 
+    {"name":"getDevices","parameterTypes":[] }, 
+    {"name":"getDiskQuota","parameterTypes":[] }, 
+    {"name":"getDns","parameterTypes":[] }, 
+    {"name":"getDnsOptions","parameterTypes":[] }, 
+    {"name":"getDnsSearch","parameterTypes":[] }, 
+    {"name":"getExtraHosts","parameterTypes":[] }, 
+    {"name":"getGroupAdd","parameterTypes":[] }, 
+    {"name":"getInit","parameterTypes":[] }, 
+    {"name":"getIoMaximumBandwidth","parameterTypes":[] }, 
+    {"name":"getIoMaximumIOps","parameterTypes":[] }, 
+    {"name":"getIpcMode","parameterTypes":[] }, 
+    {"name":"getIsolation","parameterTypes":[] }, 
+    {"name":"getKernelMemory","parameterTypes":[] }, 
+    {"name":"getLxcConf","parameterTypes":[] }, 
+    {"name":"getMemory","parameterTypes":[] }, 
+    {"name":"getMemoryReservation","parameterTypes":[] }, 
+    {"name":"getMemorySwap","parameterTypes":[] }, 
+    {"name":"getMemorySwappiness","parameterTypes":[] }, 
+    {"name":"getMounts","parameterTypes":[] }, 
+    {"name":"getNanoCPUs","parameterTypes":[] }, 
+    {"name":"getNetworkMode","parameterTypes":[] }, 
+    {"name":"getOomKillDisable","parameterTypes":[] }, 
+    {"name":"getOomScoreAdj","parameterTypes":[] }, 
+    {"name":"getPidMode","parameterTypes":[] }, 
+    {"name":"getPidsLimit","parameterTypes":[] }, 
+    {"name":"getPortBindings","parameterTypes":[] }, 
+    {"name":"getPrivileged","parameterTypes":[] }, 
+    {"name":"getPublishAllPorts","parameterTypes":[] }, 
+    {"name":"getReadonlyRootfs","parameterTypes":[] }, 
+    {"name":"getRestartPolicy","parameterTypes":[] }, 
+    {"name":"getRuntime","parameterTypes":[] }, 
+    {"name":"getSecurityOpts","parameterTypes":[] }, 
+    {"name":"getShmSize","parameterTypes":[] }, 
+    {"name":"getStorageOpt","parameterTypes":[] }, 
+    {"name":"getSysctls","parameterTypes":[] }, 
+    {"name":"getTmpFs","parameterTypes":[] }, 
+    {"name":"getUlimits","parameterTypes":[] }, 
+    {"name":"getUsernsMode","parameterTypes":[] }, 
+    {"name":"getUtSMode","parameterTypes":[] }, 
+    {"name":"getVolumeDriver","parameterTypes":[] }, 
+    {"name":"getVolumesFrom","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.github.dockerjava.api.model.Image",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.Info",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.InfoRegistryConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.InfoRegistryConfig$IndexConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.InternetProtocol",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Isolation",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"fromValue","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.Link",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Links",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"toPrimitive","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.LocalNodeState",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"forValue","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.LogConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setType","parameterTypes":["com.github.dockerjava.api.model.LogConfig$LoggingType"] }
+  ]
+},
+{
+  "name":"com.github.dockerjava.api.model.LogConfig$LoggingType",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"fromValue","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.LxcConf",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Mount",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.MountType",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.NetworkSettings",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.PeerNode",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Ports",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"fromPrimitive","parameterTypes":["java.util.Map"] }, 
+    {"name":"toPrimitive","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.github.dockerjava.api.model.Ports$Binding",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.PropagationMode",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.PullResponseItem",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.ResourceVersion",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.ResponseItem",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.ResponseItem$AuxDetail",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.ResponseItem$ErrorDetail",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.ResponseItem$ProgressDetail",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.RestartPolicy",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.SELContext",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"com.github.dockerjava.api.model.SwarmCAConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.SwarmDispatcherConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.SwarmInfo",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.SwarmOrchestration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.SwarmRaftConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.SwarmSpec",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.TaskDefaults",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.TmpfsOptions",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Ulimit",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Version",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.VersionComponent",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.VersionPlatform",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.Volume",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.VolumeBind",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.VolumeBinds",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.VolumeOptions",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.VolumeRW",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.Volumes",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"toPrimitive","parameterTypes":[] }]
+},
+{
+  "name":"com.github.dockerjava.api.model.VolumesFrom",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"com.github.dockerjava.api.model.VolumesRW",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
   "name":"com.google.common.base$Optional"
 },
 {
@@ -824,24 +1516,12 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"com.sun.crypto.provider.DHParameters",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"com.sun.crypto.provider.GaloisCounterMode$AESGCM",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"com.sun.crypto.provider.HmacCore$HmacSHA256",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.sun.crypto.provider.HmacCore$HmacSHA384",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.sun.crypto.provider.TlsMasterSecretGenerator",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "name":"com.sun.jna.CallbackProxy",
+  "methods":[{"name":"callback","parameterTypes":["java.lang.Object[]"] }]
 },
 {
   "name":"com.sun.management.GarbageCollectionNotificationInfo"
@@ -1464,6 +2144,9 @@
   ]
 },
 {
+  "name":"io.lettuce.core.ConnectionBuilder$PlainChannelInitializer"
+},
+{
   "name":"io.lettuce.core.ConnectionEventTrigger",
   "methods":[
     {"name":"channelActive","parameterTypes":["io.netty.channel.ChannelHandlerContext"] }, 
@@ -1474,9 +2157,6 @@
 {
   "name":"io.lettuce.core.RedisAsyncCommandsImpl",
   "methods":[{"name":"getStatefulConnection","parameterTypes":[] }]
-},
-{
-  "name":"io.lettuce.core.SslConnectionBuilder$SslChannelInitializer"
 },
 {
   "name":"io.lettuce.core.api.sync.BaseRedisCommands",
@@ -1571,6 +2251,16 @@
   "name":"io.lettuce.core.event.connection.JfrDisconnectedEvent",
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ConnectionEventSupport"] }]
+},
+{
+  "name":"io.lettuce.core.event.connection.JfrReconnectAttemptEvent",
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ReconnectAttemptEvent"] }]
+},
+{
+  "name":"io.lettuce.core.event.connection.JfrReconnectFailedEvent",
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ReconnectFailedEvent"] }]
 },
 {
   "name":"io.lettuce.core.metrics.MicrometerOptions",
@@ -2022,13 +2712,6 @@
   "name":"io.netty.channel.unix.PeerCredentials"
 },
 {
-  "name":"io.netty.handler.codec.ByteToMessageDecoder",
-  "methods":[
-    {"name":"channelRead","parameterTypes":["io.netty.channel.ChannelHandlerContext","java.lang.Object"] }, 
-    {"name":"userEventTriggered","parameterTypes":["io.netty.channel.ChannelHandlerContext","java.lang.Object"] }
-  ]
-},
-{
   "name":"io.netty.handler.codec.MessageToByteEncoder",
   "methods":[{"name":"write","parameterTypes":["io.netty.channel.ChannelHandlerContext","java.lang.Object","io.netty.channel.ChannelPromise"] }]
 },
@@ -2055,23 +2738,6 @@
 },
 {
   "name":"io.netty.handler.codec.http.HttpContentDecompressor"
-},
-{
-  "name":"io.netty.handler.ssl.SslHandler",
-  "methods":[
-    {"name":"bind","parameterTypes":["io.netty.channel.ChannelHandlerContext","java.net.SocketAddress","io.netty.channel.ChannelPromise"] }, 
-    {"name":"channelActive","parameterTypes":["io.netty.channel.ChannelHandlerContext"] }, 
-    {"name":"channelInactive","parameterTypes":["io.netty.channel.ChannelHandlerContext"] }, 
-    {"name":"channelReadComplete","parameterTypes":["io.netty.channel.ChannelHandlerContext"] }, 
-    {"name":"close","parameterTypes":["io.netty.channel.ChannelHandlerContext","io.netty.channel.ChannelPromise"] }, 
-    {"name":"connect","parameterTypes":["io.netty.channel.ChannelHandlerContext","java.net.SocketAddress","java.net.SocketAddress","io.netty.channel.ChannelPromise"] }, 
-    {"name":"deregister","parameterTypes":["io.netty.channel.ChannelHandlerContext","io.netty.channel.ChannelPromise"] }, 
-    {"name":"disconnect","parameterTypes":["io.netty.channel.ChannelHandlerContext","io.netty.channel.ChannelPromise"] }, 
-    {"name":"exceptionCaught","parameterTypes":["io.netty.channel.ChannelHandlerContext","java.lang.Throwable"] }, 
-    {"name":"flush","parameterTypes":["io.netty.channel.ChannelHandlerContext"] }, 
-    {"name":"read","parameterTypes":["io.netty.channel.ChannelHandlerContext"] }, 
-    {"name":"write","parameterTypes":["io.netty.channel.ChannelHandlerContext","java.lang.Object","io.netty.channel.ChannelPromise"] }
-  ]
 },
 {
   "name":"io.netty.incubator.channel.uring.IOUring"
@@ -2313,7 +2979,9 @@
 },
 {
   "name":"java.lang.Boolean",
-  "fields":[{"name":"TYPE"}]
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.lang.Byte",
@@ -2348,12 +3016,18 @@
   "fields":[{"name":"TYPE"}]
 },
 {
+  "name":"java.lang.Enum",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"java.lang.Float",
   "fields":[{"name":"TYPE"}]
 },
 {
   "name":"java.lang.Integer",
-  "fields":[{"name":"TYPE"}]
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.lang.Iterable",
@@ -2366,15 +3040,28 @@
 },
 {
   "name":"java.lang.Long",
-  "fields":[{"name":"TYPE"}]
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.lang.Module",
   "queryAllDeclaredMethods":true
 },
 {
-  "name":"java.lang.Object",
+  "name":"java.lang.Number",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.lang.Object",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[
+    {"name":"equals","parameterTypes":["java.lang.Object"] }, 
+    {"name":"hashCode","parameterTypes":[] }, 
+    {"name":"toString","parameterTypes":[] }
+  ]
 },
 {
   "name":"java.lang.OutOfMemoryError"
@@ -2406,7 +3093,8 @@
 },
 {
   "name":"java.lang.Throwable",
-  "allDeclaredFields":true
+  "allDeclaredFields":true,
+  "methods":[{"name":"addSuppressed","parameterTypes":["java.lang.Throwable"] }]
 },
 {
   "name":"java.lang.Void",
@@ -2417,7 +3105,38 @@
 },
 {
   "name":"java.lang.constant.Constable",
+  "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"java.lang.constant.ConstantDesc",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"java.lang.invoke.MethodHandle",
+  "methods":[
+    {"name":"bindTo","parameterTypes":["java.lang.Object"] }, 
+    {"name":"invokeWithArguments","parameterTypes":["java.lang.Object[]"] }
+  ]
+},
+{
+  "name":"java.lang.invoke.MethodHandles",
+  "methods":[
+    {"name":"lookup","parameterTypes":[] }, 
+    {"name":"privateLookupIn","parameterTypes":["java.lang.Class","java.lang.invoke.MethodHandles$Lookup"] }
+  ]
+},
+{
+  "name":"java.lang.invoke.MethodHandles$Lookup",
+  "methods":[
+    {"name":"findSpecial","parameterTypes":["java.lang.Class","java.lang.String","java.lang.invoke.MethodType","java.lang.Class"] }, 
+    {"name":"in","parameterTypes":["java.lang.Class"] }, 
+    {"name":"unreflectSpecial","parameterTypes":["java.lang.reflect.Method","java.lang.Class"] }
+  ]
+},
+{
+  "name":"java.lang.invoke.MethodType",
+  "methods":[{"name":"methodType","parameterTypes":["java.lang.Class","java.lang.Class[]"] }]
 },
 {
   "name":"java.lang.invoke.TypeDescriptor$OfField",
@@ -2496,6 +3215,13 @@
   "queryAllPublicMethods":true
 },
 {
+  "name":"java.lang.reflect.Method",
+  "methods":[
+    {"name":"isDefault","parameterTypes":[] }, 
+    {"name":"isVarArgs","parameterTypes":[] }
+  ]
+},
+{
   "name":"java.lang.reflect.Type",
   "queryAllPublicMethods":true
 },
@@ -2571,12 +3297,6 @@
   "name":"java.security.SecurityPermission"
 },
 {
-  "name":"java.security.interfaces.RSAPrivateKey"
-},
-{
-  "name":"java.security.interfaces.RSAPublicKey"
-},
-{
   "name":"java.sql.Date"
 },
 {
@@ -2584,6 +3304,11 @@
 },
 {
   "name":"java.time.LocalDateTime"
+},
+{
+  "name":"java.util.ArrayList",
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.util.Date",
@@ -2595,6 +3320,16 @@
   "name":"java.util.EventListener",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"java.util.HashMap",
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"java.util.LinkedHashMap",
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.util.Map",
@@ -2865,16 +3600,16 @@
   "queryAllPublicMethods":true
 },
 {
-  "name":"org.apache.hc.client5.http.impl.async$CloseableHttpAsyncClient"
-},
-{
   "name":"org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient"
 },
 {
-  "name":"org.apache.hc.client5.http.impl.classic$HttpClients"
+  "name":"org.apache.hc.client5.http.impl.classic.HttpClients"
 },
 {
-  "name":"org.apache.hc.client5.http.impl.classic.HttpClients"
+  "name":"org.apache.hc.core5.reactive$ReactiveDataConsumer"
+},
+{
+  "name":"org.apache.hc.core5.reactive.ReactiveDataConsumer"
 },
 {
   "name":"org.apache.jasper.compiler$JspConfig"
@@ -2982,9 +3717,15 @@
   "name":"org.jruby.runtime.Constants"
 },
 {
-  "name":"org.junit.jupiter.api.Order",
-  "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "name":"org.junit.internal.AssumptionViolatedException"
+},
+{
+  "name":"org.junit.jupiter.api.AfterAll",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.junit.jupiter.api.BeforeAll",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.junit.jupiter.api.Test",
@@ -2992,9 +3733,18 @@
   "queryAllPublicMethods":true
 },
 {
+  "name":"org.junit.jupiter.api.Timeout",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
   "name":"org.junit.jupiter.api.extension.ExtendWith",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"org.junit.jupiter.engine.extension.TimeoutInvocationFactory$SingleThreadExecutorResource",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.junit.platform.commons.annotation.Testable",
@@ -4222,7 +4972,7 @@
     {"name":"getLettuce","parameterTypes":[] }, 
     {"name":"setClientType","parameterTypes":["org.springframework.boot.autoconfigure.data.redis.RedisProperties$ClientType"] }, 
     {"name":"setHost","parameterTypes":["java.lang.String"] }, 
-    {"name":"setPassword","parameterTypes":["java.lang.String"] }, 
+    {"name":"setPort","parameterTypes":["int"] }, 
     {"name":"setSsl","parameterTypes":["boolean"] }
   ]
 },
@@ -4302,7 +5052,24 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[
+    {"name":"getRestclient","parameterTypes":[] }, 
+    {"name":"setSocketTimeout","parameterTypes":["java.time.Duration"] }
+  ]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchProperties$Restclient",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"getSniffer","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchProperties$Restclient$Sniffer",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"setDelayAfterFailure","parameterTypes":["java.time.Duration"] }]
 },
 {
   "name":"org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration",
@@ -5850,6 +6617,10 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.context.annotation.Profile",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"org.springframework.context.annotation.Role",
   "queryAllDeclaredMethods":true
 },
@@ -6381,6 +7152,12 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.data.elasticsearch.core.index.Settings",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
   "name":"org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true
@@ -6445,6 +7222,10 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.data.keyvalue.annotation.KeySpace",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"org.springframework.data.keyvalue.core.AbstractKeyValueAdapter",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -6503,6 +7284,50 @@
   ]
 },
 {
+  "name":"org.springframework.data.keyvalue.repository.KeyValueRepository",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.springframework.data.keyvalue.repository.query.KeyValuePartTreeQuery",
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.data.repository.query.QueryMethod","org.springframework.data.repository.query.QueryMethodEvaluationContextProvider","org.springframework.data.keyvalue.core.KeyValueOperations","java.lang.Class"] }]
+},
+{
+  "name":"org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[
+    {"name":"afterPropertiesSet","parameterTypes":[] }, 
+    {"name":"setKeyValueOperations","parameterTypes":["org.springframework.data.keyvalue.core.KeyValueOperations"] }, 
+    {"name":"setMappingContext","parameterTypes":["org.springframework.data.mapping.context.MappingContext"] }, 
+    {"name":"setQueryCreator","parameterTypes":["java.lang.Class"] }, 
+    {"name":"setQueryType","parameterTypes":["java.lang.Class"] }
+  ]
+},
+{
+  "name":"org.springframework.data.keyvalue.repository.support.SimpleKeyValueRepository",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":["org.springframework.data.repository.core.EntityInformation","org.springframework.data.keyvalue.core.KeyValueOperations"] }, 
+    {"name":"count","parameterTypes":[] }, 
+    {"name":"delete","parameterTypes":["java.lang.Object"] }, 
+    {"name":"deleteAll","parameterTypes":[] }, 
+    {"name":"deleteAll","parameterTypes":["java.lang.Iterable"] }, 
+    {"name":"deleteAllById","parameterTypes":["java.lang.Iterable"] }, 
+    {"name":"deleteById","parameterTypes":["java.lang.Object"] }, 
+    {"name":"existsById","parameterTypes":["java.lang.Object"] }, 
+    {"name":"findAll","parameterTypes":[] }, 
+    {"name":"findAll","parameterTypes":["org.springframework.data.domain.Pageable"] }, 
+    {"name":"findAll","parameterTypes":["org.springframework.data.domain.Sort"] }, 
+    {"name":"findAllById","parameterTypes":["java.lang.Iterable"] }, 
+    {"name":"findById","parameterTypes":["java.lang.Object"] }, 
+    {"name":"save","parameterTypes":["java.lang.Object"] }, 
+    {"name":"saveAll","parameterTypes":["java.lang.Iterable"] }
+  ]
+},
+{
   "name":"org.springframework.data.mapping.callback.EntityCallback",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
@@ -6547,6 +7372,16 @@
 },
 {
   "name":"org.springframework.data.querydsl.ReactiveQuerydslPredicateExecutor"
+},
+{
+  "name":"org.springframework.data.redis.connection.DefaultedRedisConnection",
+  "methods":[
+    {"name":"del","parameterTypes":["byte[][]"] }, 
+    {"name":"hMSet","parameterTypes":["byte[]","java.util.Map"] }, 
+    {"name":"sAdd","parameterTypes":["byte[]","byte[][]"] }, 
+    {"name":"sInter","parameterTypes":["byte[][]"] }, 
+    {"name":"sIsMember","parameterTypes":["byte[]","byte[]"] }
+  ]
 },
 {
   "name":"org.springframework.data.redis.connection.ReactiveRedisConnectionFactory",
@@ -6655,6 +7490,10 @@
     {"name":"getRequiredConnectionFactory","parameterTypes":[] }, 
     {"name":"setConnectionFactory","parameterTypes":["org.springframework.data.redis.connection.RedisConnectionFactory"] }
   ]
+},
+{
+  "name":"org.springframework.data.redis.core.RedisHash",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.data.redis.core.RedisKeyValueAdapter",
@@ -6901,6 +7740,17 @@
   ]
 },
 {
+  "name":"org.springframework.data.redis.repository.query.RedisQueryCreator",
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.data.repository.query.parser.PartTree","org.springframework.data.repository.query.ParameterAccessor"] }]
+},
+{
+  "name":"org.springframework.data.redis.repository.support.RedisRepositoryFactoryBean",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
+},
+{
   "name":"org.springframework.data.repository.CrudRepository",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
@@ -6918,6 +7768,16 @@
     {"name":"save","parameterTypes":["java.lang.Object"] }, 
     {"name":"saveAll","parameterTypes":["java.lang.Iterable"] }
   ]
+},
+{
+  "name":"org.springframework.data.repository.ListCrudRepository",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.springframework.data.repository.ListPagingAndSortingRepository",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
 },
 {
   "name":"org.springframework.data.repository.NoRepositoryBean",
@@ -8139,9 +8999,18 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.test.context.ActiveProfiles",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
   "name":"org.springframework.test.context.BootstrapWith",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"org.springframework.test.context.DynamicPropertySource",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.test.context.aot.AotTestAttributes__Generated",
@@ -8299,6 +9168,10 @@
   "name":"org.springframework.validation.Validator",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"org.springframework.vault.annotation.VaultPropertySource",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.web.accept.ContentNegotiationManager",
@@ -9058,6 +9931,98 @@
   "name":"org.synchronoss.cloud.nio.multipart.NioMultipartParser"
 },
 {
+  "name":"org.testcontainers.junit.jupiter.Container",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.testcontainers.junit.jupiter.Testcontainers",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.testcontainers.junit.jupiter.TestcontainersExtension",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.testcontainers.shaded.com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.DockerConfigFile",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.AbstrAsyncDockerCmd",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.AbstrDockerCmd",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateContainerCmdImpl",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.ExecCreateCmdImpl",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getContainerId","parameterTypes":[] }, 
+    {"name":"getEnv","parameterTypes":[] }, 
+    {"name":"getPrivileged","parameterTypes":[] }, 
+    {"name":"getUser","parameterTypes":[] }, 
+    {"name":"getWorkingDir","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.ExecStartCmdImpl",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.InfoCmdImpl",
+  "allDeclaredFields":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.InspectContainerCmdImpl",
+  "allDeclaredFields":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.InspectExecCmdImpl",
+  "allDeclaredFields":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.InspectImageCmdImpl",
+  "allDeclaredFields":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.ListImagesCmdImpl",
+  "allDeclaredFields":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.StartContainerCmdImpl",
+  "allDeclaredFields":true
+},
+{
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.VersionCmdImpl",
+  "allDeclaredFields":true
+},
+{
+  "name":"org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"org.thymeleaf.spring6$SpringTemplateEngine"
 },
 {
@@ -9179,18 +10144,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"sun.security.provider.DSA$SHA224withDSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.DSA$SHA256withDSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.JavaKeyStore$DualFormatJKS",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"sun.security.provider.JavaKeyStore$JKS",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -9199,23 +10152,11 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"sun.security.provider.NativePRNG$NonBlocking",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"sun.security.provider.SHA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.SHA2$SHA224",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.SHA2$SHA256",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.SHA5$SHA384",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.SHA5$SHA512",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -9227,27 +10168,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"sun.security.provider.certpath.PKIXCertPathValidator",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.rsa.PSSParameters",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"sun.security.rsa.RSAKeyFactory$Legacy",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.rsa.RSAPSSSignature",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.rsa.RSASignature$SHA224withRSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.rsa.RSASignature$SHA256withRSA",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -9267,9 +10188,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"sun.security.util.ObjectIdentifier"
-},
-{
   "name":"sun.security.x509.AuthorityInfoAccessExtension",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
 },
@@ -9284,9 +10202,6 @@
 {
   "name":"sun.security.x509.CRLDistributionPointsExtension",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
-{
-  "name":"sun.security.x509.CertificateExtensions"
 },
 {
   "name":"sun.security.x509.CertificatePoliciesExtension",

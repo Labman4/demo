@@ -20,10 +20,16 @@
       "pattern":"\\QMETA-INF/services/org.slf4j.spi.SLF4JServiceProvider\\E"
     }, 
     {
+      "pattern":"\\QMETA-INF/services/org.testcontainers.dockerclient.DockerClientProviderStrategy\\E"
+    }, 
+    {
       "pattern":"\\QMETA-INF/spring.factories\\E"
     }, 
     {
-      "pattern":"\\Qapplication-dev.yaml\\E"
+      "pattern":"\\Qapplication-test.yaml\\E"
+    }, 
+    {
+      "pattern":"\\Qapplication.properties\\E"
     }, 
     {
       "pattern":"\\Qapplication.yaml\\E"
@@ -33,6 +39,15 @@
     }, 
     {
       "pattern":"\\Qcom/elpsykongroo/demo/config/\\E"
+    }, 
+    {
+      "pattern":"\\Qcom/github/dockerjava/zerodep/shaded/org/apache/hc/client5/version.properties\\E"
+    }, 
+    {
+      "pattern":"\\Qcom/sun/jna/linux-x86-64/libjnidispatch.so\\E"
+    }, 
+    {
+      "pattern":"\\Qelasticsearch-default-memory-vm.options\\E"
     }, 
     {
       "pattern":"\\Qmozilla/public-suffix-list.txt\\E"
@@ -48,6 +63,9 @@
     }, 
     {
       "pattern":"\\Qorg/apache/catalina/util/ServerInfo.properties\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/apache/hc/client5/version.properties\\E"
     }, 
     {
       "pattern":"\\Qorg/apache/http/nio/client/version.properties\\E"
@@ -69,6 +87,9 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/http/codec/CodecConfigurer.properties\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/vault/config/AbstractVaultConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qversions.properties\\E"
