@@ -20,10 +20,10 @@ public class RedisConfig {
 
     public static final Set<Integer> redisClusterPorts = Set.of(7000, 7001, 7002, 7003, 7004, 7005);
 
-    private static final GenericContainer<?> redisClusterContainer = new GenericContainer<>("labman4/redis-cluster:7.0.7")
+    private static final GenericContainer<?> redisClusterContainer = new GenericContainer<>("labman4/redis-cluster:7.0")
             .withExposedPorts(redisClusterPorts.toArray(new Integer[0]))
             .withEnv("PROTECTED_MODE", "false")
-            .withStartupTimeout(Duration.ofSeconds(200));
+            .withStartupTimeout(Duration.ofSeconds(100));
 
     private static ConcurrentMap<Integer, Integer> redisClusterNatPortMapping = new ConcurrentHashMap<>();
     private static ConcurrentMap<Integer, SocketAddress> redisClusterSocketAddresses = new ConcurrentHashMap<>();
