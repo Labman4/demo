@@ -17,29 +17,36 @@
 package com.elpsykongroo.demo.config;
 
 import com.elpsykongroo.demo.utils.SSLUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import javax.net.ssl.SSLContext;
+
 import java.time.Duration;
 
 @Configuration(proxyBeanMethods = false)
-@EnableElasticsearchRepositories("com.elpsykongroo.demo.repo")
+@EnableElasticsearchRepositories("com.elpsykongroo.demo.repo.elasticsearch")
 public class ElasticConfig extends ElasticsearchConfiguration {
+
    @Autowired
    private ServiceConfig serviceConfig;
-   
+
+   @Autowired
+    Environment env;
+    
    @Override
    public ClientConfiguration clientConfiguration() {
        ServiceConfig.ES es= serviceConfig.getEs();
        if ("public".equals(es.getSsl().getType())) {
            return ClientConfiguration.builder()
-                   .connectedTo(serviceConfig.getEs().getNodes())
+                   .connectedTo(es.getNodes())
                    .usingSsl()
-                   .withBasicAuth(es.getUser(), es.getPass())
+                   .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
                    .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
                    .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
                    .build();
@@ -49,19 +56,17 @@ public class ElasticConfig extends ElasticsearchConfiguration {
            return ClientConfiguration.builder()
                    .connectedTo(serviceConfig.getEs().getNodes())
                    .usingSsl(sslContext)
-                   .withBasicAuth(es.getUser(), es.getPass())
+                   .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
                    .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
                    .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
                    .build();
        } else {
            return ClientConfiguration.builder()
-                   .connectedTo(serviceConfig.getEs().getNodes())
-                   .withBasicAuth(es.getUser(), es.getPass())
+                   .connectedTo(es.getNodes())
+                   .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
                    .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
                    .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
                    .build();
        }
-
-
    }
 }

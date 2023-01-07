@@ -1,4 +1,20 @@
+server:
+  http2:
+    enabled: true
+  shutdown: graceful
+  port: 8443
+  
 spring:
+  elasticsearch:
+    socket-timeout: 100s
+    restclient:
+      sniffer:
+        delay-after-failure: 100s
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${AUTH_URL:https://auth.elpsykongroo.com}/oauth2/jwks
   #  cloud:
   #    kubernetes:
   #      discovery:
@@ -17,10 +33,16 @@ spring:
   datasource:
     url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
   data:
+    elasticsearch:
+      repositories:
+        enabled: true
     redis:
+      # host: 127.0.0.1
+      # port: 6379
+      ssl: false
       client-type: ${REDIS_TYPE:LETTUCE}
-      cluster:
-        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
+      # cluster:
+      #   nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
         pool:
           enabled: false
@@ -37,10 +59,6 @@ spring:
           maxActive: 5
           maxWait: 5
           timeBetweenEvictionRuns: 100000
-
-    elasticsearch:
-      repositories:
-        enabled: true
   kafka:
     bootstrap-servers: ${KAFKA_URL:kafka}
     security:
@@ -52,7 +70,6 @@ spring:
       #      security:
       #        protocol: ssl
       auto-offset-reset: earliest
-
 request:
   limit:
     global:
@@ -64,8 +81,8 @@ request:
       duration: ${REQUEST_DURATION:1}
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
-    permit: ${PERMIT_PATH:/public}
-    nonPrivate: ${PUBLIC_PATH:/public}
+    permit: ${PERMIT_PATH:/**}
+    nonPrivate: ${PUBLIC_PATH:/}
     limit: ${LIMIT_PATH:/}
     exclude:
       all: ${EXCLUDE_PATH:/actuator}
@@ -75,18 +92,26 @@ request:
     ip: ${IP_HEADER:x-forward-for}
     black: ${BLACK_HEADER:x-forward-for}
     white: ${WHITE_HEADER:x-forward-for}
+
 service:
   ssl:
-    ca:  ${CA_CRT:ca.crt}
-    cert:  ${TLS_CERT:tls.crt}
-    key:  ${TLS_KEY:tls.key}
+    ca:  ${CA_CRT}
+    cert:  ${TLS_CERT}
+    key:  ${TLS_KEY}
   es:
-    nodes: ${ES_URL:elasticsearch-master:9200}
+    # nodes: elasticsearch.elpsykongroo.com:443
+    # user: elastic
+    # pass: Elpsy4783
+    # ssl:
+    #   type: public
+    # nodes: 127.0.0.1:9200
+    user: elastic
+    pass: 123456
     ssl:
-      type: self
-      ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
-      cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
-      key: ${ES_TLS_KEY:/var/ssl/es/tls.key}
+      type: none
+      ca: ${ES_CA_CRT:ca.crt}
+      cert: ${ES_TLS_CERT:tls.crt}
+      key: ${ES_TLS_KEY:tls.key}
     timeout:
-      connect: ${ES_CONNECT_TIME:10}
-      socket: ${ES_SOCKET_TIME:10}
+      connect: ${ES_CONNECT_TIME:100}
+      socket: ${ES_SOCKET_TIME:100}

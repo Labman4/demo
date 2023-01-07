@@ -26,13 +26,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.elpsykongroo.demo.exception.ServiceException;
+import com.elpsykongroo.demo.repo.elasticsearch.AccessRecordRepo;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.config.RequestConfig;
-import com.elpsykongroo.demo.document.AccessRecord;
-import com.elpsykongroo.demo.repo.AccessRecordRepo;
+import com.elpsykongroo.demo.domain.AccessRecord;
 import com.elpsykongroo.demo.service.AccessRecordService;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,11 +48,10 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class AccessRecordServiceImpl implements AccessRecordService {
+
+	@Autowired
 	private AccessRecordRepo accessRecordRepo;
 
-	public AccessRecordServiceImpl(AccessRecordRepo accessRecordRepo) {
-		this.accessRecordRepo = accessRecordRepo;
-	}
 //    @Autowired
 //    private RedissonClient redissonClient;
 
@@ -74,6 +75,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				record.setSourceIP(request.getRemoteAddr());
 				record.setTimestamp(new Date());
 				record.setUserAgent(request.getHeader("user-agent"));
+				accessRecordRepo.save(record);
 				log.info("request header------------{} ", result);
 			}
 		} catch (Exception e) {

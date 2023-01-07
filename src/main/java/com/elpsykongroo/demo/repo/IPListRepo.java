@@ -14,30 +14,14 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.document;
+package com.elpsykongroo.demo.repo;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.data.repository.CrudRepository;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
+import com.elpsykongroo.demo.domain.IPList;
 
-@Document(indexName = "ip_black")
-@Data
-@NoArgsConstructor
-public class IPManage {
-	private @Id String id;
-	private String address;
+public interface IPListRepo extends CrudRepository<IPList, String> {
+	IPList findByIsBlackTrue();
 
-	private boolean isBlack;
-
-	public IPManage(String addres) {
-		this.address = addres;
-		this.isBlack = true;
-	}
-
-	public IPManage(String addres, boolean black) {
-		this.address = addres;
-		this.isBlack = black;
-	}
+    IPList findByIsBlackFalse();
 }

@@ -16,14 +16,10 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
-    username: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:elpsy4783}
   data:
     redis:
-      host: redis.elpsykongroo.com
-      ssl: true
+      ssl: false
       client-type: ${REDIS_TYPE:LETTUCE}
-      password: ${REDIS_PASSWORD:elpsy4783}
       # cluster:
       #   nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
@@ -52,7 +48,7 @@ spring:
       protocol: ssl
     ssl:
       trust-store-location: ${JKS:jks}
-      trust-store-password: ${JKS_PASS:elpsy4783}
+      trust-store-password: ${JKS_PASS:pass}
     consumer:
       #      security:
       #        protocol: ssl
@@ -87,8 +83,6 @@ service:
     key:  ${TLS_KEY}
   es:
     nodes: ${ES_URL:elasticsearch.elpsykongroo.com:443}
-    user: ${ES_USER:elastic}
-    pass: ${ES_PASS:Elpsy4783}
     ssl:
       type: public
       ca: ${ES_CA_CRT:ca.crt}
@@ -97,4 +91,4 @@ service:
     timeout:
       connect: ${ES_CONNECT_TIME:10}
       socket: ${ES_SOCKET_TIME:10}
-
+ 

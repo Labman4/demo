@@ -46,7 +46,7 @@ public class IPManagerContronller {
 			try {
 				return JsonUtils.toJson(ipManagerService.add(address, isBlack));
 			}
-			catch (ServiceException e) {
+			catch (Exception e) {
 				return JsonUtils.toJson(CommonResponse.error
 						(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
 		}

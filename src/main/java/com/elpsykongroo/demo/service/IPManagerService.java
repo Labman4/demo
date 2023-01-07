@@ -22,7 +22,7 @@ import com.elpsykongroo.demo.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
-import com.elpsykongroo.demo.document.IPManage;
+import com.elpsykongroo.demo.domain.IPManage;
 
 import org.springframework.stereotype.Service;
 

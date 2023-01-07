@@ -75,5 +75,5 @@ server:
     certificate-private-key: ${TLS_KEY}
 
 #    key-store: ${SSL_JKS:}
-#    key-store-password: ${SSL_PASS:elpsy4783}
+#    key-store-password: ${SSL_PASS:password}
 #    key-alias: api

@@ -17,7 +17,6 @@
 package com.elpsykongroo.demo.filter;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -106,13 +105,13 @@ public class ThrottlingFilter implements Filter {
 		}
 	}
 
-	private void filterPath(HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri) throws UnknownHostException {
+	private void filterPath(HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri){
 		if (limitByBucket("", httpResponse, session)) {
 			blackOrWhite(httpRequest, httpResponse, requestUri);
 		}
 	}
 
-	private void blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri) throws UnknownHostException {
+	private void blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri){
 		if (!ipMangerService.blackOrWhiteList(httpRequest, "true")) {
 			blackFlag = false;
 			publicFlag = isPublic(requestUri, httpRequest, httpResponse);
@@ -163,7 +162,7 @@ public class ThrottlingFilter implements Filter {
 		}
 	}
 
-	private boolean isPublic(String requestUri, ServletRequest request, HttpServletResponse servletResponse) throws UnknownHostException {
+	private boolean isPublic(String requestUri, ServletRequest request, HttpServletResponse servletResponse) {
 		if (!PathUtils.beginWithPath(requestConfig.getPath().getNonPrivate(), requestUri)) {
 			if (!ipMangerService.blackOrWhiteList((HttpServletRequest) request, "false")) {
 				servletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());

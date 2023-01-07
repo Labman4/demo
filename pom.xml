@@ -18,8 +18,7 @@
         <maven-checkstyle-plugin.includeTestSourceDirectory>true</maven-checkstyle-plugin.includeTestSourceDirectory>
         <maven.compiler.source>${java.specification.version}</maven.compiler.source>
         <maven.compiler.target>${java.specification.version}</maven.compiler.target>
-        <!-- <start-class>com.elpsykongroo.demo.DemoApplication</start-class> -->
-        <!-- <agentConfig>src/main/resources/META-INF/native-image/com.elpsykongroo/demo</agentConfig> -->
+        <start-class>com.elpsykongroo.demo.DemoApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
@@ -77,7 +76,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-
         <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-starter-aop</artifactId>-->
@@ -104,6 +102,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>io.lettuce</groupId>-->
@@ -162,22 +164,11 @@
             <groupId>io.github.hakky54</groupId>
             <artifactId>sslcontext-kickstart-for-pem</artifactId>
             <version>7.4.9</version>
-        </dependency>
+        </dependency> 
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-reactor-netty -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-reactor-netty</artifactId>-->
-<!--        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux -->
-       <dependency>
            <groupId>org.springframework.boot</groupId>
            <artifactId>spring-boot-starter-webflux</artifactId>
-       </dependency>
+        </dependency> 
        <!-- <dependency>
            <groupId>io.projectreactor.netty</groupId>
            <artifactId>reactor-netty</artifactId>
@@ -192,7 +183,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.github.vladimir-bukhtoyarov</groupId>
             <artifactId>bucket4j-core</artifactId>
@@ -214,12 +204,39 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!--        <dependency>-->
-<!--            <groupId>org.apache.httpcomponents.client5</groupId>-->
-<!--            <artifactId>httpclient5</artifactId>-->
-<!--        </dependency>-->
-
+        <dependency>
+            <groupId>org.springframework.vault</groupId>
+            <artifactId>spring-vault-core</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.testcontainers/vault -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>vault</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.testcontainers/elasticsearch -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.testcontainers/testcontainers -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>            
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
         <!--        <dependency>-->
 <!--            <groupId>com.google.guava</groupId>-->
 <!--            <artifactId>guava</artifactId>-->
@@ -306,6 +323,24 @@
             <artifactId>opentelemetry-samplers</artifactId>
             <version>1.21.0-alpha</version>
         </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-vault-config &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-vault-config</artifactId>-->
+<!--            <version>4.0.0</version>-->
+<!--        </dependency>-->
+<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap -->
+        <!-- <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>4.0.0</version>
+        </dependency> -->
+        <!-- <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-elasticsearch</artifactId>
+            <scope>test</scope>
+        </dependency> -->
+
     </dependencies>
     <profiles>
         <profile>
@@ -376,8 +411,6 @@
                                 <env>
                                     <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                   	
-<!--                                    <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>-->
-<!--                                    <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/workspace/BOOT-INF/classes/opentelemetry-javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
                                 </env>
                                 <name>
                                     registry.elpsykongroo.com/library/${project.artifactId}:${project.version}-native
@@ -389,8 +422,8 @@
                                 <host>unix:///run/user/1000/podman/podman.sock</host>
                                 <bindHostToBuilder>true</bindHostToBuilder>
                                 <publishRegistry>
-                                    <username>admin</username>
-                                    <password>Elpsy4783</password>
+                                    <username>robot$github_bot</username>
+                                    <password>j66oKThoa2LjsC2apALotdN9Q11NV5UB</password>
                                     <url>registry.elpsykongroo.com</url>
                                 </publishRegistry>
                             </docker>
@@ -456,15 +489,12 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-<!--                        <builder>paketobuildpacks/builder:full</builder>-->
+                        <builder>paketobuildpacks/builder:tiny</builder>
                         <env>
-<!--                            <HTTP_PROXY>http://192.168.1.106:1080</HTTP_PROXY>-->
-<!--                            <HTTPS_PROXY>http://192.168.1.106:1080</HTTPS_PROXY>-->
-                            <BP_JVM_VERSION>17.0.4</BP_JVM_VERSION>
-                            <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
-<!--                            <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>-->
-<!--                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
-<!--                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-->
+                           <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
+                           <!-- <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
+                           <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>
+                           <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS> -->
                         </env>
                         <name>
                             registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
@@ -476,8 +506,8 @@
                         <host>unix:///run/podman/podman.sock</host>
                         <bindHostToBuilder>true</bindHostToBuilder>
                         <publishRegistry>
-                            <username>admin</username>
-                            <password>Elpsy4783</password>
+                            <username>robot$github_bot</username>
+                            <password>j66oKThoa2LjsC2apALotdN9Q11NV5UB</password>
                             <url>registry.elpsykongroo.com</url>
                         </publishRegistry>
                     </docker>
@@ -515,13 +545,21 @@
     </reporting>
     <dependencyManagement>
         <dependencies>
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.cloud</groupId>-->
-<!--                <artifactId>spring-cloud-dependencies</artifactId>-->
-<!--                <version>2021.0.3</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
+            <!-- https://mvnrepository.com/artifact/com.playtika.testcontainers/testcontainers-spring-boot-bom -->
+            <!-- <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>testcontainers-spring-boot-bom</artifactId>
+                <version>2.2.14</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency> -->
+            <!-- <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2022.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency> -->
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-tracing-bom</artifactId>
@@ -550,6 +588,13 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>1.17.6</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <repositories>
@@ -565,17 +610,6 @@
         </repository>
     </repositories>
     <pluginRepositories>
-        <pluginRepository>
-            <id>graalvm-native-build-tools-snapshots</id>
-            <name>GraalVM native-build-tools Snapshots</name>
-            <url>https://raw.githubusercontent.com/graalvm/native-build-tools/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
         <pluginRepository>
             <id>spring-release</id>
             <name>Spring release</name>

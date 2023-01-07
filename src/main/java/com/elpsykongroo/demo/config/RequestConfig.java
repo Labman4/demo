@@ -22,11 +22,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
-/**
- *
- * @author Labman4
- * 
- */
 @Component
 @ConfigurationProperties(prefix = "request")
 @Data

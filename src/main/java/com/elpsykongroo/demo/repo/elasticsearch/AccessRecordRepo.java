@@ -14,33 +14,19 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.repo;
-
+package com.elpsykongroo.demo.repo.elasticsearch;
 
 import java.util.List;
 
-import com.elpsykongroo.demo.document.IPManage;
-
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import com.elpsykongroo.demo.domain.AccessRecord;
 
-public interface IPRepo extends ElasticsearchRepository<IPManage, String> {
+public interface AccessRecordRepo extends ElasticsearchRepository<AccessRecord, String> {
 
-	List<IPManage> findByAddress(String address);
+	List<AccessRecord> findBySourceIP(String sourceip);
 
-	List<IPManage> findByIsBlackTrue();
+	List<AccessRecord> findByRequestHeaderContaining(String path);
 
-	List<IPManage> findByIsBlackFalse();
-
-	long countByAddressAndIsBlackTrue(String address);
-
-	long countByAddressAndIsBlackFalse(String address);
-
-	List<IPManage> findByAddressAndIsBlackTrue(String address);
-
-	List<IPManage> findByAddressAndIsBlackFalse(String address);
-
-	void deleteByAddressAndIsBlackTrue(String address);
-
-	void deleteByAddressAndIsBlackFalse(String address);
+	List<AccessRecord> findByUserAgentLike(String path);
 
 }
