@@ -29,16 +29,16 @@ import java.net.URI;
 public class VaultConfig extends AbstractVaultConfiguration  {
     @Override
     public ClientAuthentication clientAuthentication() {
-        return new TokenAuthentication(getEnvironment().getProperty("vault.token"));
+        return new TokenAuthentication(getEnvironment().getProperty("vaultToken"));
     }
     @Override
     public VaultEndpoint vaultEndpoint() {
         VaultEndpoint endpoint = new VaultEndpoint();
-        URI uri = URI.create(getEnvironment().getProperty("vault.uri"));
+        URI uri = URI.create(getEnvironment().getProperty("vaultUri"));
         endpoint.setHost(uri.getHost());
         endpoint.setPort(uri.getPort());
         endpoint.setScheme(uri.getScheme());
-        endpoint.setPath(getEnvironment().getProperty("vault.path"));
+        endpoint.setPath(getEnvironment().getProperty("vaultPath"));
         return endpoint;
     }
 }
