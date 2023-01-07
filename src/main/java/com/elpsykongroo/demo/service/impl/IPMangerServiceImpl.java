@@ -34,7 +34,7 @@ import com.elpsykongroo.demo.repo.elasticsearch.IPRepo;
 import com.elpsykongroo.demo.service.IPManagerService;
 import com.elpsykongroo.demo.utils.PathUtils;
 
-import io.lettuce.core.RedisException;
+import io.lettuce.core.RedisConnectionException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -270,7 +270,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 					}
 				}
 			log.info("flag:{}, black:{}", flag, isBlack);
-		} catch (UnknownHostException | RedisConnectionFailureException | RedisException e) {
+		} catch (UnknownHostException | RedisConnectionFailureException | RedisConnectionException e) {
 			throw new ServiceException(String.valueOf(HttpStatus.SERVICE_UNAVAILABLE.value()), e);
 		}
 		return flag;

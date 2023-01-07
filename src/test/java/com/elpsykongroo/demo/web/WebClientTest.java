@@ -13,22 +13,22 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
+import com.elpsykongroo.demo.config.ServiceConfig;
 import com.elpsykongroo.demo.repo.IPListRepo;
 import com.elpsykongroo.demo.repo.elasticsearch.AccessRecordRepo;
 import com.elpsykongroo.demo.repo.elasticsearch.IPRepo;
+import com.elpsykongroo.demo.testconfig.RedisConfig;
 
 
 
 @Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {RedisConfig.class})
 @ActiveProfiles("test")
-public class WebClientTest {   
+public class WebClientTest  {   
     @Autowired
     IPListRepo ipListRepo;
 
@@ -41,9 +41,12 @@ public class WebClientTest {
     @Autowired 
     WebTestClient webClient;
 
-    @Container
-    public static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7.0.7-alpine"))
-    .withExposedPorts(6379);
+    @Autowired
+    static ServiceConfig serviceConfig;
+
+    // @Container
+    // public static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7.0.7-alpine"))
+    // .withExposedPorts(6379);
 
     @Container
     static ElasticsearchContainer elastic = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.17.3")
@@ -105,20 +108,20 @@ public class WebClientTest {
     
     @BeforeAll
     static void setUp() throws Exception {
-         redis.start();
          elastic.start();
-         System.setProperty("spring.data.redis.host", redis.getHost());
-         System.setProperty("spring.data.redis.port", redis.getMappedPort(6379).toString());
+        //  System.setProperty("spring.data.redis.cluster.nodes", redis.getHost() + ":" + redis.getMappedPort(6379).toString());
+        //  System.setProperty("spring.data.redis.port", redis.getMappedPort(6379).toString());
       //    System.setProperty("spring.data.redis.password", "123456");
     }
     
     @DynamicPropertySource
     static void overrideTestProperties(DynamicPropertyRegistry registry) {
         registry.add("service..es.nodes", elastic::getHttpHostAddress);
+        // registry.add("service..es.ssl.type", serviceConfig.getEs().getSsl()::getType);
+
     }
     @AfterAll
     static void destroy() {
-         redis.stop();
          elastic.stop();
     }
 }
