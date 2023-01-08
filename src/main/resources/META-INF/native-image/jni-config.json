@@ -1,19 +1,5 @@
 [
 {
-  "name":"[Lcom.sun.management.internal.DiagnosticCommandArgumentInfo;"
-},
-{
-  "name":"[Lcom.sun.management.internal.DiagnosticCommandInfo;"
-},
-{
-  "name":"com.sun.management.internal.DiagnosticCommandArgumentInfo",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","boolean","boolean","boolean","int"] }]
-},
-{
-  "name":"com.sun.management.internal.DiagnosticCommandInfo",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","boolean","java.util.List"] }]
-},
-{
   "name":"io.netty.channel.ChannelException"
 },
 {
@@ -116,10 +102,6 @@
 {
   "name":"java.nio.channels.ClosedChannelException",
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"java.util.Arrays",
-  "methods":[{"name":"asList","parameterTypes":["java.lang.Object[]"] }]
 },
 {
   "name":"sun.management.VMManagementImpl",
