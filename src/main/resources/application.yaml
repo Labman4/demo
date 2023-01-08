@@ -7,7 +7,7 @@ server:
 spring:
   profiles:
     active:
-      - ${ENV:dev}
+      - ${ENV:prod}
   application:
     name: demo
   security:
@@ -66,8 +66,6 @@ spring:
     activate:
       on-profile:
         - prod
-#    import:
-#      - application-prod.yaml
 server:
   ssl:
     enabled: ${SSL:false}

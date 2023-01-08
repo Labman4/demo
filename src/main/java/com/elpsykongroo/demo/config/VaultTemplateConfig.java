@@ -18,18 +18,24 @@ package com.elpsykongroo.demo.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.vault.authentication.ClientAuthentication;
+import org.springframework.vault.authentication.KubernetesAuthentication;
+import org.springframework.vault.authentication.KubernetesAuthenticationOptions;
 import org.springframework.vault.authentication.TokenAuthentication;
 import org.springframework.vault.client.VaultEndpoint;
-import org.springframework.context.annotation.Profile;
 import org.springframework.vault.config.AbstractVaultConfiguration;
 import java.net.URI;
 
-@Configuration(proxyBeanMethods = false)
-@Profile({ "dev", "prod" })
-public class VaultConfig extends AbstractVaultConfiguration  {
+@Configuration
+public class VaultTemplateConfig extends AbstractVaultConfiguration  {
     @Override
     public ClientAuthentication clientAuthentication() {
-        return new TokenAuthentication(getEnvironment().getProperty("vaultToken"));
+        if ("prod".equals(getEnvironment().getProperty("vaultUri"))) {
+        KubernetesAuthenticationOptions options = KubernetesAuthenticationOptions.builder()
+                .role(getEnvironment().getProperty("vaultRole")).build();
+            return  new KubernetesAuthentication(options, restOperations());
+        } else {
+            return new TokenAuthentication(getEnvironment().getProperty("vaultToken"));
+        }
     }
     @Override
     public VaultEndpoint vaultEndpoint() {
