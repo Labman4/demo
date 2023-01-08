@@ -16,11 +16,12 @@
 
 package com.elpsykongroo.demo.config;
 
+import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.vault.annotation.VaultPropertySource;
 
-@Configuration(proxyBeanMethods = false)
-// @VaultPropertySource(value = "${SECRETS_PATH:cubbyhole/secret/demo}/${ENV:dev}", propertyNamePrefix = "service.")
-@VaultPropertySource("${SECRETS_PATH:cubbyhole/secret/demo}/${ENV:dev}")
+@Configuration
+@ConditionalOnEnabledTracing
+@VaultPropertySource(value = "${SECRETS_PATH:cubbyhole/secret/demo}/${ENV:dev}")
 public class SecretsConfig {
 }
