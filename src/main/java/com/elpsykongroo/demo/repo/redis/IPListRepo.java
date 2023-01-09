@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.repo;
+package com.elpsykongroo.demo.repo.redis;
 
 import org.springframework.data.repository.CrudRepository;
 

@@ -29,12 +29,11 @@ import com.elpsykongroo.demo.config.RequestConfig;
 import com.elpsykongroo.demo.config.RequestConfig.Header;
 import com.elpsykongroo.demo.domain.IPList;
 import com.elpsykongroo.demo.domain.IPManage;
-import com.elpsykongroo.demo.repo.IPListRepo;
+import com.elpsykongroo.demo.repo.redis.IPListRepo;
 import com.elpsykongroo.demo.repo.elasticsearch.IPRepo;
 import com.elpsykongroo.demo.service.IPManagerService;
 import com.elpsykongroo.demo.utils.PathUtils;
 
-import io.lettuce.core.RedisConnectionException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -270,7 +269,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 					}
 				}
 			log.info("flag:{}, black:{}", flag, isBlack);
-		} catch (UnknownHostException | RedisConnectionFailureException | RedisConnectionException e) {
+		} catch (UnknownHostException | RedisConnectionFailureException e) {
 			throw new ServiceException(String.valueOf(HttpStatus.SERVICE_UNAVAILABLE.value()), e);
 		}
 		return flag;
