@@ -1457,10 +1457,14 @@
   "name":"com.google.common.base.Optional"
 },
 {
-  "name":"com.google.gson$Gson"
+  "name":"com.google.gson.Gson",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
 },
 {
-  "name":"com.google.gson.Gson"
+  "name":"com.google.gson.GsonBuilder",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"com.google.protobuf$Message"
@@ -3521,9 +3525,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"org.apache.commons.pool2$ObjectPool"
-},
-{
   "name":"org.apache.commons.pool2.ObjectPool"
 },
 {
@@ -5077,6 +5078,37 @@
   "name":"org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration$StandardGsonBuilderCustomizer",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[
+    {"name":"customize","parameterTypes":["com.google.gson.GsonBuilder"] }, 
+    {"name":"getOrder","parameterTypes":[] }
+  ]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.gson.GsonBuilderCustomizer",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"org.springframework.boot.autoconfigure.gson.GsonProperties",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.autoconfigure.http.GsonHttpMessageConvertersConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.boot.autoconfigure.http.HttpMessageConverters",
@@ -7259,6 +7291,10 @@
   "queryAllPublicMethods":true
 },
 {
+  "name":"org.springframework.data.keyvalue.repository.config.QueryCreatorType",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"org.springframework.data.keyvalue.repository.query.KeyValuePartTreeQuery",
   "methods":[{"name":"<init>","parameterTypes":["org.springframework.data.repository.query.QueryMethod","org.springframework.data.repository.query.QueryMethodEvaluationContextProvider","org.springframework.data.keyvalue.core.KeyValueOperations","java.lang.Class"] }]
 },
@@ -7708,6 +7744,10 @@
     {"name":"<init>","parameterTypes":["org.springframework.data.redis.core.convert.MappingConfiguration"] }, 
     {"name":"setFallbackKeySpaceResolver","parameterTypes":["org.springframework.data.keyvalue.core.mapping.KeySpaceResolver"] }
   ]
+},
+{
+  "name":"org.springframework.data.redis.repository.configuration.EnableRedisRepositories",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.data.redis.repository.query.RedisQueryCreator",
