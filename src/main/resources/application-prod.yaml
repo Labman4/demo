@@ -19,6 +19,7 @@ spring:
   data:
     redis:
       client-type: ${REDIS_TYPE:LETTUCE}
+      password: ${REDIS_PASS:pass}
       cluster:
         nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
@@ -82,6 +83,8 @@ service:
     key:  ${TLS_KEY:tls.key}
   es:
     nodes: ${ES_URL:elasticsearch-master:9200}
+    user: ${ES_USER:user}
+    pass: ${ES_PASS:pass}
     ssl:
       type: self
       ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
