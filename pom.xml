@@ -418,7 +418,9 @@
                                 <buildpacks></buildpacks>
                                 <env>
                                     <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
-                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                   	
+                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+                                    <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
+                                    <BPE_APPEND_JAVA_TOOL_OPTIONS>--add-reads=jdk.jfr=ALL-UNNAMED</BPE_APPEND_JAVA_TOOL_OPTIONS>               	
                                 </env>
                                 <name>
                                     registry.elpsykongroo.com/library/${project.artifactId}:${project.version}-native
