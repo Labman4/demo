@@ -12,8 +12,7 @@ on:
 jobs:
   native:
     uses: Labman4/workflow/.github/workflows/native-image.yml@native-image
-    secrets:
-      inherit
+    secrets: inherit
  
 
     
