@@ -84,7 +84,7 @@ service:
   es:
     nodes: ${ES_URL:elasticsearch-master:9200}
     user: ${ES_USER:user}
-    pass: ${ES_PASS:pass}
+    pass: ${ES_PASS:elpsykongroo}
     ssl:
       type: self
       ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
