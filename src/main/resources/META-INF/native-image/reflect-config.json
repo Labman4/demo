@@ -618,17 +618,17 @@
   "methods":[{"name":"doFilter","parameterTypes":["jakarta.servlet.ServletRequest","jakarta.servlet.ServletResponse","jakarta.servlet.FilterChain"] }]
 },
 {
-  "name":"com.elpsykongroo.demo.repo.IPListRepo",
-  "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
-},
-{
   "name":"com.elpsykongroo.demo.repo.elasticsearch.AccessRecordRepo",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
 },
 {
   "name":"com.elpsykongroo.demo.repo.elasticsearch.IPRepo",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"com.elpsykongroo.demo.repo.redis.IPListRepo",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
 },
