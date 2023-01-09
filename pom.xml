@@ -107,11 +107,11 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>io.lettuce</groupId>-->
-<!--            <artifactId>lettuce-core</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
+       <dependency>
+           <groupId>io.lettuce</groupId>
+           <artifactId>lettuce-core</artifactId>
+       </dependency>
+       <!-- <dependency> -->
 <!--            <groupId>redis.clients</groupId>-->
 <!--            <artifactId>jedis</artifactId>-->
 <!--        </dependency>-->
@@ -340,6 +340,11 @@
             <artifactId>embedded-elasticsearch</artifactId>
             <scope>test</scope>
         </dependency> -->
+       <!-- <dependency>
+           <groupId>org.springframework</groupId>
+           <artifactId>spring-core-test</artifactId>
+           <version>6.0.3</version>
+       </dependency> -->
 
     </dependencies>
     <profiles>
