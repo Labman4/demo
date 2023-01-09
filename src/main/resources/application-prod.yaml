@@ -20,8 +20,8 @@ spring:
     redis:
       client-type: ${REDIS_TYPE:JEDIS}
       password: ${REDIS_PASS:pass}
-      cluster:
-        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
+      # cluster:
+      #   nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
         pool:
           enabled: false
