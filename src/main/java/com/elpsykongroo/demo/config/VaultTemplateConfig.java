@@ -29,13 +29,15 @@ import java.net.URI;
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
     @Override
     public ClientAuthentication clientAuthentication() {
-        if ("prod".equals(getEnvironment().getProperty("vaultUri"))) {
-        KubernetesAuthenticationOptions options = KubernetesAuthenticationOptions.builder()
-                .role(getEnvironment().getProperty("vaultRole")).build();
-            return  new KubernetesAuthentication(options, restOperations());
-        } else {
-            return new TokenAuthentication(getEnvironment().getProperty("vaultToken"));
-        }
+        // if ("prod".equals(getEnvironment().getProperty("vaultUri"))) {
+        // KubernetesAuthenticationOptions options = KubernetesAuthenticationOptions.builder()
+        //         .role(getEnvironment().getProperty("vaultRole")).build();
+        //     return  new KubernetesAuthentication(options, restOperations());
+        // } else {
+        //     return new TokenAuthentication(getEnvironment().getProperty("vaultToken"));
+        // }
+        return new TokenAuthentication(getEnvironment().getProperty("vaultToken"));
+
     }
     @Override
     public VaultEndpoint vaultEndpoint() {
