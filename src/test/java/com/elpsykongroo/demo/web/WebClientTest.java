@@ -18,7 +18,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.elpsykongroo.demo.config.ServiceConfig;
-import com.elpsykongroo.demo.repo.IPListRepo;
+import com.elpsykongroo.demo.repo.redis.IPListRepo;
 import com.elpsykongroo.demo.repo.elasticsearch.AccessRecordRepo;
 import com.elpsykongroo.demo.repo.elasticsearch.IPRepo;
 import com.elpsykongroo.demo.testconfig.RedisConfig;
