@@ -102,19 +102,25 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+<!--                <exclusions>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>io.lettuce</groupId>-->
+<!--                        <artifactId>lettuce-core</artifactId>-->
+<!--                    </exclusion>-->
+<!--                </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
-       <dependency>
+       <!-- <dependency>
            <groupId>io.lettuce</groupId>
            <artifactId>lettuce-core</artifactId>
+       </dependency> -->
+       <dependency>
+           <groupId>redis.clients</groupId>
+           <artifactId>jedis</artifactId>
        </dependency>
-       <!-- <dependency> -->
-<!--            <groupId>redis.clients</groupId>-->
-<!--            <artifactId>jedis</artifactId>-->
-<!--        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc -->
 <!--        <dependency>-->
@@ -418,9 +424,7 @@
                                 <buildpacks></buildpacks>
                                 <env>
                                     <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
-                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-                                    <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
-                                    <BPE_APPEND_JAVA_TOOL_OPTIONS>--add-reads=jdk.jfr=ALL-UNNAMED</BPE_APPEND_JAVA_TOOL_OPTIONS>               	
+                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
                                 </env>
                                 <name>
                                     registry.elpsykongroo.com/library/${project.artifactId}:${project.version}-native
@@ -508,13 +512,13 @@
                 <configuration>
                     <mainClass>${start-class}</mainClass>
                     <jvmArguments>
-                        -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/
+<!--                        -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/-->
                     </jvmArguments>
                     <image>
                         <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
                         <env>
                             <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
-                            <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+                            <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
                             <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                                 --initialize-at-build-time=ch.qos.logback.classic.Logger
                             </BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
@@ -542,20 +546,20 @@
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-reachability-metadata</id>
-                        <goals>
-                            <goal>add-reachability-metadata</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <skipNativeTests>true</skipNativeTests>
-                    <metadataRepository>
-                        <enabled>true</enabled>
-                    </metadataRepository>
-                </configuration>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>add-reachability-metadata</id>-->
+<!--                        <goals>-->
+<!--                            <goal>add-reachability-metadata</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <skipNativeTests>true</skipNativeTests>-->
+<!--                    <metadataRepository>-->
+<!--                        <enabled>true</enabled>-->
+<!--                    </metadataRepository>-->
+<!--                </configuration>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

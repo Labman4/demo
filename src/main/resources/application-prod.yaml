@@ -18,7 +18,7 @@ spring:
     url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
   data:
     redis:
-      client-type: ${REDIS_TYPE:LETTUCE}
+      client-type: ${REDIS_TYPE:JEDIS}
       password: ${REDIS_PASS:pass}
       cluster:
         nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
@@ -32,7 +32,7 @@ spring:
           timeBetweenEvictionRuns: 100000
       jedis:
         pool:
-          enabled: true
+          enabled: false
           maxIdle: 5
           minIdle: 1
           maxActive: 5
@@ -81,6 +81,10 @@ service:
     ca:  ${CA_CRT:ca.crt}
     cert:  ${TLS_CERT:tls.crt}
     key:  ${TLS_KEY:tls.key}
+  redis:
+    host: ${REDIS_NODE:redis-cluster.redis.svc}
+    port: ${REDIS_PORT:6379}
+    pass: ${REDIS_PASS:pass}
   es:
     nodes: ${ES_URL:elasticsearch-master:9200}
     user: ${ES_USER:user}

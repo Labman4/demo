@@ -26,6 +26,8 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "service")
 public class ServiceConfig {
 
+    private Redis redis;
+
     private  ES es ;
 
     //public ca
@@ -65,5 +67,15 @@ public class ServiceConfig {
         private String connect;
 
         private String socket;
+    }
+
+    @Data
+    public static class Redis {
+
+        private String host;
+
+        private String port;
+
+        private String pass;
     }
 }
