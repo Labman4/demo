@@ -15,18 +15,6 @@
     "interfaces":["io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands"]
   },
   {
-    "interfaces":["java.lang.reflect.GenericArrayType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
-  },
-  {
-    "interfaces":["java.lang.reflect.ParameterizedType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
-  },
-  {
-    "interfaces":["java.lang.reflect.TypeVariable","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
-  },
-  {
-    "interfaces":["java.lang.reflect.WildcardType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
-  },
-  {
     "interfaces":["org.springframework.boot.actuate.endpoint.annotation.EndpointExtension"]
   },
   {
@@ -42,13 +30,7 @@
     "interfaces":["org.springframework.data.redis.connection.RedisClusterConnection","org.springframework.data.redis.connection.DefaultedRedisClusterConnection","org.springframework.data.redis.connection.RedisConnection"]
   },
   {
-    "interfaces":["org.springframework.data.redis.connection.RedisConnection"]
-  },
-  {
     "interfaces":["org.springframework.data.redis.core.RedisHash"]
-  },
-  {
-    "interfaces":["org.springframework.stereotype.Component"]
   },
   {
     "interfaces":["org.springframework.test.context.ActiveProfiles"]
