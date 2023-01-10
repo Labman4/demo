@@ -50,7 +50,7 @@ public class AccessRecordContronller {
 	}
 
 	@PostMapping("/filter")
-	public String filterUserAgent(@RequestParam("path") String path) {
-		return JsonUtils.toJson(accessRecordService.filterUserAgent(path));
+	public String filter(@RequestParam("param") String param, @RequestParam("type") String type) {
+		return JsonUtils.toJson(accessRecordService.filterByParams(param, type));
 	}
 }

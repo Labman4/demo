@@ -126,10 +126,16 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 
 	@Override
-	public CommonResponse<List<AccessRecord>> filterUserAgent(String path) {
+	public CommonResponse<List<AccessRecord>> filterByParams(String params, String type) {
 		List<AccessRecord> accessRecords = null;
 		try {
-			accessRecords = accessRecordRepo.findByUserAgentLike(path);
+			if ("agent".equals(type)) {
+				accessRecords = accessRecordRepo.findByUserAgentLike(params);
+			} else if ("path".equals(type)){
+				accessRecords = accessRecordRepo.findByAccessPath(params);
+			} else if ("source".equals(type)){
+				accessRecords = accessRecordRepo.findBySourceIP(params);
+			}
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}

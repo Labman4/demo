@@ -31,7 +31,7 @@ public interface AccessRecordService {
 
 	CommonResponse<List<AccessRecord>> findAll(String pageNumber, String pageSize, String sort);
 
-	CommonResponse<List<AccessRecord>> filterUserAgent(String path);
+	CommonResponse<List<AccessRecord>> filterByParams(String params, String type);
 
 	CommonResponse<Integer> deleteRecord(String sourceIP, String ids);
 

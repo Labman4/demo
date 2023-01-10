@@ -18,6 +18,9 @@ spring:
     url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
   data:
     redis:
+#      host: redis.elpsykongroo.com
+#      port: 6379
+#      ssl: true
       ssl: false
       client-type: ${REDIS_TYPE:LETTUCE}
       # cluster:
@@ -32,7 +35,7 @@ spring:
           timeBetweenEvictionRuns: 100000
       jedis:
         pool:
-          enabled: true
+          enabled: false
           maxIdle: 5
           minIdle: 1
           maxActive: 5
@@ -81,6 +84,10 @@ service:
     ca:  ${CA_CRT}
     cert:  ${TLS_CERT}
     key:  ${TLS_KEY}
+  redis:
+    host: ${REDIS_NODE:127.0.0.1}
+    port: ${REDIS_PORT:17000}
+    # pass: ${REDIS_PASS:pass}
   es:
     nodes: ${ES_URL:elasticsearch.elpsykongroo.com:443}
     ssl:

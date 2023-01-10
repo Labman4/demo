@@ -99,12 +99,6 @@ service:
     cert:  ${TLS_CERT}
     key:  ${TLS_KEY}
   es:
-    # nodes: elasticsearch.elpsykongroo.com:443
-    # user: elastic
-    # pass: Elpsy4783
-    # ssl:
-    #   type: public
-    # nodes: 127.0.0.1:9200
     user: elastic
     pass: 123456
     ssl:

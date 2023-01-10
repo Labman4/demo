@@ -25,7 +25,7 @@ public interface AccessRecordRepo extends ElasticsearchRepository<AccessRecord, 
 
 	List<AccessRecord> findBySourceIP(String sourceip);
 
-	List<AccessRecord> findByRequestHeaderContaining(String path);
+	List<AccessRecord> findByAccessPath(String path);
 
 	List<AccessRecord> findByUserAgentLike(String path);
 
