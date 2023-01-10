@@ -18,11 +18,8 @@ spring:
     url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
   data:
     redis:
-#      host: redis.elpsykongroo.com
-#      port: 6379
-#      ssl: true
       ssl: false
-      client-type: ${REDIS_TYPE:LETTUCE}
+      client-type: ${REDIS_TYPE:JEDIS}
       # cluster:
       #   nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
@@ -80,14 +77,15 @@ request:
     white: ${WHITE_HEADER:x-forward-for}
 
 service:
+  vault: true
   ssl:
     ca:  ${CA_CRT}
     cert:  ${TLS_CERT}
     key:  ${TLS_KEY}
   redis:
-    host: ${REDIS_NODE:127.0.0.1}
-    port: ${REDIS_PORT:17000}
-    # pass: ${REDIS_PASS:pass}
+    host: redis.elpsykongroo.com
+    port: 6379
+    type: single
   es:
     nodes: ${ES_URL:elasticsearch.elpsykongroo.com:443}
     ssl:

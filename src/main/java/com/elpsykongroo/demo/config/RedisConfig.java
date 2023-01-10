@@ -20,6 +20,7 @@
  import org.springframework.context.annotation.Bean;
  import org.springframework.context.annotation.Configuration;
  import org.springframework.data.redis.connection.RedisClusterConfiguration;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
  import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
@@ -32,10 +33,16 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
  	@Bean
  	public JedisConnectionFactory redisConnectionFactory() {
          ServiceConfig.Redis redis = serviceConfig.getRedis();
-         RedisClusterConfiguration config = new RedisClusterConfiguration();
-         config.clusterNode(redis.getHost(), Integer.parseInt(redis.getPort()));
-         config.setPassword(redis.getPass());
- 		return new JedisConnectionFactory(config);
+         if ("single".equals(redis.getType())) {
+            RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redis.getHost(), Integer.parseInt(redis.getPort()));
+            config.setPassword(redis.getPass());
+            return new JedisConnectionFactory(config);
+         } else {
+            RedisClusterConfiguration config = new RedisClusterConfiguration();
+            config.clusterNode(redis.getHost(), Integer.parseInt(redis.getPort()));
+            config.setPassword(redis.getPass());
+            return new JedisConnectionFactory(config);
+         }
  	}
 
  //	@Bean

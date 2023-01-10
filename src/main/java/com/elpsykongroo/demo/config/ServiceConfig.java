@@ -28,6 +28,8 @@ public class ServiceConfig {
 
     private Redis redis;
 
+    private String vault;
+
     private  ES es ;
 
     //public ca
@@ -71,6 +73,7 @@ public class ServiceConfig {
 
     @Data
     public static class Redis {
+        private String type;
 
         private String host;
 

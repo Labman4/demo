@@ -198,7 +198,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 			cache.add(ad.getAddress());
 		}
 		ipList.setIpList(cache);
-		ipListRepo.save(ipList);
+		try {
+			ipListRepo.save(ipList);
+		} catch (Exception e) {
+			log.error("redis excepetion:{}", e);
+		}
 	}
 
 	@Override
@@ -229,9 +233,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack){
-		boolean flag;
+		boolean flag = false;
 		try {
-			flag = false;
 				Object list = null;
 				flag = false;
 				String ip = "";
@@ -269,9 +272,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 					}
 				}
 			log.info("flag:{}, black:{}", flag, isBlack);
-		} catch (UnknownHostException | RedisConnectionFailureException e) {
+		} catch (UnknownHostException e) {
 			throw new ServiceException(String.valueOf(HttpStatus.SERVICE_UNAVAILABLE.value()), e);
-		}
+		} catch (RedisConnectionFailureException e) {
+			log.error("redis error:{}", e);
+		}  
 		return flag;
-	}
+    }
 }

@@ -50,7 +50,9 @@ public class AccessRecordContronller {
 	}
 
 	@PostMapping("/filter")
-	public String filter(@RequestParam("param") String param, @RequestParam("type") String type) {
-		return JsonUtils.toJson(accessRecordService.filterByParams(param, type));
+	public String filter( @RequestParam("param") String params,
+						  @RequestParam("pageNumber") String pageNumber,
+						  @RequestParam("pageSize") String pageSize) {
+		return JsonUtils.toJson(accessRecordService.filterByParams(params, pageNumber, pageSize));
 	}
 }
