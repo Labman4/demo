@@ -17,7 +17,6 @@
 package com.elpsykongroo.demo.filter;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +37,7 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.Refill;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component("ThrottlingFilter")
+@Slf4j
 public class ThrottlingFilter implements Filter {
 	private String errorMsg;
 	private boolean limitFlag = false;
@@ -86,11 +87,12 @@ public class ThrottlingFilter implements Filter {
 			limitFlag = limitByBucket("global", httpResponse, session);
 			accessRecordService.saveAcessRecord(httpRequest);
 			String filtertPath = requestConfig.getPath().getFilter();
-			String excludePath = requestConfig.getPath().getFilter();
+			String excludePath = requestConfig.getPath().getExclude().getAll();
 			if (limitFlag) {
 				if (StringUtils.isNotEmpty(filtertPath)
 						&& PathUtils.beginWithPath(filtertPath, requestUri)
 						&& !PathUtils.beginWithPath(excludePath, requestUri)) {
+					log.info("start filter:{}", requestUri);
 					filterPath(httpRequest, httpResponse, session, requestUri);
 				}
 			}
@@ -103,13 +105,13 @@ public class ThrottlingFilter implements Filter {
 		}
 	}
 
-	private void filterPath(HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri) throws UnknownHostException {
+	private void filterPath(HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri){
 		if (limitByBucket("", httpResponse, session)) {
 			blackOrWhite(httpRequest, httpResponse, requestUri);
 		}
 	}
 
-	private void blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri) throws UnknownHostException {
+	private void blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri){
 		if (!ipMangerService.blackOrWhiteList(httpRequest, "true")) {
 			blackFlag = false;
 			publicFlag = isPublic(requestUri, httpRequest, httpResponse);
@@ -160,7 +162,7 @@ public class ThrottlingFilter implements Filter {
 		}
 	}
 
-	private boolean isPublic(String requestUri, ServletRequest request, HttpServletResponse servletResponse) throws UnknownHostException {
+	private boolean isPublic(String requestUri, ServletRequest request, HttpServletResponse servletResponse) {
 		if (!PathUtils.beginWithPath(requestConfig.getPath().getNonPrivate(), requestUri)) {
 			if (!ipMangerService.blackOrWhiteList((HttpServletRequest) request, "false")) {
 				servletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());

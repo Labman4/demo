@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.document;
+package com.elpsykongroo.demo.exception;
 
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-
-@Document(indexName = "ip_black")
-@Data
 @NoArgsConstructor
-public class IPManage {
-	private @Id String id;
-	private String address;
+public class ServiceException extends RuntimeException {
+	private static final long serialVersionUID = 5639223247225972389L;
 
-	private boolean isBlack;
-
-	public IPManage(String addres) {
-		this.address = addres;
-		this.isBlack = true;
+	public ServiceException(Throwable cause) {
+		super(cause);
 	}
 
-	public IPManage(String addres, boolean black) {
-		this.address = addres;
-		this.isBlack = black;
+	public ServiceException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public ServiceException(String message) {
+		super(message);
 	}
 }

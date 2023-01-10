@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.repo;
+package com.elpsykongroo.demo.repo.elasticsearch;
 
 
 import java.util.List;
 
-import com.elpsykongroo.demo.document.IPManage;
-
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Service;
 
+import com.elpsykongroo.demo.domain.IPManage;
+
+@Service
 public interface IPRepo extends ElasticsearchRepository<IPManage, String> {
 
 	List<IPManage> findByAddress(String address);

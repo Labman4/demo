@@ -16,14 +16,13 @@
 
 package com.elpsykongroo.demo.service;
 
-
-import java.net.UnknownHostException;
 import java.util.List;
 
+import com.elpsykongroo.demo.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
-import com.elpsykongroo.demo.document.IPManage;
+import com.elpsykongroo.demo.domain.IPManage;
 
 import org.springframework.stereotype.Service;
 
@@ -31,14 +30,14 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IPManagerService {
 
-	CommonResponse<List<String>> add(String address, String isBlack);
+	CommonResponse<List<String>> add(String address, String isBlack) throws ServiceException;
 
 	CommonResponse<List<IPManage>> list(String isBlack, String pageNumber, String pageSize);
 
-	CommonResponse<String> patch(String addresses, String isBlack, String ids) throws UnknownHostException;
+	CommonResponse<String> patch(String addresses, String isBlack, String ids) throws ServiceException;
 
 	String accessIP(HttpServletRequest request, String type);
 
-	Boolean blackOrWhiteList(HttpServletRequest request, String isBlack) throws UnknownHostException;
+	Boolean blackOrWhiteList(HttpServletRequest request, String isBlack) throws ServiceException;
 
 }

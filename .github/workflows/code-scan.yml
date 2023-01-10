@@ -1,0 +1,23 @@
+name: Code scan
+on:
+  push:
+    branches:
+    - develop
+    
+  pull_request:
+    branches:
+    - main
+    - develop
+    
+jobs:
+  codescan:
+    uses: Labman4/workflow/.github/workflows/codescan-java.yml@codescan-java
+
+
+    
+          
+    
+          
+
+    
+  

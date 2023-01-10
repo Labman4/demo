@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.repo;
+package com.elpsykongroo.demo.repo.elasticsearch;
 
 import java.util.List;
 
-import com.elpsykongroo.demo.document.AccessRecord;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-
+import com.elpsykongroo.demo.domain.AccessRecord;
 
 public interface AccessRecordRepo extends ElasticsearchRepository<AccessRecord, String> {
-
+	Page<AccessRecord> findAll(Pageable pageable);
 
 	List<AccessRecord> findBySourceIP(String sourceip);
 
-	List<AccessRecord> findByRequestHeaderContaining(String path);
+	List<AccessRecord> findByAccessPath(String path);
 
-	List<AccessRecord> findByUserAgentLike(String path);
+	List<AccessRecord> findByUserAgentLike(String agent);
+
+	List<AccessRecord> findByRequestHeaderLike(String header);
+
 
 }

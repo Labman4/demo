@@ -50,7 +50,9 @@ public class AccessRecordContronller {
 	}
 
 	@PostMapping("/filter")
-	public String filterUserAgent(@RequestParam("path") String path) {
-		return JsonUtils.toJson(accessRecordService.filterUserAgent(path));
+	public String filter( @RequestParam("param") String params,
+						  @RequestParam("pageNumber") String pageNumber,
+						  @RequestParam("pageSize") String pageSize) {
+		return JsonUtils.toJson(accessRecordService.filterByParams(params, pageNumber, pageSize));
 	}
 }

@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.exception;
+package com.elpsykongroo.demo.config;
 
-import lombok.NoArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.vault.annotation.VaultPropertySource;
 
-@NoArgsConstructor
-public class ElasticException extends RuntimeException {
-	private static final long serialVersionUID = 5639223247225972389L;
-
-	public ElasticException(Throwable cause) {
-		super(cause);
-	}
-
-	public ElasticException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public ElasticException(String message) {
-		super(message);
-	}
+@Configuration
+@ConditionalOnProperty(
+    prefix = "service",
+    name = "vault",
+    havingValue = "true",
+    matchIfMissing = false)
+@VaultPropertySource(value = "${SECRETS_PATH:cubbyhole/secret/demo}/${ENV:dev}")
+public class SecretsConfig {
 }

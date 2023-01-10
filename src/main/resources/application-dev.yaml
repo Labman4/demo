@@ -16,14 +16,12 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
-    username: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:elpsy4783}
   data:
     redis:
-      client-type: ${REDIS_TYPE:LETTUCE}
-      password: ${REDIS_PASSWORD:elpsy4783}
-      cluster:
-        nodes: ${REDIS_NODE:redis:6379}
+      ssl: false
+      client-type: ${REDIS_TYPE:JEDIS}
+      # cluster:
+      #   nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
         pool:
           enabled: false
@@ -34,14 +32,14 @@ spring:
           timeBetweenEvictionRuns: 100000
       jedis:
         pool:
-          enabled: true
+          enabled: false
           maxIdle: 5
           minIdle: 1
           maxActive: 5
           maxWait: 5
           timeBetweenEvictionRuns: 100000
 
-    elasticsearch:
+    elasticsearch:        
       repositories:
         enabled: true
   kafka:
@@ -50,26 +48,21 @@ spring:
       protocol: ssl
     ssl:
       trust-store-location: ${JKS:jks}
-      trust-store-password: ${JKS_PASS:elpsy4783}
+      trust-store-password: ${JKS_PASS:pass}
     consumer:
       #      security:
       #        protocol: ssl
       auto-offset-reset: earliest
-  elasticsearch:
-    uris:
-      - ${ES_URL:192.168.1.106:9200}
-    username: ${ES_USER:elastic}
-    password: ${ES_PASS:Elpsy4783}
 request:
   limit:
     global:
-      tokens: ${GLOBAL_REQUEST_LIMIT}
-      duration: ${GLOBAL_REQUEST_DURATION}
-      speed: ${GLOBAL_REQUEST_DURATION_SPEED}
+      tokens: ${GLOBAL_REQUEST_LIMIT:1000}
+      duration: ${GLOBAL_REQUEST_DURATION:1}
+      speed: ${GLOBAL_REQUEST_DURATION_SPEED:100}
     scope:
-      tokens: ${REQUEST_LIMIT}
-      duration: ${REQUEST_DURATION}
-      speed: ${REQUEST_DURATION_SPEED}
+      tokens: ${REQUEST_LIMIT:100}
+      duration: ${REQUEST_DURATION:1}
+      speed: ${REQUEST_DURATION_SPEED:10}
   path:
     permit: ${PERMIT_PATH:/**}
     nonPrivate: ${PUBLIC_PATH:/}
@@ -83,4 +76,24 @@ request:
     black: ${BLACK_HEADER:x-forward-for}
     white: ${WHITE_HEADER:x-forward-for}
 
-    
+service:
+  vault: true
+  ssl:
+    ca:  ${CA_CRT}
+    cert:  ${TLS_CERT}
+    key:  ${TLS_KEY}
+  redis:
+    host: redis.elpsykongroo.com
+    port: 6379
+    type: single
+  es:
+    nodes: ${ES_URL:elasticsearch.elpsykongroo.com:443}
+    ssl:
+      type: public
+      ca: ${ES_CA_CRT:ca.crt}
+      cert: ${ES_TLS_CERT:tls.crt}
+      key: ${ES_TLS_KEY:tls.key}
+    timeout:
+      connect: ${ES_CONNECT_TIME:10}
+      socket: ${ES_SOCKET_TIME:10}
+ 

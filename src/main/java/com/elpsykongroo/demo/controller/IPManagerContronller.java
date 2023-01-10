@@ -16,10 +16,8 @@
 
 package com.elpsykongroo.demo.controller;
 
-
-import java.net.UnknownHostException;
-
 import com.elpsykongroo.demo.common.CommonResponse;
+import com.elpsykongroo.demo.exception.ServiceException;
 import com.elpsykongroo.demo.service.IPManagerService;
 import com.elpsykongroo.demo.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +43,13 @@ public class IPManagerContronller {
 	@PutMapping("/manage/add")
 	public String addBlacklist(@RequestParam("address") String address, @RequestParam("black") String isBlack) {
 		log.info("add sourceIP:{}, black:{}", address, isBlack);
-		return JsonUtils.toJson(ipManagerService.add(address, isBlack));
+			try {
+				return JsonUtils.toJson(ipManagerService.add(address, isBlack));
+			}
+			catch (Exception e) {
+				return JsonUtils.toJson(CommonResponse.error
+						(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+		}
 	}
 	@GetMapping("/manage/list")
 	public String blacklist(@RequestParam("black") String isBlack, @RequestParam("pageNumber") String pageNumber, @RequestParam("pageSize") String pageSize) {
@@ -56,11 +60,10 @@ public class IPManagerContronller {
 	@PatchMapping("/manage/patch")
 	public String updateBlacklist(@RequestParam("address") String addresses, @RequestParam("black") String isBlack, @RequestParam("id") String ids) {
 		try {
-			ipManagerService.patch(addresses, isBlack, ids);
+		  return JsonUtils.toJson(ipManagerService.patch(addresses, isBlack, ids));
 		}
-		catch (UnknownHostException e) {
-			return JsonUtils.toJson(CommonResponse.error(HttpStatus.BAD_REQUEST.value(), "unknown host"));
+		catch (ServiceException e) {
+			return JsonUtils.toJson(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
 		}
-		return JsonUtils.toJson(CommonResponse.success("done"));
 	}
 }

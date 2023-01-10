@@ -10,8 +10,7 @@
       "name":"org.apache.http.impl.auth.RFC2617Scheme"
     },
     {
-      "condition":{"typeReachable":"org.springframework.data.redis.cache.RedisCacheManager"},
-      "name":"org.springframework.cache.support.NullValue"
+      "name":"org.junit.platform.launcher.TestIdentifier$SerializedForm"
     }
   ],
   "lambdaCapturingTypes":[

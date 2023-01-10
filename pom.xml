@@ -17,9 +17,8 @@
         <maven-checkstyle-plugin.failsOnViolation>true</maven-checkstyle-plugin.failsOnViolation>
         <maven-checkstyle-plugin.includeTestSourceDirectory>true</maven-checkstyle-plugin.includeTestSourceDirectory>
         <maven.compiler.source>${java.specification.version}</maven.compiler.source>
-        <maven.compiler.target>${java.specification.version}</maven.compiler.target> 
-        <mainClass>com.elpsykongroo.demo.DemoApplication</mainClass>
-        <!-- <agentConfig>src/main/resources/META-INF/native-image/com.elpsykongroo/demo</agentConfig> -->
+        <maven.compiler.target>${java.specification.version}</maven.compiler.target>
+        <start-class>com.elpsykongroo.demo.DemoApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
@@ -77,7 +76,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-
         <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-starter-aop</artifactId>-->
@@ -104,15 +102,25 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+<!--                <exclusions>-->
+<!--                    <exclusion>-->
+<!--                        <groupId>io.lettuce</groupId>-->
+<!--                        <artifactId>lettuce-core</artifactId>-->
+<!--                    </exclusion>-->
+<!--                </exclusions>-->
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>io.lettuce</groupId>-->
-<!--            <artifactId>lettuce-core</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>redis.clients</groupId>-->
-<!--            <artifactId>jedis</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+       <!-- <dependency>
+           <groupId>io.lettuce</groupId>
+           <artifactId>lettuce-core</artifactId>
+       </dependency> -->
+       <dependency>
+           <groupId>redis.clients</groupId>
+           <artifactId>jedis</artifactId>
+       </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc -->
 <!--        <dependency>-->
@@ -153,30 +161,24 @@
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-zipkin</artifactId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-coyote</artifactId>
             <version>10.1.1</version>
-        </dependency>
+        </dependency> -->
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-reactor-netty -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-reactor-netty</artifactId>-->
-<!--        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-webflux -->
-       <dependency>
+            <groupId>io.github.hakky54</groupId>
+            <artifactId>sslcontext-kickstart-for-pem</artifactId>
+            <version>7.4.9</version>
+        </dependency> 
+        <dependency>
            <groupId>org.springframework.boot</groupId>
            <artifactId>spring-boot-starter-webflux</artifactId>
-       </dependency>
-       <dependency>
+        </dependency> 
+       <!-- <dependency>
            <groupId>io.projectreactor.netty</groupId>
            <artifactId>reactor-netty</artifactId>
-       </dependency>
+       </dependency> -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -187,7 +189,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.github.vladimir-bukhtoyarov</groupId>
             <artifactId>bucket4j-core</artifactId>
@@ -209,12 +210,39 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!--        <dependency>-->
-<!--            <groupId>org.apache.httpcomponents.client5</groupId>-->
-<!--            <artifactId>httpclient5</artifactId>-->
-<!--        </dependency>-->
-
+        <dependency>
+            <groupId>org.springframework.vault</groupId>
+            <artifactId>spring-vault-core</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.testcontainers/vault -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>vault</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.testcontainers/elasticsearch -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.testcontainers/testcontainers -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>            
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
         <!--        <dependency>-->
 <!--            <groupId>com.google.guava</groupId>-->
 <!--            <artifactId>guava</artifactId>-->
@@ -271,10 +299,6 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-jose</artifactId>
         </dependency>
         <dependency>
@@ -305,47 +329,70 @@
             <artifactId>opentelemetry-samplers</artifactId>
             <version>1.21.0-alpha</version>
         </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-vault-config &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-vault-config</artifactId>-->
+<!--            <version>4.0.0</version>-->
+<!--        </dependency>-->
+<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-bootstrap -->
+        <!-- <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>4.0.0</version>
+        </dependency> -->
+        <!-- <dependency>
+            <groupId>com.playtika.testcontainers</groupId>
+            <artifactId>embedded-elasticsearch</artifactId>
+            <scope>test</scope>
+        </dependency> -->
+       <!-- <dependency>
+           <groupId>org.springframework</groupId>
+           <artifactId>spring-core-test</artifactId>
+           <version>6.0.3</version>
+       </dependency> -->
+
     </dependencies>
     <profiles>
         <profile>
-            <id>native</id>
+            <id>nativeTest</id> 
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
-                        <!-- <extensions>true</extensions>
                         <executions>
                             <execution>
-                                <id>build-native</id>
-                                <goals>
-                                    <goal>compile-no-fork</goal>
-                                </goals>
-                                <phase>package</phase>
-                            </execution>
-                            <execution>
-                                <id>test-native</id>
+                                <id>native-test</id>
                                 <goals>
                                     <goal>test</goal>
                                 </goals>
-                                <phase>test</phase>
                             </execution>
-                        </executions> -->
+                            <execution>
+                                <id>add-reachability-metadata</id>
+                                <goals>
+                                    <goal>add-reachability-metadata</goal>
+                                </goals>
+                            </execution>
+                        </executions>                          
                         <configuration>
-                            <fallback>false</fallback>
-                             <!--<configurationFileDirectories>
+                            <skipNativeTests>true</skipNativeTests>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                            </metadataRepository>
+                            <!--<configurationFileDirectories>
                                 <dir>/src/main/resources/META-INF/native-image/com/elpsykongroo</dir>
                             </configurationFileDirectories> -->
-                            <agent>
-                                <enabled>true</enabled>
-                                <!-- <options name="main">
-                                   <option>-agentlib:native-image-agent=config-merge-dir=${agentConfig}</option>
-                                   <option>experimental-class-define-support</option>
+                            <!-- <agent>
+                                <enabled>true</enabled> 
+                                <options name="main">
+                                <option>-agentlib:native-image-agent=config-merge-dir=${agentConfig}</option>
+                                <option>experimental-class-define-support</option>
                                 </options>
                                 <options name="test">
                                     <option>access-filter-file=${basedir}/access-filter.json</option>
-                                </options>  -->
-                            </agent>
+                                </options>  
+                            </agent> -->
                         </configuration> 
                     </plugin>
                     <plugin>
@@ -353,28 +400,31 @@
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>process-aot</id>
+                                <id>process-test-aot</id>
                                 <goals>
-                                    <goal>process-aot</goal>
+                                    <goal>process-test-aot</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>build-image</id>
+                                <goals>
+                                    <goal>build-image-no-fork</goal>
                                 </goals>
                             </execution>
                         </executions>
                         <configuration>
-                            <!-- <systemPropertyVariables>
-                                <springAot>true</springAot>
-                            </systemPropertyVariables> -->
+                            <systemPropertyVariables>
+                                <springAot>false</springAot>
+                            </systemPropertyVariables>
+                            <jvmArguments>
+                                -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/
+                            </jvmArguments>
                             <image>
-                                <buildpacks>
-                                    <!--                            <buildpack>gcr.io/paketo-buildpacks/graalvm</buildpack>-->
-                                    <!--                            <buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>-->
-                                </buildpacks>
+                                <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
+                                <buildpacks></buildpacks>
                                 <env>
-<!--                                    <HTTP_PROXY>http://192.168.1.106:1080</HTTP_PROXY>-->
-<!--                                    <HTTPS_PROXY>http://192.168.1.106:1080</HTTPS_PROXY>-->
-                                    <BP_JVM_VERSION>17.0.4</BP_JVM_VERSION>
-                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-<!--                                    <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>-->
-<!--                                    <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/workspace/BOOT-INF/classes/opentelemetry-javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
+                                    <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
+                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
                                 </env>
                                 <name>
                                     registry.elpsykongroo.com/library/${project.artifactId}:${project.version}-native
@@ -386,42 +436,14 @@
                                 <host>unix:///run/user/1000/podman/podman.sock</host>
                                 <bindHostToBuilder>true</bindHostToBuilder>
                                 <publishRegistry>
-                                    <username>admin</username>
-                                    <password>Elpsy4783</password>
+                                    <username>robot$github_bot</username>
+                                    <password>j66oKThoa2LjsC2apALotdN9Q11NV5UB</password>
                                     <url>registry.elpsykongroo.com</url>
                                 </publishRegistry>
                             </docker>
                         </configuration>
                     </plugin>
                 </plugins>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-maven-plugin</artifactId>
-                            <executions>
-                               <execution>
-                                   <id>build-image</id>
-                                   <goals>
-                                       <goal>build-image-no-fork</goal>
-                                   </goals>
-                               </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.graalvm.buildtools</groupId>
-                            <artifactId>native-maven-plugin</artifactId>
-                            <!-- <executions>
-                                <execution>
-                                    <id>build-image</id>
-                                    <goals>
-                                        <goal>compile-no-fork</goal>
-                                    </goals>
-                                </execution>  
-                            </executions> -->
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
             </build>
         </profile>
     </profiles>
@@ -476,74 +498,18 @@
                     </execution>
                 </executions>
             </plugin>     
-            <!-- <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-agent-config</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.build.directory}/native/agent-output/main"/>
-                                <mkdir dir="${project.build.directory}/native/agent-output/test"/>
-                                <copy todir="${project.build.directory}/native/agent-output/main">
-                                    <fileset dir="${project.build.directory}/native/agent-output/test" />
-                                </copy>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin> -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>java-agent</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>java</executable>
-                            <workingDirectory>${project.build.directory}</workingDirectory>
-                            <arguments>
-                                <argument>-classpath</argument>
-                                <classpath/>
-                                <argument>${mainClass}</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-<!--                        <builder>paketobuildpacks/builder:full</builder>-->
-                        <buildpacks>
-<!--                            <buildpack>gcr.io/paketo-buildpacks/graalvm</buildpack>-->
-<!--                            <buildpack>gcr.io/paketo-buildpacks/java-native-image</buildpack>-->
-                        </buildpacks>
+                        <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
                         <env>
-<!--                            <HTTP_PROXY>http://192.168.1.106:1080</HTTP_PROXY>-->
-<!--                            <HTTPS_PROXY>http://192.168.1.106:1080</HTTPS_PROXY>-->
-                            <BP_JVM_VERSION>17.0.4</BP_JVM_VERSION>
+                            <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
-<!--                            <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>-->
-<!--                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-Xmx=300M</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
-
-                            <!--                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>-->
-<!--                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-->
+                            <!-- <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
+                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>
+                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS> -->
                         </env>
                         <name>
                             registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
@@ -552,22 +518,40 @@
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                     </image>
                     <docker>
-                        <host>unix:///run/podman/podman.sock</host>
+                        <host>unix:///run/user/1000/podman/podman.sock</host>
                         <bindHostToBuilder>true</bindHostToBuilder>
                         <publishRegistry>
-                            <username>admin</username>
-                            <password>Elpsy4783</password>
+                            <username>robot$github_bot</username>
+                            <password>j66oKThoa2LjsC2apALotdN9Q11NV5UB</password>
                             <url>registry.elpsykongroo.com</url>
                         </publishRegistry>
                     </docker>
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>add-reachability-metadata</id>-->
+<!--                        <goals>-->
+<!--                            <goal>add-reachability-metadata</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <skipNativeTests>true</skipNativeTests>-->
+<!--                    <metadataRepository>-->
+<!--                        <enabled>true</enabled>-->
+<!--                    </metadataRepository>-->
+<!--                </configuration>-->
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-<!--                    <compilerArgument>-Xlint:unchecked</compilerArgument>-->
-<!--                    <compilerArgument>-Xlint:deprecation</compilerArgument>-->
+                   <compilerArgument>-Xlint:unchecked</compilerArgument>
+                   <!-- <compilerArgument>-Xlint:deprecation</compilerArgument> -->
                 </configuration>
             </plugin>
         </plugins>
@@ -594,13 +578,21 @@
     </reporting>
     <dependencyManagement>
         <dependencies>
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.cloud</groupId>-->
-<!--                <artifactId>spring-cloud-dependencies</artifactId>-->
-<!--                <version>2021.0.3</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
+            <!-- https://mvnrepository.com/artifact/com.playtika.testcontainers/testcontainers-spring-boot-bom -->
+            <!-- <dependency>
+                <groupId>com.playtika.testcontainers</groupId>
+                <artifactId>testcontainers-spring-boot-bom</artifactId>
+                <version>2.2.14</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency> -->
+            <!-- <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2022.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency> -->
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-tracing-bom</artifactId>
@@ -629,6 +621,13 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>1.17.6</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <repositories>
@@ -644,17 +643,6 @@
         </repository>
     </repositories>
     <pluginRepositories>
-        <pluginRepository>
-            <id>graalvm-native-build-tools-snapshots</id>
-            <name>GraalVM native-build-tools Snapshots</name>
-            <url>https://raw.githubusercontent.com/graalvm/native-build-tools/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
         <pluginRepository>
             <id>spring-release</id>
             <name>Spring release</name>

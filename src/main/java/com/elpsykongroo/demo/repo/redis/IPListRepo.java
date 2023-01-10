@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.config;
+package com.elpsykongroo.demo.repo.redis;
 
-import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.data.repository.CrudRepository;
 
-@Configuration(proxyBeanMethods = false)
-public class TraceConfig {
-   @Bean
-   public InMemoryHttpExchangeRepository httpExchangeRepository() {
-       return new InMemoryHttpExchangeRepository();
-   }
+import com.elpsykongroo.demo.domain.IPList;
+
+public interface IPListRepo extends CrudRepository<IPList, String> {
+	IPList findByIsBlackTrue();
+
+    IPList findByIsBlackFalse();
 }

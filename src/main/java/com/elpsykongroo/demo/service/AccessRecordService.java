@@ -20,7 +20,7 @@ package com.elpsykongroo.demo.service;
 import java.util.List;
 
 import com.elpsykongroo.demo.common.CommonResponse;
-import com.elpsykongroo.demo.document.AccessRecord;
+import com.elpsykongroo.demo.domain.AccessRecord;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public interface AccessRecordService {
 
 	CommonResponse<List<AccessRecord>> findAll(String pageNumber, String pageSize, String sort);
 
-	CommonResponse<List<AccessRecord>> filterUserAgent(String path);
+	CommonResponse<List<AccessRecord>> filterByParams(String params, String pageNumber, String pageSize);
 
 	CommonResponse<Integer> deleteRecord(String sourceIP, String ids);
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.document;
+package com.elpsykongroo.demo.domain;
 
 import java.util.Date;
 import java.util.Map;
@@ -25,6 +25,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+
 @Data
 @Document(indexName = "access_record")
 public class AccessRecord {

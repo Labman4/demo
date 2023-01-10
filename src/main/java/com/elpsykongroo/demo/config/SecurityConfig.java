@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2022-2022 the original author or authors.
  *
@@ -23,18 +22,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
 	@Value("${request.path.permit}")
 	private String permit_path;
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors().and()
 		    .csrf().disable()
-//				.requiresChannel(channel ->
+ //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
 						.requestMatchers(permit_path).permitAll()
