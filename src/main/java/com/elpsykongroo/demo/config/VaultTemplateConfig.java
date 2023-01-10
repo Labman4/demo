@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.demo.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.vault.authentication.ClientAuthentication;
 import org.springframework.vault.authentication.TokenAuthentication;
@@ -24,6 +25,11 @@ import org.springframework.vault.config.AbstractVaultConfiguration;
 import java.net.URI;
 
 @Configuration
+@ConditionalOnProperty(
+    prefix = "service",
+    name = "vault",
+    havingValue = "true",
+    matchIfMissing = false)
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
     @Override
     public ClientAuthentication clientAuthentication() {

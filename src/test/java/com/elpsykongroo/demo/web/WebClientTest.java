@@ -94,10 +94,10 @@ public class WebClientTest  {
 
         webClient
             .post()
-            .uri("/record/filter?path=man")
+            .uri("/record/filter?param=man&pageNumber=0&pageSize=10")
             .exchange()
             .expectStatus().isOk()
-            .expectBody().jsonPath("$.data").isEmpty();
+            .expectBody().jsonPath("$.data").isNotEmpty();
 
         webClient
             .patch()
