@@ -389,20 +389,10 @@
                                     <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
                                 </env>
-                                <name>
-                                    registry.elpsykongroo.com/library/${project.artifactId}:${project.version}-native
-                                </name>
-                                <publish>true</publish>
-                                <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                             </image>
                             <docker>
                                 <host>unix:///run/user/1000/podman/podman.sock</host>
                                 <bindHostToBuilder>true</bindHostToBuilder>
-                                <publishRegistry>
-                                    <username>robot$github_bot</username>
-                                    <password>j66oKThoa2LjsC2apALotdN9Q11NV5UB</password>
-                                    <url>registry.elpsykongroo.com</url>
-                                </publishRegistry>
                             </docker>
                         </configuration>
                     </plugin>
@@ -482,19 +472,16 @@
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
                                 </env>
                                 <name>
-                                    registry.elpsykongroo.com/library/${project.artifactId}:${project.version}-native
+                                    ${project.artifactId}
                                 </name>
-                                <publish>true</publish>
-                                <pullPolicy>IF_NOT_PRESENT</pullPolicy>
+                                <!-- <publish>true</publish>
+                                <pullPolicy>IF_NOT_PRESENT</pullPolicy> -->
                             </image>
                             <docker>
                                 <host>unix:///run/user/1000/podman/podman.sock</host>
                                 <bindHostToBuilder>true</bindHostToBuilder>
-                                <publishRegistry>
-                                    <username>robot$github_bot</username>
-                                    <password>j66oKThoa2LjsC2apALotdN9Q11NV5UB</password>
-                                    <url>registry.elpsykongroo.com</url>
-                                </publishRegistry>
+                                <!-- <publishRegistry>
+                                </publishRegistry> -->
                             </docker>
                         </configuration>
                     </plugin>
@@ -567,19 +554,19 @@
                             <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS> -->
                         </env>
                         <name>
-                            registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
+                            ${project.artifactId}
                         </name>
-                        <publish>true</publish>
-                        <pullPolicy>IF_NOT_PRESENT</pullPolicy>
+                        <!-- <publish>true</publish>
+                        <pullPolicy>IF_NOT_PRESENT</pullPolicy> -->
                     </image>
                     <docker>
                         <host>unix:///run/user/1000/podman/podman.sock</host>
                         <bindHostToBuilder>true</bindHostToBuilder>
-                        <publishRegistry>
-                            <username>robot$github_bot</username>
-                            <password>j66oKThoa2LjsC2apALotdN9Q11NV5UB</password>
+                        <!-- <publishRegistry>
+                            <username></username>
+                            <password></password>
                             <url>registry.elpsykongroo.com</url>
-                        </publishRegistry>
+                        </publishRegistry> -->
                     </docker>
                 </configuration>
             </plugin>
