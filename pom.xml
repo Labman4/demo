@@ -472,7 +472,7 @@
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
                                 </env>
                                 <name>
-                                    ${project.artifactId}
+                                    demo
                                 </name>
                                 <!-- <publish>true</publish>
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy> -->
@@ -554,7 +554,7 @@
                             <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS> -->
                         </env>
                         <name>
-                            ${project.artifactId}
+                            demo
                         </name>
                         <!-- <publish>true</publish>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy> -->
