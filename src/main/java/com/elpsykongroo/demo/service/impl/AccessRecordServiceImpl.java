@@ -40,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -127,15 +128,28 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	@Override
 	public CommonResponse<List<AccessRecord>> filterByParams(String params, String pageNo, String pageSize) {
+		Pageable pageable = PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize));
 		try {
 			List<AccessRecord> records = new ArrayList<>();
 			if (IPRegexUtils.vaildate(params)) {
 				records = accessRecordRepo.findBySourceIP(params);
 			}
+			if (IPRegexUtils.vaildateHost(params)) {
+				InetAddress[] inetAddresses = InetAddress.getAllByName(params);
+				for (InetAddress addr: inetAddresses) {
+					List<AccessRecord> accessRecord = accessRecordRepo.findBySourceIP(addr.getHostAddress());
+					records.addAll(accessRecord);
+				}
+			}
 			records.addAll(accessRecordRepo.findByUserAgentLike(params));
 			records.addAll(accessRecordRepo.findByAccessPathLike(params));
 			records.addAll(accessRecordRepo.findByRequestHeaderLike(params));
-		    return CommonResponse.success(records);
+			int start = (int) pageable.getOffset();
+			int end = (int) ((start + pageable.getPageSize()) > records.size() ? records.size()
+					: (start + pageable.getPageSize()));
+			Page<AccessRecord> page =
+					new PageImpl<AccessRecord>(records.subList(start, end), pageable, records.size());
+		    return CommonResponse.success(page.get().toList());
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}

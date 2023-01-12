@@ -36,4 +36,14 @@ public final class IPRegexUtils {
         }
         return false;
     }
+    public static boolean vaildateHost(String ip) {
+        String hostnameRegex = "^((?!-)[A-Za-z0-9-]"
+                                + "{1,63}(?<!-)\\.)"
+                                + "+[A-Za-z]{2,6}";
+        Pattern host = Pattern.compile(hostnameRegex);
+        if(host.matcher(ip).matches()) {
+            return true;
+        }
+        return false;
+    }
 }
