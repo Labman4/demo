@@ -472,7 +472,7 @@
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
                                 </env>
                                 <name>
-                                    demo
+                                    demo:native
                                 </name>
                                 <!-- <publish>true</publish>
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy> -->

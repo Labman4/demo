@@ -27,6 +27,7 @@ import java.util.Map;
 
 import com.elpsykongroo.demo.exception.ServiceException;
 import com.elpsykongroo.demo.repo.elasticsearch.AccessRecordRepo;
+import com.elpsykongroo.demo.utils.IPRegexUtils;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
@@ -126,14 +127,18 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	@Override
 	public CommonResponse<List<AccessRecord>> filterByParams(String params, String pageNo, String pageSize) {
-		Pageable pageable = PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize));
-		Page<AccessRecord> accessRecords = accessRecordRepo.findAll(pageable);
 		try {
-			accessRecords.stream().map(record -> accessRecordRepo.searchSimilar(record, params.split(" "), pageable));
+			List<AccessRecord> records = new ArrayList<>();
+			if (IPRegexUtils.vaildate(params)) {
+				records = accessRecordRepo.findBySourceIP(params);
+			}
+			records.addAll(accessRecordRepo.findByUserAgentLike(params));
+			records.addAll(accessRecordRepo.findByAccessPathLike(params));
+			records.addAll(accessRecordRepo.findByRequestHeaderLike(params));
+		    return CommonResponse.success(records);
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}
-		return CommonResponse.success(accessRecords.get().toList());
 	}
 
 	private boolean beginWithPath(String paths, String url) {

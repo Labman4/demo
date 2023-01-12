@@ -21,11 +21,15 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+
 import com.elpsykongroo.demo.domain.AccessRecord;
 
 public interface AccessRecordRepo extends ElasticsearchRepository<AccessRecord, String> {
+
 	Page<AccessRecord> findAll(Pageable pageable);
 
+	List<AccessRecord> findByAccessPathLike(String path);
+	
 	List<AccessRecord> findBySourceIP(String sourceip);
 
 	List<AccessRecord> findByAccessPath(String path);
