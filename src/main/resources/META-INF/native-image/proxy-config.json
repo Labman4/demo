@@ -39,10 +39,10 @@
     "interfaces":["org.springframework.data.elasticsearch.annotations.Field"]
   },
   {
-    "interfaces":["org.springframework.data.redis.connection.RedisClusterConnection"]
+    "interfaces":["org.springframework.data.redis.connection.DefaultedRedisClusterConnection"]
   },
   {
-    "interfaces":["org.springframework.data.redis.connection.DefaultedRedisClusterConnection"]
+    "interfaces":["org.springframework.data.redis.connection.RedisClusterConnection"]
   },
   {
     "interfaces":["org.springframework.data.redis.connection.RedisConnection"]
