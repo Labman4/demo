@@ -22,7 +22,9 @@
  import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
- import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
  @Configuration(proxyBeanMethods = false)
  @EnableRedisRepositories("com.elpsykongroo.demo.repo.redis")
@@ -33,16 +35,19 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
  	@Bean
  	public JedisConnectionFactory redisConnectionFactory() {
          ServiceConfig.Redis redis = serviceConfig.getRedis();
+         RedisClusterConfiguration config = new RedisClusterConfiguration();
+         config.clusterNode(redis.getHost(), Integer.parseInt(redis.getPort()));
+         config.setPassword(redis.getPass());
+         JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(config);
          if ("single".equals(redis.getType())) {
-            RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redis.getHost(), Integer.parseInt(redis.getPort()));
-            config.setPassword(redis.getPass());
-            return new JedisConnectionFactory(config);
-         } else {
-            RedisClusterConfiguration config = new RedisClusterConfiguration();
-            config.clusterNode(redis.getHost(), Integer.parseInt(redis.getPort()));
-            config.setPassword(redis.getPass());
-            return new JedisConnectionFactory(config);
+            RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
+            singleConfig.setHostName(redis.getHost());
+            singleConfig.setPort(Integer.parseInt(redis.getPort()));
+            singleConfig.setPassword(redis.getPass());
+            jedisConnectionFactory = new JedisConnectionFactory(singleConfig);
          }
+         return jedisConnectionFactory;
+
  	}
 
  //	@Bean
@@ -56,15 +61,15 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
  //		return new LettuceConnectionFactory(new RedisStandaloneConfiguration(URL, 6379), clientConfig);
  //	}
 
- 	// @Bean
- 	// public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
- 	// 	RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
- 	// 	redisTemplate.setConnectionFactory(factory);
- 	// 	StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
- 	// 	redisTemplate.setKeySerializer(stringRedisSerializer);
- 	// 	redisTemplate.setHashKeySerializer(stringRedisSerializer);
- 	// 	redisTemplate.setValueSerializer(stringRedisSerializer);
- 	// 	redisTemplate.afterPropertiesSet();
- 	// 	return redisTemplate;
- 	// }
+ 	@Bean
+ 	public <K, V> RedisTemplate<String, Object> redisTemplate(JedisConnectionFactory factory) {
+ 		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+ 		redisTemplate.setConnectionFactory(factory);
+ 		StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+ 		redisTemplate.setKeySerializer(stringRedisSerializer);
+ 		redisTemplate.setHashKeySerializer(stringRedisSerializer);
+ 		redisTemplate.setValueSerializer(stringRedisSerializer);
+ 		redisTemplate.afterPropertiesSet();
+ 		return redisTemplate;
+ 	}
  }
