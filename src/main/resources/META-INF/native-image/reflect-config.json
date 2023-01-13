@@ -430,27 +430,6 @@
   "queryAllDeclaredConstructors":true
 },
 {
-  "name":"com.elpsykongroo.demo.config.RedisConfig$$SpringCGLIB$$0",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "fields":[{"name":"CGLIB$FACTORY_DATA"}],
-  "methods":[
-    {"name":"<init>","parameterTypes":[] }, 
-    {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"redisConnectionFactory","parameterTypes":[] }
-  ]
-},
-{
-  "name":"com.elpsykongroo.demo.config.RedisConfig$$SpringCGLIB$$1",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
-  "name":"com.elpsykongroo.demo.config.RedisConfig$$SpringCGLIB$$2",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
   "name":"com.elpsykongroo.demo.config.RequestConfig",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -753,21 +732,14 @@
 {
   "name":"com.elpsykongroo.demo.testconfig.RedisConfig",
   "allDeclaredFields":true,
-  "allDeclaredClasses":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"com.elpsykongroo.demo.testconfig.RedisConfig$$SpringCGLIB$$0",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[
-    {"name":"<init>","parameterTypes":[] }, 
     {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"lettuceClientResources","parameterTypes":[] }
+    {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }
   ]
 },
 {
@@ -777,9 +749,6 @@
 {
   "name":"com.elpsykongroo.demo.testconfig.RedisConfig$$SpringCGLIB$$2",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
-  "name":"com.elpsykongroo.demo.testconfig.RedisConfig$1"
 },
 {
   "name":"com.elpsykongroo.demo.web.WebClientTest",
@@ -833,7 +802,6 @@
   "queryAllDeclaredMethods":true,
   "methods":[
     {"name":"getJsonFactory","parameterTypes":[] }, 
-    {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.ResolvedType"] }, 
     {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","com.fasterxml.jackson.core.type.TypeReference"] }, 
     {"name":"readValues","parameterTypes":["com.fasterxml.jackson.core.JsonParser","java.lang.Class"] }
   ]
@@ -1780,13 +1748,7 @@
   "name":"graphql.GraphQL"
 },
 {
-  "name":"groovy.lang$Closure"
-},
-{
   "name":"groovy.lang$MetaClass"
-},
-{
-  "name":"groovy.lang.Closure"
 },
 {
   "name":"groovy.lang.GroovySystem"
@@ -2497,10 +2459,8 @@
 },
 {
   "name":"io.lettuce.core.resource.ClientResources",
-  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"shutdown","parameterTypes":[] }]
 },
 {
@@ -2535,6 +2495,10 @@
 },
 {
   "name":"io.micrometer.atlas.AtlasMeterRegistry"
+},
+{
+  "name":"io.micrometer.common.lang.NonNull",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"io.micrometer.common.lang.NonNullApi",
@@ -2745,7 +2709,6 @@
   "name":"io.micrometer.core.instrument.observation.DefaultMeterObservationHandler",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"onEvent","parameterTypes":["io.micrometer.observation.Observation$Event","io.micrometer.observation.Observation$Context"] }, 
     {"name":"onStart","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
@@ -2762,18 +2725,15 @@
 },
 {
   "name":"io.micrometer.core.instrument.simple.SimpleConfig",
-  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"validate","parameterTypes":[] }]
 },
 {
   "name":"io.micrometer.core.instrument.simple.SimpleMeterRegistry",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllPublicMethods":true
 },
 {
   "name":"io.micrometer.datadog.DatadogMeterRegistry"
@@ -2815,7 +2775,9 @@
   "methods":[
     {"name":"onError","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
     {"name":"onScopeClosed","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
-    {"name":"onScopeOpened","parameterTypes":["io.micrometer.observation.Observation$Context"] }
+    {"name":"onScopeOpened","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStart","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStop","parameterTypes":["io.micrometer.observation.Observation$Context"] }
   ]
 },
 {
@@ -2875,11 +2837,150 @@
   ]
 },
 {
-  "name":"io.micrometer.tracing.Tracer",
-  "queryAllDeclaredMethods":true
+  "name":"io.micrometer.tracing.CurrentTraceContext",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
-  "name":"io.micrometer.tracing.otel.bridge.OtelTracer"
+  "name":"io.micrometer.tracing.SpanCustomizer",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.Tracer",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.handler.DefaultTracingObservationHandler",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"onError","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStart","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStop","parameterTypes":["io.micrometer.observation.Observation$Context"] }
+  ]
+},
+{
+  "name":"io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"onError","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStart","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStop","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"supportsContext","parameterTypes":["io.micrometer.observation.Observation$Context"] }
+  ]
+},
+{
+  "name":"io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"onError","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStart","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStop","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"supportsContext","parameterTypes":["io.micrometer.observation.Observation$Context"] }
+  ]
+},
+{
+  "name":"io.micrometer.tracing.handler.TracingAwareMeterObservationHandler",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"onError","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onEvent","parameterTypes":["io.micrometer.observation.Observation$Event","io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onScopeClosed","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onScopeOpened","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStart","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onStop","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"supportsContext","parameterTypes":["io.micrometer.observation.Observation$Context"] }
+  ]
+},
+{
+  "name":"io.micrometer.tracing.handler.TracingObservationHandler",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getParentSpan","parameterTypes":["io.micrometer.observation.Observation$ContextView"] }, 
+    {"name":"getRequiredSpan","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"getSpanName","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"getTracingContext","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onError","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onEvent","parameterTypes":["io.micrometer.observation.Observation$Event","io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onScopeClosed","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"onScopeOpened","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"supportsContext","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
+    {"name":"tagSpan","parameterTypes":["io.micrometer.observation.Observation$Context","io.micrometer.tracing.Span"] }
+  ]
+},
+{
+  "name":"io.micrometer.tracing.otel.bridge.EventListener",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.otel.bridge.OtelPropagator",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.otel.bridge.OtelSpanCustomizer",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.otel.bridge.OtelTracer",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.otel.bridge.OtelTracer$EventPublisher",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.otel.bridge.Slf4JEventListener",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.micrometer.tracing.propagation.Propagator",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"io.netty.buffer.AbstractByteBufAllocator",
@@ -3125,10 +3226,69 @@
   "name":"io.netty5.buffer.Buffer"
 },
 {
-  "name":"io.opentelemetry.api.OpenTelemetry"
+  "name":"io.opentelemetry.api.OpenTelemetry",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
-  "name":"io.opentelemetry.sdk.trace.SdkTracerProvider"
+  "name":"io.opentelemetry.api.trace.Tracer",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.opentelemetry.api.trace.TracerProvider",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.opentelemetry.context.propagation.ContextPropagators",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.opentelemetry.context.propagation.TextMapPropagator",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.opentelemetry.exporter.zipkin.ZipkinSpanExporter",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.opentelemetry.sdk.trace.SdkTracerProvider",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"tracerBuilder","parameterTypes":["java.lang.String"] }]
+},
+{
+  "name":"io.opentelemetry.sdk.trace.SpanProcessor",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.opentelemetry.sdk.trace.export.SpanExporter",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"close","parameterTypes":[] }]
+},
+{
+  "name":"io.opentelemetry.sdk.trace.samplers.Sampler",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"io.prometheus.client.CollectorRegistry",
@@ -3137,7 +3297,33 @@
   "queryAllDeclaredConstructors":true
 },
 {
-  "name":"io.prometheus.client.exemplars.tracer.common.SpanContextSupplier"
+  "name":"io.prometheus.client.exemplars.CounterExemplarSampler",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"io.prometheus.client.exemplars.DefaultExemplarSampler",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.prometheus.client.exemplars.ExemplarSampler",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"io.prometheus.client.exemplars.HistogramExemplarSampler",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
+  "name":"io.prometheus.client.exemplars.tracer.common.SpanContextSupplier",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"io.prometheus.client.exporter.PushGateway"
@@ -3261,9 +3447,6 @@
 },
 {
   "name":"jakarta.json.bind.Jsonb"
-},
-{
-  "name":"jakarta.mail.internet.MimeMessage"
 },
 {
   "name":"jakarta.persistence$EntityManagerFactory"
@@ -3400,6 +3583,13 @@
 },
 {
   "name":"java.io.FilePermission"
+},
+{
+  "name":"java.io.Flushable",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.io.IOException"
@@ -3881,9 +4071,6 @@
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true
-},
-{
-  "name":"java.util.concurrent.TimeUnit"
 },
 {
   "name":"java.util.function.Consumer",
@@ -4888,7 +5075,6 @@
   "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[
-    {"name":"determineBeanType","parameterTypes":["java.lang.Class","java.lang.String"] }, 
     {"name":"determineCandidateConstructors","parameterTypes":["java.lang.Class","java.lang.String"] }, 
     {"name":"getEarlyBeanReference","parameterTypes":["java.lang.Object","java.lang.String"] }, 
     {"name":"predictBeanType","parameterTypes":["java.lang.Class","java.lang.String"] }
@@ -5027,7 +5213,6 @@
   "name":"org.springframework.boot.actuate.autoconfigure.data.redis.RedisReactiveHealthContributorAutoConfiguration",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["java.util.Map"] }]
 },
 {
@@ -5517,14 +5702,12 @@
 {
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"setEnabled","parameterTypes":["boolean"] }]
 },
@@ -5584,6 +5767,11 @@
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration$MeterObservationHandlerConfiguration$OnlyMetricsMeterObservationHandlerConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration$MeterObservationHandlerConfiguration$TracingAndMetricsObservationHandlerConfiguration",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true
@@ -5717,7 +5905,134 @@
   "queryAllDeclaredMethods":true
 },
 {
-  "name":"org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration"
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration$BaggageConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties$Baggage",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties$Baggage$Correlation",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties$Propagation",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties$Propagation$PropagationType",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties$Sampling",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusExemplarsAutoConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.HttpSender",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[
+    {"name":"check","parameterTypes":[] }, 
+    {"name":"close","parameterTypes":[] }, 
+    {"name":"encoding","parameterTypes":[] }, 
+    {"name":"messageMaxBytes","parameterTypes":[] }, 
+    {"name":"messageSizeInBytes","parameterTypes":["int"] }, 
+    {"name":"messageSizeInBytes","parameterTypes":["java.util.List"] }, 
+    {"name":"sendSpans","parameterTypes":["java.util.List"] }
+  ]
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations$BraveConfiguration"
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations$OpenTelemetryConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations$ReporterConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations$RestTemplateSenderConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations$SenderConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations$UrlConnectionSenderConfiguration"
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations$WebClientSenderConfiguration",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinProperties",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinWebClientSender",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration",
@@ -6769,7 +7084,6 @@
   "name":"org.springframework.boot.autoconfigure.data.redis.LettuceConnectionConfiguration",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["org.springframework.boot.autoconfigure.data.redis.RedisProperties","org.springframework.beans.factory.ObjectProvider","org.springframework.beans.factory.ObjectProvider","org.springframework.beans.factory.ObjectProvider"] }]
 },
 {
@@ -6873,8 +7187,7 @@
 {
   "name":"org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesRegistrar",
@@ -8976,7 +9289,6 @@
 },
 {
   "name":"org.springframework.boot.test.autoconfigure.ConditionReportApplicationContextFailureProcessor",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -8996,19 +9308,10 @@
   "name":"org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$NoopTracerFactoryBean",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[
-    {"name":"<init>","parameterTypes":[] }, 
     {"name":"getObject","parameterTypes":[] }, 
     {"name":"getObjectType","parameterTypes":[] }
   ]
-},
-{
-  "name":"org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory$NoopTracerRegistrar",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory",
@@ -9024,7 +9327,6 @@
 },
 {
   "name":"org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -9048,13 +9350,11 @@
 },
 {
   "name":"org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -9072,9 +9372,6 @@
   "name":"org.springframework.boot.test.context.SpringBootTest",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
-},
-{
-  "name":"org.springframework.boot.test.context.SpringBootTest$WebEnvironment"
 },
 {
   "name":"org.springframework.boot.test.context.SpringBootTestContextBootstrapper",
@@ -9114,34 +9411,20 @@
 },
 {
   "name":"org.springframework.boot.test.mock.mockito.MockitoPostProcessor",
-  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[
-    {"name":"<init>","parameterTypes":["java.util.Set"] }, 
-    {"name":"postProcessProperties","parameterTypes":["org.springframework.beans.PropertyValues","java.lang.Object","java.lang.String"] }
-  ]
+  "methods":[{"name":"<init>","parameterTypes":["java.util.Set"] }]
 },
 {
   "name":"org.springframework.boot.test.mock.mockito.MockitoPostProcessor$SpyPostProcessor",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[
-    {"name":"<init>","parameterTypes":["org.springframework.boot.test.mock.mockito.MockitoPostProcessor"] }, 
-    {"name":"getEarlyBeanReference","parameterTypes":["java.lang.Object","java.lang.String"] }, 
-    {"name":"postProcessAfterInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }
-  ]
+  "methods":[{"name":"<init>","parameterTypes":["org.springframework.boot.test.mock.mockito.MockitoPostProcessor"] }]
 },
 {
   "name":"org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -9155,21 +9438,12 @@
   "name":"org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer$TestRestTemplateFactory",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[
-    {"name":"<init>","parameterTypes":[] }, 
     {"name":"getObject","parameterTypes":[] }, 
     {"name":"getObjectType","parameterTypes":[] }, 
     {"name":"isSingleton","parameterTypes":[] }, 
     {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }
   ]
-},
-{
-  "name":"org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer$TestRestTemplateRegistrar",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.test.web.client.TestRestTemplateContextCustomizerFactory",
@@ -9187,21 +9461,12 @@
   "name":"org.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizer$WebTestClientFactory",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[
-    {"name":"<init>","parameterTypes":[] }, 
     {"name":"getObject","parameterTypes":[] }, 
     {"name":"getObjectType","parameterTypes":[] }, 
     {"name":"isSingleton","parameterTypes":[] }, 
     {"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }
   ]
-},
-{
-  "name":"org.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizer$WebTestClientRegistrar",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizerFactory",
@@ -10827,7 +11092,6 @@
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"getPersistentEntity","parameterTypes":["java.lang.Class"] }, 
-    {"name":"getPersistentEntity","parameterTypes":["org.springframework.data.mapping.PersistentProperty"] }, 
     {"name":"getPersistentEntity","parameterTypes":["org.springframework.data.util.TypeInformation"] }, 
     {"name":"getRequiredPersistentEntity","parameterTypes":["java.lang.Class"] }, 
     {"name":"getRequiredPersistentEntity","parameterTypes":["org.springframework.data.mapping.PersistentProperty"] }, 
@@ -10875,10 +11139,8 @@
 },
 {
   "name":"org.springframework.data.redis.connection.ReactiveRedisConnectionFactory",
-  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllPublicMethods":true
 },
 {
   "name":"org.springframework.data.redis.connection.RedisConnectionFactory",
@@ -10900,7 +11162,6 @@
   "name":"org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"afterPropertiesSet","parameterTypes":[] }, 
     {"name":"destroy","parameterTypes":[] }, 
@@ -10936,10 +11197,8 @@
 },
 {
   "name":"org.springframework.data.redis.core.ReactiveRedisOperations",
-  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"execute","parameterTypes":["org.springframework.data.redis.core.script.RedisScript"] }, 
     {"name":"execute","parameterTypes":["org.springframework.data.redis.core.script.RedisScript","java.util.List"] }, 
@@ -10954,7 +11213,6 @@
   "name":"org.springframework.data.redis.core.ReactiveRedisTemplate",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"convertAndSend","parameterTypes":["java.lang.String","java.lang.Object"] }, 
     {"name":"copy","parameterTypes":["java.lang.Object","java.lang.Object","boolean"] }, 
@@ -11007,8 +11265,7 @@
 {
   "name":"org.springframework.data.redis.core.ReactiveStringRedisTemplate",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.data.redis.core.RedisAccessor",
@@ -12117,8 +12374,7 @@
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"createContainer","parameterTypes":["java.util.regex.Pattern"] }, 
-    {"name":"createContainer","parameterTypes":["java.lang.String[]"] }, 
-    {"name":"createContainer","parameterTypes":["org.springframework.kafka.support.TopicPartitionOffset[]"] }
+    {"name":"createContainer","parameterTypes":["java.lang.String[]"] }
   ]
 },
 {
@@ -13104,25 +13360,13 @@
   "queryAllPublicMethods":true
 },
 {
-  "name":"org.springframework.test.context.ApplicationContextFailureProcessor",
-  "queryAllDeclaredConstructors":true
-},
-{
   "name":"org.springframework.test.context.BootstrapWith",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
 },
 {
-  "name":"org.springframework.test.context.ContextCustomizerFactory",
-  "queryAllDeclaredConstructors":true
-},
-{
   "name":"org.springframework.test.context.DynamicPropertySource",
   "queryAllDeclaredMethods":true
-},
-{
-  "name":"org.springframework.test.context.TestExecutionListener",
-  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.test.context.aot.AotTestAttributes__Generated",
@@ -13143,25 +13387,11 @@
 },
 {
   "name":"org.springframework.test.context.event.ApplicationEventsTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.test.context.event.EventPublishingTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.test.context.hint.StandardTestRuntimeHints",
-  "queryAllDeclaredConstructors":true,
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.test.context.hint.TestContextRuntimeHints",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -13171,7 +13401,6 @@
 },
 {
   "name":"org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -13189,19 +13418,16 @@
 },
 {
   "name":"org.springframework.test.context.support.DependencyInjectionTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.test.context.support.DirtiesContextTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -13213,22 +13439,16 @@
 },
 {
   "name":"org.springframework.test.context.transaction.TransactionalTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.test.context.web.ServletTestExecutionListener",
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.test.context.web.WebAppConfiguration"
-},
-{
-  "name":"org.springframework.test.context.web.WebMergedContextConfiguration",
-  "methods":[{"name":"getResourceBasePath","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.test.context.web.socket.MockServerContainerContextCustomizerFactory",
@@ -14223,10 +14443,6 @@
   "name":"org.synchronoss.cloud.nio.multipart.NioMultipartParser"
 },
 {
-  "name":"org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"org.testcontainers.dockerclient.UnixSocketClientProviderStrategy",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -14451,10 +14667,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"sun.security.provider.DRBG",
-  "methods":[{"name":"<init>","parameterTypes":["java.security.SecureRandomParameters"] }]
-},
-{
   "name":"sun.security.provider.JavaKeyStore$JKS",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -14468,10 +14680,6 @@
 },
 {
   "name":"sun.security.provider.SHA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.SHA2$SHA256",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -14551,6 +14759,40 @@
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
 },
 {
-  "name":"zipkin2.reporter.Sender"
+  "name":"zipkin2.Component",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"check","parameterTypes":[] }]
+},
+{
+  "name":"zipkin2.codec.BytesEncoder",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"zipkin2.reporter.AsyncReporter",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"close","parameterTypes":[] }]
+},
+{
+  "name":"zipkin2.reporter.Reporter",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"zipkin2.reporter.Sender",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"zipkin2.reporter.brave.ZipkinSpanHandler"
+},
+{
+  "name":"zipkin2.reporter.urlconnection.URLConnectionSender"
 }
 ]

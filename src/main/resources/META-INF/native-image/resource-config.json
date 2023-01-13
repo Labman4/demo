@@ -149,19 +149,10 @@
       "pattern":"\\Qcom/elpsykongroo/demo/service/impl/IPMangerServiceImpl.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/demo/testconfig/RedisConfig.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/demo/web/\\E"
-    }, 
-    {
       "pattern":"\\Qcom/github/dockerjava/zerodep/shaded/org/apache/hc/client5/version.properties\\E"
     }, 
     {
       "pattern":"\\Qelasticsearch-default-memory-vm.options\\E"
-    }, 
-    {
-      "pattern":"\\Qio/lettuce/core/resource/SocketAddressResolver.class\\E"
     }, 
     {
       "pattern":"\\Qjakarta/servlet/Filter.class\\E"
@@ -548,16 +539,52 @@
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/system/DiskSpaceHealthContributorAutoConfiguration.class\\E"
     }, 
     {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/ConditionalOnEnabledTracing.class\\E"
+    }, 
+    {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/MicrometerTracingAutoConfiguration.class\\E"
     }, 
     {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/OpenTelemetryAutoConfiguration$BaggageConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/OpenTelemetryAutoConfiguration$NoBaggageConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/OpenTelemetryAutoConfiguration$OTelEventPublisher.class\\E"
+    }, 
+    {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/OpenTelemetryAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/prometheus/PrometheusExemplarsAutoConfiguration$LazyTracingSpanContextSupplier.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/prometheus/PrometheusExemplarsAutoConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$BraveConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$OpenTelemetryConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$ReporterConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$RestTemplateSenderConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$SenderConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$UrlConnectionSenderConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$WebClientSenderConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/web/ManagementContextConfiguration.class\\E"
@@ -741,9 +768,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/JedisConnectionConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/LettuceConnectionConfiguration$PoolBuilderFactory.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/LettuceConnectionConfiguration.class\\E"
@@ -1215,9 +1239,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/context/ApplicationContextAware.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/context/ApplicationContextInitializer.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/context/EnvironmentAware.class\\E"
