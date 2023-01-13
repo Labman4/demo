@@ -469,10 +469,13 @@
                                 <buildpacks></buildpacks>
                                 <env>
                                     <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
-                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
+                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>     
+                                    <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                                        --initialize-at-build-time=org.springframework.data.redis.connection.RedisClusterConnection
+                                    </BP_NATIVE_IMAGE_BUILD_ARGUMENTS>                         
                                 </env>
                                 <name>
-                                    demo:native
+                                    registry.elpsykongroo.com/library/${project.artifactId}:native
                                 </name>
                                 <!-- <publish>true</publish>
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy> -->
@@ -554,7 +557,7 @@
                             <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS> -->
                         </env>
                         <name>
-                            demo
+                            registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
                         </name>
                         <!-- <publish>true</publish>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy> -->
