@@ -85,6 +85,7 @@ service:
     host: ${REDIS_NODE:redis-cluster.redis.svc}
     port: ${REDIS_PORT:6379}
     pass: ${REDIS_PASS:pass}
+    type: cluster
   es:
     nodes: ${ES_URL:elasticsearch-master:9200}
     user: ${ES_USER:user}
