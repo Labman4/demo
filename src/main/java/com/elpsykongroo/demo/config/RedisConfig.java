@@ -24,7 +24,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
  import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
- @Configuration
+ @Configuration(proxyBeanMethods = false)
  @EnableRedisRepositories("com.elpsykongroo.demo.repo.redis")
  public class RedisConfig {
     @Autowired
