@@ -33,12 +33,12 @@ logging:
     web: ${LOG_LEVEL:info}
 management:
   tracing:
-    enabled: ${TRACE_ENABLED:false}
+    enabled: ${TRACE_ENABLED:true}
 ---
 management:
   httpexchanges:
     recording:
-      enabled: ${HTTP_RECORD:false}
+      enabled: ${HTTP_RECORD:true}
   endpoint:
     health:
       probes:
