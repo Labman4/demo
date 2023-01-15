@@ -1,0 +1,97 @@
+spring:
+  #  cloud:
+  #    kubernetes:
+  #      discovery:
+  #        enabled: true
+  #        all-namespaces: true
+  #        #        master-url: https://kubernetes.default.svc
+  #        #      include-not-ready-addresses: true
+  #        discovery-server-url: ${DISCOVERY_URL}
+  #    discovery:
+  #      client:
+  #        health-indicator:
+  #          enabled: false
+
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
+  data:
+    redis:
+      client-type: ${REDIS_TYPE:JEDIS}
+      password: ${REDIS_PASS:pass}
+      cluster:
+        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
+      lettuce:
+        pool:
+          enabled: false
+          maxIdle: 10
+          minIdle: 1
+          maxActive: 5
+          maxWait: 5
+          timeBetweenEvictionRuns: 100000
+      jedis:
+        pool:
+          enabled: true
+          maxIdle: 5
+          minIdle: 1
+          maxActive: 5
+          maxWait: 5
+          timeBetweenEvictionRuns: 100000
+
+    elasticsearch:
+      repositories:
+        enabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:kafka}
+    security:
+      protocol: ssl
+    ssl:
+      trust-store-location: ${JKS:jks}
+      trust-store-password: ${JKS_PASS:pass}
+    consumer:
+      #      security:
+      #        protocol: ssl
+      auto-offset-reset: earliest
+
+request:
+  limit:
+    global:
+      tokens: ${GLOBAL_REQUEST_LIMIT:1000}
+      duration: ${GLOBAL_REQUEST_DURATION:1}
+      speed: ${GLOBAL_REQUEST_DURATION_SPEED:100}
+    scope:
+      tokens: ${REQUEST_LIMIT:100}
+      duration: ${REQUEST_DURATION:1}
+      speed: ${REQUEST_DURATION_SPEED:10}
+  path:
+    permit: ${PERMIT_PATH:/public}
+    nonPrivate: ${PUBLIC_PATH:/public}
+    limit: ${LIMIT_PATH:/}
+    exclude:
+      all: ${EXCLUDE_PATH:/actuator}
+      record: ${RECORD_EXCLUDE_PATH:/actuator}
+    filter: ${FILTER_PATH:/}
+  header:
+    ip: ${IP_HEADER:x-forward-for}
+    black: ${BLACK_HEADER:x-forward-for}
+    white: ${WHITE_HEADER:x-forward-for}
+service:
+  ssl:
+    ca:  ${CA_CRT:ca.crt}
+    cert:  ${TLS_CERT:tls.crt}
+    key:  ${TLS_KEY:tls.key}
+  redis:
+    url:  ${REDIS_SERVICE:localhost:8379}
+  es:
+    nodes: ${ES_URL:elasticsearch-master:9200}
+    user: ${ES_USER:user}
+    pass: ${ES_PASS:elpsykongroo}
+    ssl:
+      type: self
+      ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
+      cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
+      key: ${ES_TLS_KEY:/var/ssl/es/tls.key}
+    timeout:
+      connect: ${ES_CONNECT_TIME:10}
+      socket: ${ES_SOCKET_TIME:10}

@@ -1,0 +1,21 @@
+server:
+  port: 8379
+
+spring:
+  data:
+    redis:
+      client-type: ${REDIS_TYPE:JEDIS}
+#      host: ${REDIS_NODE:redis-singel-master.redis.svc}
+      cluster:
+        nodes:
+          - ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
+      jedis:
+        pool:
+          enabled: true
+          maxIdle: 5
+          minIdle: 1
+          maxActive: 5
+          maxWait: 5
+          timeBetweenEvictionRuns: 100000
+REDIS_HOST: ${REDIS_NODES:redis.elpsykongroo.com}
+REDIS_PASSWORD: ${REDIS_PASS:elpsy4783}
