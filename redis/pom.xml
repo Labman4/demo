@@ -187,6 +187,20 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.qunix</groupId>
+                <artifactId>structure-maven-plugin</artifactId>
+                <version>0.0.2</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>modules</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>

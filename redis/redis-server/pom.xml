@@ -9,8 +9,8 @@
         <version>0.0.1</version>
     </parent>
 
-    <groupId>com.elpsykongroo.services.redis</groupId>
-    <artifactId>server</artifactId>
+    <groupId>com.elpsykongroo.services</groupId>
+    <artifactId>redis-server</artifactId>
     <version>0.0.1</version>
 
 </project>

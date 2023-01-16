@@ -53,9 +53,6 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	@Autowired
 	private AccessRecordRepo accessRecordRepo;
 
-//    @Autowired
-//    private RedissonClient redissonClient;
-
 	@Autowired
 	private RequestConfig requestConfig;
 

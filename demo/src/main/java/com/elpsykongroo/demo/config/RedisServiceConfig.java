@@ -3,21 +3,21 @@ package com.elpsykongroo.demo.config;
 import com.elpsykongroo.services.redis.RedisService;
 import com.elpsykongroo.services.redis.impl.RedisServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
-@Configuration(proxyBeanMethods = false)
-public class RedisConfig {
+@Configuration
+public class RedisServiceConfig {
 
     @Autowired
     private ServiceConfig serviceConfig;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private RestTemplateBuilder restTemplateBuilder;
 
     @Bean
-    public RedisService redisService () {
-        return  new RedisServiceImpl(serviceConfig.getRedis().getUrl(), restTemplate);
+    public RedisService redisService() {
+        return  new RedisServiceImpl(serviceConfig.getRedis().getUrl(), new RestTemplateBuilder());
     }
 }

@@ -21,9 +21,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-//@MyBatisResourcesScan(typeAliasesPackages = "com.elpsykongroo.demo.entity", mapperLocationPatterns = "mapper/**/*Mapper.xml")
-//@MapperScan(basePackages = "com.elpsykongroo.demo.mapper", sqlSessionTemplateRef = "sqlSessionTemplate")
-//@ServletComponentScan
 public class DemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
@@ -47,12 +44,5 @@ public class DemoApplication {
 //    @KafkaListener(id = "0", topics = "demo")
 //    public void listen(String in) {
 //        System.out.println(in);
-//    }
-
-//    @Bean
-//    ApplicationRunner runner(DemoMapper mapper) {
-//        return args -> {
-//            mapper.test();
-//        };
 //    }
 }

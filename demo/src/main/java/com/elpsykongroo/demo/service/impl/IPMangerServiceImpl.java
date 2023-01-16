@@ -50,17 +50,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 	@Autowired
 	private IPRepo ipRepo;
 
-//    @Autowired
-//    private RedissonClient redissonClient;
-
 	@Autowired
 	private RedisService redisService;
 
     @Autowired
 	private RequestConfig requestConfig;
-
-//	@Autowired
-//	private DemoMapper demoMapper;
 
 	/*
 	 * X-Forwarded-For

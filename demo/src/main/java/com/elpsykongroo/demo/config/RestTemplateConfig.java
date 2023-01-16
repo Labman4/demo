@@ -19,8 +19,4 @@
                   .setReadTimeout(Duration.ofSeconds(2)).detectRequestFactory(true);
       }
 
-      @Bean
-      public RestTemplate restTemplate () {
-          return new RestTemplate();
-      }
  }

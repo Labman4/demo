@@ -2,18 +2,20 @@ package com.elpsykongroo.services.redis.impl;
 
 import com.elpsykongroo.services.redis.RedisService;
 import com.elpsykongroo.services.redis.dto.KV;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+@Component
 public class RedisServiceImpl implements RedisService {
-    private String serverUrl;
+    private RestTemplate restTemplate;
+    private String serverUrl = "http://localhost:8379";
     private String servicePrefix =  "/redis";
 
-    public RedisServiceImpl(String serverUrl, RestTemplate restTemplate) {
+    public RedisServiceImpl(String serverUrl, RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
         this.serverUrl = serverUrl;
-        this.restTemplate = restTemplate;
     }
-
-    private RestTemplate restTemplate;
 
     @Override
     public void set(KV kv) {
