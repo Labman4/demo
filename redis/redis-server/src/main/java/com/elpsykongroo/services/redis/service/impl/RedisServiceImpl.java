@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RedisServiceImpl implements RedisService {
     @Autowired
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
     @Override
     public void setCache(String key, String value) {
            redisTemplate.opsForValue().set(key, value);

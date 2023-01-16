@@ -65,6 +65,7 @@ service:
   redis:
     url: http://localhost:8379
   es:
+    nodes: localhost:9200
     user: elastic
     pass: 123456
     ssl:
