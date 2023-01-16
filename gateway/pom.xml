@@ -347,6 +347,14 @@
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-image</id>
+                                <goals>
+                                    <goal>build-image-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                         <configuration>
                             <jvmArguments>
                                 -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/
@@ -358,10 +366,13 @@
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
                                 </env>
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy>
+                                <name>
+                                    registry.elpsykongroo.com/library/${project.artifactId}:native
+                                </name>
                             </image>
                             <docker>
-<!--                                <host>unix:///run/user/1000/podman/podman.sock</host>-->
-<!--                                <bindHostToBuilder>true</bindHostToBuilder>-->
+                               <host>unix:///run/user/1000/podman/podman.sock</host>
+                               <bindHostToBuilder>true</bindHostToBuilder>
                             </docker>
                         </configuration>
                     </plugin>
@@ -432,12 +443,9 @@
                             </jvmArguments>
                             <image>
                                 <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
-                                <buildpacks></buildpacks>
                                 <env>
                                     <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>     
-<!--                                    <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>-->
-<!--                                    </BP_NATIVE_IMAGE_BUILD_ARGUMENTS>                         -->
                                 </env>
                                 <name>
                                     registry.elpsykongroo.com/library/${project.artifactId}:native
@@ -445,9 +453,8 @@
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                             </image>
                             <docker>
-                                <host>http://localhost:2375</host>
-<!--                                <host>unix:///run/user/1000/podman/podman.sock</host>-->
-<!--                                <bindHostToBuilder>true</bindHostToBuilder>-->
+                                <host>unix:///run/user/1000/podman/podman.sock</host>
+                                <bindHostToBuilder>true</bindHostToBuilder>
                             </docker>
                         </configuration>
                     </plugin>
