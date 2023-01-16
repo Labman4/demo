@@ -41,9 +41,6 @@
       "pattern":"\\Q\\E"
     }, 
     {
-      "pattern":"\\Qapplication-dev.yaml\\E"
-    }, 
-    {
       "pattern":"\\Qapplication-prod.yaml\\E"
     }, 
     {
@@ -68,7 +65,7 @@
       "pattern":"\\Qcom/elpsykongroo/demo/config/ElasticConfig.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/demo/config/RedisConfig.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/demo/config/RedisServiceConfig.class\\E"
     }, 
     {
       "pattern":"\\Qcom/elpsykongroo/demo/config/RequestConfig$Header.class\\E"
@@ -86,7 +83,7 @@
       "pattern":"\\Qcom/elpsykongroo/demo/config/RequestConfig.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/demo/config/SecretsConfig.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/demo/config/RestTemplateConfig.class\\E"
     }, 
     {
       "pattern":"\\Qcom/elpsykongroo/demo/config/SecurityConfig.class\\E"
@@ -113,9 +110,6 @@
       "pattern":"\\Qcom/elpsykongroo/demo/config/TraceConfig.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/demo/config/VaultTemplateConfig.class\\E"
-    }, 
-    {
       "pattern":"\\Qcom/elpsykongroo/demo/config/\\E"
     }, 
     {
@@ -123,6 +117,9 @@
     }, 
     {
       "pattern":"\\Qcom/elpsykongroo/demo/controller/IPManagerContronller.class\\E"
+    }, 
+    {
+      "pattern":"\\Qcom/elpsykongroo/demo/controller/RedisController.class\\E"
     }, 
     {
       "pattern":"\\Qcom/elpsykongroo/demo/controller/external/IPContronller.class\\E"
@@ -140,12 +137,6 @@
       "pattern":"\\Qcom/elpsykongroo/demo/repo/elasticsearch/\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/demo/repo/redis/IPListRepo.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/demo/repo/redis/\\E"
-    }, 
-    {
       "pattern":"\\Qcom/elpsykongroo/demo/service/AccessRecordService.class\\E"
     }, 
     {
@@ -158,22 +149,13 @@
       "pattern":"\\Qcom/elpsykongroo/demo/service/impl/IPMangerServiceImpl.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/demo/testconfig/RedisConfig.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/demo/web/\\E"
-    }, 
-    {
       "pattern":"\\Qcom/github/dockerjava/zerodep/shaded/org/apache/hc/client5/version.properties\\E"
     }, 
     {
+      "pattern":"\\Qcom/sun/jna/linux-x86-64/libjnidispatch.so\\E"
+    }, 
+    {
       "pattern":"\\Qelasticsearch-default-memory-vm.options\\E"
-    }, 
-    {
-      "pattern":"\\Qio/lettuce/core/resource/SocketAddressResolver.class\\E"
-    }, 
-    {
-      "pattern":"\\Qio/opentelemetry/sdk/common/version.properties\\E"
     }, 
     {
       "pattern":"\\Qjakarta/servlet/Filter.class\\E"
@@ -191,12 +173,6 @@
       "pattern":"\\Qorg/apache/catalina/core/RestrictedServlets.properties\\E"
     }, 
     {
-      "pattern":"\\Qorg/apache/catalina/loader/JdbcLeakPrevention.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/apache/catalina/util/CharsetMapperDefault.properties\\E"
-    }, 
-    {
       "pattern":"\\Qorg/apache/catalina/util/ServerInfo.properties\\E"
     }, 
     {
@@ -210,6 +186,75 @@
     }, 
     {
       "pattern":"\\Qorg/json/JSONObject.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/body.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/bodyWithContentType.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/connectionOptions.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/delay.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/draft-07.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/expectation.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/httpClassCallback.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/httpError.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/httpForward.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/httpObjectCallback.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/httpOverrideForwardedRequest.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/httpRequest.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/httpResponse.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/httpTemplate.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/keyToMultiValue.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/keyToValue.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/openAPIDefinition.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/protocol.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/requestDefinition.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/socketAddress.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/stringOrJsonSchema.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/timeToLive.json\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/mockserver/model/schema/times.json\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/aot/hint/annotation/Reflective.class\\E"
@@ -407,12 +452,6 @@
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/JvmMetricsAutoConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration$KafkaStreamsMetricsConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/KafkaMetricsAutoConfiguration.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/LogbackMetricsAutoConfiguration$LogbackLoggingCondition.class\\E"
     }, 
     {
@@ -486,9 +525,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/jdbc/DataSourcePoolMetricsAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/redis/LettuceMetricsAutoConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/startup/StartupTimeMetricsListenerAutoConfiguration.class\\E"
@@ -797,9 +833,6 @@
       "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/JedisConnectionConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/LettuceConnectionConfiguration$PoolBuilderFactory.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/LettuceConnectionConfiguration.class\\E"
     }, 
     {
@@ -954,18 +987,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/jmx/JmxAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/kafka/KafkaAnnotationDrivenConfiguration$EnableKafkaConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/kafka/KafkaAnnotationDrivenConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/kafka/KafkaAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/kafka/KafkaStreamsAnnotationDrivenConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/mail/MailSenderValidatorAutoConfiguration.class\\E"
@@ -1271,9 +1292,6 @@
       "pattern":"\\Qorg/springframework/context/ApplicationContextAware.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/context/ApplicationContextInitializer.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/context/EnvironmentAware.class\\E"
     }, 
     {
@@ -1334,19 +1352,7 @@
       "pattern":"\\Qorg/springframework/data/elasticsearch/repository/support/ElasticsearchRepositoryFactoryBean.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/data/keyvalue/repository/config/QueryCreatorType.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/data/redis/core/convert/ReferenceResolverImpl.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/redis/repository/configuration/EnableRedisRepositories.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/redis/repository/configuration/RedisRepositoriesRegistrar.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/redis/repository/support/RedisRepositoryFactoryBean.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/data/repository/CrudRepository.class\\E"
@@ -1383,15 +1389,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/http/codec/CodecConfigurer.properties\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/kafka/annotation/EnableKafka.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/kafka/annotation/KafkaBootstrapConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/kafka/annotation/KafkaListenerConfigurationSelector.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/security/config/annotation/authentication/configuration/AuthenticationConfiguration$AuthenticationManagerDelegator.class\\E"
@@ -1466,18 +1463,6 @@
       "pattern":"\\Qorg/springframework/transaction/annotation/TransactionManagementConfigurationSelector.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/vault/annotation/VaultPropertySource.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/vault/annotation/VaultPropertySourceRegistrar.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/vault/config/AbstractVaultConfiguration$ClientFactoryWrapper.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/vault/config/AbstractVaultConfiguration$TaskSchedulerWrapper.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/vault/config/AbstractVaultConfiguration.class\\E"
     }, 
     {
@@ -1527,11 +1512,11 @@
       "locales":["und"]
     }, 
     {
-      "name":"org.apache.catalina.authenticator.LocalStrings",
+      "name":"jsv-messages",
       "locales":["und"]
     }, 
     {
-      "name":"org.apache.catalina.authenticator.jaspic.LocalStrings",
+      "name":"org.apache.catalina.authenticator.LocalStrings",
       "locales":["und"]
     }, 
     {
@@ -1595,10 +1580,6 @@
       "locales":["und"]
     }, 
     {
-      "name":"org.apache.coyote.http11.filters.LocalStrings",
-      "locales":["und"]
-    }, 
-    {
       "name":"org.apache.coyote.http2.LocalStrings",
       "locales":["und"]
     }, 
@@ -1624,10 +1605,6 @@
     }, 
     {
       "name":"org.apache.tomcat.util.http.LocalStrings",
-      "locales":["und"]
-    }, 
-    {
-      "name":"org.apache.tomcat.util.http.parser.LocalStrings",
       "locales":["und"]
     }, 
     {
