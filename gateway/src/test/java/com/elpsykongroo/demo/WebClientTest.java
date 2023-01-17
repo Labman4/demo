@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@MockServerTest("server.url=http://localhost:${mockServerPort}")
+//@MockServerTest("server.url=http://localhost:${mockServerPort}")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
@@ -32,10 +32,10 @@ public class WebClientTest  {
     @LocalServerPort
     int serverPort;
 
-    MockServerClient client;
-
-     @Value("${server.url}")
-    private String serverUrl;
+//    MockServerClient client;
+//
+//     @Value("${server.url}")
+//    private String serverUrl;
 
     @Autowired 
     WebTestClient webClient;

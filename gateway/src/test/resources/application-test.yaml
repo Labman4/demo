@@ -3,7 +3,9 @@ server:
     enabled: true
   shutdown: graceful
   port: 8443
-  
+management:
+  tracing:
+    enabled: ${TRACE_ENABLED:true}
 spring:
   elasticsearch:
     socket-timeout: 100s
@@ -63,7 +65,7 @@ service:
     cert:  ${TLS_CERT}
     key:  ${TLS_KEY}
   redis:
-    url: http://localhost:8379
+    url: https://api.elpsykongroo.com
   es:
     nodes: localhost:9200
     user: elastic
