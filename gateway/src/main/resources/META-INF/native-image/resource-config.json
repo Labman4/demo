@@ -1520,6 +1520,10 @@
       "locales":["und"]
     }, 
     {
+      "name":"org.apache.catalina.authenticator.jaspic.LocalStrings",
+      "locales":["und"]
+    }, 
+    {
       "name":"org.apache.catalina.connector.LocalStrings",
       "locales":["und"]
     }, 
@@ -1580,6 +1584,10 @@
       "locales":["und"]
     }, 
     {
+      "name":"org.apache.coyote.http11.filters.LocalStrings",
+      "locales":["und"]
+    }, 
+    {
       "name":"org.apache.coyote.http2.LocalStrings",
       "locales":["und"]
     }, 
@@ -1605,6 +1613,10 @@
     }, 
     {
       "name":"org.apache.tomcat.util.http.LocalStrings",
+      "locales":["und"]
+    }, 
+    {
+      "name":"org.apache.tomcat.util.http.parser.LocalStrings",
       "locales":["und"]
     }, 
     {

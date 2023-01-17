@@ -69,9 +69,6 @@
   "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
 },
 {
-  "name":"[Ljakarta.servlet.Filter;"
-},
-{
   "name":"[Ljava.io.Serializable;"
 },
 {
@@ -302,18 +299,6 @@
     {"name":"<init>","parameterTypes":[] }, 
     {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
     {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }
-  ]
-},
-{
-  "name":"com.elpsykongroo.demo.RedisServiceTest",
-  "allDeclaredFields":true,
-  "allDeclaredClasses":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[
-    {"name":"<init>","parameterTypes":[] }, 
-    {"name":"redisTest","parameterTypes":[] }
   ]
 },
 {
@@ -591,7 +576,16 @@
   "allDeclaredClasses":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getAccessPath","parameterTypes":[] }, 
+    {"name":"getId","parameterTypes":[] }, 
+    {"name":"getRequestHeader","parameterTypes":[] }, 
+    {"name":"getSourceIP","parameterTypes":[] }, 
+    {"name":"getTimestamp","parameterTypes":[] }, 
+    {"name":"getUserAgent","parameterTypes":[] }
+  ]
 },
 {
   "name":"com.elpsykongroo.demo.domain.IPManage",
@@ -1646,13 +1640,7 @@
   "name":"graphql.GraphQL"
 },
 {
-  "name":"groovy.lang$Closure"
-},
-{
   "name":"groovy.lang$MetaClass"
-},
-{
-  "name":"groovy.lang.Closure"
 },
 {
   "name":"groovy.lang.GroovySystem"
@@ -2789,7 +2777,8 @@
 {
   "name":"java.lang.Cloneable",
   "allDeclaredFields":true,
-  "allDeclaredClasses":true
+  "allDeclaredClasses":true,
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"java.lang.Comparable",
@@ -3214,7 +3203,10 @@
   "allDeclaredClasses":true
 },
 {
-  "name":"java.util.Date"
+  "name":"java.util.Date",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.util.EventListener",
@@ -8425,8 +8417,14 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
+},
+{
   "name":"org.springframework.boot.test.autoconfigure.web.reactive.SpringBootWebTestClientBuilderCustomizer",
   "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true
 },
 {
@@ -8435,36 +8433,10 @@
   "queryAllDeclaredMethods":true
 },
 {
-  "name":"org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc",
-  "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
-},
-{
-  "name":"org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":["org.springframework.web.context.WebApplicationContext","org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties"] }]
-},
-{
-  "name":"org.springframework.boot.test.autoconfigure.web.servlet.MockMvcAutoConfiguration$WebTestClientMockMvcConfiguration",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
-},
-{
   "name":"org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener",
   "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.boot.test.autoconfigure.web.servlet.SpringBootMockMvcBuilderCustomizer",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[
-    {"name":"setAddFilters","parameterTypes":["boolean"] }, 
-    {"name":"setPrintOnlyOnFailure","parameterTypes":["boolean"] }
-  ]
 },
 {
   "name":"org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory",
@@ -8565,10 +8537,14 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer__TestContext002_BeanDefinitions",
+  "name":"org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer__TestContext001_BeanDefinitions",
   "allDeclaredClasses":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"org.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizer$WebTestClientFactory",
+  "allDeclaredFields":true
 },
 {
   "name":"org.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizerFactory",
@@ -11443,10 +11419,6 @@
   "allDeclaredFields":true
 },
 {
-  "name":"org.springframework.security.web.csrf.CsrfFilter",
-  "allDeclaredFields":true
-},
-{
   "name":"org.springframework.security.web.header.HeaderWriterFilter",
   "allDeclaredFields":true
 },
@@ -11557,14 +11529,6 @@
   "methods":[{"name":"<init>","parameterTypes":["org.springframework.test.context.support.DefaultTestContext"] }]
 },
 {
-  "name":"org.springframework.test.context.support.DefaultTestContextBootstrapper",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"org.springframework.test.context.support.DelegatingSmartContextLoader",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"org.springframework.test.context.support.DependencyInjectionTestExecutionListener",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -11605,27 +11569,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"org.springframework.test.web.reactive.server.DefaultWebTestClient",
-  "allDeclaredFields":true
-},
-{
   "name":"org.springframework.test.web.reactive.server.WebTestClient"
-},
-{
-  "name":"org.springframework.test.web.servlet.MockMvc",
-  "allDeclaredFields":true
-},
-{
-  "name":"org.springframework.test.web.servlet.MockMvcBuilderSupport",
-  "allDeclaredFields":true
-},
-{
-  "name":"org.springframework.test.web.servlet.setup.AbstractMockMvcBuilder",
-  "allDeclaredFields":true
-},
-{
-  "name":"org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder",
-  "allDeclaredFields":true
 },
 {
   "name":"org.springframework.transaction.PlatformTransactionManager"
@@ -13317,6 +13261,10 @@
 },
 {
   "name":"sun.security.provider.SHA5$SHA512",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.provider.SecureRandom",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
