@@ -11,7 +11,7 @@ import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,20 +22,25 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+
 @Testcontainers
-//@MockServerTest("server.url=http://localhost:${mockServerPort}")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@MockServerTest("server.url=http://localhost:${mockServerPort}")
+@SpringBootTest(properties = { "service.redis.url=${server.url}" }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@AutoConfigureMockMvc(addFilters = false)
+//@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureWebTestClient
+
 public class WebClientTest  {
 
     @LocalServerPort
     int serverPort;
 
-//    MockServerClient client;
-//
-//     @Value("${server.url}")
-//    private String serverUrl;
+    MockServerClient client;
+
+     @Value("${server.url}")
+    private String serverUrl;
 
     @Autowired 
     WebTestClient webClient;
@@ -48,8 +53,8 @@ public class WebClientTest  {
     @Test
     @Timeout(value = 200, unit = TimeUnit.SECONDS)
     void web() {
-//        client.when(request().withMethod("POST").withPath("/redis.*"))
-//                .respond(response().withStatusCode(200));
+        client.when(request().withMethod("POST").withPath("/redis.*"))
+                .respond(response().withStatusCode(200));
 //        client.when(request().withPath(not("/redis.*")))
 //                .forward(forward().withPort(serverPort));
 //        WebTestClient webTestClient = WebTestClient.bindToServer().baseUrl(serverUrl).build();
@@ -61,7 +66,7 @@ public class WebClientTest  {
 
         webClient
             .put()
-            .uri("/ip/manage/add?address=test.elpsykongroo.com&black=false")
+            .uri("/ip/manage/add?address=test.elpsykongroo.com&black")
             .exchange()
             .expectAll(
                 res -> res.expectStatus().isOk()

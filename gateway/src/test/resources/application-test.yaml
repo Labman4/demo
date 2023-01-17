@@ -65,7 +65,7 @@ service:
     cert:  ${TLS_CERT}
     key:  ${TLS_KEY}
   redis:
-    url: https://api.elpsykongroo.com
+    url: http://localhost:8379
   es:
     nodes: localhost:9200
     user: elastic
