@@ -17,28 +17,6 @@ spring:
   datasource:
     url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
   data:
-    redis:
-      client-type: ${REDIS_TYPE:JEDIS}
-      password: ${REDIS_PASS:pass}
-      cluster:
-        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
-      lettuce:
-        pool:
-          enabled: false
-          maxIdle: 10
-          minIdle: 1
-          maxActive: 5
-          maxWait: 5
-          timeBetweenEvictionRuns: 100000
-      jedis:
-        pool:
-          enabled: true
-          maxIdle: 5
-          minIdle: 1
-          maxActive: 5
-          maxWait: 5
-          timeBetweenEvictionRuns: 100000
-
     elasticsearch:
       repositories:
         enabled: true
