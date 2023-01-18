@@ -314,12 +314,6 @@
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/data/elasticsearch/ElasticsearchReactiveHealthContributorAutoConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/data/redis/RedisHealthContributorAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/data/redis/RedisReactiveHealthContributorAutoConfiguration.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/elasticsearch/ElasticsearchRestHealthContributorAutoConfiguration.class\\E"
     }, 
     {
@@ -423,9 +417,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/logging/LoggersEndpointAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/mail/MailHealthContributorAutoConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/management/HeapDumpWebEndpointAutoConfiguration.class\\E"
@@ -761,9 +752,6 @@
       "pattern":"\\Qorg/springframework/boot/autoconfigure/cache/NoOpCacheConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/cache/RedisCacheConfiguration.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/cache/SimpleCacheConfiguration.class\\E"
     }, 
     {
@@ -830,30 +818,6 @@
       "pattern":"\\Qorg/springframework/boot/autoconfigure/data/elasticsearch/ReactiveElasticsearchRepositoriesRegistrar.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/JedisConnectionConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/LettuceConnectionConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisConnectionConfiguration$ConnectionInfo.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisConnectionConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisReactiveAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisRepositoriesAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisRepositoriesRegistrar.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration.class\\E"
     }, 
     {
@@ -888,33 +852,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ReactiveElasticsearchClientAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/gson/GsonAutoConfiguration$StandardGsonBuilderCustomizer.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/gson/GsonAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$GsonHttpMessageConverterConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$JacksonAndJsonbUnavailableCondition$JacksonAvailable.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$JacksonAndJsonbUnavailableCondition$JsonbPreferred.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$JacksonAndJsonbUnavailableCondition.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$PreferGsonOrJacksonAndJsonbUnavailableCondition$GsonPreferred.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$PreferGsonOrJacksonAndJsonbUnavailableCondition$JacksonJsonbUnavailable.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$PreferGsonOrJacksonAndJsonbUnavailableCondition.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration.class\\E"
@@ -987,9 +924,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/jmx/JmxAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/mail/MailSenderValidatorAutoConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/netty/NettyAutoConfiguration.class\\E"
@@ -1350,9 +1284,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/data/elasticsearch/repository/support/ElasticsearchRepositoryFactoryBean.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/redis/core/convert/ReferenceResolverImpl.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/data/repository/CrudRepository.class\\E"
