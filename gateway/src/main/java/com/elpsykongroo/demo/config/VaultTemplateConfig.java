@@ -24,7 +24,7 @@ import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.config.AbstractVaultConfiguration;
 import java.net.URI;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(
     prefix = "service",
     name = "vault",

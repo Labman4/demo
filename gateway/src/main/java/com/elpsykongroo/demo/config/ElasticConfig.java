@@ -18,6 +18,7 @@ package com.elpsykongroo.demo.config;
 
 import com.elpsykongroo.demo.utils.SSLUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -44,29 +45,35 @@ public class ElasticConfig extends ElasticsearchConfiguration {
        ServiceConfig.ES es= serviceConfig.getEs();
        if ("public".equals(es.getSsl().getType())) {
            return ClientConfiguration.builder()
-                   .connectedTo(es.getNodes())
-                   .usingSsl()
-                   .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
-                   .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
-                   .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
-                   .build();
+                    .connectedTo(es.getNodes())
+                    .usingSsl()
+                    .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
+                    .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
+                    .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
+                    .build();
        } else if ("self".equals(es.getSsl().getType())) {
            SSLContext sslContext = SSLUtils.getSSLContext(es.getSsl().getCa(),
                    es.getSsl().getCert(), es.getSsl().getKey());
            return ClientConfiguration.builder()
-                   .connectedTo(serviceConfig.getEs().getNodes())
-                   .usingSsl(sslContext)
-                   .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
-                   .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
-                   .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
-                   .build();
+                    .connectedTo(serviceConfig.getEs().getNodes())
+                    .usingSsl(sslContext)
+                    .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
+                    .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
+                    .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
+                    .build();
+       } else if (StringUtils.isNotEmpty(es.getUser())){
+           return ClientConfiguration.builder()
+                    .connectedTo(es.getNodes())
+                    .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
+                    .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
+                    .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
+                    .build();
        } else {
            return ClientConfiguration.builder()
-                   .connectedTo(es.getNodes())
-                   .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
-                   .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
-                   .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
-                   .build();
-       }
+                    .connectedTo(es.getNodes())
+                    .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))
+                    .withSocketTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getSocket())))
+                    .build();
+      }
    }
 }
