@@ -58,8 +58,6 @@ service:
     url: http://localhost:8379
   es:
     nodes: elasticsearch-master.elastic.svc.cluster.local
-    user: elastic
-    pass: Elpsy4783
     ssl:
       type: none
       ca: ${ES_CA_CRT:ca.crt}
