@@ -1,3 +1,10 @@
+management:
+  endpoint:
+    shutdown.enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: ${ENDPOINTS_WEB:shutdown}
 spring:
   main:
     allow-bean-definition-overriding: true
