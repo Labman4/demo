@@ -58,6 +58,7 @@ service:
     url: http://localhost:8379
   es:
     nodes: localhost:9200
+    user: elastic
     ssl:
       type: none
       ca: ${ES_CA_CRT:ca.crt}
