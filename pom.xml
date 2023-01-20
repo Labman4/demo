@@ -195,7 +195,7 @@
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
             </plugin>
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.qunix</groupId>
                 <artifactId>structure-maven-plugin</artifactId>
                 <version>0.0.2</version>
@@ -208,7 +208,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin> -->
         </plugins>
     </build>
     <reporting>
