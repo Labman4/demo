@@ -341,27 +341,6 @@
   "queryAllDeclaredConstructors":true
 },
 {
-  "name":"com.elpsykongroo.demo.config.RedisServiceConfig$$SpringCGLIB$$0",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "fields":[{"name":"CGLIB$FACTORY_DATA"}],
-  "methods":[
-    {"name":"<init>","parameterTypes":[] }, 
-    {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"redisService","parameterTypes":[] }
-  ]
-},
-{
-  "name":"com.elpsykongroo.demo.config.RedisServiceConfig$$SpringCGLIB$$1",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
-  "name":"com.elpsykongroo.demo.config.RedisServiceConfig$$SpringCGLIB$$2",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
   "name":"com.elpsykongroo.demo.config.RequestConfig",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
