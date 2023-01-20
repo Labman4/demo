@@ -6,22 +6,13 @@ on:
         description: 'Environment to run the workflow against'
         type: environment
         required: true
+      deploy_secret:
+        type: string
+        required: false
 jobs:
-#   test:
-#     runs-on: ubuntu-latest
-#     steps:
-#     -  run: |
-#         echo "{{ secrets.VAULT_TOKEN }}"
-#         echo "{{ secrets.VAULT_URI }}"
-#         echo "{{ secrets.VAULT_PATH }}"
-#         echo "{{ secrets.SECRETS_PATH }}"
-
-  build:
+  deploy:
     uses: Labman4/workflow/.github/workflows/host-build-native.yml@native-image
+    with: 
+      deploy_secret: ${{ inputs.deploy_secret }}
     secrets: inherit
-
-#       vaultToken: "{{ secrets.VAULT_TOKEN }}"
-#       vaultUri: "{{ secrets.VAULT_URI }}"
-#       vaultPath: "{{ secrets.VAULT_PATH }}"
-#       secretsPath: "{{ secrets.SECRETS_PATH }}"
 
