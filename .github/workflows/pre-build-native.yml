@@ -12,6 +12,8 @@ on:
   push:
     branches:
     - native-image
+    paths-ignore:
+      - .github/**    
 jobs:
   native:
     uses: Labman4/workflow/.github/workflows/native-image.yml@native-image
