@@ -8,7 +8,7 @@ on:
         required: true
       deploy_secret:
         type: string
-        required: true
+        required: false
 jobs:
   deploy:
     uses: Labman4/workflow/.github/workflows/host-build-native.yml@native-image
