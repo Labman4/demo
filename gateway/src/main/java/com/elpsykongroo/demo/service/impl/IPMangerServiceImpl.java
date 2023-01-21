@@ -219,12 +219,14 @@ public class IPMangerServiceImpl implements IPManagerService {
 	public String accessIP(HttpServletRequest request, String headerType) {
 		Header header = requestConfig.getHeader();
 		String[] headers = header.getIp().split(",");
-		
 		if ("black".equals(headerType)) {
 			headers = header.getBlack().split(",");
 		}
 		if ("white".equals(headerType)) {
 			headers = header.getWhite().split(",");
+		}
+		if ("record".equals(headerType)) {
+			headers = header.getRecord().split(",");
 		}
 		String ip = null;
 		for (String head: headers) {
@@ -236,8 +238,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
-		if (!PathUtils.beginWithPath(requestConfig.getPath().getExclude().getRecord(), request.getRequestURI())) {
-			log.info("ip------------{}", ip);
+		if (!PathUtils.beginWithPath(requestConfig.getRecord().getExclude().getPath(), request.getRequestURI())) {
+			log.info("ip------------{}, type:{}, header:{}", ip, headerType, headers);
 		}
 		return ip;
 	}

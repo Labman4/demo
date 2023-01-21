@@ -87,7 +87,6 @@ public class WebClientTest  {
         webClient
             .put()
             .uri("/ip/manage/add?address=test.elpsykongroo.com&black=false")
-            .headers(http -> http.setBasicAuth("username", "password"))
             .exchange()
             .expectAll(
                 res -> res.expectStatus().isOk()
@@ -117,7 +116,6 @@ public class WebClientTest  {
         webClient
             .post()
             .uri("/record/filter?param=man&pageNumber=0&pageSize=10")
-            .headers(http -> http.setBasicAuth("username", "password"))
             .exchange()
             .expectStatus().isOk();
 

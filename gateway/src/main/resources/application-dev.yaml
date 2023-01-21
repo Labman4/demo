@@ -32,17 +32,19 @@ request:
     permit: ${PERMIT_PATH:/**}
     nonPrivate: ${PUBLIC_PATH:/}
     limit: ${LIMIT_PATH:/}
-    exclude:
-      all: ${EXCLUDE_PATH:/}
-      record: ${RECORD_EXCLUDE_PATH:/actuator}
+    exclude: ${EXCLUDE_PATH:/}
     filter: ${FILTER_PATH:/}
+  record: 
+    exclude:
+      path:  ${RECORD_EXCLUDE_PATH:/actuator}
+      ip:  ${RECORD_EXCLUDE_IP:ip.elpsykongroo.com}
   header:
     ip: ${IP_HEADER:x-forward-for}
     black: ${BLACK_HEADER:x-forward-for}
     white: ${WHITE_HEADER:x-forward-for}
-
+    record: ${RECORD_HEADER:x-forward-for}
 service:
-  vault: true
+  vault: false
   ssl:
     ca:  ${CA_CRT}
     cert:  ${TLS_CERT}

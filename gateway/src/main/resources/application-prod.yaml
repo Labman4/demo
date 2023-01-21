@@ -46,14 +46,17 @@ request:
     permit: ${PERMIT_PATH:/public}
     nonPrivate: ${PUBLIC_PATH:/public}
     limit: ${LIMIT_PATH:/}
-    exclude:
-      all: ${EXCLUDE_PATH:/actuator}
-      record: ${RECORD_EXCLUDE_PATH:/actuator}
+    exclude: ${EXCLUDE_PATH:/actuator}
     filter: ${FILTER_PATH:/}
+  record: 
+    exclude:
+      path:  ${RECORD_EXCLUDE_PATH:/actuator}
+      ip:  ${RECORD_EXCLUDE_IP:ip.elpsykongroo.com}
   header:
     ip: ${IP_HEADER:x-forward-for}
     black: ${BLACK_HEADER:x-forward-for}
     white: ${WHITE_HEADER:x-forward-for}
+    record: ${RECORD_HEADER:x-forward-for}
 service:
   ssl:
     ca:  ${CA_CRT:ca.crt}

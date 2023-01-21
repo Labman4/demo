@@ -32,6 +32,8 @@ public class RequestConfig {
 
     private Header header;
 
+    private Record record;
+
     @Data
     public static class Limit  {
         private Token global;
@@ -46,6 +48,9 @@ public class RequestConfig {
         private String black = "X-Forwarded-For";
 
         private String white = "X-Forwarded-For";
+
+        private String record = "X-Forwarded-For";
+
     }
 
     @Data
@@ -65,17 +70,22 @@ public class RequestConfig {
     
         private String limit = "/";
         
-        private Exclude exclude;
+        private String exclude;
     
-        private String filter = "/";
-        
+        private String filter = "/";  
+    }
+
+    @Data
+    public static class Record {
+        private Exclude exclude;
+
         @Data
         public static class Exclude {
-            private String all = "/";
-
-            private String record = "/actuator";
-        }     
-
+            private String path;
+    
+            private String ip;
+    
+        }
     }
 
 }

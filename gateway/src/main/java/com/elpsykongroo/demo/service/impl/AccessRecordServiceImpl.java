@@ -17,6 +17,7 @@
 package com.elpsykongroo.demo.service.impl;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,8 +33,10 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.config.RequestConfig;
+import com.elpsykongroo.demo.config.RequestConfig.Record.Exclude;
 import com.elpsykongroo.demo.domain.AccessRecord;
 import com.elpsykongroo.demo.service.AccessRecordService;
+import com.elpsykongroo.demo.service.IPManagerService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -54,28 +57,40 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	private AccessRecordRepo accessRecordRepo;
 
 	@Autowired
+	private IPManagerService ipMangerService;
+
+	@Autowired
 	private RequestConfig requestConfig;
 
 	public void saveAcessRecord(HttpServletRequest request) {
 		try {
-			String recordExcludePath = requestConfig.getPath().getExclude().getRecord();
-			if (!(StringUtils.isNotEmpty(recordExcludePath) && beginWithPath(recordExcludePath, request.getRequestURI()))) {
-				Map<String, String> result = new HashMap<>();
-				Enumeration<String> headerNames = request.getHeaderNames();
-				while (headerNames.hasMoreElements()) {
-					String key = (String) headerNames.nextElement();
-					String value = request.getHeader(key);
-					result.put(key, value);
+			boolean recordFlag = false;
+		    Exclude recordExclude = requestConfig.getRecord().getExclude();		
+			if (StringUtils.isNotEmpty(recordExclude.getIp())) {
+				String[] excludeIp = recordExclude.getIp().split(",");
+				for (String i: excludeIp) {
+					recordFlag = recordByIp(request, i);
 				}
-				AccessRecord record = new AccessRecord();
-				record.setRequestHeader(result);
-				record.setAccessPath(request.getRequestURI());
-				record.setSourceIP(request.getRemoteAddr());
-				record.setTimestamp(new Date());
-				record.setUserAgent(request.getHeader("user-agent"));
-				accessRecordRepo.save(record);
-				log.info("request header------------{} ", result);
 			}
+			if (!(StringUtils.isNotEmpty(recordExclude.getPath()) && beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
+				if (!recordFlag) {
+					Map<String, String> result = new HashMap<>();
+					Enumeration<String> headerNames = request.getHeaderNames();
+					while (headerNames.hasMoreElements()) {
+						String key = (String) headerNames.nextElement();
+						String value = request.getHeader(key);
+						result.put(key, value);
+					}
+					AccessRecord record = new AccessRecord();
+					record.setRequestHeader(result);
+					record.setAccessPath(request.getRequestURI());
+					record.setSourceIP(request.getRemoteAddr());
+					record.setTimestamp(new Date());
+					record.setUserAgent(request.getHeader("user-agent"));
+					accessRecordRepo.save(record);
+					log.info("request header------------{} ", result);
+			    }
+		  	}
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}
@@ -142,8 +157,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			records.addAll(accessRecordRepo.findByAccessPathLike(params));
 			records.addAll(accessRecordRepo.findByRequestHeaderLike(params));
 			int start = (int) pageable.getOffset();
-			int end = (int) ((start + pageable.getPageSize()) > records.size() ? records.size()
-					: (start + pageable.getPageSize()));
+			int end = (int) ((start + pageable.getPageSize()) > records.size() ? records.size() : (start + pageable.getPageSize()));
 			Page<AccessRecord> page =
 					new PageImpl<AccessRecord>(records.subList(start, end), pageable, records.size());
 		    return CommonResponse.success(page.get().toList());
@@ -158,6 +172,23 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			if (url.startsWith(p)) {
 				return true;
 			}
+		}
+		return false;
+	}
+
+	private boolean recordByIp(HttpServletRequest request, String recordIp) {
+		try {
+			String ip = ipMangerService.accessIP(request, "record");
+				if(IPRegexUtils.vaildateHost(recordIp)) {
+					InetAddress[] inetAddresses = InetAddress.getAllByName(recordIp);
+					for (InetAddress addr: inetAddresses) {
+						if (ip.equals(addr.getHostAddress())) {
+							return true;
+						}
+					}			
+				}
+		} catch (UnknownHostException e) {
+			throw new ServiceException(e);
 		}
 		return false;
 	}
