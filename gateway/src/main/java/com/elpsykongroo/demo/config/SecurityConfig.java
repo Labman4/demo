@@ -25,6 +25,8 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.web.DefaultSecurityFilterChain;
 
 @Configuration(proxyBeanMethods = false)
+// @EnableWebSecurity
+// @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 	@Value("${request.path.permit}")
 	private String permit_path;
@@ -32,7 +34,7 @@ public class SecurityConfig {
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors().and()
-		     .csrf().disable()
+		    //  .csrf().disable()
  //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize

@@ -5,33 +5,41 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
+import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @Testcontainers
 @MockServerTest("server.url=http://localhost:${mockServerPort}")
-@SpringBootTest(properties = { "service.redis.url=${server.url}" }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = { "service.redis.url=${server.url}" }, 
+                    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+                    classes = {
+                        // ServletWebServerFactoryAutoConfiguration.class,
+                        // SecurityConfig.class,
+                    })
 @ActiveProfiles("test")
-//@AutoConfigureMockMvc(addFilters = false)
-@AutoConfigureWebTestClient
-
 public class WebClientTest  {
 
     @LocalServerPort
@@ -42,13 +50,25 @@ public class WebClientTest  {
      @Value("${server.url}")
     private String serverUrl;
 
-    @Autowired 
-    WebTestClient webClient;
-
     @Container
     static ElasticsearchContainer elastic = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.17.3")
                                 .withExposedPorts(9200)
                                 .withPassword("123456").withStartupTimeout(Duration.ofSeconds(100));
+
+    @Autowired
+    private WebApplicationContext context;
+
+    private WebTestClient webClient;
+
+    @BeforeEach
+    void setup() {
+        webClient = MockMvcWebTestClient.bindToApplicationContext(context)
+                    .apply(springSecurity())
+                    .defaultRequest(get("/").with(csrf()))
+                    .configureClient()
+                    .build();
+    }
+
 
     @Test
     @Timeout(value = 200, unit = TimeUnit.SECONDS)
@@ -66,7 +86,8 @@ public class WebClientTest  {
 
         webClient
             .put()
-            .uri("/ip/manage/add?address=test.elpsykongroo.com&black")
+            .uri("/ip/manage/add?address=test.elpsykongroo.com&black=false")
+            .headers(http -> http.setBasicAuth("username", "password"))
             .exchange()
             .expectAll(
                 res -> res.expectStatus().isOk()
@@ -96,6 +117,7 @@ public class WebClientTest  {
         webClient
             .post()
             .uri("/record/filter?param=man&pageNumber=0&pageSize=10")
+            .headers(http -> http.setBasicAuth("username", "password"))
             .exchange()
             .expectStatus().isOk();
 

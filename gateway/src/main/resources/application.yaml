@@ -1,13 +1,13 @@
 server:
   http2:
     enabled: true
-  shutdown: graceful
+  # shutdown: graceful
   port: 8443
 
 spring:
   profiles:
     active:
-      - ${ENV:prod}
+      - ${ENV:dev}
   application:
     name: demo
   security:
