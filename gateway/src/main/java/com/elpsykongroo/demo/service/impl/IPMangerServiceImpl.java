@@ -29,9 +29,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.config.RequestConfig;
 import com.elpsykongroo.demo.config.RequestConfig.Header;
+import com.elpsykongroo.demo.config.RequestConfig.Record.Exclude;
 import com.elpsykongroo.demo.domain.IPManage;
 import com.elpsykongroo.demo.repo.elasticsearch.IPRepo;
-import com.elpsykongroo.demo.service.IPManagerService;
+    import com.elpsykongroo.demo.service.IPManagerService;  
+import com.elpsykongroo.demo.utils.IPRegexUtils;
 import com.elpsykongroo.demo.utils.PathUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -238,8 +240,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
-		if (!PathUtils.beginWithPath(requestConfig.getRecord().getExclude().getPath(), request.getRequestURI())) {
-			log.info("ip------------{}, type:{}, header:{}", ip, headerType, headers);
+		Exclude recordExclude = requestConfig.getRecord().getExclude();		
+		if (!PathUtils.beginWithPath(recordExclude.getPath(), request.getRequestURI())) {
+			boolean recordFlag = recordFilterByIp(request, recordExclude.getIp());
+			if (!recordFlag) {
+				log.info("ip------------{}, type:{}, header:{}", ip, headerType, headers);
+			}
 		}
 		return ip;
 	}
@@ -289,4 +295,33 @@ public class IPMangerServiceImpl implements IPManagerService {
 		}
 		return flag;
     }
+
+	@Override
+	public boolean recordFilterByIp(HttpServletRequest request, String excludeIp) {
+		boolean flag = false;
+		if (StringUtils.isNotEmpty(excludeIp)) {
+			String[] ips = excludeIp.split(",");
+			for (String i: ips) {
+			    flag = recordByIp(request, i);
+			}
+		}
+		return flag;
+	} 
+
+	private boolean recordByIp(HttpServletRequest request, String recordIp) {
+		try {
+			String ip = accessIP(request, "record");
+				if(IPRegexUtils.vaildateHost(recordIp)) {
+					InetAddress[] inetAddresses = InetAddress.getAllByName(recordIp);
+					for (InetAddress addr: inetAddresses) {
+						if (ip.equals(addr.getHostAddress())) {
+							return true;
+						}
+					}			
+				}
+		} catch (UnknownHostException e) {
+			throw new ServiceException(e);
+		}
+		return false;
+	}
 }

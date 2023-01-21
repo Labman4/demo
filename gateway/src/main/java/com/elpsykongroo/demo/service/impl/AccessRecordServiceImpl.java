@@ -17,7 +17,6 @@
 package com.elpsykongroo.demo.service.impl;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -64,14 +63,8 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	public void saveAcessRecord(HttpServletRequest request) {
 		try {
-			boolean recordFlag = false;
 		    Exclude recordExclude = requestConfig.getRecord().getExclude();		
-			if (StringUtils.isNotEmpty(recordExclude.getIp())) {
-				String[] excludeIp = recordExclude.getIp().split(",");
-				for (String i: excludeIp) {
-					recordFlag = recordByIp(request, i);
-				}
-			}
+			boolean recordFlag = ipMangerService.recordFilterByIp(request, recordExclude.getIp());
 			if (!(StringUtils.isNotEmpty(recordExclude.getPath()) && beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
 				if (!recordFlag) {
 					Map<String, String> result = new HashMap<>();
@@ -173,23 +166,6 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				return true;
 			}
 		}
-		return false;
-	}
-
-	private boolean recordByIp(HttpServletRequest request, String recordIp) {
-		try {
-			String ip = ipMangerService.accessIP(request, "record");
-				if(IPRegexUtils.vaildateHost(recordIp)) {
-					InetAddress[] inetAddresses = InetAddress.getAllByName(recordIp);
-					for (InetAddress addr: inetAddresses) {
-						if (ip.equals(addr.getHostAddress())) {
-							return true;
-						}
-					}			
-				}
-		} catch (UnknownHostException e) {
-			throw new ServiceException(e);
-		}
-		return false;
-	}
+	return false;
+}
 }
