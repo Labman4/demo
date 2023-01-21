@@ -7,7 +7,7 @@ server:
 spring:
   profiles:
     active:
-      - ${ENV:dev}
+      - ${ENV:prod}
   application:
     name: demo
   security:
