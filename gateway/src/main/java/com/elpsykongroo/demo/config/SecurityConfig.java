@@ -40,6 +40,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests((authorize) -> authorize
 						.requestMatchers(permit_path).permitAll()
 						.requestMatchers(HttpMethod.GET, "/public/*").permitAll()
+						.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
 //						.requestMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")
 //						.requestMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
 						.anyRequest().authenticated()
