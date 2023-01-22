@@ -283,16 +283,18 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if (exist(ip, isBlack) > 0) {
 					flag = true;
 					for (InetAddress address: inetAddress) {
-						if (!ip.equals(address.getHostName()) && exist(address.getHostName(), isBlack) == 0) {
+						log.info("hostname:{}", address.getHostName());
+						if (exist(address.getHostName(), isBlack) == 0) {
 							String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
 									.getAddress();
 							updataCache(isBlack);
-							log.info("Update blacklist domain when blackIP domain change, {} -> {}", ip, newAddress);
+							log.info("Update list domain when IP domain change, {} -> {}", ip, newAddress);
 						}
 					}
 				}
 				else {
 					for (InetAddress address: inetAddress) {
+						log.info("hostname:{}", address.getHostName());
 						if (exist(address.getHostName(), isBlack) > 0) {
 							log.info("hostname in list");
 							flag = true;
