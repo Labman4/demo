@@ -40,6 +40,8 @@ public interface IPManagerService {
 
 	Boolean blackOrWhiteList(HttpServletRequest request, String isBlack) throws ServiceException;
 
-	boolean recordFilterByIp(HttpServletRequest request, String exclude);
+	boolean filterByIpOrList(HttpServletRequest request, String ip, String accessIP);
+
+	boolean filterByIp(HttpServletRequest request, String ip, String accessIP);
 
 }

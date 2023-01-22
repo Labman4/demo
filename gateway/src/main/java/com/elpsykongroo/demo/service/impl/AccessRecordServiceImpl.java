@@ -63,8 +63,9 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	public void saveAcessRecord(HttpServletRequest request) {
 		try {
+			String ip = ipMangerService.accessIP(request, "record");
 		    Exclude recordExclude = requestConfig.getRecord().getExclude();		
-			boolean recordFlag = ipMangerService.recordFilterByIp(request, recordExclude.getIp());
+			boolean recordFlag = ipMangerService.filterByIpOrList(request, recordExclude.getIp(), ip);
 			if (!(StringUtils.isNotEmpty(recordExclude.getPath()) && beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
 				if (!recordFlag) {
 					Map<String, String> result = new HashMap<>();

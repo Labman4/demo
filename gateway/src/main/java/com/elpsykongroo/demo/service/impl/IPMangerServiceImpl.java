@@ -32,7 +32,7 @@ import com.elpsykongroo.demo.config.RequestConfig.Header;
 import com.elpsykongroo.demo.config.RequestConfig.Record.Exclude;
 import com.elpsykongroo.demo.domain.IPManage;
 import com.elpsykongroo.demo.repo.elasticsearch.IPRepo;
-    import com.elpsykongroo.demo.service.IPManagerService;  
+import com.elpsykongroo.demo.service.IPManagerService;  
 import com.elpsykongroo.demo.utils.IPRegexUtils;
 import com.elpsykongroo.demo.utils.PathUtils;
 
@@ -218,19 +218,37 @@ public class IPMangerServiceImpl implements IPManagerService {
 //	}
 
 	@Override
-	public String accessIP(HttpServletRequest request, String headerType) {
+	public String accessIP(HttpServletRequest request, String headerType) {		
+		String[] headers = splitHeader(headerType);
+		String ip = getIp(request, headers);
+		Exclude recordExclude = requestConfig.getRecord().getExclude();		
+		if (!PathUtils.beginWithPath(recordExclude.getPath(), request.getRequestURI())) {
+			String[] head= splitHeader("record");
+			String recordIp = getIp(request, head);                                                       
+			boolean recordFlag = filterByIpOrList(request, recordExclude.getIp(), recordIp);
+			if (!recordFlag) {
+				log.info("ip------------{}, type:{}, header:{}", ip, headerType, headers);
+			}
+		}
+		return ip;
+	}
+
+	private String[] splitHeader (String headerType) {
 		Header header = requestConfig.getHeader();
-		String[] headers = header.getIp().split(",");
-		if ("black".equals(headerType)) {
-			headers = header.getBlack().split(",");
+		switch(headerType){
+			case "black":
+				return header.getBlack().split(",");
+			case "white":
+				return header.getWhite().split(",");
+			case "record":
+				return header.getRecord().split(",");
+			default:
+				return header.getIp().split(",");
 		}
-		if ("white".equals(headerType)) {
-			headers = header.getWhite().split(",");
-		}
-		if ("record".equals(headerType)) {
-			headers = header.getRecord().split(",");
-		}
-		String ip = null;
+	}
+
+	private String getIp(HttpServletRequest request, String[] headers) {
+		String ip = "";
 		for (String head: headers) {
 			ip = request.getHeader(head);
 			if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
@@ -240,16 +258,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
-		Exclude recordExclude = requestConfig.getRecord().getExclude();		
-		if (!PathUtils.beginWithPath(recordExclude.getPath(), request.getRequestURI())) {
-			boolean recordFlag = recordFilterByIp(request, recordExclude.getIp());
-			if (!recordFlag) {
-				log.info("ip------------{}, type:{}, header:{}", ip, headerType, headers);
-			}
-		}
 		return ip;
 	}
-
 	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack){
 		boolean flag = false;
 		try {
@@ -297,28 +307,30 @@ public class IPMangerServiceImpl implements IPManagerService {
     }
 
 	@Override
-	public boolean recordFilterByIp(HttpServletRequest request, String excludeIp) {
+	public boolean filterByIpOrList(HttpServletRequest request, String ip, String accessIP) {
 		boolean flag = false;
-		if (StringUtils.isNotEmpty(excludeIp)) {
-			String[] ips = excludeIp.split(",");
+		if (StringUtils.isNotEmpty(ip)) {
+			String[] ips = ip.split(",");
 			for (String i: ips) {
-			    flag = recordByIp(request, i);
+			    flag = filterByIp(request, i, accessIP);
 			}
 		}
 		return flag;
 	} 
 
-	private boolean recordByIp(HttpServletRequest request, String recordIp) {
+	@Override
+	public boolean filterByIp(HttpServletRequest request, String ip, String accessIP) {
 		try {
-			String ip = accessIP(request, "record");
-				if(IPRegexUtils.vaildateHost(recordIp)) {
-					InetAddress[] inetAddresses = InetAddress.getAllByName(recordIp);
-					for (InetAddress addr: inetAddresses) {
-						if (ip.equals(addr.getHostAddress())) {
-							return true;
-						}
-					}			
-				}
+			if(IPRegexUtils.vaildateHost(ip)) {
+				InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
+				for (InetAddress addr: inetAddresses) {
+					if (accessIP.equals(addr.getHostAddress())) {
+						return true;
+					}
+				}			
+			} else if (accessIP.equals(ip)) {
+					return true;
+			}
 		} catch (UnknownHostException e) {
 			throw new ServiceException(e);
 		}
