@@ -5,7 +5,10 @@ management:
     web:
       exposure:
         include: ${ENDPOINTS_WEB:shutdown}
+ 
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
   main:
     allow-bean-definition-overriding: true
   datasource:
@@ -39,7 +42,7 @@ request:
     permit: ${PERMIT_PATH:/**}
     nonPrivate: ${PUBLIC_PATH:/}
     limit: ${LIMIT_PATH:/}
-    exclude: ${EXCLUDE_PATH:/actuator}
+    exclude: ${EXCLUDE_PATH:/}
     filter: ${FILTER_PATH:/}
   record: 
     exclude:
