@@ -4,12 +4,14 @@ server:
 spring:
   data:
     redis:
-      client-type: ${REDIS_TYPE:JEDIS}
+      client-type: ${REDIS_TYPE:LETTUCE}
+      password: ${REDIS_PASS:pass}
 #      host: ${REDIS_NODE:redis-singel-master.redis.svc}
       cluster:
         nodes:
+          # - 127.0.0.1:16379
           - ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
-      jedis:
+      lettuce:
         pool:
           enabled: true
           maxIdle: 5
@@ -17,5 +19,11 @@ spring:
           maxActive: 5
           maxWait: 5
           timeBetweenEvictionRuns: 100000
-REDIS_HOST: ${REDIS_NODES:redis.elpsykongroo.com}
-REDIS_PASSWORD: ${REDIS_PASS:elpsy4783}
+      # jedis:
+      #   pool:
+      #     enabled: false
+      #     maxIdle: 5
+      #     minIdle: 1
+      #     maxActive: 5
+      #     maxWait: 5
+      #     timeBetweenEvictionRuns: 100000

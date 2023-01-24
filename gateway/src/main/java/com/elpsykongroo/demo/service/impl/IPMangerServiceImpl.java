@@ -225,7 +225,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		if (!PathUtils.beginWithPath(recordExclude.getPath(), request.getRequestURI())) {
 			String[] head= splitHeader("record");
 			String recordIp = getIp(request, head);                                                       
-			boolean recordFlag = filterByIpOrList(request, recordExclude.getIp(), recordIp);
+			boolean recordFlag = filterByIpOrList(recordExclude.getIp(), recordIp);
 			if (!recordFlag) {
 				log.info("ip------------{}, type:{}, header:{}", ip, headerType, headers);
 			}
@@ -260,6 +260,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		}
 		return ip;
 	}
+
 	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack){
 		boolean flag = false;
 		try {
@@ -276,14 +277,21 @@ public class IPMangerServiceImpl implements IPManagerService {
 				}
 				if (list != null) {
 					if (list.toString().contains(ip)) {
-						flag = true;
+						return true;
 					}
 				}
+				/**
+				 * 	Todo
+				 * 
+				 * 	reserve dns need ptr record and public static ip;
+				 *  cannot get hostname; need to search first; 
+				 *  if exist too many domain record in es may cause problem;		 
+				 * 
+				 */
 				InetAddress[] inetAddress = InetAddress.getAllByName(ip);
 				if (exist(ip, isBlack) > 0) {
 					flag = true;
 					for (InetAddress address: inetAddress) {
-						log.info("hostname:{}", address.getHostName());
 						if (exist(address.getHostName(), isBlack) == 0) {
 							String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
 									.getAddress();
@@ -294,7 +302,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 				}
 				else {
 					for (InetAddress address: inetAddress) {
-						log.info("hostname:{}", address.getHostName());
 						if (exist(address.getHostName(), isBlack) > 0) {
 							log.info("hostname in list");
 							flag = true;
@@ -309,28 +316,30 @@ public class IPMangerServiceImpl implements IPManagerService {
     }
 
 	@Override
-	public boolean filterByIpOrList(HttpServletRequest request, String ip, String accessIP) {
+	public boolean filterByIpOrList(String ip, String accessIP) {
 		boolean flag = false;
 		if (StringUtils.isNotEmpty(ip)) {
 			String[] ips = ip.split(",");
 			for (String i: ips) {
-			    flag = filterByIp(request, i, accessIP);
+			    flag = filterByIp(i, accessIP);
 			}
 		}
 		return flag;
 	} 
 
 	@Override
-	public boolean filterByIp(HttpServletRequest request, String ip, String accessIP) {
+	public boolean filterByIp(String ip, String accessIP) {
 		try {
 			if(IPRegexUtils.vaildateHost(ip)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
 				for (InetAddress addr: inetAddresses) {
 					if (accessIP.equals(addr.getHostAddress())) {
+						log.info("address:{}", addr.getHostAddress());
 						return true;
 					}
 				}			
 			} else if (accessIP.equals(ip)) {
+					log.info("ip:{}, accessIp:{}", ip, accessIP);
 					return true;
 			}
 		} catch (UnknownHostException e) {
