@@ -167,12 +167,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 		long size = 0;
 		if ("true".equals(isBlack)) {
 			size = ipRepo.countByAddressAndIsBlackTrue(ad);
-			log.info("black.size:{}", size);
+			log.debug("black.size:{}", size);
 			return size;
 		}
 		else {
 			size = ipRepo.countByAddressAndIsBlackFalse(ad);
-			log.info("white.size:{}", size);
+			log.debug("white.size:{}", size);
 			return size;
 		}
 	}
@@ -336,6 +336,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 					if (accessIP.equals(addr.getHostAddress())) {
 						log.info("accessIp:{}, ip:{}", accessIP, addr.getHostAddress());
 						return true;
+					} else {
+						log.info("result accessIp:{}, ip:{}", accessIP, addr.getHostAddress());
 					}
 				}			
 			} else if (accessIP.equals(ip)) {
