@@ -334,12 +334,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
 				for (InetAddress addr: inetAddresses) {
 					if (accessIP.equals(addr.getHostAddress())) {
-						log.info("address:{}", addr.getHostAddress());
+						log.debug("ip:{}, accessIp:{}", addr.getHostAddress(), accessIP);
 						return true;
 					}
 				}			
 			} else if (accessIP.equals(ip)) {
-					log.info("ip:{}, accessIp:{}", ip, accessIP);
+					log.debug("ip:{}, accessIp:{}", ip, accessIP);
 					return true;
 			}
 		} catch (UnknownHostException e) {
