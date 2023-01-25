@@ -317,38 +317,37 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	@Override
 	public boolean filterByIpOrList(String ip, String accessIP) {
-		boolean flag = false;
 		if (StringUtils.isNotEmpty(ip)) {
 			String[] ips = ip.split(",");
 			for (String i: ips) {
-			    flag = filterByIp(i, accessIP);
+				if(filterByIp(i, accessIP)){
+					return true;
+				}
 			}
 		}
-		log.debug("ip filter flag:{}", flag);
-		return flag;
+		return false;
 	} 
 
 	@Override
 	public boolean filterByIp(String ip, String accessIP) {
-		boolean flag = false;
 		try {
 			if(IPRegexUtils.vaildateHost(ip)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
 				for (InetAddress addr: inetAddresses) {
 					if (accessIP.equals(addr.getHostAddress())) {
 						log.debug("accessIp:{}, ip:{}", accessIP, addr.getHostAddress());
-						flag = true;
+						return true;
 					} else {
 						log.debug("result accessIp:{}, ip:{}", accessIP, addr.getHostAddress());
 					}
 				}			
 			} else if (accessIP.equals(ip)) {
 					log.debug("ip:{}, accessIp:{}", ip, accessIP);
-					flag = true;
+					return true;
 			}
 		} catch (UnknownHostException e) {
 			throw new ServiceException(e);
 		}
-		return flag;
+		return false;
 	}
 }

@@ -25,6 +25,9 @@ logging:
 #      override:
 #        - classpath:log4j2-spring.xml
   level:
+    com:
+      elpsykongroo:
+        demo: ${LOG_LEVEL:INFO}
 #    org:
 #      springframework:
 #        web:
