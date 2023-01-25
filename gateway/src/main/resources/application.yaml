@@ -9,7 +9,7 @@ spring:
     active:
       - ${ENV:prod}
   application:
-    name: demo
+    name: ${APP_NAME:demo}
   security:
     oauth2:
       resourceserver:
