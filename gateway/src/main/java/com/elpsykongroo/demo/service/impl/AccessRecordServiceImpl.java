@@ -75,10 +75,11 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 						String value = request.getHeader(key);
 						result.put(key, value);
 					}
+					ip = ipMangerService.accessIP(request, "ip");
 					AccessRecord record = new AccessRecord();
 					record.setRequestHeader(result);
 					record.setAccessPath(request.getRequestURI());
-					record.setSourceIP(request.getRemoteAddr());
+					record.setSourceIP(ip);
 					record.setTimestamp(new Date());
 					record.setUserAgent(request.getHeader("user-agent"));
 					accessRecordRepo.save(record);
