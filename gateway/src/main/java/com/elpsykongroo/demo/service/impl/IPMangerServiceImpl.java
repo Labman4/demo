@@ -324,6 +324,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 			    flag = filterByIp(i, accessIP);
 			}
 		}
+		log.info("ip filter flag:{}", flag);
 		return flag;
 	} 
 
@@ -337,7 +338,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 						log.info("accessIp:{}, ip:{}", accessIP, addr.getHostAddress());
 						return true;
 					} else {
-						log.info("result accessIp:{}, ip:{}", accessIP, addr.getHostAddress());
+						log.debug("result accessIp:{}, ip:{}", accessIP, addr.getHostAddress());
 					}
 				}			
 			} else if (accessIP.equals(ip)) {
