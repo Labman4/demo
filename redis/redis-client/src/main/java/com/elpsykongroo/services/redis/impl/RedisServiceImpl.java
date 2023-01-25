@@ -23,8 +23,8 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public String get(KV kv) {
-        String result = restTemplate.postForEntity(serverUrl + servicePrefix + "/get", kv, String.class).getBody();
+    public String get(String key) {
+        String result = restTemplate.getForEntity(serverUrl + servicePrefix + "/get?key=" + key, String.class).getBody();
         return result == null ? "" : result;
     }
 }

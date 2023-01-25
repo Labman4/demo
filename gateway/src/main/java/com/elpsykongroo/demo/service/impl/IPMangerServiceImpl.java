@@ -269,11 +269,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 				String ip = "";
 				if ("true".equals(isBlack)) {
 					ip = accessIP(request, "black");
-					list = redisService.get(new KV("blackList", ""));
+					list = redisService.get("blackList");
 				}
 				else {
 					ip = accessIP(request, "white");
-					list = redisService.get(new KV("whiteList", ""));
+					list = redisService.get("whiteList");
 				}
 				if (list != null) {
 					if (list.toString().contains(ip)) {

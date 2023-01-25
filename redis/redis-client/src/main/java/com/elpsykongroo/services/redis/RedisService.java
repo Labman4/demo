@@ -5,5 +5,5 @@ import com.elpsykongroo.services.redis.dto.KV;
 public interface RedisService {
     void set(KV kv);
 
-    String get(KV kv);
+    String get(String key);
 }
