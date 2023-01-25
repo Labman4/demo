@@ -43,7 +43,7 @@ request:
       duration: ${REQUEST_DURATION:1}
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
-    permit: ${PERMIT_PATH:/public}
+    permit: ${PERMIT_PATH:/public/**}
     nonPrivate: ${PUBLIC_PATH:/public}
     limit: ${LIMIT_PATH:/}
     exclude: ${EXCLUDE_PATH:/actuator}
@@ -67,9 +67,9 @@ service:
   es:
     nodes: ${ES_URL:elasticsearch-master:9200}
     user: ${ES_USER:user}
-    pass: ${ES_PASS:elpsykongroo}
+    pass: ${ES_PASS:pass}
     ssl:
-      type: self
+      type: ${SSL_TYPE:self}
       ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
       cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
       key: ${ES_TLS_KEY:/var/ssl/es/tls.key}
