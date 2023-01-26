@@ -2,10 +2,6 @@ name: Just build native (host)
 on: 
   workflow_dispatch:
     inputs:
-      environment:
-        description: 'Environment to run the workflow against'
-        type: environment
-        required: true
       deploy_secret:
         type: string
         required: false
