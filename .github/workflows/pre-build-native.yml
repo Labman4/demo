@@ -1,11 +1,6 @@
 name: Prepare build (native)
 on:
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to run the workflow against'
-        type: environment
-        required: true
   pull_request:
     branches:
     - main 
