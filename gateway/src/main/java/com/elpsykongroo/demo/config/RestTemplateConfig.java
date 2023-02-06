@@ -14,8 +14,8 @@
       @Bean
       public RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer configurer) {
           return configurer.configure(new RestTemplateBuilder())
-                  .setConnectTimeout(Duration.ofSeconds(5))
-                  .setReadTimeout(Duration.ofSeconds(2)).detectRequestFactory(true);
+                  .setConnectTimeout(Duration.ofSeconds(10))
+                  .setReadTimeout(Duration.ofSeconds(10)).detectRequestFactory(true);
       }
 
  }

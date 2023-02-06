@@ -6,11 +6,9 @@ spring:
     redis:
       client-type: ${REDIS_TYPE:LETTUCE}
       password: ${REDIS_PASS:pass}
-#      host: ${REDIS_NODE:redis-singel-master.redis.svc}
+      # host: 127.0.0.1
       cluster:
-        nodes:
-          # - 127.0.0.1:16379
-          - ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
+        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
       lettuce:
         pool:
           enabled: true

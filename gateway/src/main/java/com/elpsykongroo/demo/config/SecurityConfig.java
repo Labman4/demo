@@ -23,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration(proxyBeanMethods = false)
 // @EnableWebSecurity
@@ -41,11 +42,15 @@ public class SecurityConfig {
 						.requestMatchers(permit_path).permitAll()
 						.requestMatchers(HttpMethod.GET, "/public/*").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/oauth2/**").permitAll()
 //						.requestMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")
 //						.requestMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
 						.anyRequest().authenticated()
 				)
-				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+				.oauth2Login(oauth2Login ->
+					oauth2Login.loginPage("/oauth2/authorization/spring"))
+				.oauth2Client(withDefaults());
 		return http.build();
 	}
 }

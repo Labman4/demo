@@ -14,6 +14,16 @@ spring:
         delay-after-failure: 100s
   security:
     oauth2:
+      client:
+        registration:
+          spring:
+            provider: spring
+            client-id: ${CLIENT_ID:test}
+            client-secret: ${CLIENT_SECRET:test}
+            authorization-grant-type: authorization_code
+            redirect-uri: ${REDIRECT_URI:http://127.0.0.1}
+            scope: openid, profile
+            client-name: spring
       resourceserver:
         jwt:
           jwk-set-uri: ${AUTH_URL:https://auth.elpsykongroo.com}/oauth2/jwks
@@ -69,6 +79,8 @@ service:
     key:  ${TLS_KEY}
   redis:
     url: http://localhost:8379
+  auth:
+    url: http://localhost:9000
   es:
     nodes: localhost:9200
     user: elastic

@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @Testcontainers
 @MockServerTest("server.url=http://localhost:${mockServerPort}")
-@SpringBootTest(properties = { "service.redis.url=${server.url}" }, 
+@SpringBootTest(properties = { "service.redis.url=${server.url}", "service.auth.url=${server.url}" },
                     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
                     classes = {
                         // ServletWebServerFactoryAutoConfiguration.class,
