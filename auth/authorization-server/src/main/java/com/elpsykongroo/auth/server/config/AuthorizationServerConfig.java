@@ -25,10 +25,12 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
@@ -44,6 +46,8 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
+	@Autowired
+	Environment env;
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -82,6 +86,6 @@ public class AuthorizationServerConfig {
 
 	@Bean
 	public AuthorizationServerSettings authorizationServerSettings() {
-		return AuthorizationServerSettings.builder().issuer("http://localhost:9000").build();
+		return AuthorizationServerSettings.builder().issuer(env.getProperty("ISSUER_URL")).build();
 	}
 }

@@ -24,7 +24,7 @@ spring:
             client-name: spring
         provider:
           spring:
-            issuer-uri: ${AUTH_URL:http://localhost:9000}
+            issuer-uri: ${ISSUER_URL:http://localhost:9000}
             authorization-uri: ${AUTH_URL:http://localhost:9000}/oauth2/authorize
             token-uri: ${AUTH_URL:http://localhost:9000}/oauth2/token
             jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
