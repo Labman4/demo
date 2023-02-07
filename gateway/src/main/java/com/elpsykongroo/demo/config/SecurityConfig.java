@@ -48,8 +48,7 @@ public class SecurityConfig {
 						.anyRequest().authenticated()
 				)
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-				.oauth2Login(oauth2Login ->
-					oauth2Login.loginPage("/oauth2/authorization/spring"))
+				.oauth2Login(withDefaults())
 				.oauth2Client(withDefaults());
 		return http.build();
 	}

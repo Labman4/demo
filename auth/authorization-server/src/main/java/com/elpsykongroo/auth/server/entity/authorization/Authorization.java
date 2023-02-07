@@ -31,7 +31,7 @@ public class Authorization {
 	private String authorizationGrantType;
 	@Column(length = 1000)
 	private String authorizedScopes;
-	@Column(length = 3000)
+	@Column(length = 4200)
 	private String attributes;
 	@Column(length = 500)
 	private String state;

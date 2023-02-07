@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @CrossOrigin
 @RequestMapping("/oauth2/authorization/")
 public class AuthorizationController {
-    @GetMapping("/spring")
+    @GetMapping("/{spring}")
 	public String index(@RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
 			@AuthenticationPrincipal OAuth2User oauth2User) {
 	
