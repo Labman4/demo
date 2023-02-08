@@ -23,6 +23,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration(proxyBeanMethods = false)
@@ -35,6 +37,8 @@ public class SecurityConfig {
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors().and()
+			.csrf()
+			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
 		    //  .csrf().disable()
  //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
