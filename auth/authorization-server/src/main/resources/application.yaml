@@ -39,20 +39,20 @@ spring:
             scope: user:email, read:user
             client-name: Sign in with GitHub
         provider:
-          spring:
-            issuer-uri: ${AUTH_URL:http://192.168.1.106:9000}
-            authorization-uri: ${AUTH_URL:http://localhost:9000}/oauth2/authorize
-            token-uri: ${AUTH_URL:http://localhost:9000}/oauth2/token
-            jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
           google:
             user-name-attribute: email
           github:
             user-name-attribute: login
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER_URL:http://localhost:9000}
+          jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
 
 logging:
   level:
-    root: ${LOG_LEVEL:INFO}  
-    # org.springframework.web: INFO
-    # org.springframework.security: INFO
-    # org.springframework.security.oauth2: INFO
+    root: ${LOG_LEVEL:INFO}
+    org:
+      springframework:
+        web: ${LOG_LEVEL:INFO}
+        security: ${LOG_LEVEL:INFO}
 #    org.springframework.boot.autoconfigure: DEBUG

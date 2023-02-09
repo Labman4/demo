@@ -4,9 +4,9 @@ import com.elpsykongroo.auth.client.dto.Client;
 
 
 public interface AuthService {
-    String add(Client client);
+    String add(String auth, Client client);
 
-    void delete(String clientId);
+    String delete(String auth, String clientId);
 
-    String findAll();
+    String findAll(String auth);
 }

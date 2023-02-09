@@ -20,10 +20,10 @@ package com.elpsykongroo.auth.server.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +34,8 @@ import com.elpsykongroo.auth.server.security.CustomLogoutSuccessHandler;
 import com.elpsykongroo.auth.server.security.FederatedIdentityConfigurer;
 import com.elpsykongroo.auth.server.security.UserRepositoryOAuth2UserHandler;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 
 /**
  * @author Steve Riesenberg
@@ -42,7 +44,6 @@ import com.elpsykongroo.auth.server.security.UserRepositoryOAuth2UserHandler;
 @EnableWebSecurity
 @Configuration(proxyBeanMethods = false)
 public class DefaultSecurityConfig {
-	
 	@Autowired
     private UserDetailsService userDetailsService;
 
@@ -53,23 +54,39 @@ public class DefaultSecurityConfig {
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer()
 			.oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
+
 		http.cors().and()
-			// .csrf().disable()
+//			.csrf().disable()
 			.logout()
 			.logoutSuccessHandler(logoutSuccessHandler).and()
-			.oauth2Login(oauth2Login ->
-					oauth2Login.loginPage("/oauth2/authorization/spring"))
+			.oauth2Login(withDefaults())
+			.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
 			.authorizeHttpRequests(authorize ->
 				authorize
-					.requestMatchers("/**").permitAll()
-					.anyRequest().authenticated()
+					.requestMatchers("/login/**").permitAll()
+					.requestMatchers("/oauth2/**").permitAll()
+						.anyRequest().authenticated()
 			)
-			.formLogin(Customizer.withDefaults())
+			.formLogin(withDefaults())
 			.apply(federatedIdentityConfigurer);
 
 		return http.build();
 	}
-		
+
+//	@Bean
+//	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//		http
+//			.securityMatcher("/auth/**")
+//				.authorizeHttpRequests()
+//					.requestMatchers("/auth/client/list").hasAuthority("SCOPE_auth.read")
+//					.requestMatchers("/auth/client/add").hasAuthority("SCOPE_auth.write")
+//					.requestMatchers("/auth/client/delete").hasAuthority("SCOPE_auth.write")
+//					.and()
+//			.oauth2ResourceServer()
+//				.jwt();
+//		return http.build();
+//	}
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
