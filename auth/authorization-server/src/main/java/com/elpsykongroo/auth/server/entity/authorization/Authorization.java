@@ -20,8 +20,10 @@ import java.time.Instant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "`authorization`")
 public class Authorization {
 	@Id
 	@Column
@@ -35,13 +37,11 @@ public class Authorization {
 	private String attributes;
 	@Column(length = 500)
 	private String state;
-
 	@Column(length = 1000)
 	private String authorizationCodeValue;
 	private Instant authorizationCodeIssuedAt;
 	private Instant authorizationCodeExpiresAt;
 	private String authorizationCodeMetadata;
-
 	@Column(length = 1000)
 	private String accessTokenValue;
 	private Instant accessTokenIssuedAt;
@@ -51,14 +51,12 @@ public class Authorization {
 	private String accessTokenType;
 	@Column(length = 1000)
 	private String accessTokenScopes;
-
 	@Column(length = 1000)
 	private String refreshTokenValue;
 	private Instant refreshTokenIssuedAt;
 	private Instant refreshTokenExpiresAt;
 	@Column(length = 1000)
 	private String refreshTokenMetadata;
-
 	@Column(length = 1000)
 	private String oidcIdTokenValue;
 	private Instant oidcIdTokenIssuedAt;

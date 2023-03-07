@@ -37,6 +37,15 @@ public final class JsonUtils {
 
 	}
 
+	public static <T> T toObject(String str, Class<T> cls){
+		try {
+			return objectMapper.readValue(str, cls);
+		}
+		catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
 //	public static String toString(Object o) {
 //		return gson.toJson(o);
 //	}

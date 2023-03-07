@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.controller;
+package com.elpsykongroo.demo.contronller;
 
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.exception.ServiceException;

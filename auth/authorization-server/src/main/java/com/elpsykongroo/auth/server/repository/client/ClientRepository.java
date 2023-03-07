@@ -16,18 +16,19 @@
 package com.elpsykongroo.auth.server.repository.client;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.elpsykongroo.auth.server.entity.client.Client;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface ClientRepository extends JpaRepository<Client, String>  {
+public interface ClientRepository extends CrudRepository<Client, String> {
 	@Transactional
 	@Modifying
 	@Query("""
@@ -38,4 +39,6 @@ public interface ClientRepository extends JpaRepository<Client, String>  {
 	Optional<Client> findByClientId(String clientId);
 
 	String deleteByClientId(String clientId);
+
+	List<Client> findAll();
 }

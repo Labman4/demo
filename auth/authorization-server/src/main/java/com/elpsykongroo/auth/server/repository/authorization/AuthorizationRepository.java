@@ -18,13 +18,13 @@ package com.elpsykongroo.auth.server.repository.authorization;
 import java.util.Optional;
 
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.elpsykongroo.auth.server.entity.authorization.Authorization;
 
-public interface AuthorizationRepository extends JpaRepository<Authorization, String> {
+public interface AuthorizationRepository extends CrudRepository<Authorization, String> {
 	Optional<Authorization> findByState(String state);
 	Optional<Authorization> findByAuthorizationCodeValue(String authorizationCode);
 	Optional<Authorization> findByAccessTokenValue(String accessToken);

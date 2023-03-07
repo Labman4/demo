@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.controller.external;
+package com.elpsykongroo.demo.contronller.external;
 
 import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.demo.service.IPManagerService;

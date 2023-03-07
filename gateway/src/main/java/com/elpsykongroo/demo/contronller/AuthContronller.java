@@ -1,4 +1,4 @@
-package com.elpsykongroo.demo.controller;
+package com.elpsykongroo.demo.contronller;
 
 import com.elpsykongroo.auth.client.AuthService;
 import com.elpsykongroo.auth.client.dto.Client;

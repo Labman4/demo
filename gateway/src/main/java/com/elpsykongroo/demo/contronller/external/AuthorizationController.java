@@ -1,4 +1,4 @@
-package com.elpsykongroo.demo.controller.external;
+package com.elpsykongroo.demo.contronller.external;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;

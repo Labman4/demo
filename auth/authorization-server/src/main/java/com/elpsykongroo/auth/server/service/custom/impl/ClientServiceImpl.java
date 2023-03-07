@@ -16,14 +16,9 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     private ClientRepository clientRepository;
 
-    // BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
-
     @Override
     public String add(Client client) {
         try {
-//            if (!client.getClientSecret().startsWith("{bcrypt}")) {
-//                client.setClientSecret("{bcrypt}" + encoder.encode(client.getClientSecret()));
-//            }
             Optional<Client> regirtryClient = clientRepository.findByClientId(client.getClientId());
            if (!regirtryClient.isPresent()) {
                client.setClientIdIssuedAt(Instant.now());

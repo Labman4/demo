@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.controller;
+package com.elpsykongroo.demo.contronller;
 
 import com.elpsykongroo.demo.service.AccessRecordService;
 import com.elpsykongroo.demo.utils.JsonUtils;
