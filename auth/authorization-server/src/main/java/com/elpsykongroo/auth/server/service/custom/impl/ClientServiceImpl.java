@@ -18,18 +18,13 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public String add(Client client) {
-        try {
-            Optional<Client> regirtryClient = clientRepository.findByClientId(client.getClientId());
+        Optional<Client> regirtryClient = clientRepository.findByClientId(client.getClientId());
            if (!regirtryClient.isPresent()) {
                client.setClientIdIssuedAt(Instant.now());
-               clientRepository.save(client);
+               return clientRepository.save(client).getClientId();
            } else {
-               updateClient(client);
+               return String.valueOf(updateClient(client));
            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return "done";
     }
 
     @Override
@@ -44,7 +39,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     private int updateClient(Client client) {
-        return clientRepository.updateClientSecretAndClientSecretExpiresAtAndClientNameAndClientAuthenticationMethodsAndAuthorizationGrantTypesAndRedirectUrisAndScopesAndClientSettingsAndTokenSettingsByClientId(
+        return clientRepository.updateByClientId(
                 client.getClientSecret(),
                 client.getClientSecretExpiresAt(),
                 client.getClientName(),

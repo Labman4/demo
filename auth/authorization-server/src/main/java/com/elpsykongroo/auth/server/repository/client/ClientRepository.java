@@ -34,7 +34,7 @@ public interface ClientRepository extends CrudRepository<Client, String> {
 	@Query("""
 			update Client c set c.clientSecret = ?1, c.clientSecretExpiresAt = ?2, c.clientName = ?3, c.clientAuthenticationMethods = ?4, c.authorizationGrantTypes = ?5, c.redirectUris = ?6, c.scopes = ?7, c.clientSettings = ?8, c.tokenSettings = ?9
 			where c.clientId = ?10""")
-	int updateClientSecretAndClientSecretExpiresAtAndClientNameAndClientAuthenticationMethodsAndAuthorizationGrantTypesAndRedirectUrisAndScopesAndClientSettingsAndTokenSettingsByClientId(String clientSecret, Instant clientSecretExpiresAt, String clientName, String clientAuthenticationMethods, String authorizationGrantTypes, String redirectUris, String scopes, String clientSettings, String tokenSettings, @NonNull String clientId);
+	int updateByClientId(String clientSecret, Instant clientSecretExpiresAt, String clientName, String clientAuthenticationMethods, String authorizationGrantTypes, String redirectUris, String scopes, String clientSettings, String tokenSettings, @NonNull String clientId);
 
 	Optional<Client> findByClientId(String clientId);
 

@@ -2,6 +2,7 @@ package com.elpsykongroo.demo.contronller;
 
 import com.elpsykongroo.auth.client.AuthService;
 import com.elpsykongroo.auth.client.dto.Client;
+import com.elpsykongroo.auth.client.dto.ClientRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,21 +16,34 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-@RequestMapping("auth/client")
+@RequestMapping("auth/")
 public class AuthContronller {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/add")
+    @PostMapping("/client/add")
     public String addClient (@RequestHeader("Authorization") String auth, @RequestBody Client client) {
-        return authService.add(auth, client);
+        return authService.addClient(auth, client);
     }
-    @DeleteMapping("/delete")
+    @DeleteMapping("/client/delete")
     public String deleteClient (@RequestHeader("Authorization") String auth, @RequestParam("clientId")String clientId) {
-        return authService.delete(auth, clientId);
+        return authService.deleteClient(auth, clientId);
     }
-    @GetMapping("/list")
+    @GetMapping("/client/list")
     public String listClient (@RequestHeader("Authorization") String auth) {
-        return authService.findAll(auth);
+        return authService.findAllClient(auth);
+    }
+
+    @PostMapping("/register/add")
+    public String addRegister (@RequestHeader("Authorization") String auth, @RequestBody ClientRegistry client) {
+        return authService.addRegister(auth, client);
+    }
+    @DeleteMapping("/register/delete")
+    public String deleteRegister (@RequestHeader("Authorization") String auth, @RequestParam("clientId")String clientId) {
+        return authService.deleteRegister(auth, clientId);
+    }
+    @GetMapping("/register/list")
+    public String listRegister (@RequestHeader("Authorization") String auth) {
+        return authService.findAllRegister(auth).toString();
     }
 }

@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
 @Component
 public class JpaRegisteredClientRepository implements RegisteredClientRepository {
 	private final ClientRepository clientRepository;
+
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	public JpaRegisteredClientRepository(ClientRepository clientRepository) {
@@ -57,9 +58,9 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
 	public void save(RegisteredClient registeredClient) {
 		Assert.notNull(registeredClient, "registeredClient cannot be null");
 		RegisteredClient client = findByClientId(registeredClient.getClientId());
-		 if (client == null) {
+		if (client == null) {
 			this.clientRepository.save(toEntity(registeredClient));
-		 }
+		}
 	}
 
 	@Override

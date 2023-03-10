@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -39,6 +40,7 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
  * @author Steve Riesenberg
  * @since 0.2.3
  */
+@Slf4j
 public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodingContext> {
 
 	private static final Set<String> ID_TOKEN_CLAIMS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
@@ -58,6 +60,8 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 
 	@Override
 	public void customize(JwtEncodingContext context) {
+		String[] policy = new String[1];
+		policy[0] = "consoleAdmin";
 		if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
 			Map<String, Object> thirdPartyClaims = extractClaims(context.getPrincipal());
 			context.getClaims().claims(existingClaims -> {
@@ -69,6 +73,7 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 
 				// Add all other claims directly to id_token
 				existingClaims.putAll(thirdPartyClaims);
+				existingClaims.put("policy", policy);
 			});
 		}
 	}

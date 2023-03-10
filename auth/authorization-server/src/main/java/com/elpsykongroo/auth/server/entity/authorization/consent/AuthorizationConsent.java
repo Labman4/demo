@@ -15,73 +15,31 @@
  */
 package com.elpsykongroo.auth.server.entity.authorization.consent;
 
-import java.io.Serializable;
-import java.util.Objects;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
+import lombok.Data;
 
+import java.io.Serializable;
+import java.util.Objects;
+
+@Data
 @Entity
-@Table(name = "`authorizationConsent`")
+@Table(name = "`authorization_consent`")
 @IdClass(AuthorizationConsent.AuthorizationConsentId.class)
 public class AuthorizationConsent {
 	@Id
 	private String registeredClientId;
-	@Id
+
 	private String principalName;
-	@Column(length = 1000)
+
 	private String authorities;
 
-	// @fold:on
-	public String getRegisteredClientId() {
-		return registeredClientId;
-	}
-
-	public void setRegisteredClientId(String registeredClientId) {
-		this.registeredClientId = registeredClientId;
-	}
-
-	public String getPrincipalName() {
-		return principalName;
-	}
-
-	public void setPrincipalName(String principalName) {
-		this.principalName = principalName;
-	}
-
-	public String getAuthorities() {
-		return authorities;
-	}
-
-	public void setAuthorities(String authorities) {
-		this.authorities = authorities;
-	}
-	// @fold:off
-
+	@Data
 	public static class AuthorizationConsentId implements Serializable {
 		private String registeredClientId;
 		private String principalName;
-
-		// @fold:on
-		public String getRegisteredClientId() {
-			return registeredClientId;
-		}
-
-		public void setRegisteredClientId(String registeredClientId) {
-			this.registeredClientId = registeredClientId;
-		}
-
-		public String getPrincipalName() {
-			return principalName;
-		}
-
-		public void setPrincipalName(String principalName) {
-			this.principalName = principalName;
-		}
-		// @fold:off
 
 		@Override
 		public boolean equals(Object o) {

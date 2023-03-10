@@ -1,12 +1,19 @@
 package com.elpsykongroo.auth.client;
 
 import com.elpsykongroo.auth.client.dto.Client;
+import com.elpsykongroo.auth.client.dto.ClientRegistry;
 
 
 public interface AuthService {
-    String add(String auth, Client client);
+    String addClient(String auth, Client client);
 
-    String delete(String auth, String clientId);
+    String deleteClient(String auth, String clientId);
 
-    String findAll(String auth);
+    String findAllClient(String auth);
+
+    String addRegister(String auth, ClientRegistry client);
+
+    String deleteRegister(String auth, String clientId);
+
+    String findAllRegister(String auth);
 }

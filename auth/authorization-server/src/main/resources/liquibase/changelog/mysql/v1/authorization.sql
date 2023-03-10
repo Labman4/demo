@@ -1,0 +1,31 @@
+CREATE TABLE authorization (
+  `id` varchar(255) NOT NULL,
+  `access_token_expires_at` datetime(6) DEFAULT NULL,
+  `access_token_issued_at` datetime(6) DEFAULT NULL,
+  `access_token_metadata` varchar(255) DEFAULT NULL,
+  `access_token_scopes` varchar(255) DEFAULT NULL,
+  `access_token_type` varchar(255) DEFAULT NULL,
+  `access_token_value` varchar(255) DEFAULT NULL,
+  `attributes` varchar(255) DEFAULT NULL,
+  `authorization_code_expires_at` datetime(6) DEFAULT NULL,
+  `authorization_code_issued_at` datetime(6) DEFAULT NULL,
+  `authorization_code_metadata` varchar(255) DEFAULT NULL,
+  `authorization_code_value` varchar(255) DEFAULT NULL,
+  `authorization_grant_type` varchar(255) DEFAULT NULL,
+  `authorized_scopes` varchar(255) DEFAULT NULL,
+  `oidc_id_token_claims` varchar(255) DEFAULT NULL,
+  `oidc_id_token_expires_at` datetime(6) DEFAULT NULL,
+  `oidc_id_token_issued_at` datetime(6) DEFAULT NULL,
+  `oidc_id_token_metadata` varchar(255) DEFAULT NULL,
+  `oidc_id_token_value` varchar(255) DEFAULT NULL,
+  `principal_name` varchar(255) DEFAULT NULL,
+  `refresh_token_expires_at` datetime(6) DEFAULT NULL,
+  `refresh_token_issued_at` datetime(6) DEFAULT NULL,
+  `refresh_token_metadata` varchar(255) DEFAULT NULL,
+  `refresh_token_value` varchar(255) DEFAULT NULL,
+  `registered_client_id` varchar(255) DEFAULT NULL,
+  `state` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
