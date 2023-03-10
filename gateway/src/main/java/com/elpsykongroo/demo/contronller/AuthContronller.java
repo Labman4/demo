@@ -39,7 +39,7 @@ public class AuthContronller {
         return authService.addRegister(auth, client);
     }
     @DeleteMapping("/register/delete")
-    public String deleteRegister (@RequestHeader("Authorization") String auth, @RequestParam("clientId")String clientId) {
+    public String deleteRegister (@RequestHeader("Authorization") String auth, @RequestParam("registerId")String clientId) {
         return authService.deleteRegister(auth, clientId);
     }
     @GetMapping("/register/list")

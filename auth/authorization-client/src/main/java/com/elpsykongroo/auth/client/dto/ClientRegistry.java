@@ -43,9 +43,9 @@ public class ClientRegistry {
 
     private String clientSecret;
 
-    private ClientAuthenticationMethod clientAuthenticationMethod;
+    private String clientAuthenticationMethod;
 
-    private AuthorizationGrantType authorizationGrantType;
+    private String authorizationGrantType;
 
     private String redirectUri;
 
@@ -337,7 +337,7 @@ public class ClientRegistry {
 
             private String uri;
 
-            private AuthenticationMethod authenticationMethod = AuthenticationMethod.HEADER;
+            private String authenticationMethod = AuthenticationMethod.HEADER.value;
 
             private String userNameAttributeName;
 
@@ -359,7 +359,7 @@ public class ClientRegistry {
              * @return the {@link AuthenticationMethod} for the user info endpoint.
              * @since 5.1
              */
-            public AuthenticationMethod getAuthenticationMethod() {
+            public String getAuthenticationMethod() {
                 return this.authenticationMethod;
             }
 
@@ -426,18 +426,50 @@ public class ClientRegistry {
             this.registrationId = registrationId;
         }
 
+        private static AuthorizationGrantType resolveAuthorizationGrantType(String authorizationGrantType) {
+            if (AuthorizationGrantType.AUTHORIZATION_CODE.getValue().equals(authorizationGrantType)) {
+                return AuthorizationGrantType.AUTHORIZATION_CODE;
+            } else if (AuthorizationGrantType.CLIENT_CREDENTIALS.getValue().equals(authorizationGrantType)) {
+                return AuthorizationGrantType.CLIENT_CREDENTIALS;
+            } else if (AuthorizationGrantType.REFRESH_TOKEN.getValue().equals(authorizationGrantType)) {
+                return AuthorizationGrantType.REFRESH_TOKEN;
+            }
+            return new AuthorizationGrantType(authorizationGrantType);              // Custom authorization grant type
+        }
+
+        private static ClientAuthenticationMethod resolveClientAuthenticationMethod(String clientAuthenticationMethod) {
+            if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC.getValue().equals(clientAuthenticationMethod)) {
+                return ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
+            } else if (ClientAuthenticationMethod.CLIENT_SECRET_POST.getValue().equals(clientAuthenticationMethod)) {
+                return ClientAuthenticationMethod.CLIENT_SECRET_POST;
+            } else if (ClientAuthenticationMethod.NONE.getValue().equals(clientAuthenticationMethod)) {
+                return ClientAuthenticationMethod.NONE;
+            }
+            return new ClientAuthenticationMethod(clientAuthenticationMethod);      // Custom client authentication method
+        }
+
+        private static AuthenticationMethod resolveUserInfoAuthenticationMethod(String userInfoAuthenticationMethod) {
+            if (AuthenticationMethod.FORM.getValue().equals(userInfoAuthenticationMethod)) {
+                return AuthenticationMethod.FORM;
+            } else if (AuthenticationMethod.HEADER.getValue().equals(userInfoAuthenticationMethod)) {
+                return AuthenticationMethod.HEADER;
+            } else {
+                return AuthenticationMethod.QUERY.getValue().equals(userInfoAuthenticationMethod) ? AuthenticationMethod.QUERY : new AuthenticationMethod(userInfoAuthenticationMethod);
+            }
+        }
+
         private Builder(ClientRegistry clientRegistry) {
             this.registrationId = clientRegistry.registrationId;
             this.clientId = clientRegistry.clientId;
             this.clientSecret = clientRegistry.clientSecret;
-            this.clientAuthenticationMethod = clientRegistry.clientAuthenticationMethod;
-            this.authorizationGrantType = clientRegistry.authorizationGrantType;
+            this.clientAuthenticationMethod = resolveClientAuthenticationMethod(clientRegistry.clientAuthenticationMethod);
+            this.authorizationGrantType = resolveAuthorizationGrantType(clientRegistry.authorizationGrantType);
             this.redirectUri = clientRegistry.redirectUri;
             this.scopes = (clientRegistry.scopes != null) ? new HashSet<>(clientRegistry.scopes) : null;
             this.authorizationUri = clientRegistry.providerDetails.authorizationUri;
             this.tokenUri = clientRegistry.providerDetails.tokenUri;
             this.userInfoUri = clientRegistry.providerDetails.userInfoEndpoint.uri;
-            this.userInfoAuthenticationMethod = clientRegistry.providerDetails.userInfoEndpoint.authenticationMethod;
+            this.userInfoAuthenticationMethod = resolveUserInfoAuthenticationMethod(clientRegistry.providerDetails.userInfoEndpoint.authenticationMethod);
             this.userNameAttributeName = clientRegistry.providerDetails.userInfoEndpoint.userNameAttributeName;
             this.jwkSetUri = clientRegistry.providerDetails.jwkSetUri;
             this.issuerUri = clientRegistry.providerDetails.issuerUri;
@@ -693,8 +725,8 @@ public class ClientRegistry {
             clientRegistry.clientId = this.clientId;
             clientRegistry.clientSecret = StringUtils.hasText(this.clientSecret) ? this.clientSecret : "";
             clientRegistry.clientAuthenticationMethod = (this.clientAuthenticationMethod != null)
-                    ? this.clientAuthenticationMethod : deduceClientAuthenticationMethod(clientRegistry);
-            clientRegistry.authorizationGrantType = this.authorizationGrantType;
+                    ? this.clientAuthenticationMethod.getValue(): deduceClientAuthenticationMethod(clientRegistry).getValue();
+            clientRegistry.authorizationGrantType = this.authorizationGrantType.getValue();
             clientRegistry.redirectUri = this.redirectUri;
             clientRegistry.scopes = this.scopes;
             clientRegistry.providerDetails = createProviderDetails(clientRegistry);
@@ -716,7 +748,7 @@ public class ClientRegistry {
             providerDetails.authorizationUri = this.authorizationUri;
             providerDetails.tokenUri = this.tokenUri;
             providerDetails.userInfoEndpoint.uri = this.userInfoUri;
-            providerDetails.userInfoEndpoint.authenticationMethod = this.userInfoAuthenticationMethod;
+            providerDetails.userInfoEndpoint.authenticationMethod = this.userInfoAuthenticationMethod.getValue();
             providerDetails.userInfoEndpoint.userNameAttributeName = this.userNameAttributeName;
             providerDetails.jwkSetUri = this.jwkSetUri;
             providerDetails.issuerUri = this.issuerUri;

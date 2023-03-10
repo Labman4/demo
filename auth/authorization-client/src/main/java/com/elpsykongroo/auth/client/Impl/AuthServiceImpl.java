@@ -2,6 +2,7 @@ package com.elpsykongroo.auth.client.impl;
 
 import com.elpsykongroo.auth.client.AuthService;
 import com.elpsykongroo.auth.client.dto.Client;
+import com.elpsykongroo.auth.client.dto.ClientRegistry;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,43 +14,78 @@ import org.springframework.web.client.RestTemplate;
 public class AuthServiceImpl implements AuthService {
     private RestTemplate restTemplate;
     private String serverUrl = "http://localhost:9000";
-    private String servicePrefix =  "/auth/client";
+    private String clientPrefix =  "/auth/client";
+
+    private String registryPrefix =  "/auth/register";
+
 
     public AuthServiceImpl(String serverUrl, RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
         this.serverUrl = serverUrl;
     }
     @Override
-    public String add(String auth, Client client) {
+    public String addClient(String auth, Client client) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", auth);
         HttpEntity<Client> requestEntity = new HttpEntity(client, headers);
-        return restTemplate.exchange(serverUrl + servicePrefix + "/add",
+        return restTemplate.exchange(serverUrl + clientPrefix + "/add",
                 HttpMethod.POST,
                 requestEntity,
                 String.class).getBody();
     }
 
     @Override
-    public String delete(String auth, String clientId) {
+    public String deleteClient(String auth, String clientId) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", auth);
         HttpEntity<String> requestEntity = new HttpEntity(headers);
-        return restTemplate.exchange(serverUrl + servicePrefix + "/delete/" + clientId,
+        return restTemplate.exchange(serverUrl + clientPrefix + "/delete/" + clientId,
                 HttpMethod.DELETE,
                 requestEntity,
                 String.class).getBody();
     }
 
     @Override
-    public String findAll(String auth) {
+    public String findAllClient(String auth) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", auth);
         HttpEntity<String> requestEntity = new HttpEntity(headers);
-        return restTemplate.exchange(serverUrl + servicePrefix + "/list",
+        return restTemplate.exchange(serverUrl + clientPrefix + "/list",
                 HttpMethod.GET,
                 requestEntity,
                 String.class).getBody();
 //        return restTemplate.getForEntity(serverUrl + servicePrefix + "/list", String.class).getBody();
+    }
+
+    @Override
+    public String addRegister(String auth, ClientRegistry client) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", auth);
+        HttpEntity<Client> requestEntity = new HttpEntity(client, headers);
+        return restTemplate.exchange(serverUrl + registryPrefix + "/add",
+                HttpMethod.POST,
+                requestEntity,
+                String.class).getBody();
+    }
+
+    @Override
+    public String deleteRegister(String auth, String clientId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", auth);
+        HttpEntity<String> requestEntity = new HttpEntity(headers);
+        return restTemplate.exchange(serverUrl + registryPrefix + "/delete/" + clientId,
+                HttpMethod.DELETE,
+                requestEntity,
+                String.class).getBody();    }
+
+    @Override
+    public String findAllRegister(String auth) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", auth);
+        HttpEntity<String> requestEntity = new HttpEntity(headers);
+        return restTemplate.exchange(serverUrl + registryPrefix + "/list",
+                HttpMethod.GET,
+                requestEntity,
+                String.class).getBody();
     }
 }

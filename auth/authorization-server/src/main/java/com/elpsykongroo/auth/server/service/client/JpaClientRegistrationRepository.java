@@ -5,6 +5,8 @@ import com.elpsykongroo.auth.server.repository.client.ClientRegistryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -30,8 +32,8 @@ public class JpaClientRegistrationRepository implements ClientRegistrationReposi
                 .clientId(client.getClientId())
                 .clientSecret(client.getClientSecret())
                 .clientName(client.getClientName())
-                .authorizationGrantType(client.getAuthorizationGrantType())
-                .clientAuthenticationMethod(client.getClientAuthenticationMethod())
+                .authorizationGrantType(new AuthorizationGrantType(client.getAuthorizationGrantType()))
+                .clientAuthenticationMethod(new ClientAuthenticationMethod(client.getClientAuthenticationMethod()))
                 .scope(client.getScopes())
                 .redirectUri(client.getRedirectUri())
                 .jwkSetUri(client.getProviderDetails().getJwkSetUri())
