@@ -25,6 +25,8 @@ import lombok.Data;
 @Component
 @ConfigurationProperties(prefix = "service")
 public class ServiceConfig {
+    private Url storage;
+
     private  Url auth;
 
     private Url redis;

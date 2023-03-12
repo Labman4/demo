@@ -1,7 +1,7 @@
 package com.elpsykongroo.demo.contronller;
 
-import com.elpsykongroo.services.redis.RedisService;
-import com.elpsykongroo.services.redis.dto.KV;
+import com.elpsykongroo.services.redis.client.RedisService;
+import com.elpsykongroo.services.redis.client.dto.KV;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

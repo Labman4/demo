@@ -18,7 +18,7 @@ public class AuthServiceConfig {
     private RestTemplateBuilder restTemplateBuilder;
 
     @Bean
-    public AuthService clientService() {
+    public AuthService authService() {
         return  new AuthServiceImpl(serviceConfig.getAuth().getUrl(),  restTemplateBuilder);
     }
 }

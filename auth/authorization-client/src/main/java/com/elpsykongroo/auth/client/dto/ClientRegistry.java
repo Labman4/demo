@@ -337,7 +337,7 @@ public class ClientRegistry {
 
             private String uri;
 
-            private String authenticationMethod = AuthenticationMethod.HEADER.value;
+            private String authenticationMethod = AuthenticationMethod.HEADER.getValue();
 
             private String userNameAttributeName;
 

@@ -5,6 +5,7 @@ import com.elpsykongroo.auth.server.repository.client.ClientRegistryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.core.AuthenticationMethod;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,11 @@ public class JpaClientRegistrationRepository implements ClientRegistrationReposi
     public ClientRegistration findByRegistrationId(String registrationId) {
         Assert.hasText(registrationId, "registrationId cannot be empty");
         ClientRegistry client = clientRegistryRepository.findByRegistrationId(registrationId);
-        ClientRegistration clientRegistration = convertToClientRegistration(client);
-        return clientRegistration;
+        if (client != null ) {
+            ClientRegistration clientRegistration = convertToClientRegistration(client);
+            return clientRegistration;
+        }
+        return null;
     }
 
     private static ClientRegistration convertToClientRegistration(ClientRegistry client) {
@@ -38,7 +42,7 @@ public class JpaClientRegistrationRepository implements ClientRegistrationReposi
                 .redirectUri(client.getRedirectUri())
                 .jwkSetUri(client.getProviderDetails().getJwkSetUri())
                 .userInfoUri(client.getProviderDetails().getUserInfoEndpoint().getUri())
-                .userInfoAuthenticationMethod(client.getProviderDetails().getUserInfoEndpoint().getAuthenticationMethod())
+                .userInfoAuthenticationMethod(new AuthenticationMethod(client.getProviderDetails().getUserInfoEndpoint().getAuthenticationMethod()))
                 .userNameAttributeName(client.getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName())
                 .issuerUri(client.getProviderDetails().getIssuerUri())
                 .authorizationUri(client.getProviderDetails().getAuthorizationUri())

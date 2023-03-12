@@ -307,7 +307,7 @@ public class ClientRegistry {
 
             private String uri;
 
-            private AuthenticationMethod authenticationMethod = AuthenticationMethod.HEADER;
+            private String authenticationMethod = AuthenticationMethod.HEADER.getValue();
 
             private String userNameAttributeName;
 
@@ -329,7 +329,7 @@ public class ClientRegistry {
              * @return the {@link AuthenticationMethod} for the user info endpoint.
              * @since 5.1
              */
-            public AuthenticationMethod getAuthenticationMethod() {
+            public String getAuthenticationMethod() {
                 return this.authenticationMethod;
             }
 
@@ -418,6 +418,16 @@ public class ClientRegistry {
             }
             return new ClientAuthenticationMethod(clientAuthenticationMethod);      // Custom client authentication method
         }
+
+        private static AuthenticationMethod resolveUserInfoAuthenticationMethod(String userInfoAuthenticationMethod) {
+            if (AuthenticationMethod.FORM.getValue().equals(userInfoAuthenticationMethod)) {
+                return AuthenticationMethod.FORM;
+            } else if (AuthenticationMethod.HEADER.getValue().equals(userInfoAuthenticationMethod)) {
+                return AuthenticationMethod.HEADER;
+            } else {
+                return AuthenticationMethod.QUERY.getValue().equals(userInfoAuthenticationMethod) ? AuthenticationMethod.QUERY : new AuthenticationMethod(userInfoAuthenticationMethod);
+            }
+        }
         private Builder(ClientRegistry clientRegistry) {
             this.registrationId = clientRegistry.registrationId;
             this.clientId = clientRegistry.clientId;
@@ -429,7 +439,7 @@ public class ClientRegistry {
             this.authorizationUri = clientRegistry.providerDetails.authorizationUri;
             this.tokenUri = clientRegistry.providerDetails.tokenUri;
             this.userInfoUri = clientRegistry.providerDetails.userInfoEndpoint.uri;
-            this.userInfoAuthenticationMethod = clientRegistry.providerDetails.userInfoEndpoint.authenticationMethod;
+            this.userInfoAuthenticationMethod = resolveUserInfoAuthenticationMethod(clientRegistry.providerDetails.userInfoEndpoint.authenticationMethod);
             this.userNameAttributeName = clientRegistry.providerDetails.userInfoEndpoint.userNameAttributeName;
             this.jwkSetUri = clientRegistry.providerDetails.jwkSetUri;
             this.issuerUri = clientRegistry.providerDetails.issuerUri;
@@ -708,7 +718,7 @@ public class ClientRegistry {
             providerDetails.authorizationUri = this.authorizationUri;
             providerDetails.tokenUri = this.tokenUri;
             providerDetails.userInfoEndpoint.uri = this.userInfoUri;
-            providerDetails.userInfoEndpoint.authenticationMethod = this.userInfoAuthenticationMethod;
+            providerDetails.userInfoEndpoint.authenticationMethod = this.userInfoAuthenticationMethod.getValue();
             providerDetails.userInfoEndpoint.userNameAttributeName = this.userNameAttributeName;
             providerDetails.jwkSetUri = this.jwkSetUri;
             providerDetails.issuerUri = this.issuerUri;

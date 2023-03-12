@@ -5,8 +5,6 @@ import com.elpsykongroo.auth.server.repository.client.ClientRegistryRepository;
 import com.elpsykongroo.auth.server.service.custom.ClientRegistrationService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,8 +33,8 @@ public class ClientRegistrationServiceImpl implements ClientRegistrationService 
         return clientRegistryRepository.updateByRegistrationId(
                 clientRegistry.getClientId(),
                 clientRegistry.getClientSecret(),
-                new ClientAuthenticationMethod(clientRegistry.getClientAuthenticationMethod()),
-                new AuthorizationGrantType(clientRegistry.getAuthorizationGrantType()),
+                clientRegistry.getClientAuthenticationMethod(),
+                clientRegistry.getAuthorizationGrantType(),
                 clientRegistry.getRedirectUri(),
                 clientRegistry.getScopes(),
                 clientRegistry.getProviderDetails(),

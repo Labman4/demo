@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.elpsykongroo.demo.exception.ServiceException;
-import com.elpsykongroo.services.redis.RedisService;
-import com.elpsykongroo.services.redis.dto.KV;
+import com.elpsykongroo.services.redis.client.RedisService;
+import com.elpsykongroo.services.redis.client.dto.KV;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.demo.common.CommonResponse;

@@ -12,12 +12,14 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class AuthServiceImpl implements AuthService {
+
     private RestTemplate restTemplate;
+
     private String serverUrl = "http://localhost:9000";
+
     private String clientPrefix =  "/auth/client";
 
     private String registryPrefix =  "/auth/register";
-
 
     public AuthServiceImpl(String serverUrl, RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();

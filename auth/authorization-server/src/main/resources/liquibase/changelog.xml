@@ -10,4 +10,6 @@
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
     
     <includeAll path="liquibase/changelog/postgresql/v1" />
+<!--	<includeAll path="liquibase/changelog/mysql/v1" />-->
+
 </databaseChangeLog>

@@ -18,7 +18,12 @@ public interface ClientRegistryRepository extends CrudRepository<ClientRegistry,
     @Query("""
             update ClientRegistry c set c.clientId = ?1, c.clientSecret = ?2, c.clientAuthenticationMethod = ?3, c.authorizationGrantType = ?4, c.redirectUri = ?5, c.scopes = ?6, c.providerDetails = ?7, c.clientName = ?8
             where c.registrationId = ?9""")
-    int updateByRegistrationId(String clientId, String clientSecret, ClientAuthenticationMethod clientAuthenticationMethod, AuthorizationGrantType authorizationGrantType, String redirectUri, Set<String> scopes, ClientRegistry.ProviderDetails providerDetails, String clientName, @NonNull String registrationId);
+    int updateByRegistrationId(String clientId, String clientSecret,
+                               String clientAuthenticationMethod, String authorizationGrantType,
+                               String redirectUri, Set<String> scopes,
+                               ClientRegistry.ProviderDetails providerDetails, String clientName,
+                               @NonNull String registrationId);
+
     String deleteByRegistrationId(String registrationId);
 
     ClientRegistry findByRegistrationId(String registrationId);
