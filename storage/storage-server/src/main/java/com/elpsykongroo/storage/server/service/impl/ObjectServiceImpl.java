@@ -4,7 +4,9 @@ import com.elpsykongroo.storage.server.entity.S3;
 import com.elpsykongroo.storage.server.service.ObjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -51,6 +53,9 @@ import java.util.Map;
 @Slf4j
 @Service
 public class ObjectServiceImpl implements ObjectService {
+    @Autowired
+    Environment env;
+
     private S3Client s3Client;
 
     @Value("${ENDPOINT:https://bucket.elpsykongroo.com}")
@@ -60,11 +65,7 @@ public class ObjectServiceImpl implements ObjectService {
 
     private String region;
 
-    @Value("${AWS_ACCESS_KEY_ID:minio}")
-
     private String accessKey;
-
-    @Value("${AWS_SECRET_ACCESS_KEY:secret}")
 
     private String accessSecret;
 
@@ -281,6 +282,8 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void initClient(S3 s3) {
+        this.accessKey = env.getProperty("AWS_ACCESS_KEY_ID");
+        this.accessSecret = env.getProperty("AWS_SECRET_ACCESS_KEY");
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, accessSecret);
 
         if (StringUtils.isNotBlank(s3.getRegion())){

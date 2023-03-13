@@ -66,6 +66,8 @@ service:
     url:  ${REDIS_SERVICE:localhost:8379}
   auth:
     url: ${AUTH_URL:http://localhost:9000}
+  storage:
+    url: ${STORAGE_URL:http://localhost:9999}
   es:
     nodes: ${ES_URL:elasticsearch-master:9200}
     user: ${ES_USER:user}
