@@ -12,23 +12,7 @@ spring:
     name: ${APP_NAME:demo}
   security:
     oauth2:
-      client:
-        registration:
-          spring:
-            provider: spring
-            client-id: ${CLIENT_ID:spring}
-            client-secret: ${CLIENT_SECRET:spring}
-            authorization-grant-type: authorization_code
-            redirect-uri: ${REDIRECT_URI:http://127.0.0.1:5173}
-            scope: openid, profile
-            client-name: spring
-        provider:
-          spring:
-            issuer-uri: ${ISSUER_URL:http://localhost:9000}
-            authorization-uri: ${AUTHORIZATION_URL:http://localhost:9000}/oauth2/authorize
-            token-uri: ${AUTH_URL:http://localhost:9000}/oauth2/token
-            jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
-      resourceserver:
+      resource-server:
         jwt:
           jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
       
