@@ -7,8 +7,6 @@ on:
   push:
     branches:
     - native-image
-    paths-ignore:
-      - .github/**
     paths:
       -  'storage/storage-server/**'
 jobs:
