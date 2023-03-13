@@ -5,3 +5,5 @@ spring:
     multipart:
       max-request-size: -1
       max-file-size: -1
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
