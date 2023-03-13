@@ -60,11 +60,11 @@ public class ObjectServiceImpl implements ObjectService {
 
     private String region;
 
-    @Value("${AWS_ACCESS_KEY_ID}")
+    @Value("${AWS_ACCESS_KEY_ID:minio}")
 
     private String accessKey;
 
-    @Value("${AWS_SECRET_ACCESS_KEY}")
+    @Value("${AWS_SECRET_ACCESS_KEY:secret}")
 
     private String accessSecret;
 
