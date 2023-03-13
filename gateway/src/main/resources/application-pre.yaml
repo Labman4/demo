@@ -61,6 +61,10 @@ service:
     key:  ${TLS_KEY}
   redis:
     url: http://localhost:8379
+  auth:
+    url: http://localhost:9000
+  storage:
+    url: http://localhost:9999
   es:
     nodes: localhost:9200
     # user: elastic

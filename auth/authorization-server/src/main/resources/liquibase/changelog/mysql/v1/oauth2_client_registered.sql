@@ -6,7 +6,7 @@ CREATE TABLE `oauth2_client_registered` (
   `client_name` varchar(255) DEFAULT NULL,
   `client_secret` varchar(255) DEFAULT NULL,
   `provider_details` varbinary(2000) DEFAULT NULL,
-  `redirect_uri` varchar(255) DEFAULT NULL,
+  `redirect_uri` varchar(1000) DEFAULT NULL,
   `scopes` varbinary(1000) DEFAULT NULL,
   PRIMARY KEY (`registration_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

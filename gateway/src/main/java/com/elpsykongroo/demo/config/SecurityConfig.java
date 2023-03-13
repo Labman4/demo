@@ -39,21 +39,20 @@ public class SecurityConfig {
 		http.cors().and()
 			.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-		    //  .csrf().disable()
+		      .csrf().disable()
  //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
 						.requestMatchers(permit_path).permitAll()
 						.requestMatchers(HttpMethod.GET, "/public/*").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-						.requestMatchers(HttpMethod.GET, "/oauth2/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/storage/**").permitAll()
+
 //						.requestMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")
 //						.requestMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
 						.anyRequest().authenticated()
 				)
-				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-				.oauth2Login(withDefaults())
-				.oauth2Client(withDefaults());
+				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 		return http.build();
 	}
 }

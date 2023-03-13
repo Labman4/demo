@@ -38,7 +38,7 @@ public class ElasticConfig extends ElasticsearchConfiguration {
    private ServiceConfig serviceConfig;
 
    @Autowired
-    Environment env;
+   Environment env;
     
    @Override
    public ClientConfiguration clientConfiguration() {

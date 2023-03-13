@@ -7,9 +7,9 @@ CREATE TABLE client (
   `client_name` varchar(255) DEFAULT NULL,
   `client_secret` varchar(255) DEFAULT NULL,
   `client_secret_expires_at` datetime(6) DEFAULT NULL,
-  `client_settings` varchar(255) DEFAULT NULL,
-  `redirect_uris` varchar(255) DEFAULT NULL,
-  `scopes` varchar(255) DEFAULT NULL,
-  `token_settings` varchar(255) DEFAULT NULL,
+  `client_settings` varchar(2000) DEFAULT NULL,
+  `redirect_uris` varchar(2000) DEFAULT NULL,
+  `scopes` varchar(1000) DEFAULT NULL,
+  `token_settings` varchar(2000) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -26,46 +26,22 @@
       "pattern":"\\Qapplication.yaml\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/services/\\E"
+      "pattern":"\\Qcom/elpsykongroo/storage/server/\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/services/config/RedisConfig.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/storage/server/controller/ObjectController.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/services/controller/RedisController.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/storage/server/service/ObjectService.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/services/redis/server/\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/services/redis/server/config/RedisConfig.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/services/redis/server/controller/RedisController.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/services/redis/server/service/RedisService.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/services/redis/server/service/impl/RedisServiceImpl.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/services/repo/StringCacheRepo.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/services/service/RedisService.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/services/service/impl/RedisServiceImpl.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/storage/server/service/impl/ObjectServiceImpl.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/aot/hint/annotation/Reflective.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/beans/factory/Aware.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/beans/factory/BeanClassLoaderAware.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/beans/factory/BeanFactoryAware.class\\E"
@@ -122,9 +98,6 @@
       "pattern":"\\Qorg/springframework/boot/autoconfigure/cache/NoOpCacheConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/cache/RedisCacheConfiguration.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/cache/SimpleCacheConfiguration.class\\E"
     }, 
     {
@@ -143,9 +116,6 @@
       "pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnSingleCandidate.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication.class\\E"
     }, 
     {
@@ -159,69 +129,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/context/PropertyPlaceholderAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/dao/PersistenceExceptionTranslationAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/AbstractRepositoryConfigurationSourceSupport.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/JedisConnectionConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/LettuceConnectionConfiguration$PoolBuilderFactory.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/LettuceConnectionConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisConnectionConfiguration$ConnectionInfo.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisConnectionConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisReactiveAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisRepositoriesAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/redis/RedisRepositoriesRegistrar.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/gson/GsonAutoConfiguration$StandardGsonBuilderCustomizer.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/gson/GsonAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$GsonHttpMessageConverterConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$JacksonAndJsonbUnavailableCondition$JacksonAvailable.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$JacksonAndJsonbUnavailableCondition$JsonbPreferred.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$JacksonAndJsonbUnavailableCondition.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$PreferGsonOrJacksonAndJsonbUnavailableCondition$GsonPreferred.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$PreferGsonOrJacksonAndJsonbUnavailableCondition$JacksonJsonbUnavailable.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration$PreferGsonOrJacksonAndJsonbUnavailableCondition.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration.class\\E"
@@ -287,9 +194,6 @@
       "pattern":"\\Qorg/springframework/boot/autoconfigure/jmx/JmxAutoConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/mail/MailSenderValidatorAutoConfiguration.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/netty/NettyAutoConfiguration.class\\E"
     }, 
     {
@@ -315,21 +219,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/task/TaskSchedulingAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$EnableTransactionManagementConfiguration$CglibAutoProxyConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$EnableTransactionManagementConfiguration$JdkDynamicAutoProxyConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$EnableTransactionManagementConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$TransactionTemplateConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/web/client/RestTemplateAutoConfiguration$NotReactiveWebApplicationCondition$ReactiveWebApplication.class\\E"
@@ -470,19 +359,7 @@
       "pattern":"\\Qorg/springframework/context/ApplicationContextAware.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/context/ApplicationContextInitializer.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/context/EnvironmentAware.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/context/ResourceLoaderAware.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/context/annotation/AdviceModeImportSelector.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/context/annotation/AutoProxyRegistrar.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/context/annotation/Conditional.class\\E"
@@ -494,67 +371,16 @@
       "pattern":"\\Qorg/springframework/context/annotation/Import.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/context/annotation/ImportAware.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/context/annotation/ImportBeanDefinitionRegistrar.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/context/annotation/ImportRuntimeHints.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/context/annotation/Role.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/core/Ordered.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/core/annotation/Order.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/redis/core/convert/ReferenceResolverImpl.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/redis/repository/support/RedisRepositoryFactoryBean.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/repository/CrudRepository.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/web/config/EnableSpringDataWebSupport$QuerydslActivator.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/web/config/EnableSpringDataWebSupport$SpringDataWebConfigurationImportSelector.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/web/config/EnableSpringDataWebSupport.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/web/config/ProjectingArgumentResolverRegistrar$ProjectingArgumentResolverBeanPostProcessor.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/web/config/ProjectingArgumentResolverRegistrar.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/web/config/SpringDataJacksonConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/web/config/SpringDataJacksonModules.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/data/web/config/SpringDataWebConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/transaction/annotation/AbstractTransactionManagementConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/transaction/annotation/EnableTransactionManagement.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/transaction/annotation/ProxyTransactionManagementConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/transaction/annotation/TransactionManagementConfigurationSelector.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/web/bind/annotation/Mapping.class\\E"
