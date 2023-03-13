@@ -25,8 +25,6 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration(proxyBeanMethods = false)
 // @EnableWebSecurity
 // @EnableMethodSecurity(prePostEnabled = true)
@@ -39,14 +37,14 @@ public class SecurityConfig {
 		http.cors().and()
 			.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-		      .csrf().disable()
+//		      .csrf().disable()
  //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
 						.requestMatchers(permit_path).permitAll()
 						.requestMatchers(HttpMethod.GET, "/public/*").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-						.requestMatchers(HttpMethod.GET, "/storage/**").permitAll()
+						.requestMatchers("/storage/**").permitAll()
 
 //						.requestMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")
 //						.requestMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
