@@ -33,7 +33,7 @@ public class ObjectController {
     }
 
     @PostMapping("download")
-    public void download(S3 s3, HttpServletResponse response) {
+    public void download(@RequestBody S3 s3, HttpServletResponse response) {
         try {
             objectService.download(s3, response);
         } catch (IOException e) {
