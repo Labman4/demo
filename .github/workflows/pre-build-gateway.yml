@@ -8,7 +8,9 @@ on:
     branches:
     - native-image
     paths:
-      - gateway/**    
+      - gateway/**   
+      - 'pom.xml'
+
 jobs:
   native:
     uses: Labman4/workflow/.github/workflows/native-image.yml@native-image
