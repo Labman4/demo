@@ -6,7 +6,7 @@ CREATE TABLE user_account (
 	id int8 NOT NULL,
 	username varchar(255) NULL,
 	email varchar(255) NULL,
-	"password" varchar(60) NULL,
+	"password" varchar(255) NULL,
 	enabled bool NOT NULL,
 	is_using2fa bool NOT NULL,
 	CONSTRAINT pk_user_account PRIMARY KEY (id),
