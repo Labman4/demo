@@ -13,6 +13,10 @@ jobs:
   native:
     uses: Labman4/workflow/.github/workflows/native-image-storage.yml@native-image
     secrets: inherit
+    with:
+      module: storage
+      modulePath: storage/storage-server
+      
  
 
     
