@@ -15,7 +15,7 @@ jobs:
     secrets: inherit
     with:
       module: storage
-      moduleName: storage-server/
+      moduleName: storage-server
       version: 0.0.1
       
       
