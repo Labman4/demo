@@ -9,6 +9,8 @@ on:
     - native-image
     paths:
       -  'redis/redis-server/**'
+      -  'pom.xml'
+
 jobs:
   native:
     uses: Labman4/workflow/.github/workflows/native-image-base.yml@native-image
