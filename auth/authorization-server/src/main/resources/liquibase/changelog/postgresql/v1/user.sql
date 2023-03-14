@@ -18,7 +18,7 @@ CREATE TABLE user_account (
 
 INSERT INTO user_account
 (id, username, email, "password", enabled, is_using2fa)
-VALUES(0, 'lab', 'w', '{noop}man', true, false);
+VALUES(0, 'lab', 'woxiangqusia@gmail.com', '{bcrypt}$2a$10$ngfTeQJj80EVgcGrEi6FuOEkNsk/GtTvt/SNDzFjHmiLUpSqz/1/m', true, false);
 
 
 --changeset auth:role
