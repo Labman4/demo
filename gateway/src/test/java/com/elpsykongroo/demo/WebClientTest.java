@@ -86,7 +86,7 @@ public class WebClientTest  {
 
         webClient
             .put()
-            .uri("/ip/manage/add?address=test.elpsykongroo.com&black=false")
+            .uri("/ip/manage/add?address=ip.elpsykongroo.com&black=false")
             .exchange()
             .expectAll(
                 res -> res.expectStatus().isOk()
@@ -108,7 +108,7 @@ public class WebClientTest  {
 
         webClient
             .delete()
-            .uri("/record/delete?sourceIP=test.elpsykongroo.com&id=1")
+            .uri("/record/delete?sourceIP=ip.elpsykongroo.com&id=1")
             .exchange()
             .expectStatus().isOk()
             .expectBody().jsonPath("$.data").isNotEmpty();
