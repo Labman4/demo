@@ -13,6 +13,8 @@ import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.http.urlconnection.ProxyConfiguration;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
@@ -37,7 +39,6 @@ import software.amazon.awssdk.services.sts.model.AssumeRoleWithWebIdentityReques
 import software.amazon.awssdk.services.sts.model.Credentials;
 import software.amazon.awssdk.utils.StringUtils;
 import software.amazon.awssdk.services.sts.StsClient;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -274,6 +275,7 @@ public class ObjectServiceImpl implements ObjectService {
         String accessSecret = env.getProperty("AWS_SECRET_ACCESS_KEY");
         String endpoint = env.getProperty("ENDPOINT");
         String region = env.getProperty("REGION");
+        String proxyUrl = env.getProperty("PROXY_URL");
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, accessSecret);
         if (StringUtils.isNotBlank(s3.getRegion())) {
             region = s3.getRegion();
@@ -284,10 +286,14 @@ public class ObjectServiceImpl implements ObjectService {
         }
 
         if(StringUtils.isNotBlank(s3.getIdToken())) {
-            getStsToken(s3, region);
+            getStsToken(s3, region, proxyUrl);
         } else if (StringUtils.isNotBlank(endpoint)) {
             if (StringUtils.isNotBlank(s3.getAccessKey())) {
                 this.s3Client = S3Client.builder()
+                        .httpClientBuilder(UrlConnectionHttpClient.builder()
+                                .proxyConfiguration(ProxyConfiguration.builder()
+                                .endpoint(URI.create(proxyUrl))
+                                .build()))
                         .region(Region.of(region))
                         .credentialsProvider(() -> AwsBasicCredentials.create(s3.getAccessKey(), s3.getAccessSecret()))
                         .endpointOverride(URI.create(endpoint))
@@ -295,6 +301,10 @@ public class ObjectServiceImpl implements ObjectService {
                         .build();
             } else {
                 this.s3Client = S3Client.builder()
+                        .httpClientBuilder(UrlConnectionHttpClient.builder()
+                                .proxyConfiguration(ProxyConfiguration.builder()
+                                        .endpoint(URI.create(proxyUrl))
+                                        .build()))
                         .region(Region.of(region))
                         .credentialsProvider(() -> awsCredentials)
                         .endpointOverride(URI.create(endpoint))
@@ -303,12 +313,20 @@ public class ObjectServiceImpl implements ObjectService {
             }
         } else if (StringUtils.isNotBlank(s3.getAccessKey())) {
                 this.s3Client = S3Client.builder()
+                        .httpClientBuilder(UrlConnectionHttpClient.builder()
+                                .proxyConfiguration(ProxyConfiguration.builder()
+                                        .endpoint(URI.create(proxyUrl))
+                                        .build()))
                         .region(Region.of(region))
                         .credentialsProvider(() -> AwsBasicCredentials.create(s3.getAccessKey(), s3.getAccessSecret()))
                         .forcePathStyle(true)
                         .build();
         } else {
             this.s3Client = S3Client.builder()
+                    .httpClientBuilder(UrlConnectionHttpClient.builder()
+                            .proxyConfiguration(ProxyConfiguration.builder()
+                                    .endpoint(URI.create(proxyUrl))
+                                    .build()))
                     .region(Region.of(region))
                     .credentialsProvider(() -> awsCredentials)
                     .forcePathStyle(true)
@@ -316,7 +334,7 @@ public class ObjectServiceImpl implements ObjectService {
         }
     }
 
-    void getStsToken(S3 s3, String region) {
+    void getStsToken(S3 s3, String region, String proxyUrl) {
             AssumeRoleWithWebIdentityRequest awRequest =
                     AssumeRoleWithWebIdentityRequest.builder()
                             .durationSeconds(3600)
@@ -337,6 +355,10 @@ public class ObjectServiceImpl implements ObjectService {
                         credentials.sessionToken());
 
                 this.s3Client = S3Client.builder()
+                        .httpClientBuilder(UrlConnectionHttpClient.builder()
+                                .proxyConfiguration(ProxyConfiguration.builder()
+                                        .endpoint(URI.create(proxyUrl))
+                                        .build()))
                         .region(Region.of(region))
                         .credentialsProvider(() ->  awsCredentials)
                         .endpointOverride(URI.create(s3.getEndpoint()))
@@ -354,6 +376,10 @@ public class ObjectServiceImpl implements ObjectService {
                         credentials.sessionToken());
 
                 this.s3Client = S3Client.builder()
+                        .httpClientBuilder(UrlConnectionHttpClient.builder()
+                                .proxyConfiguration(ProxyConfiguration.builder()
+                                        .endpoint(URI.create(proxyUrl))
+                                        .build()))
                         .region(Region.of(region))
                         .credentialsProvider(() ->  awsCredentials)
                         .forcePathStyle(true)
