@@ -275,21 +275,14 @@ public class ObjectServiceImpl implements ObjectService {
         String endpoint = env.getProperty("ENDPOINT");
         String region = env.getProperty("REGION");
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, accessSecret);
-        if (StringUtils.isNotBlank(s3.getRegion())){
-            accessKey = s3.getRegion();
-        }
-
-        if (StringUtils.isNotBlank(s3.getAccessKey())) {
-            accessKey = s3.getAccessKey();
-        }
-
-        if (StringUtils.isNotBlank(s3.getAccessSecret())){
-            accessSecret = s3.getAccessSecret();
+        if (StringUtils.isNotBlank(s3.getRegion())) {
+            region = s3.getRegion();
         }
 
         if (StringUtils.isNotBlank(s3.getEndpoint())) {
             endpoint = s3.getEndpoint();
         }
+
         if(StringUtils.isNotBlank(s3.getIdToken())) {
             getStsToken(s3, region);
         } else if (StringUtils.isNotBlank(endpoint)) {
@@ -314,13 +307,13 @@ public class ObjectServiceImpl implements ObjectService {
                         .credentialsProvider(() -> AwsBasicCredentials.create(s3.getAccessKey(), s3.getAccessSecret()))
                         .forcePathStyle(true)
                         .build();
-            } else {
-                this.s3Client = S3Client.builder()
-                        .region(Region.of(region))
-                        .credentialsProvider(() -> awsCredentials)
-                        .forcePathStyle(true)
-                        .build();
-            }
+        } else {
+            this.s3Client = S3Client.builder()
+                    .region(Region.of(region))
+                    .credentialsProvider(() -> awsCredentials)
+                    .forcePathStyle(true)
+                    .build();
+        }
     }
 
     void getStsToken(S3 s3, String region) {
