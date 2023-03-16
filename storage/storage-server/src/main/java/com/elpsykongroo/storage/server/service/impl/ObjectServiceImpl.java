@@ -54,11 +54,9 @@ import java.util.Map;
 public class ObjectServiceImpl implements ObjectService {
     @Autowired
     Environment env;
+
     private S3Client s3Client;
-    private String endpoint;
-    private String region;
-    private String accessKey;
-    private String accessSecret;
+
     private Long partSize = (long) 1024 * 1024 * 5;
 
     @Override
@@ -272,29 +270,28 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void initClient(S3 s3) {
-        this.accessKey = env.getProperty("AWS_ACCESS_KEY_ID");
-        this.accessSecret = env.getProperty("AWS_SECRET_ACCESS_KEY");
-        this.endpoint = env.getProperty("ENDPOINT");
-        this.region = env.getProperty("REGION");
+        String accessKey = env.getProperty("AWS_ACCESS_KEY_ID");
+        String accessSecret = env.getProperty("AWS_SECRET_ACCESS_KEY");
+        String endpoint = env.getProperty("ENDPOINT");
+        String region = env.getProperty("REGION");
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, accessSecret);
-
         if (StringUtils.isNotBlank(s3.getRegion())){
-            this.region = s3.getRegion();
+            accessKey = s3.getRegion();
         }
 
         if (StringUtils.isNotBlank(s3.getAccessKey())) {
-            this.accessKey = s3.getAccessKey();
+            accessKey = s3.getAccessKey();
         }
 
         if (StringUtils.isNotBlank(s3.getAccessSecret())){
-            this.accessSecret = s3.getAccessSecret();
+            accessSecret = s3.getAccessSecret();
         }
 
         if (StringUtils.isNotBlank(s3.getEndpoint())) {
-            this.endpoint = s3.getEndpoint();
+            endpoint = s3.getEndpoint();
         }
         if(StringUtils.isNotBlank(s3.getIdToken())) {
-            getStsToken(s3);
+            getStsToken(s3, region);
         } else if (StringUtils.isNotBlank(endpoint)) {
             if (StringUtils.isNotBlank(s3.getAccessKey())) {
                 this.s3Client = S3Client.builder()
@@ -326,7 +323,7 @@ public class ObjectServiceImpl implements ObjectService {
             }
     }
 
-    void getStsToken(S3 s3) {
+    void getStsToken(S3 s3, String region) {
             AssumeRoleWithWebIdentityRequest awRequest =
                     AssumeRoleWithWebIdentityRequest.builder()
                             .durationSeconds(3600)
@@ -369,8 +366,6 @@ public class ObjectServiceImpl implements ObjectService {
                         .forcePathStyle(true)
                         .build();
             }
-
-//
 //            StsAssumeRoleWithWebIdentityCredentialsProvider provider = StsAssumeRoleWithWebIdentityCredentialsProvider.builder()
 //                    .refreshRequest(awRequest)
 //                    .stsClient(stsClient)
