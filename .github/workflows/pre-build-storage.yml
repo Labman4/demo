@@ -13,6 +13,7 @@ on:
 jobs:
   build: 
     uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks
+    secrets: inherit
     with:
       module: storage
       moduleName: storage-server
