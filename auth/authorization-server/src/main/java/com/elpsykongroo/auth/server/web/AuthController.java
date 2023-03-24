@@ -25,6 +25,7 @@ import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +51,14 @@ import java.io.IOException;
 @RestController
 public class AuthController {
 
+    @Autowired
+    private ServletContext servletContext;
+
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
     private SecurityContextRepository securityContextRepository =
             new HttpSessionSecurityContextRepository();
+
     @Autowired
     private RelyingParty relyingParty;
 
@@ -68,8 +73,7 @@ public class AuthController {
     @ResponseBody
     public String newUserRegistration(
         @RequestParam String username,
-        @RequestParam String display,
-        HttpSession session
+        @RequestParam String display
     ) {
         User existingUser = service.getUserRepo().findByUsername(username);
         if (existingUser == null) {
@@ -80,7 +84,7 @@ public class AuthController {
                 .build();
             User saveUser = new User(userIdentity);
             service.getUserRepo().save(saveUser);
-            String response = newAuthRegistration(saveUser, session);
+            String response = newAuthRegistration(saveUser);
             return response;
         }
         return "409";
@@ -89,8 +93,7 @@ public class AuthController {
     @PostMapping("/registerauth")
     @ResponseBody
     public String newAuthRegistration(
-        @RequestParam User user,
-        HttpSession session
+        @RequestParam User user
     ) {
         User existingUser = service.getUserRepo().findByHandle(user.getHandle());
         if (existingUser != null) {
@@ -99,7 +102,7 @@ public class AuthController {
             .user(userIdentity)
             .build();
             PublicKeyCredentialCreationOptions registration = relyingParty.startRegistration(registrationOptions);
-            session.setAttribute(user.getUsername(), registration);
+            servletContext.setAttribute(user.getUsername(), registration);
             try {
                 return registration.toCredentialsCreateJson();
             } catch (JsonProcessingException e) {
@@ -110,8 +113,6 @@ public class AuthController {
         }
     }
 
-
-
     @PostMapping("/finishauth")
     @ResponseBody
     public String finishRegisration(
@@ -121,7 +122,9 @@ public class AuthController {
             HttpSession session
     ) {
         User user = service.getUserRepo().findByUsername(username);
-        PublicKeyCredentialCreationOptions requestOptions = (PublicKeyCredentialCreationOptions) session.getAttribute(user.getUsername());
+        PublicKeyCredentialCreationOptions requestOptions =
+                (PublicKeyCredentialCreationOptions) servletContext.getAttribute(user.getUsername());
+        servletContext.removeAttribute(user.getUsername());
         try {
             if (credential != null) {
                 PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
@@ -147,14 +150,13 @@ public class AuthController {
     @PostMapping("/login")
     @ResponseBody
     public String startLogin(
-        @RequestParam String username,
-        HttpSession session
+        @RequestParam String username
     ) {
         AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
             .username(username)
             .build());
         try {
-            session.setAttribute(username, request);
+            servletContext.setAttribute(username, request);
             return request.toCredentialsGetJson();
         } catch (JsonProcessingException e) {
             return "502";
@@ -166,12 +168,13 @@ public class AuthController {
     public String finishLogin(
             @RequestParam String credential,
             @RequestParam String username,
-            HttpSession session, HttpServletRequest request, HttpServletResponse response
+            HttpServletRequest request, HttpServletResponse response
     ) {
         try {
             User user = service.getUserRepo().findByUsername(username);
             PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc = PublicKeyCredential.parseAssertionResponseJson(credential);
-            AssertionRequest assertionRequest = (AssertionRequest)session.getAttribute(username);
+            AssertionRequest assertionRequest = (AssertionRequest) servletContext.getAttribute(username);
+            servletContext.removeAttribute(username);
             AssertionResult result = relyingParty.finishAssertion(FinishAssertionOptions.builder()
                     .request(assertionRequest)
                     .response(pkc)
