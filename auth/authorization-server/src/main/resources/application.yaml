@@ -2,64 +2,69 @@ server:
   port: 9000
 
 spring:
+
   jpa:
     #    defer-datasource-initialization: true
     open-in-view: false
 #    properties:
 #       hibernate:
-##         dialect: org.hibernate.dialect.MySQLDialect
-#    hibernate:
-#      ddl-auto: update
-#      # naming:
+##         dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+      # naming:
 #      #   implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
-#  #   database-platform: org.hibernate.dialect.MySQL8Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   liquibase:
-    drop-first: false
-    enabled: true
+    drop-first: true
+    enabled: false
     clear-checksums: true
     change-log: classpath:liquibase/changelog.xml
 #    rollback-file: rollback.sh
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_IP:192.168.1.106}:${DB_PORT:5432}/${DB_DATABASE:auth}?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:postgresql://${DB_IP:localhost}:${DB_PORT:15432}/${DB_DATABASE:auth}?useUnicode=true&characterEncoding=UTF-8
     username: ${DB_USER:postgres}
-    password: ${DB_PASS:pass}
+    password: ${DB_PASS:elpsy}
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://${DB_IP:192.168.1.106}:${DB_PORT:5432}/${DB_DATABASE:auth}?useUnicode=true&characterEncoding=UTF-8
+#    username: ${DB_USER:postgres}
+#    password: ${DB_PASS:Elpsy9657}
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://${DB_IP:localhost}:${DB_PORT:13306}/${DB_DATABASE:auth}?useUnicode=true&characterEncoding=UTF-8
 #    username: ${DB_USER:root}
 #    password: ${DB_PASS:elpsy}
   security:
     oauth2:
-#      client:
-#        registration:
-#          google-idp:
-#            provider: google
-#            client-id: ${GOOGLE_CLIENT_ID:google-client-id}
-#            client-secret: ${GOOGLE_CLIENT_SECRET:google-client-secret}
-#            scope: openid, https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email
-#            client-name: Sign in with Google
-#          github-idp:
-#            provider: github
-#            client-id: ${GITHUB_CLIENT_ID:client-id}
-#            client-secret: ${GITHUB_CLIENT_SECRET:client-secret}
-#            scope: user:email, read:user
-#            client-name: Sign in with GitHub
-#        provider:
-#          google:
-#            user-name-attribute: email
-#          github:
-#            user-name-attribute: login
+      client:
+        registration:
+          google-idp:
+            provider: google
+            client-id: ${GOOGLE_CLIENT_ID:google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:google-client-secret}
+            scope: openid, https://www.googleapis.com/auth/userinfo.profile, https://www.googleapis.com/auth/userinfo.email
+            client-name: Sign in with Google
+          github-idp:
+            provider: github
+            client-id: ${GITHUB_CLIENT_ID:client-id}
+            client-secret: ${GITHUB_CLIENT_SECRET:client-secret}
+            scope: user:email, read:user
+            client-name: Sign in with GitHub
+        provider:
+          google:
+            user-name-attribute: email
+          github:
+            user-name-attribute: login
       resourceserver:
         jwt:
-          issuer-uri: ${JWT_ISSUER_URL:http://localhost:9000}
-          jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
+          issuer-uri: ${JWT_ISSUER_URL:http://127.0.0.1:9000}
+          jwk-set-uri: ${AUTH_URL:http://127.0.0.1:9000}/oauth2/jwks
 
 logging:
   level:
-    root: ${LOG_LEVEL:INFO}
+    root: ${LOG_LEVEL:info}
     org:
       springframework:
-        web: ${LOG_LEVEL:INFO}
-        security: ${LOG_LEVEL:INFO}
+        web: ${LOG_LEVEL:DEBUG}
+        security: ${LOG_LEVEL:DEBUG}
 #    org.springframework.boot.autoconfigure: DEBUG

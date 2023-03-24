@@ -48,12 +48,9 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 	private String authorizationRequestUri = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI
 			+ "/{registrationId}";
 
-	private final AuthenticationEntryPoint delegate;
-
 	private final ClientRegistrationRepository clientRegistrationRepository;
 
-	public FederatedIdentityAuthenticationEntryPoint(String loginPageUrl, ClientRegistrationRepository clientRegistrationRepository) {
-		this.delegate = new LoginUrlAuthenticationEntryPoint(loginPageUrl);
+	public FederatedIdentityAuthenticationEntryPoint(ClientRegistrationRepository clientRegistrationRepository) {
 		this.clientRegistrationRepository = clientRegistrationRepository;
 	}
 
@@ -73,7 +70,7 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 			}
 		}
 
-		this.delegate.commence(request, response, authenticationException);
+//		this.delegate.commence(request, response, authenticationException);
 	}
 
 	public void setAuthorizationRequestUri(String authorizationRequestUri) {

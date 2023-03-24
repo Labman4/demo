@@ -16,7 +16,8 @@
 
 package com.elpsykongroo.auth.server.config;
 
-
+import com.elpsykongroo.auth.server.security.FederatedIdentityConfigurer;
+import com.elpsykongroo.auth.server.security.UserRepositoryOAuth2UserHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,15 +25,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import com.elpsykongroo.auth.server.security.CustomLogoutSuccessHandler;
-
-import com.elpsykongroo.auth.server.security.FederatedIdentityConfigurer;
-import com.elpsykongroo.auth.server.security.UserRepositoryOAuth2UserHandler;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -47,29 +46,38 @@ public class DefaultSecurityConfig {
 	@Autowired
     private UserDetailsService userDetailsService;
 
-	@Autowired
-	LogoutSuccessHandler logoutSuccessHandler;
-
 	@Bean
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer()
 			.oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
 
 		http.cors().and()
-//			.csrf().disable()
-			.logout()
-			.logoutSuccessHandler(logoutSuccessHandler).and()
-			.oauth2Login(withDefaults())
-			.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.NEVER).and()
+			.csrf().disable()
+//			.logout()
+//			.logoutSuccessHandler(logoutSuccessHandler).and()
+//			.oauth2Login().loginPage("http://localhost:15173").and()
+				.oauth2Login().and()
+				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
 			.authorizeHttpRequests(authorize ->
 				authorize
-					.requestMatchers("/login/**").permitAll()
 					.requestMatchers("/oauth2/**").permitAll()
-						.anyRequest().authenticated()
+					.requestMatchers("/auth/**").permitAll()
+					.requestMatchers(
+							"/",
+							"/index",
+							"/welcome",
+							"/login",
+							"/register",
+							"/registerauth",
+							"/css/**",
+							"/javascript/**",
+							"/finishauth").permitAll()
+					.anyRequest().authenticated()
 			)
-			.formLogin(withDefaults())
+			.formLogin().disable()
 			.apply(federatedIdentityConfigurer);
-
 		return http.build();
 	}
 
@@ -92,14 +100,18 @@ public class DefaultSecurityConfig {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
-	@Bean
-	public LogoutSuccessHandler logoutSuccessHandler() {
-		return new CustomLogoutSuccessHandler();
-	}
-	
+//	@Bean
+//	public LogoutSuccessHandler logoutSuccessHandler() {
+//		return new CustomLogoutSuccessHandler();
+//	}
+
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) 
-	  throws Exception {
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService);
 	}
+
+//	@Bean
+//	public WebAuthnAuthenticationProvider AuthenticationProvider () {
+//		return new WebAuthnAuthenticationProvider();
+//	}
 }

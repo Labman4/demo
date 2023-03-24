@@ -60,8 +60,8 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 
 	@Override
 	public void customize(JwtEncodingContext context) {
-		String[] policy = new String[1];
-		policy[0] = "consoleAdmin";
+//		String[] policy = new String[1];
+//		policy[0] = "consoleAdmin";
 		if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
 			Map<String, Object> thirdPartyClaims = extractClaims(context.getPrincipal());
 			context.getClaims().claims(existingClaims -> {
@@ -73,7 +73,7 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 
 				// Add all other claims directly to id_token
 				existingClaims.putAll(thirdPartyClaims);
-				existingClaims.put("policy", policy);
+//				existingClaims.put("policy", policy);
 			});
 		}
 	}

@@ -16,9 +16,8 @@ public class WebConfig {
                 registry.addMapping("/login");
                 registry.addMapping("/logout");
                 registry.addMapping("/oauth2/**");
-
+                registry.addMapping("/register");
             }
-
         };
     }
 }

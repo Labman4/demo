@@ -35,6 +35,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
@@ -44,7 +45,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
@@ -53,7 +53,8 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.web.reactive.function.client.WebClient;
+
+import java.io.PrintWriter;
 
 
 @Configuration(proxyBeanMethods = false)
@@ -70,11 +71,23 @@ public class AuthorizationServerConfig {
 			.oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
 		http
 			.cors().and()
-				.csrf().disable()
-			.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+			.csrf().disable()
 			.exceptionHandling((exceptions) -> exceptions
-				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
-			
+							.authenticationEntryPoint((req, resp, authException) -> {
+							resp.setContentType("application/json;charset=utf-8");
+							PrintWriter out = resp.getWriter();
+							out.write("401");
+							out.flush();
+							out.close();
+						}))
+			.logout()
+			.logoutSuccessHandler((req, resp, authentication) -> {
+				resp.setContentType("application/json;charset=utf-8");
+				PrintWriter out = resp.getWriter();
+				out.write("logout");
+				out.flush();
+				out.close();
+			});
 		http.apply(new FederatedIdentityConfigurer());
 		return http.build();
 	}
@@ -108,25 +121,25 @@ public class AuthorizationServerConfig {
 		return new JdbcOAuth2AuthorizedClientService(jdbcTemplate, clientRegistrationRepository);
 	}
 
-	@Bean
-	public OAuth2AuthorizedClientRepository authorizedClientRepository(
-			OAuth2AuthorizedClientService authorizedClientService) {
-		return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
-	}
-
-	@Bean
-	OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,
-														  OAuth2AuthorizedClientRepository authorizedClientRepository) {
-
-		//可以扩展其他模式
-		OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder
-				.builder()
-				.authorizationCode()
-				.refreshToken()
-				.build();
-		DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientRepository);
-		authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
-
-		return authorizedClientManager;
-	}
+//	@Bean
+//	public OAuth2AuthorizedClientRepository authorizedClientRepository(
+//			OAuth2AuthorizedClientService authorizedClientService) {
+//		return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
+//	}
+//
+//	@Bean
+//	OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,
+//														  OAuth2AuthorizedClientRepository authorizedClientRepository) {
+//
+//		//可以扩展其他模式
+//		OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder
+//				.builder()
+//				.authorizationCode()
+//				.refreshToken()
+//				.build();
+//		DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientRepository);
+//		authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
+//
+//		return authorizedClientManager;
+//	}
 }

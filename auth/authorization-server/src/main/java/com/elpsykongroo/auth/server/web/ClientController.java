@@ -2,6 +2,8 @@ package com.elpsykongroo.auth.server.web;
 
 
 import com.elpsykongroo.auth.server.entity.client.Client;
+import com.elpsykongroo.auth.server.entity.client.ClientRegistry;
+import com.elpsykongroo.auth.server.service.custom.ClientRegistrationService;
 import com.elpsykongroo.auth.server.service.custom.ClientService;
 import com.elpsykongroo.auth.server.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,22 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
+    @Autowired
+    private ClientRegistrationService clientRegistrationService;
+
+    @PostMapping("/register/add")
+    public String addClientRegistry (@RequestBody ClientRegistry client) {
+        return clientRegistrationService.add(client);
+    }
+    @DeleteMapping("/register/delete/{registerId}")
+    public String deleteClientRegistry (@PathVariable String registerId) {
+        return clientRegistrationService.delete(registerId);
+    }
+    @GetMapping("/register/list")
+    public String listClientRegistry () {
+        List<ClientRegistry> clientList = clientRegistrationService.findAll();
+        return JsonUtils.toJson(clientList);
+    }
     @PostMapping("/add")
     public String addClient (@RequestBody Client client) {
         return clientService.add(client);

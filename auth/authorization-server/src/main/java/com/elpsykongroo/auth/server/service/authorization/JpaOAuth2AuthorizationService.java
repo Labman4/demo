@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import com.elpsykongroo.auth.server.entity.authorization.Authorization;
 
 import com.elpsykongroo.auth.server.repository.authorization.AuthorizationRepository;
+import com.elpsykongroo.auth.server.utils.WebAuthnTokenJackson2Module;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,7 +69,7 @@ public class JpaOAuth2AuthorizationService implements OAuth2AuthorizationService
 		this.objectMapper.registerModules(securityModules);
 		objectMapper.registerModules(new CoreJackson2Module());
 		this.objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());
-		// objectMapper.addMixIn(PersistentBag.class, User.class);
+		this.objectMapper.registerModule(new WebAuthnTokenJackson2Module());
 	}
 
 	@Override
