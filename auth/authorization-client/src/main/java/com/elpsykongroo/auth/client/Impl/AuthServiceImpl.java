@@ -19,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
 
     private String clientPrefix =  "/auth/client";
 
-    private String registryPrefix =  "/auth/register";
+    private String registryPrefix =  "/auth/client/register";
 
     public AuthServiceImpl(String serverUrl, RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
