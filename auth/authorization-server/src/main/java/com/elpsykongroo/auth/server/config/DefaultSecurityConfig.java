@@ -25,15 +25,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
-import static org.springframework.security.config.Customizer.withDefaults;
 
 
 /**
@@ -49,69 +45,31 @@ public class DefaultSecurityConfig {
 	@Bean
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer()
-			.oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
-
+				.oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
 		http.cors().and()
-			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.NEVER).and()
 			.csrf().disable()
-//			.logout()
-//			.logoutSuccessHandler(logoutSuccessHandler).and()
-//			.oauth2Login().loginPage("http://localhost:15173").and()
-				.oauth2Login().and()
-				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+			.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
 			.authorizeHttpRequests(authorize ->
-				authorize
-					.requestMatchers("/oauth2/**").permitAll()
-					.requestMatchers("/auth/**").permitAll()
-					.requestMatchers(
-							"/",
-							"/index",
-							"/welcome",
-							"/login",
-							"/register",
-							"/registerauth",
-							"/css/**",
-							"/javascript/**",
-							"/finishauth").permitAll()
-					.anyRequest().authenticated()
-			)
+			 	authorize.requestMatchers(
+								 	"/oauth2/**",
+									"/welcome",
+									"/login",
+									"/register",
+									"/finishauth").permitAll()
+							.anyRequest().authenticated())
 			.formLogin().disable()
 			.apply(federatedIdentityConfigurer);
 		return http.build();
 	}
-
-//	@Bean
-//	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//		http
-//			.securityMatcher("/auth/**")
-//				.authorizeHttpRequests()
-//					.requestMatchers("/auth/client/list").hasAuthority("SCOPE_auth.read")
-//					.requestMatchers("/auth/client/add").hasAuthority("SCOPE_auth.write")
-//					.requestMatchers("/auth/client/delete").hasAuthority("SCOPE_auth.write")
-//					.and()
-//			.oauth2ResourceServer()
-//				.jwt();
-//		return http.build();
-//	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 
-//	@Bean
-//	public LogoutSuccessHandler logoutSuccessHandler() {
-//		return new CustomLogoutSuccessHandler();
-//	}
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService);
 	}
-
-//	@Bean
-//	public WebAuthnAuthenticationProvider AuthenticationProvider () {
-//		return new WebAuthnAuthenticationProvider();
-//	}
 }

@@ -1,5 +1,6 @@
 package com.elpsykongroo.auth.server.utils;
 
+import com.elpsykongroo.auth.server.entity.user.Authority;
 import com.elpsykongroo.auth.server.service.webauthn.WebAuthnAuthenticationToken;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
@@ -16,5 +17,6 @@ public class WebAuthnTokenJackson2Module extends SimpleModule {
     public void setupModule(Module.SetupContext context) {
         SecurityJackson2Modules.enableDefaultTyping((ObjectMapper)context.getOwner());
         context.setMixInAnnotations(WebAuthnAuthenticationToken.class, WebAuthnTokenMixin.class);
+        context.setMixInAnnotations(Authority.class, AuthorityMixin.class);
     }
 }

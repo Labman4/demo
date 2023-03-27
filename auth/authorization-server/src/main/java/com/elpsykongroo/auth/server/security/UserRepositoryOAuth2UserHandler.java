@@ -20,14 +20,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-/**
- * Example {@link Consumer} to perform JIT provisioning of an {@link OAuth2User}.
- *
- * @author Steve Riesenberg
- * @since 0.2.3
- */
+@Slf4j
 public final class UserRepositoryOAuth2UserHandler implements Consumer<OAuth2User> {
 
 	private final UserRepository userRepository = new UserRepository();
@@ -36,7 +32,7 @@ public final class UserRepositoryOAuth2UserHandler implements Consumer<OAuth2Use
 	public void accept(OAuth2User user) {
 		// Capture user in a local data store on first authentication
 		if (this.userRepository.findByName(user.getName()) == null) {
-			System.out.println("Saving first-time user: name=" + user.getName() + ", claims=" + user.getAttributes() + ", authorities=" + user.getAuthorities());
+			log.info("Saving first-time user: name=" + user.getName() + ", claims=" + user.getAttributes() + ", authorities=" + user.getAuthorities());
 			this.userRepository.save(user);
 		}
 	}

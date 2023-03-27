@@ -16,15 +16,18 @@
 
 package com.elpsykongroo.auth.server.security;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
@@ -60,20 +63,28 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 
 	@Override
 	public void customize(JwtEncodingContext context) {
-//		String[] policy = new String[1];
-//		policy[0] = "consoleAdmin";
 		if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
 			Map<String, Object> thirdPartyClaims = extractClaims(context.getPrincipal());
+			Map<String, Object> customClaims = new HashMap<>();
+			for (String scope : context.getAuthorizedScopes()) {
+				List<String> authList = new ArrayList<>();
+				for (GrantedAuthority authority : context.getPrincipal().getAuthorities()) {
+					String[] auth = authority.getAuthority().split(scope + ".");
+						if (auth.length > 1) {
+							authList.add(auth[1]);
+						}
+				}
+				customClaims.put(scope, authList);
+			}
 			context.getClaims().claims(existingClaims -> {
 				// Remove conflicting claims set by this authorization server
 				existingClaims.keySet().forEach(thirdPartyClaims::remove);
-
 				// Remove standard id_token claims that could cause problems with clients
 				ID_TOKEN_CLAIMS.forEach(thirdPartyClaims::remove);
 
 				// Add all other claims directly to id_token
 				existingClaims.putAll(thirdPartyClaims);
-//				existingClaims.put("policy", policy);
+				existingClaims.putAll(customClaims);
 			});
 		}
 	}
@@ -90,7 +101,6 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 		} else {
 			claims = Collections.emptyMap();
 		}
-
 		return new HashMap<>(claims);
 	}
 

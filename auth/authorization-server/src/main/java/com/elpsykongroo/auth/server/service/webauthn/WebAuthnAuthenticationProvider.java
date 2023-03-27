@@ -6,9 +6,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class WebAuthnAuthenticationProvider implements AuthenticationProvider {
 
+    private AuthenticationProvider delegate; // this can be either of the above providers
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         if (!supports(authentication.getClass())) {
@@ -21,6 +23,19 @@ public class WebAuthnAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Invalid username or password");
         }
         return authentication;
+//        OAuth2AccessTokenAuthenticationToken rawAuthentication = (OAuth2AccessTokenAuthenticationToken) delegate.authenticate(authentication);
+//        Map<String, Object> newParameters = new HashMap<>(rawAuthentication.getAdditionalParameters());
+//        rawAuthentication.getRegisteredClient().getScopes().stream().map(scope ->
+//                webAuthnAuthenticationToken.getAuthorities().stream().map(authority ->
+//                        newParameters.put(scope, authority.getAuthority().split(scope + ".")[1]))
+//                        );
+//
+//        return new OAuth2AccessTokenAuthenticationToken(
+//                rawAuthentication.getRegisteredClient(),
+//                (Authentication)rawAuthentication.getPrincipal(),
+//                rawAuthentication.getAccessToken(),
+//                rawAuthentication.getRefreshToken(),
+//                newParameters);
     }
 
     @Override

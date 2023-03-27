@@ -66,19 +66,6 @@ public class User implements UserDetails {
     )
     private List<Group> groups;
 
-//    @Type(
-//            value = ListArrayType.class,
-//            parameters = {
-//                    @Parameter(
-//                            name = ListArrayType.SQL_ARRAY_TYPE,
-//                            value = "authorities"
-//                    )
-//            }
-//    )
-//    @Column(
-//            name = "authorities",
-//            columnDefinition = "authorities[]"
-//    )    @LazyCollection(LazyCollectionOption.FALSE)
     @ManyToMany(cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     @JoinTable(
@@ -119,6 +106,11 @@ public class User implements UserDetails {
         this.handle = user.getId();
         this.username = user.getName();
         this.nickName = user.getDisplayName();
+    }
+
+    @Override
+    public String toString() {
+        return username;
     }
 
     public UserIdentity toUserIdentity() {

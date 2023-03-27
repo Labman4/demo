@@ -43,6 +43,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 public final class FederatedIdentityAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+	private final AuthenticationEntryPoint delegate;
 	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
 	private String authorizationRequestUri = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI
@@ -50,12 +51,17 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 
 	private final ClientRegistrationRepository clientRegistrationRepository;
 
-	public FederatedIdentityAuthenticationEntryPoint(ClientRegistrationRepository clientRegistrationRepository) {
+	public FederatedIdentityAuthenticationEntryPoint(String loginPageUrl, ClientRegistrationRepository clientRegistrationRepository) {
+		this.delegate = new LoginUrlAuthenticationEntryPoint(loginPageUrl);
 		this.clientRegistrationRepository = clientRegistrationRepository;
 	}
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException, ServletException {
+		String uri = request.getRequestURI();
+//		if (StringUtils.isNotBlank(uri) && "/userinfo".equals(uri)) {
+//
+//		}
 		String idp = request.getParameter("idp");
 		if (idp != null) {
 			ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(idp);
@@ -70,7 +76,7 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 			}
 		}
 
-//		this.delegate.commence(request, response, authenticationException);
+		this.delegate.commence(request, response, authenticationException);
 	}
 
 	public void setAuthorizationRequestUri(String authorizationRequestUri) {

@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
  */
 public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<FederatedIdentityConfigurer, HttpSecurity> {
 
-//	private String loginPageUrl = "/login";
+	private String loginPageUrl = "https://elpsykongroo.com";
 
 	private String authorizationRequestUri;
 
@@ -46,11 +46,11 @@ public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<Fe
 	 * @param loginPageUrl The URL of the login page, defaults to {@code "/login"}
 	 * @return This configurer for additional configuration
 	 */
-//	public FederatedIdentityConfigurer loginPageUrl(String loginPageUrl) {
-//		Assert.hasText(loginPageUrl, "loginPageUrl cannot be empty");
-//		this.loginPageUrl = loginPageUrl;
-//		return this;
-//	}
+	public FederatedIdentityConfigurer loginPageUrl(String loginPageUrl) {
+		Assert.hasText(loginPageUrl, "loginPageUrl cannot be empty");
+		this.loginPageUrl = loginPageUrl;
+		return this;
+	}
 
 	/**
 	 * @param authorizationRequestUri The authorization request URI for initiating
@@ -92,11 +92,11 @@ public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<Fe
 		ApplicationContext applicationContext = http.getSharedObject(ApplicationContext.class);
 		ClientRegistrationRepository clientRegistrationRepository =
 			applicationContext.getBean(ClientRegistrationRepository.class);
-//		FederatedIdentityAuthenticationEntryPoint authenticationEntryPoint =
-//			new FederatedIdentityAuthenticationEntryPoint(clientRegistrationRepository);
-//		if (this.authorizationRequestUri != null) {
-//			authenticationEntryPoint.setAuthorizationRequestUri(this.authorizationRequestUri);
-//		}
+		FederatedIdentityAuthenticationEntryPoint authenticationEntryPoint =
+			new FederatedIdentityAuthenticationEntryPoint(this.loginPageUrl,clientRegistrationRepository);
+		if (this.authorizationRequestUri != null) {
+			authenticationEntryPoint.setAuthorizationRequestUri(this.authorizationRequestUri);
+		}
 
 		FederatedIdentityAuthenticationSuccessHandler authenticationSuccessHandler =
 			new FederatedIdentityAuthenticationSuccessHandler();
@@ -108,9 +108,9 @@ public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<Fe
 		}
 
 		http
-//			.exceptionHandling(exceptionHandling ->
-//				exceptionHandling.authenticationEntryPoint(authenticationEntryPoint)
-//			)
+			.exceptionHandling(exceptionHandling ->
+				exceptionHandling.authenticationEntryPoint(authenticationEntryPoint)
+			)
 			.oauth2Login(oauth2Login -> {
 				oauth2Login.successHandler(authenticationSuccessHandler);
 				if (this.authorizationRequestUri != null) {
