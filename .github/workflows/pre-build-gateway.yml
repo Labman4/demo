@@ -10,7 +10,7 @@ on:
     paths:
       - gateway/**   
       - 'pom.xml'
-      - '**/*client/**'	
+      - '**/*-client/**'	
 
 jobs:
   build: 
