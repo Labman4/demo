@@ -74,7 +74,9 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 							authList.add(auth[1]);
 						}
 				}
-				customClaims.put(scope, authList);
+				if (authList.size() > 0) {
+					customClaims.put(scope, authList);
+				}
 			}
 			context.getClaims().claims(existingClaims -> {
 				// Remove conflicting claims set by this authorization server
