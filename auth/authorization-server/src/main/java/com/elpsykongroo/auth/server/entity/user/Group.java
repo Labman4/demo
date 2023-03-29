@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.auth.server.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,6 +50,7 @@ public class Group implements Serializable {
 
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
     @JoinTable(
             name = "user_group",
             joinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id")},
@@ -58,6 +60,7 @@ public class Group implements Serializable {
 
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
     @JoinTable(
             name = "group_authority",
             joinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id")},

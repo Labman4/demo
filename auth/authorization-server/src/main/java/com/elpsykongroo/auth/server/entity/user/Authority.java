@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.auth.server.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +48,7 @@ public class Authority implements GrantedAuthority {
 
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
     @JoinTable(
             name = "user_authority",
             joinColumns = {@JoinColumn(name = "authority_id", referencedColumnName = "id")},
@@ -56,6 +58,7 @@ public class Authority implements GrantedAuthority {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
     @JoinTable(
             name = "group_authority",
             joinColumns = {@JoinColumn(name = "authority_id", referencedColumnName = "id")},

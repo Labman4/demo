@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.auth.server.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.UserIdentity;
 import jakarta.persistence.CascadeType;
@@ -58,6 +59,7 @@ public class User implements UserDetails {
     private String nickName;
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
     @JoinTable(
             name = "user_group",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
@@ -68,6 +70,7 @@ public class User implements UserDetails {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
     @JoinTable(
             name = "user_authority",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
