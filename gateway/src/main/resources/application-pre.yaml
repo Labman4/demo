@@ -54,7 +54,7 @@ request:
     white: ${WHITE_HEADER:x-forward-for}
     record: ${RECORD_HEADER:x-forward-for}
 service:
-  vault: false
+  vault: true
   ssl:
     ca:  ${CA_CRT}
     cert:  ${TLS_CERT}
