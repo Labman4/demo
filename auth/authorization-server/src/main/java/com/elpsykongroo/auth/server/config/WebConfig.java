@@ -2,6 +2,7 @@ package com.elpsykongroo.auth.server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,8 +24,6 @@ public class WebConfig {
                 registry.addMapping("/oauth2/**").allowedOriginPatterns("*").allowCredentials(true);
                 registry.addMapping("/register");
                 registry.addMapping("/userinfo").allowedOriginPatterns("*").allowCredentials(true);
-                registry.addMapping("/oauth2/authorize").allowedOriginPatterns("*").allowCredentials(true);
-
             }
         };
     }
@@ -32,15 +31,27 @@ public class WebConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
-        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
-        configuration.setAllowCredentials(true); // enable credentials
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOriginPatterns(Arrays.asList("*"));
+        config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE"));
+        config.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.addAllowedOrigin("http://127.0.0.1:15173");
+        config.addAllowedOrigin("https://elpsykongroo.com");
+        config.addAllowedOrigin("https://auth-dev.elpsykongroo.com");
+        config.addAllowedOrigin("https://oauth2-proxy2.elpsykongroo.com");
+        config.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    @Bean
+    public DefaultCookieSerializer defaultCookieSerializer() {
+        DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
+        defaultCookieSerializer.setCookiePath("/");
+        defaultCookieSerializer.setSameSite(null);
+        return defaultCookieSerializer;
     }
 }
