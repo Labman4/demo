@@ -8,7 +8,7 @@ on:
     branches:
     - native-image
     paths:
-      -  '**/*src/**authorization-server/**'
+      -  '**/*authorization-server/**'
       -  'pom.xml'
 
 jobs:
