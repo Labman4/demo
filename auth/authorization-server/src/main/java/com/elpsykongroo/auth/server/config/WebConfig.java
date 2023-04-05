@@ -14,6 +14,7 @@ public class WebConfig {
 
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/auth/**");
                 registry.addMapping("/login");
                 registry.addMapping("/logout");
                 registry.addMapping("/oauth2/**").allowedOriginPatterns("*").allowCredentials(true);
@@ -48,7 +49,7 @@ public class WebConfig {
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
         defaultCookieSerializer.setCookiePath("/");
         defaultCookieSerializer.setSameSite(null);
-        defaultCookieSerializer.setDomainNamePattern("^(([^.]+)\\.)?(elpsykongroo\\.com|localhost)$");
+        defaultCookieSerializer.setDomainNamePattern("^(([^.]+)\\.)?(elpsykongroo\\.com|localhost|127.0.0.1)$");
         return defaultCookieSerializer;
     }
 }

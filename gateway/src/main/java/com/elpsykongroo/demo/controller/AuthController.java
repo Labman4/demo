@@ -1,4 +1,4 @@
-package com.elpsykongroo.demo.contronller;
+package com.elpsykongroo.demo.controller;
 
 import com.elpsykongroo.auth.client.AuthService;
 import com.elpsykongroo.auth.client.dto.Client;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @RestController
 @RequestMapping("auth/")
-public class AuthContronller {
+public class AuthController {
     @Autowired
     private AuthService authService;
 
@@ -34,15 +34,15 @@ public class AuthContronller {
         return authService.findAllClient(auth);
     }
 
-    @PostMapping("/register/add")
+    @PostMapping("/client/register/add")
     public String addRegister (@RequestHeader("Authorization") String auth, @RequestBody ClientRegistry client) {
         return authService.addRegister(auth, client);
     }
-    @DeleteMapping("/register/delete")
+    @DeleteMapping("/client/register/delete")
     public String deleteRegister (@RequestHeader("Authorization") String auth, @RequestParam("registerId")String clientId) {
         return authService.deleteRegister(auth, clientId);
     }
-    @GetMapping("/register/list")
+    @GetMapping("/client/register/list")
     public String listRegister (@RequestHeader("Authorization") String auth) {
         return authService.findAllRegister(auth).toString();
     }

@@ -1,4 +1,4 @@
-package com.elpsykongroo.demo.contronller;
+package com.elpsykongroo.demo.controller;
 
 import com.elpsykongroo.services.redis.client.RedisService;
 import com.elpsykongroo.services.redis.client.dto.KV;

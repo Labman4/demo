@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.contronller;
+package com.elpsykongroo.demo.controller;
 
 import com.elpsykongroo.demo.common.CommonResponse;
 import com.elpsykongroo.demo.exception.ServiceException;
@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/ip")
 @Slf4j
-public class IPManagerContronller {
+public class IPManagerController {
 	@Autowired
 	private IPManagerService ipManagerService;
 

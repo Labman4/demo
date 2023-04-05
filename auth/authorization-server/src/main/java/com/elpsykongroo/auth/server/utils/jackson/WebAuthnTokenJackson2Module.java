@@ -1,4 +1,4 @@
-package com.elpsykongroo.auth.server.utils;
+package com.elpsykongroo.auth.server.utils.jackson;
 
 import com.elpsykongroo.auth.server.entity.user.Authority;
 import com.elpsykongroo.auth.server.service.webauthn.WebAuthnAuthenticationToken;
@@ -11,7 +11,7 @@ import org.springframework.security.jackson2.SecurityJackson2Modules;
 
 public class WebAuthnTokenJackson2Module extends SimpleModule {
     public WebAuthnTokenJackson2Module() {
-        super(com.elpsykongroo.auth.server.utils.WebAuthnTokenJackson2Module.class.getName(), new Version(1, 0, 0, (String)null, (String)null, (String)null));
+        super(WebAuthnTokenJackson2Module.class.getName(), new Version(1, 0, 0, (String)null, (String)null, (String)null));
     }
 
     public void setupModule(Module.SetupContext context) {

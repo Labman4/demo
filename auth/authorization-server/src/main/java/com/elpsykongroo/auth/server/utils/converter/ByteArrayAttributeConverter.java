@@ -1,4 +1,4 @@
-package com.elpsykongroo.auth.server.utils;
+package com.elpsykongroo.auth.server.utils.converter;
 
 import com.yubico.webauthn.data.ByteArray;
 

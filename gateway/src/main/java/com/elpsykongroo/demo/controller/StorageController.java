@@ -1,4 +1,4 @@
-package com.elpsykongroo.demo.contronller;
+package com.elpsykongroo.demo.controller;
 
 
 import com.elpsykongroo.storage.client.StorageService;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @Slf4j
 @RestController
 @RequestMapping("storage")
-public class StorageContronller {
+public class StorageController {
     @Autowired
     private StorageService storageService;
 

@@ -24,7 +24,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -33,11 +32,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 /**
  * User model
@@ -48,11 +52,12 @@ import java.util.List;
 @NoArgsConstructor
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(strategy = IDENTITY, generator = "uuid2")
+    private String id;
+    @Column(length = 2000)
+    private Map<String, Object> userInfo;
     @Column(nullable = false, length = 64)
-
     private ByteArray handle;
     private String username;
     private String email;
@@ -85,6 +90,10 @@ public class User implements UserDetails {
 
     private boolean locked;
 
+    private Instant createTime;
+
+    private Instant updateTime;
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -111,9 +120,20 @@ public class User implements UserDetails {
         this.nickName = user.getDisplayName();
     }
 
+
     @Override
     public String toString() {
-        return username;
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"").append(id).append("\",");
+        sb.append("\"username\":\"").append(username).append("\",");
+        sb.append("\"email\":\"").append(email).append("\",");
+        sb.append("\"nickName\":\"").append(nickName).append("\",");
+        sb.append("\"password\":\"").append(password).append("\",");
+        sb.append("\"locked\":\"").append(locked).append("\",");
+        sb.append("\"createTime\":\"").append(createTime).append("\",");
+        sb.append("\"updateTime\":\"").append(updateTime).append("\"");
+        sb.append('}');
+        return sb.toString();
     }
 
     public UserIdentity toUserIdentity() {

@@ -35,7 +35,7 @@ public class AuthController {
             @RequestParam String username,
             @RequestParam String credname
     ) {
-        return userService.saveUser(credential, username, credname);
+        return userService.saveAuth(credential, username, credname);
     }
 
     @PostMapping("/login")

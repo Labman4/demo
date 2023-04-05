@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.contronller;
+package com.elpsykongroo.demo.controller;
 
 import com.elpsykongroo.demo.service.AccessRecordService;
 import com.elpsykongroo.demo.utils.JsonUtils;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/record")
 @Slf4j
-public class AccessRecordContronller {
+public class AccessRecordController {
 	@Autowired
 	private AccessRecordService accessRecordService;
 

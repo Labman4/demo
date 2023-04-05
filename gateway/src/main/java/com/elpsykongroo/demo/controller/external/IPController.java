@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.demo.contronller.external;
+package com.elpsykongroo.demo.controller.external;
 
 import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.demo.service.IPManagerService;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/public")
-public class IPContronller {
+public class IPController {
 	@Autowired
 	private IPManagerService ipManagerService;
 

@@ -23,14 +23,16 @@ import com.yubico.webauthn.data.ByteArray;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Optional;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 /**
  * Authenticator model
@@ -43,8 +45,9 @@ import java.util.Optional;
 public class Authenticator{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(strategy = IDENTITY, generator = "uuid2")
+    private String id;
 
     private String name;
 

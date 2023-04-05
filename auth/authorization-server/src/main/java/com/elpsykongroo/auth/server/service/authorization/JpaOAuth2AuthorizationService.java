@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import com.elpsykongroo.auth.server.entity.authorization.Authorization;
 
 import com.elpsykongroo.auth.server.repository.authorization.AuthorizationRepository;
-import com.elpsykongroo.auth.server.utils.WebAuthnTokenJackson2Module;
+import com.elpsykongroo.auth.server.utils.jackson.WebAuthnTokenJackson2Module;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;

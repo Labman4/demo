@@ -1,4 +1,4 @@
-package com.elpsykongroo.auth.server.utils;
+package com.elpsykongroo.auth.server.utils.jackson;
 
 import com.elpsykongroo.auth.server.service.webauthn.WebAuthnAuthenticationToken;
 import com.fasterxml.jackson.core.JsonParseException;

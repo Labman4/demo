@@ -53,7 +53,7 @@ public class Authorization {
 	private Instant authorizationCodeExpiresAt;
 
 	private String authorizationCodeMetadata;
-	@Column(length = 1000)
+	@Column(length = 2000)
 	private String accessTokenValue;
 
 	private Instant accessTokenIssuedAt;
@@ -77,7 +77,7 @@ public class Authorization {
 	@Column(length = 1000)
 	private String refreshTokenMetadata;
 
-	@Column(length = 1000)
+	@Column(length = 2000)
 	private String oidcIdTokenValue;
 
 	private Instant oidcIdTokenIssuedAt;
@@ -87,6 +87,6 @@ public class Authorization {
 	@Column(length = 1000)
 	private String oidcIdTokenMetadata;
 
-	@Column(length = 1000)
+	@Column(length = 2000)
 	private String oidcIdTokenClaims;
 }
