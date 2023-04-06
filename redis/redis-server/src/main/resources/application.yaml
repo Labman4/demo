@@ -25,3 +25,7 @@ spring:
       #     maxActive: 5
       #     maxWait: 5
       #     timeBetweenEvictionRuns: 100000
+logging:
+  level:
+    root: ${GLOBAL_LOG_LEVEL:info}
+    web: ${WEB_LOG_LEVEL:info}
