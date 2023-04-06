@@ -1,0 +1,20 @@
+[
+  {
+    "interfaces":["org.springframework.boot.actuate.endpoint.annotation.EndpointExtension"]
+  },
+  {
+    "interfaces":["org.springframework.boot.context.properties.ConfigurationProperties"]
+  },
+  {
+    "interfaces":["org.springframework.boot.test.context.SpringBootTest"]
+  },
+  {
+    "interfaces":["org.springframework.test.context.ActiveProfiles"]
+  },
+  {
+    "interfaces":["org.springframework.test.context.BootstrapWith"]
+  },
+  {
+    "interfaces":["org.testcontainers.dockerclient.RootlessDockerClientProviderStrategy$LibC"]
+  }
+]
