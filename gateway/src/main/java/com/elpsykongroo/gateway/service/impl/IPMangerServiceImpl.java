@@ -189,11 +189,13 @@ public class IPMangerServiceImpl implements IPManagerService {
 			list = ipRepo.findByIsBlackFalse();
 			kv.setKey("whiteList");
 		}
-		for (IPManage ad: list) {
-			cache.append(ad.getAddress()).append(",");
+		if (list.size() > 0) {
+			for (IPManage ad: list) {
+				cache.append(ad.getAddress()).append(",");
+			}
+			kv.setValue(cache.toString().substring(0, cache.length() - 1));
+			redisService.set(kv);
 		}
-		kv.setValue(cache.toString().substring(0, cache.length() - 1));
-		redisService.set(kv);
 	}
 //	private void updataCache(String isBlack) {
 //		List<String> cache = new ArrayList<>();
