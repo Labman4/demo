@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -17,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.Arrays;
 
 @Component
@@ -27,6 +30,10 @@ public class StorageServiceImpl implements StorageService {
 
     public StorageServiceImpl(String serverUrl, RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
+//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 10809));
+//        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+//        requestFactory.setProxy(proxy);
+//        restTemplate.setRequestFactory(requestFactory);
         this.serverUrl = serverUrl;
     }
 
@@ -36,7 +43,6 @@ public class StorageServiceImpl implements StorageService {
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
-        System.out.println(s3.getData()[0].getBytes().length);
         form.add("data", s3.getData()[0].getResource());
         form.add("endpoint", s3.getEndpoint());
         form.add("accessKey", s3.getAccessKey());

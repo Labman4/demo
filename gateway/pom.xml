@@ -20,7 +20,7 @@
         <maven-checkstyle-plugin.includeTestSourceDirectory>true</maven-checkstyle-plugin.includeTestSourceDirectory>
         <maven.compiler.source>${java.specification.version}</maven.compiler.source>
         <maven.compiler.target>${java.specification.version}</maven.compiler.target>
-        <start-class>com.elpsykongroo.demo.DemoApplication</start-class>
+        <start-class>com.elpsykongroo.gateway.GatewayApplication</start-class>
     </properties>
     <dependencies>
         <dependency>

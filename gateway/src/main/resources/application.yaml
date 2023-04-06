@@ -26,6 +26,8 @@ logging:
 #      override:
 #        - classpath:log4j2-spring.xml
   level:
+    root: ${ROOT_LOG_LEVEL:INFO}
+    web: ${WEB_LOG_LEVEL:info}
     org:
       springframework:
         security:
@@ -33,13 +35,12 @@ logging:
             csrf: ${CSRF_LEVEL:DEBUG}
     com:
       elpsykongroo:
-        demo: ${LOG_LEVEL:INFO}
+        gateway: ${GATEWAY_LOG_LEVEL:INFO}
 #    org:
 #      springframework:
 #        web:
 #          filter:
 #            CommonsRequestLoggingFilter: DEBUG
-    web: ${LOG_LEVEL:info}
 management:
   tracing:
     enabled: ${TRACE_ENABLED:true}
