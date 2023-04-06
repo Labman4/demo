@@ -178,7 +178,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	private void updataCache(String isBlack) {
-		List<String> cache = new ArrayList<>();
+		StringBuffer cache = null;
 		List<IPManage> list = new ArrayList<>();
 		KV kv = new KV();
 		if ("true".equals(isBlack)) {
@@ -190,9 +190,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 			kv.setKey("whiteList");
 		}
 		for (IPManage ad: list) {
-			cache.add(ad.getAddress());
+			cache.append(ad.getAddress()).append(",");
 		}
-		kv.setValue(cache.toString());
+		kv.setValue(cache.toString().substring(0, cache.length() - 1));
 		redisService.set(kv);
 	}
 //	private void updataCache(String isBlack) {
@@ -276,7 +276,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 					list = redisService.get("whiteList");
 				}
 				if (list != null) {
-					if (list.toString().contains(ip)) {
+					if (list.contains(ip)) {
 						return true;
 					} else {
 						for (String s : list.split(",")) {
