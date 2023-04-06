@@ -276,7 +276,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 					list = redisService.get("whiteList");
 				}
 				log.debug("cacheList: {}", list);
-				if (list != null) {
+				if (StringUtils.isNotBlank(list)) {
 					if (list.contains(ip)) {
 						return true;
 					} else {
