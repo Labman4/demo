@@ -27,6 +27,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @NoArgsConstructor
 public class IPManage {
 	private @Id String id;
+
 	private String address;
 
 	private boolean isBlack;

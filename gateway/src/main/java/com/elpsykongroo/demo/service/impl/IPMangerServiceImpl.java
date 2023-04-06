@@ -278,6 +278,18 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if (list != null) {
 					if (list.toString().contains(ip)) {
 						return true;
+					} else {
+						for (String s : list.split(",")) {
+							if (IPRegexUtils.vaildateHost(s)) {
+								InetAddress[] inetAddress = InetAddress.getAllByName(ip);
+								for (InetAddress address : inetAddress) {
+									if (address.getHostAddress().equals(ip)) {
+										add(address.getHostAddress(), isBlack);
+										return true;
+									}
+								}
+							}
+						}
 					}
 				}
 				/**
@@ -286,28 +298,31 @@ public class IPMangerServiceImpl implements IPManagerService {
 				 * 	reserve dns need ptr record and public static ip;
 				 *  cannot get hostname; need to search first; 
 				 *  if exist too many domain record in es may cause problem;		 
-				 * 
+				 *
+				 *  solved
+				 *    query all domain in cache when request don't match cache
 				 */
-				InetAddress[] inetAddress = InetAddress.getAllByName(ip);
+//				InetAddress[] inetAddress = InetAddress.getAllByName(ip);
 				if (exist(ip, isBlack) > 0) {
 					flag = true;
-					for (InetAddress address: inetAddress) {
-						if (exist(address.getHostName(), isBlack) == 0) {
-							String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
-									.getAddress();
-							updataCache(isBlack);
-							log.info("Update list domain when IP domain change, {} -> {}", ip, newAddress);
-						}
-					}
+					// not work address.getHostName() only return ipaddress without ptr
+//					for (InetAddress address: inetAddress) {
+//						if (exist(address.getHostName(), isBlack) == 0) {
+//							String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
+//									.getAddress();
+//							updataCache(isBlack);
+//							log.info("Update list domain when IP domain change, {} -> {}", ip, newAddress);
+//						}
+//					}
 				}
-				else {
-					for (InetAddress address: inetAddress) {
-						if (exist(address.getHostName(), isBlack) > 0) {
-							log.info("hostname in list");
-							flag = true;
-						}
-					}
-				}
+//				else {
+//					for (InetAddress address: inetAddress) {
+//						if (exist(address.getHostName(), isBlack) > 0) {
+//							log.info("hostname in list");
+//							flag = true;
+//						}
+//					}
+//				}
 			log.info("flag:{}, black:{}", flag, isBlack);
 		} catch (UnknownHostException e) {
 			throw new ServiceException(String.valueOf(HttpStatus.SERVICE_UNAVAILABLE.value()), e);
