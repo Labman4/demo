@@ -293,6 +293,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 							}
 						}
 					}
+				} else {
+					updataCache(isBlack);
 				}
 				/**
 				 * 	Todo
