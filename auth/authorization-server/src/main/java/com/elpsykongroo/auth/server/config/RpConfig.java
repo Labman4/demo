@@ -11,7 +11,7 @@ import org.springframework.core.env.Environment;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class RpConfig {
     @Autowired
     Environment env;
