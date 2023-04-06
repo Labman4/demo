@@ -281,9 +281,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 					} else {
 						for (String s : list.split(",")) {
 							if (IPRegexUtils.vaildateHost(s)) {
+								log.info("query domain: {}", s);
 								InetAddress[] inetAddress = InetAddress.getAllByName(ip);
 								for (InetAddress address : inetAddress) {
 									if (address.getHostAddress().equals(ip)) {
+										log.info("update domain ip: {}", address.getHostAddress());
 										add(address.getHostAddress(), isBlack);
 										return true;
 									}
