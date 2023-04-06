@@ -178,7 +178,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	private void updataCache(String isBlack) {
-		StringBuffer cache = null;
+		StringBuffer cache = new StringBuffer();
 		List<IPManage> list = new ArrayList<>();
 		KV kv = new KV();
 		if ("true".equals(isBlack)) {
