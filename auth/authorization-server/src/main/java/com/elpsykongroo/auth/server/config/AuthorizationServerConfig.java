@@ -20,7 +20,6 @@ package com.elpsykongroo.auth.server.config;
 import com.elpsykongroo.auth.server.jose.Jwks;
 import com.elpsykongroo.auth.server.security.FederatedIdentityConfigurer;
 import com.elpsykongroo.auth.server.security.FederatedIdentityIdTokenCustomizer;
-import com.elpsykongroo.auth.server.security.OAuth2ClientAuthorizationRequestResolver;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -62,7 +61,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.io.PrintWriter;
 import java.util.function.Function;
 
 
@@ -121,7 +119,7 @@ public class AuthorizationServerConfig {
 						}
 					}))
 			.cors().and()
-			.csrf().disable()
+			.csrf().disable().logout();
 //			.exceptionHandling((exceptions) -> exceptions
 //							.authenticationEntryPoint((req, resp, e) -> {
 //							resp.setContentType("application/json;charset=utf-8");
@@ -130,14 +128,6 @@ public class AuthorizationServerConfig {
 //							out.flush();
 //							out.close();
 //						}))
-			.logout()
-			.logoutSuccessHandler((req, resp, authentication) -> {
-				resp.setContentType("application/json;charset=utf-8");
-				PrintWriter out = resp.getWriter();
-				out.write("logout");
-				out.flush();
-				out.close();
-			});
 		return http.build();
 	}
 

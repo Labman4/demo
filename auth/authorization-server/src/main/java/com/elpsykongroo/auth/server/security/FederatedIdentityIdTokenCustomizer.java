@@ -16,20 +16,25 @@
 
 package com.elpsykongroo.auth.server.security;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.elpsykongroo.auth.server.entity.user.Group;
+import com.elpsykongroo.auth.server.entity.user.User;
+import com.elpsykongroo.auth.server.entity.user.UserInfo;
+import com.elpsykongroo.auth.server.service.custom.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -45,6 +50,9 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
  */
 @Slf4j
 public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodingContext> {
+
+	@Autowired
+	private UserService userService;
 
 	private static final Set<String> ID_TOKEN_CLAIMS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
 			IdTokenClaimNames.ISS,
@@ -64,20 +72,52 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 	@Override
 	public void customize(JwtEncodingContext context) {
 		if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
-			Map<String, Object> thirdPartyClaims = extractClaims(context.getPrincipal());
+			OidcUserInfo userInfo = userService.loadUser(
+					context.getPrincipal().getName());
 			Map<String, Object> customClaims = new HashMap<>();
-			for (String scope : context.getAuthorizedScopes()) {
-				List<String> authList = new ArrayList<>();
-				for (GrantedAuthority authority : context.getPrincipal().getAuthorities()) {
-					String[] auth = authority.getAuthority().split(scope + ".");
-						if (auth.length > 1) {
-							authList.add(auth[1]);
+			User user = userService.loadUserByUsername(context.getPrincipal().getName());
+			System.out.println(user.getGroups());
+			if (userInfo != null) {
+				if ( user != null && user.getGroups().size() > 0) {
+					for (String scope : context.getAuthorizedScopes()) {
+						for (Group group : user.getGroups()) {
+							for (GrantedAuthority auth : group.getAuthorities()) {
+								if (auth.getAuthority().equals(scope)) {
+									customClaims.put(scope, null);
+								}
+							}
 						}
+					}
 				}
-				if (authList.size() > 0) {
-					customClaims.put(scope, authList);
+				for (String scope : context.getAuthorizedScopes()) {
+//					List<String> authList = new ArrayList<>();
+					for (GrantedAuthority authority : context.getPrincipal().getAuthorities()) {
+						if(authority.getAuthority().equals(scope)) {
+							customClaims.put(scope, null);
+						}
+//						String[] auth = authority.getAuthority().split(scope + ".");
+//						if (auth.length > 1) {
+//							authList.add(auth[1]);
+//						}
+					}
+//					if (authList.size() > 0) {
+//						customClaims.put(scope, authList);
+//					}
+				}
+				for (Field field : UserInfo.class.getDeclaredFields()) {
+					for (String claim: userInfo.getClaims().keySet()) {
+						if (field.getName().equals(claim)) {
+							context.getClaims().claims(claims ->
+									claims.put(claim, userInfo.getClaims().get((claim))));
+						}
+						if (customClaims.containsKey(claim)) {
+							context.getClaims().claims(claims ->
+									claims.put(claim, userInfo.getClaims().get((claim))));						}
+					}
 				}
 			}
+			Map<String, Object> thirdPartyClaims = extractClaims(context.getPrincipal());
+
 			context.getClaims().claims(existingClaims -> {
 				// Remove conflicting claims set by this authorization server
 				existingClaims.keySet().forEach(thirdPartyClaims::remove);
@@ -86,7 +126,6 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 
 				// Add all other claims directly to id_token
 				existingClaims.putAll(thirdPartyClaims);
-				existingClaims.putAll(customClaims);
 			});
 		}
 	}
