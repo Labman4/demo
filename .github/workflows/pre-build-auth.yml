@@ -18,15 +18,15 @@ jobs:
     with:
       module: auth
       moduleName: authorization-server
-      version: 0.0.1
+      version: dev
       env: dev
-#   native:
-#     uses: Labman4/workflow/.github/workflows/native-image-base.yml@native-image
-#     secrets: inherit
-#     with:
-#       module: auth
-#       moduleName: authorization-server
-#       version: 0.0.1
+  native:
+    uses: Labman4/workflow/.github/workflows/native-image-base.yml@native-image
+    secrets: inherit
+    with:
+      module: auth
+      moduleName: authorization-server
+      version: 0.0.1
       
       
  
