@@ -11,7 +11,7 @@ service:
     user: ${ES_USER:elastic}
     pass: ${ES_PASS:elpsy}
     ssl:
-      type: ${SSL_TYPE:self}
+      type: ${SSL_TYPE:none}
       ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
       cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
       key: ${ES_TLS_KEY:/var/ssl/es/tls.key}

@@ -46,15 +46,11 @@ public class elasticsearchTest {
     @BeforeAll
     static void setUp() throws Exception {
          elastic.start();
-//          System.setProperty("spring.data.redis.cluster.nodes", redis.getHost() + ":" + redis.getMappedPort(6379).toString());
-//          System.setProperty("spring.data.redis.port", redis.getMappedPort(6379).toString());
-//            System.setProperty("spring.data.redis.password", "123456");
     }
 
     @DynamicPropertySource
     static void overrideTestProperties(DynamicPropertyRegistry registry) {
-        registry.add("service.es.url", elastic::getHttpHostAddress);
-        // registry.add("service..es.ssl.type", serviceConfig.getEs().getSsl()::getType);
+        registry.add("service.es.nodes", elastic::getHttpHostAddress);
     }
     @AfterAll
     static void destroy() {
