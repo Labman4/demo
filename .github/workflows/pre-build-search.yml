@@ -22,7 +22,7 @@ jobs:
       env: dev
       
   native:
-    uses: Labman4/workflow/.github/workflows/native-image-elasticsearch.yml@native-image
+    uses: Labman4/workflow/.github/workflows/native-image-base.yml@native-image
     secrets: inherit
     with:
       module: elasticsearch
