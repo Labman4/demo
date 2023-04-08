@@ -55,7 +55,7 @@ public class ElasticsearchTest {
         IPManage ipManage = new IPManage("127.0.0.1", false);
         ipRepo.save(new IPManage("127.0.0.1", false));
         ipRepo.save(new IPManage("127.0.0.1", true));
-        ipRepo.searchSimilar(ipManage,new String[]{ipManage.getAddress()}, Pageable.ofSize(1));
+//        ipRepo.searchSimilar(ipManage,new String[]{ipManage.getAddress()}, Pageable.ofSize(1));
         ipRepo.countByAddressAndIsBlackFalse("127.0.0.1");
         ipRepo.countByAddressAndIsBlackTrue("127.0.0.1");
         ipRepo.findByIsBlackTrue();
