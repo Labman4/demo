@@ -69,14 +69,4 @@ service:
   storage:
     url: ${STORAGE_URL:http://localhost:9999}
   es:
-    nodes: ${ES_URL:elasticsearch-master:9200}
-    user: ${ES_USER:user}
-    pass: ${ES_PASS:pass}
-    ssl:
-      type: ${SSL_TYPE:self}
-      ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
-      cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
-      key: ${ES_TLS_KEY:/var/ssl/es/tls.key}
-    timeout:
-      connect: ${ES_CONNECT_TIME:10}
-      socket: ${ES_SOCKET_TIME:10}
+    url: ${ES_URL:elasticsearch-master:9200}

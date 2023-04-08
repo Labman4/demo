@@ -66,14 +66,4 @@ service:
   storage:
     url: http://localhost:9999
   es:
-    nodes: localhost:9200
-    # user: elastic
-    ssl:
-      type: none
-      ca: ${ES_CA_CRT:ca.crt}
-      cert: ${ES_TLS_CERT:tls.crt}
-      key: ${ES_TLS_KEY:tls.key}
-    timeout:
-      connect: ${ES_CONNECT_TIME:10}
-      socket: ${ES_SOCKET_TIME:10}
- 
+    url: http://localhost:9201
