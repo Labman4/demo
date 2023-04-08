@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
-@Document(indexName = "IPManage")
+@Document(indexName = "ip")
 @Data
 @NoArgsConstructor
 public class IPManage {
