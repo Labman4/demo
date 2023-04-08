@@ -12,13 +12,13 @@ on:
       -  'pom.xml'
 
 jobs:
-  build:
-    uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks
-    secrets: inherit
-    with:
-      module: elasticsearch
-      moduleName: elasticsearch-server
-      version: 0.0.1
+#   build:
+#     uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks
+#     secrets: inherit
+#     with:
+#       module: elasticsearch
+#       moduleName: elasticsearch-server
+#       version: 0.0.1
       
   native:
     uses: Labman4/workflow/.github/workflows/native-image-base.yml@native-image
