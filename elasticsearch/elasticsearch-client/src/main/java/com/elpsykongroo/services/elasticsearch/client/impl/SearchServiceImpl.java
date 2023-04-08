@@ -18,7 +18,7 @@ public class SearchServiceImpl implements SearchService {
     private RestTemplate restTemplate;
     private String serverUrl = "http://localhost:9201";
     private String recordPrefix =  "/search/record";
-    private String ipPrefix =  "/search/IPManage";
+    private String ipPrefix =  "/search/ip";
 
     public SearchServiceImpl() {
 
@@ -142,8 +142,8 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public String saveIP(IPManage IPManage_manage) {
-        HttpEntity<IPManage> requestEntity = new HttpEntity(IPManage_manage);
+    public String saveIP(IPManage ipManage) {
+        HttpEntity<IPManage> requestEntity = new HttpEntity(ipManage);
         return restTemplate.exchange(serverUrl + ipPrefix + "/add",
                 HttpMethod.PUT,
                 requestEntity,
@@ -154,7 +154,7 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public List<AccessRecord> findBySourceIP(String sourceip) {
         ResponseEntity<List<AccessRecord>> response = restTemplate.exchange(
-                serverUrl + recordPrefix + "/list/IPManage?IPManage=" + sourceip,
+                serverUrl + recordPrefix + "/list/ip?ip=" + sourceip,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<AccessRecord>>() {});
