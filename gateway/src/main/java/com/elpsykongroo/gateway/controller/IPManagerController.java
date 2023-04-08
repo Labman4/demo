@@ -16,10 +16,10 @@
 
 package com.elpsykongroo.gateway.controller;
 
-import com.elpsykongroo.gateway.common.CommonResponse;
+import com.elpsykongroo.base.common.CommonResponse;
+import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.gateway.exception.ServiceException;
 import com.elpsykongroo.gateway.service.IPManagerService;
-import com.elpsykongroo.gateway.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -25,13 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.elpsykongroo.base.common.CommonResponse;
+import com.elpsykongroo.base.utils.IPRegexUtils;
 import com.elpsykongroo.gateway.exception.ServiceException;
-import com.elpsykongroo.gateway.utils.IPRegexUtils;
 import com.elpsykongroo.services.elasticsearch.client.SearchService;
 import com.elpsykongroo.services.elasticsearch.client.domain.AccessRecord;
 import jakarta.servlet.http.HttpServletRequest;
 
-import com.elpsykongroo.gateway.common.CommonResponse;
 import com.elpsykongroo.gateway.config.RequestConfig;
 import com.elpsykongroo.gateway.config.RequestConfig.Record.Exclude;
 import com.elpsykongroo.gateway.service.AccessRecordService;

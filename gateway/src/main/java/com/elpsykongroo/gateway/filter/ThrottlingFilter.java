@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import com.elpsykongroo.base.utils.PathUtils;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -32,7 +33,6 @@ import jakarta.servlet.http.HttpSession;
 import com.elpsykongroo.gateway.config.RequestConfig;
 import com.elpsykongroo.gateway.service.AccessRecordService;
 import com.elpsykongroo.gateway.service.IPManagerService;
-import com.elpsykongroo.gateway.utils.PathUtils;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;

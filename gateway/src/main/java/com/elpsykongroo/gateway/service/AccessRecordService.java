@@ -19,8 +19,7 @@ package com.elpsykongroo.gateway.service;
 
 import java.util.List;
 
-import com.elpsykongroo.gateway.common.CommonResponse;
-
+import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.services.elasticsearch.client.domain.AccessRecord;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;

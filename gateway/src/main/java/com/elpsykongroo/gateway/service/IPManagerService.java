@@ -18,10 +18,9 @@ package com.elpsykongroo.gateway.service;
 
 import java.util.List;
 
+import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.gateway.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
-
-import com.elpsykongroo.gateway.common.CommonResponse;
 
 import org.springframework.stereotype.Service;
 

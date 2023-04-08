@@ -16,8 +16,8 @@
 
 package com.elpsykongroo.gateway.controller;
 
+import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.gateway.service.AccessRecordService;
-import com.elpsykongroo.gateway.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
