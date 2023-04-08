@@ -22,7 +22,6 @@ import com.elpsykongroo.gateway.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.gateway.common.CommonResponse;
-import com.elpsykongroo.gateway.domain.IPManage;
 
 import org.springframework.stereotype.Service;
 
@@ -32,7 +31,7 @@ public interface IPManagerService {
 
 	CommonResponse<List<String>> add(String address, String isBlack) throws ServiceException;
 
-	CommonResponse<List<IPManage>> list(String isBlack, String pageNumber, String pageSize);
+	String list(String isBlack, String pageNumber, String pageSize);
 
 	CommonResponse<String> patch(String addresses, String isBlack, String ids) throws ServiceException;
 

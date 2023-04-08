@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.config;
+package com.elpsykongroo.services.elasticsearch.server.config;
 
-import com.elpsykongroo.gateway.utils.SSLUtils;
-
+import com.elpsykongroo.base.utils.SSLUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -27,22 +26,21 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfigurat
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import javax.net.ssl.SSLContext;
-
 import java.time.Duration;
 
 @Configuration(proxyBeanMethods = false)
-@EnableElasticsearchRepositories("com.elpsykongroo.demo.repo.elasticsearch")
+@EnableElasticsearchRepositories("com.elpsykongroo.services.elasticsearch.server.domain")
 public class ElasticConfig extends ElasticsearchConfiguration {
 
-   @Autowired
-   private ServiceConfig serviceConfig;
+    @Autowired
+    private ServiceConfig serviceConfig;
 
-   @Autowired
-   Environment env;
+    @Autowired
+    Environment env;
     
    @Override
    public ClientConfiguration clientConfiguration() {
-       ServiceConfig.ES es= serviceConfig.getEs();
+       ServiceConfig.ES es =  serviceConfig.getEs();
        if ("public".equals(es.getSsl().getType())) {
            return ClientConfiguration.builder()
                     .connectedTo(es.getNodes())
@@ -55,7 +53,7 @@ public class ElasticConfig extends ElasticsearchConfiguration {
            SSLContext sslContext = SSLUtils.getSSLContext(es.getSsl().getCa(),
                    es.getSsl().getCert(), es.getSsl().getKey());
            return ClientConfiguration.builder()
-                    .connectedTo(serviceConfig.getEs().getNodes())
+                    .connectedTo(es.getNodes())
                     .usingSsl(sslContext)
                     .withBasicAuth(env.getProperty("service.es.user"), env.getProperty("service.es.pass"))
                     .withConnectTimeout(Duration.ofSeconds(Integer.parseInt(es.getTimeout().getConnect())))

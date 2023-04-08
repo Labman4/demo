@@ -59,8 +59,8 @@ request:
   path:
     permit: ${PERMIT_PATH:/**}
     nonPrivate: ${PUBLIC_PATH:/}
-    limit: ${LIMIT_PATH:/}
-    exclude: ${EXCLUDE_PATH:/actuator}
+    limit: ${LIMIT_PATH:/none}
+    exclude: ${EXCLUDE_PATH:/}
     filter: ${FILTER_PATH:/}
   record: 
     exclude:
@@ -84,14 +84,4 @@ service:
   storage:
     url: http://localhost:9999
   es:
-    nodes: localhost:9200
-    user: elastic
-    pass: 123456
-    ssl:
-      type: none
-      ca: ${ES_CA_CRT:ca.crt}
-      cert: ${ES_TLS_CERT:tls.crt}
-      key: ${ES_TLS_KEY:tls.key}
-    timeout:
-      connect: ${ES_CONNECT_TIME:100}
-      socket: ${ES_SOCKET_TIME:100}
+    url: http://localhost:9201

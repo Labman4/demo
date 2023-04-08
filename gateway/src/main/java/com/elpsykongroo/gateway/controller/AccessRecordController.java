@@ -41,7 +41,7 @@ public class AccessRecordController {
 	public String getAccessRecord(@RequestParam("pageNumber") String pageNumber,
 								  @RequestParam("pageSize") String pageSize,
 								  @RequestParam("order") String order) {
-		return JsonUtils.toJson(accessRecordService.findAll(pageNumber, pageSize, order));
+		return accessRecordService.findAll(pageNumber, pageSize, order);
 	}
 	@DeleteMapping("/delete")
 	public String deleterecord(@RequestParam("sourceIP") String sourceIP, @RequestParam("id") String ids) {

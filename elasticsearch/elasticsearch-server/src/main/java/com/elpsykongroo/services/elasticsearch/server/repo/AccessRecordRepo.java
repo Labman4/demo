@@ -14,35 +14,26 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.repo.elasticsearch;
+package com.elpsykongroo.services.elasticsearch.server.repo;
 
-
-import java.util.List;
-
+import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Service;
 
-import com.elpsykongroo.gateway.domain.IPManage;
+import java.util.List;
 
 @Service
-public interface IPRepo extends ElasticsearchRepository<IPManage, String> {
+public interface AccessRecordRepo extends ElasticsearchRepository<AccessRecord, String> {
 
-	List<IPManage> findByAddress(String address);
+	Page<AccessRecord> findAll(Pageable pageable);
 
-	List<IPManage> findByIsBlackTrue();
+	List<AccessRecord> findByAccessPathLike(String path);
+	
+	List<AccessRecord> findBySourceIP(String sourceip);
 
-	List<IPManage> findByIsBlackFalse();
+	List<AccessRecord> findByUserAgentLike(String agent);
 
-	long countByAddressAndIsBlackTrue(String address);
-
-	long countByAddressAndIsBlackFalse(String address);
-
-	List<IPManage> findByAddressAndIsBlackTrue(String address);
-
-	List<IPManage> findByAddressAndIsBlackFalse(String address);
-
-	void deleteByAddressAndIsBlackTrue(String address);
-
-	void deleteByAddressAndIsBlackFalse(String address);
-
+	List<AccessRecord> findByRequestHeaderLike(String header);
 }

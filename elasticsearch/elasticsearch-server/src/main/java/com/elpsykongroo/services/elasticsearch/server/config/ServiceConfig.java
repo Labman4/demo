@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.config;
+package com.elpsykongroo.services.elasticsearch.server.config;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import lombok.Data;
-
-@Data
 @Component
+@Data
 @ConfigurationProperties(prefix = "service")
 public class ServiceConfig {
-    private Url es;
-
-    private Url storage;
-
-    private  Url auth;
-
-    private Url redis;
-
     private String vault;
+
+    private  ES es ;
 
     //public ca
     private SSL ssl;
@@ -48,6 +41,22 @@ public class ServiceConfig {
         private String cert;
 
         private String key;
+    }
+
+    @Data
+    public static class ES {
+
+        private TimeOut timeout;
+
+        private String user;
+
+        private String pass;
+
+        //self ca
+        private SSL ssl ;
+
+        private String[] nodes;
+
     }
 
     @Data

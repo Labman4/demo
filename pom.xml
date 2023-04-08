@@ -19,6 +19,8 @@
         <module>gateway</module>
         <module>auth</module>
         <module>storage</module>
+        <module>elasticsearch</module>
+        <module>base</module>
     </modules>
     
     <properties>
@@ -145,7 +147,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
                 <configuration>
+                    <useSystemClassLoader>false</useSystemClassLoader>
                     <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>    
@@ -246,6 +250,10 @@
         <repository>
             <id>milestone</id>
             <url>https://repo.spring.io/milestone</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
             <id>spring-release</id>

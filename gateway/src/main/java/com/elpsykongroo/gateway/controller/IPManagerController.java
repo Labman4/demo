@@ -54,7 +54,7 @@ public class IPManagerController {
 	@GetMapping("/manage/list")
 	public String blacklist(@RequestParam("black") String isBlack, @RequestParam("pageNumber") String pageNumber, @RequestParam("pageSize") String pageSize) {
 		log.info("black:{}, pageNumber:{}, pageSize:{}", isBlack, pageNumber, pageSize );
-		return JsonUtils.toJson(ipManagerService.list(isBlack, pageNumber, pageSize));
+		return ipManagerService.list(isBlack, pageNumber, pageSize);
 	}
 
 	@PatchMapping("/manage/patch")

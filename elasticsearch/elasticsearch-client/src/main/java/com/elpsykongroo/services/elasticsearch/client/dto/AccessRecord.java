@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.service;
+package com.elpsykongroo.services.elasticsearch.client.dto;
 
 
-import java.util.List;
 
-import com.elpsykongroo.gateway.common.CommonResponse;
+import lombok.Data;
 
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Service;
+import java.util.Date;
+import java.util.Map;
 
+@Data
+public class AccessRecord {
 
-@Service
-public interface AccessRecordService {
+	private String sourceIP;
 
-	String findAll(String pageNumber, String pageSize, String sort);
+	private String accessPath;
 
-	CommonResponse<List<AccessRecord>> filterByParams(String params, String pageNumber, String pageSize);
+	private Map<String, String> requestHeader;
 
-	CommonResponse<Integer> deleteRecord(String sourceIP, String ids);
+	private String userAgent;
 
-	void saveAcessRecord(HttpServletRequest request);
+	private Date timestamp;
 
+	private String id;
 }

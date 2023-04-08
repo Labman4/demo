@@ -1,4 +1,4 @@
-//package com.elpsykongroo.demo.testconfig;
+package com.elpsykongroo.services.redis.server;//package com.elpsykongroo.demo.testconfig;
 //
 //import io.lettuce.core.RedisURI;
 //import io.lettuce.core.resource.ClientResources;

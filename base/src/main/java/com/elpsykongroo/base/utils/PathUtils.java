@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.domain;
+package com.elpsykongroo.base.utils;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-
-@Document(indexName = "ip")
-@Data
-@NoArgsConstructor
-public class IPManage {
-	private @Id String id;
-
-	private String address;
-
-	private boolean isBlack;
-
-	public IPManage(String addres) {
-		this.address = addres;
-		this.isBlack = true;
+public final class PathUtils {
+	private PathUtils() {
+		throw new IllegalStateException("Utility class");
 	}
 
-	public IPManage(String addres, boolean black) {
-		this.address = addres;
-		this.isBlack = black;
+	public static boolean beginWithPath(String paths, String url) {
+		String[] path = paths.split(",");
+		for (String p: path) {
+			if (url.startsWith(p)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

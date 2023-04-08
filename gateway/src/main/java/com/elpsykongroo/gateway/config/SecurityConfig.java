@@ -37,7 +37,7 @@ public class SecurityConfig {
 		http.cors().and()
 			.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-		      .csrf().disable()
+//		      .csrf().disable()
  //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
@@ -45,7 +45,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/public/*").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
 						.requestMatchers("/storage/**").permitAll()
-								.requestMatchers("/auth/**").permitAll()
+//								.requestMatchers("/auth/**").permitAll()
 
 
 //						.requestMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")

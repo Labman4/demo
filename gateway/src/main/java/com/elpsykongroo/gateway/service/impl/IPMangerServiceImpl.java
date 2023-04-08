@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.elpsykongroo.gateway.exception.ServiceException;
+import com.elpsykongroo.gateway.utils.JsonUtils;
+import com.elpsykongroo.services.elasticsearch.client.SearchService;
+import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
 import com.elpsykongroo.services.redis.client.RedisService;
 import com.elpsykongroo.services.redis.client.dto.KV;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,8 +33,6 @@ import com.elpsykongroo.gateway.common.CommonResponse;
 import com.elpsykongroo.gateway.config.RequestConfig;
 import com.elpsykongroo.gateway.config.RequestConfig.Header;
 import com.elpsykongroo.gateway.config.RequestConfig.Record.Exclude;
-import com.elpsykongroo.gateway.domain.IPManage;
-import com.elpsykongroo.gateway.repo.elasticsearch.IPRepo;
 import com.elpsykongroo.gateway.service.IPManagerService;
 import com.elpsykongroo.gateway.utils.IPRegexUtils;
 import com.elpsykongroo.gateway.utils.PathUtils;
@@ -40,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -49,8 +49,8 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class IPMangerServiceImpl implements IPManagerService {
-	@Autowired
-	private IPRepo ipRepo;
+    @Autowired
+	private SearchService searchService;
 
 	@Autowired
 	private RedisService redisService;
@@ -68,28 +68,27 @@ public class IPMangerServiceImpl implements IPManagerService {
 	 * */
 
 	@Override
-	public CommonResponse<List<IPManage>> list(String isBlack, String pageNumber, String pageSize) {
+	public String list(String isBlack, String pageNumber, String pageSize) {
 		List<IPManage> ipManages = null;
 		if ("".equals(isBlack)) {
-			Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-			Page<IPManage> ipManage = ipRepo.findAll(pageable);
-			return CommonResponse.success(ipManage.get().toList());
+			String ipManage = searchService.findAllIP(pageNumber, pageSize);
+			return ipManage;
 		}
 		else if ("true".equals(isBlack)) {
-			ipManages = ipRepo.findByIsBlackTrue();
+			ipManages = searchService.findByIsBlackTrue(pageNumber, pageSize);
 		}
 		else {
-			ipManages = ipRepo.findByIsBlackFalse();
+			ipManages = searchService.findByIsBlackFalse(pageNumber, pageSize);
 		}
-		return CommonResponse.success(ipManages);
+		return JsonUtils.toJson(ipManages);
 	}
 
 	@Override
-	public CommonResponse<String> patch(String addresses, String isBlack, String ids) throws ServiceException {
+	public CommonResponse<String> patch(String addresses, String isBlack, String id) throws ServiceException {
 			try {
 				String[] addr = addresses.split(",");
-				if (StringUtils.isNotEmpty(ids)) {
-					ipRepo.deleteById(ids);
+				if (StringUtils.isNotEmpty(id)) {
+					searchService.deleteIPById(id);
 					updataCache(isBlack);
 					return CommonResponse.success("done");
 				}
@@ -110,10 +109,10 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	private void deleteIPManage(String isBlack, String ad) {
 		if ("true".equals(isBlack)) {
-			ipRepo.deleteByAddressAndIsBlackTrue(ad);
+			searchService.deleteByAddressAndIsBlackTrue(ad);
 		}
 		else {
-			ipRepo.deleteByAddressAndIsBlackFalse(ad);
+			searchService.deleteByAddressAndIsBlackFalse(ad);
 		}
 	}
 
@@ -137,10 +136,10 @@ public class IPMangerServiceImpl implements IPManagerService {
 					InetAddress[] inetAddresses = InetAddress.getAllByName(addr);
 					for (InetAddress ad: inetAddresses) {
 						if (exist(ad.getHostAddress(), isBlack) == 0) {
-							addresses.add(ipRepo.save(new IPManage(ad.getHostAddress(), flag)).getAddress());
+							addresses.add(searchService.saveIP(new IPManage(ad.getHostAddress(), flag)));
 						}
 						if (exist(ad.getHostName(), isBlack) == 0) {
-							addresses.add(ipRepo.save(new IPManage(ad.getHostName(), flag)).getAddress());
+							addresses.add(searchService.saveIP(new IPManage(ad.getHostName(), flag)));
 						}
 					}
 				}
@@ -166,12 +165,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 	private Long exist(String ad, String isBlack) {
 		long size = 0;
 		if ("true".equals(isBlack)) {
-			size = ipRepo.countByAddressAndIsBlackTrue(ad);
+			size = searchService.countByAddressAndIsBlackTrue(ad);
 			log.debug("black.size:{}", size);
 			return size;
 		}
 		else {
-			size = ipRepo.countByAddressAndIsBlackFalse(ad);
+			size = searchService.countByAddressAndIsBlackFalse(ad);
 			log.debug("white.size:{}", size);
 			return size;
 		}
@@ -182,11 +181,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 		List<IPManage> list = new ArrayList<>();
 		KV kv = new KV();
 		if ("true".equals(isBlack)) {
-			list = ipRepo.findByIsBlackTrue();
+			list = searchService.findByIsBlackTrue();
 			kv.setKey("blackList");
 		}
 		else {
-			list = ipRepo.findByIsBlackFalse();
+			list = searchService.findByIsBlackFalse();
 			kv.setKey("whiteList");
 		}
 		if (list.size() > 0) {

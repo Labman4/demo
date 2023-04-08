@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.service;
+package com.elpsykongroo.services.elasticsearch.client.dto;
 
 
-import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import com.elpsykongroo.gateway.common.CommonResponse;
+@Data
+@NoArgsConstructor
+public class IPManage {
+	private String id;
 
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Service;
+	private String address;
 
+	private boolean isBlack;
 
-@Service
-public interface AccessRecordService {
+	public IPManage(String addres) {
+		this.address = addres;
+		this.isBlack = true;
+	}
 
-	String findAll(String pageNumber, String pageSize, String sort);
-
-	CommonResponse<List<AccessRecord>> filterByParams(String params, String pageNumber, String pageSize);
-
-	CommonResponse<Integer> deleteRecord(String sourceIP, String ids);
-
-	void saveAcessRecord(HttpServletRequest request);
-
+	public IPManage(String addres, boolean black) {
+		this.address = addres;
+		this.isBlack = black;
+	}
 }

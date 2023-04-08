@@ -26,14 +26,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.elpsykongroo.gateway.exception.ServiceException;
-import com.elpsykongroo.gateway.repo.elasticsearch.AccessRecordRepo;
 import com.elpsykongroo.gateway.utils.IPRegexUtils;
+import com.elpsykongroo.services.elasticsearch.client.SearchService;
+import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.gateway.common.CommonResponse;
 import com.elpsykongroo.gateway.config.RequestConfig;
 import com.elpsykongroo.gateway.config.RequestConfig.Record.Exclude;
-import com.elpsykongroo.gateway.domain.AccessRecord;
 import com.elpsykongroo.gateway.service.AccessRecordService;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
@@ -53,7 +53,7 @@ import org.springframework.stereotype.Service;
 public class AccessRecordServiceImpl implements AccessRecordService {
 
 	@Autowired
-	private AccessRecordRepo accessRecordRepo;
+	private SearchService searchService;
 
 	@Autowired
 	private IPManagerService ipMangerService;
@@ -82,7 +82,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 					record.setSourceIP(ip);
 					record.setTimestamp(new Date());
 					record.setUserAgent(request.getHeader("user-agent"));
-					accessRecordRepo.save(record);
+					searchService.saveRecord(record);
 					log.info("request header------------{} ", result);
 			    }
 		  	}
@@ -92,19 +92,14 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	}
 
 	@Override
-	public CommonResponse<List<AccessRecord>> findAll(String pageNo, String pageSize, String order) {
-		Page<AccessRecord> records = null;
+	public String findAll(String pageNo, String pageSize, String order) {
+		String records = null;
 		try {
-			Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
-			if ("1".equals(order)) {
-				sort = Sort.by(Sort.Direction.ASC, "timestamp");
-			}
-			Pageable pageable = PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize), sort);
-			records = accessRecordRepo.findAll(pageable);
+			records = searchService.findAllRecord(pageNo, pageSize ,order);
 		} catch (NumberFormatException e) {
 			throw new ServiceException(e);
 		}
-		return CommonResponse.success(records.get().toList());
+		return records;
 	}
 
 	@Override
@@ -113,19 +108,19 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		try {
 			recordIds = new ArrayList<>();
 			if (StringUtils.isNotEmpty(ids)) {
-				recordIds = Arrays.asList(ids.split(","));
+				recordIds = new ArrayList<String>(Arrays.asList(ids.split(",")));
 			}
 
 			if (StringUtils.isNotEmpty(sourceIP)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(sourceIP);
 				for (InetAddress addr: inetAddresses) {
-					List<AccessRecord> accessRecord = accessRecordRepo.findBySourceIP(addr.getHostAddress());
+					List<AccessRecord> accessRecord = searchService.findBySourceIP(addr.getHostAddress());
 					for (AccessRecord record: accessRecord) {
 						recordIds.add(record.getId());
 					}
 				}
 			}
-			accessRecordRepo.deleteAllById(recordIds);
+			searchService.deleteAllRecordById(recordIds);
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}
@@ -139,18 +134,18 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		try {
 			List<AccessRecord> records = new ArrayList<>();
 			if (IPRegexUtils.vaildate(params)) {
-				records = accessRecordRepo.findBySourceIP(params);
+				records = searchService.findBySourceIP(params);
 			}
 			if (IPRegexUtils.vaildateHost(params)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(params);
 				for (InetAddress addr: inetAddresses) {
-					List<AccessRecord> accessRecord = accessRecordRepo.findBySourceIP(addr.getHostAddress());
+					List<AccessRecord> accessRecord = searchService.findBySourceIP(addr.getHostAddress());
 					records.addAll(accessRecord);
 				}
 			}
-			records.addAll(accessRecordRepo.findByUserAgentLike(params));
-			records.addAll(accessRecordRepo.findByAccessPathLike(params));
-			records.addAll(accessRecordRepo.findByRequestHeaderLike(params));
+			records.addAll(searchService.findByUserAgentLike(params));
+			records.addAll(searchService.findByAccessPathLike(params));
+			records.addAll(searchService.findByRequestHeaderLike(params));
 			int start = (int) pageable.getOffset();
 			int end = (int) ((start + pageable.getPageSize()) > records.size() ? records.size() : (start + pageable.getPageSize()));
 			Page<AccessRecord> page =
