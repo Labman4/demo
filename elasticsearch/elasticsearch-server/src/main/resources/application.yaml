@@ -5,21 +5,16 @@ spring:
     elasticsearch:        
       repositories:
         enabled: true
-
 service:
   es:
-#    nodes: ${ES_URL:elasticsearch.elpsykongroo.com:443}
-#    user: elastic
-#    pass: Elpsy9657
-    nodes: ${ES_URL:localhost:9200}
-    user: elastic
-    pass: elpsy
+    url: ${ES_URL:localhost:9200}
+    user: ${ES_USER:elastic}
+    pass: ${ES_PASS:elpsy}
     ssl:
-      type: none
-      ca: ${ES_CA_CRT:ca.crt}
-      cert: ${ES_TLS_CERT:tls.crt}
-      key: ${ES_TLS_KEY:tls.key}
+      type: ${SSL_TYPE:self}
+      ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
+      cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
+      key: ${ES_TLS_KEY:/var/ssl/es/tls.key}
     timeout:
       connect: ${ES_CONNECT_TIME:30}
       socket: ${ES_SOCKET_TIME:30}
- 

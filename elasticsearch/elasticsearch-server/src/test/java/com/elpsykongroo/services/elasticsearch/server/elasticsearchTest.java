@@ -53,7 +53,7 @@ public class elasticsearchTest {
 
     @DynamicPropertySource
     static void overrideTestProperties(DynamicPropertyRegistry registry) {
-        registry.add("service.es.nodes", elastic::getHttpHostAddress);
+        registry.add("service.es.url", elastic::getHttpHostAddress);
         // registry.add("service..es.ssl.type", serviceConfig.getEs().getSsl()::getType);
     }
     @AfterAll
@@ -83,7 +83,6 @@ public class elasticsearchTest {
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<IPManage>>() {});
-        System.out.println(response.getBody());
     }
 
     @Test
@@ -168,7 +167,6 @@ public class elasticsearchTest {
                 HttpMethod.PUT,
                 requestEntity,
                 String.class).getBody();
-        System.out.println(address);
     }
 
     @Test
