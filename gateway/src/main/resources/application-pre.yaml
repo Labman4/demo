@@ -13,10 +13,6 @@ spring:
     allow-bean-definition-overriding: true
   datasource:
     url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
-  data:
-    elasticsearch:        
-      repositories:
-        enabled: true
   kafka:
     bootstrap-servers: ${KAFKA_URL:kafka}
     security:
