@@ -28,7 +28,7 @@ import java.util.Map;
 import com.elpsykongroo.gateway.exception.ServiceException;
 import com.elpsykongroo.gateway.utils.IPRegexUtils;
 import com.elpsykongroo.services.elasticsearch.client.SearchService;
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
+import com.elpsykongroo.services.elasticsearch.client.domain.AccessRecord;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.gateway.common.CommonResponse;
@@ -45,7 +45,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -114,8 +113,8 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			if (StringUtils.isNotEmpty(sourceIP)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(sourceIP);
 				for (InetAddress addr: inetAddresses) {
-					List<AccessRecord> accessRecord = searchService.findBySourceIP(addr.getHostAddress());
-					for (AccessRecord record: accessRecord) {
+					List<AccessRecord> accessrecord = searchService.findBySourceIP(addr.getHostAddress());
+					for (AccessRecord record: accessrecord) {
 						recordIds.add(record.getId());
 					}
 				}
@@ -139,8 +138,8 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			if (IPRegexUtils.vaildateHost(params)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(params);
 				for (InetAddress addr: inetAddresses) {
-					List<AccessRecord> accessRecord = searchService.findBySourceIP(addr.getHostAddress());
-					records.addAll(accessRecord);
+					List<AccessRecord> accessrecord = searchService.findBySourceIP(addr.getHostAddress());
+					records.addAll(accessrecord);
 				}
 			}
 			records.addAll(searchService.findByUserAgentLike(params));

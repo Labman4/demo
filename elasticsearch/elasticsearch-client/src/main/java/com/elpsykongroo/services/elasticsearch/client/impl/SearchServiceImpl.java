@@ -1,8 +1,8 @@
 package com.elpsykongroo.services.elasticsearch.client.impl;
 
 import com.elpsykongroo.services.elasticsearch.client.SearchService;
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
-import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
+import com.elpsykongroo.services.elasticsearch.client.domain.IPManage;
+import com.elpsykongroo.services.elasticsearch.client.domain.AccessRecord;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -18,8 +18,12 @@ public class SearchServiceImpl implements SearchService {
     private RestTemplate restTemplate;
     private String serverUrl = "http://localhost:9201";
     private String recordPrefix =  "/search/record";
-    private String ipPrefix =  "/search/ip";
+    private String ipPrefix =  "/search/IPManage";
 
+    public SearchServiceImpl() {
+
+    }
+    
     public SearchServiceImpl(String serverUrl, RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
         this.serverUrl = serverUrl;
@@ -129,8 +133,8 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public void saveRecord(AccessRecord accessRecord) {
-        HttpEntity<AccessRecord> requestEntity = new HttpEntity(accessRecord);
+    public void saveRecord(AccessRecord accessrecord) {
+        HttpEntity<AccessRecord> requestEntity = new HttpEntity(accessrecord);
         restTemplate.exchange(serverUrl + recordPrefix + "/add",
                 HttpMethod.PUT,
                 requestEntity,
@@ -138,8 +142,8 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public String saveIP(IPManage ipManage) {
-        HttpEntity<IPManage> requestEntity = new HttpEntity(ipManage);
+    public String saveIP(IPManage IPManage_manage) {
+        HttpEntity<IPManage> requestEntity = new HttpEntity(IPManage_manage);
         return restTemplate.exchange(serverUrl + ipPrefix + "/add",
                 HttpMethod.PUT,
                 requestEntity,
@@ -150,7 +154,7 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public List<AccessRecord> findBySourceIP(String sourceip) {
         ResponseEntity<List<AccessRecord>> response = restTemplate.exchange(
-                serverUrl + recordPrefix + "/list/ip?ip=" + sourceip,
+                serverUrl + recordPrefix + "/list/IPManage?IPManage=" + sourceip,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<AccessRecord>>() {});

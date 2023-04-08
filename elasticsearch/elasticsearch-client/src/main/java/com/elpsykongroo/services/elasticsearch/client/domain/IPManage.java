@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.elasticsearch.server.domain;
+package com.elpsykongroo.services.elasticsearch.client.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
-@Document(indexName = "ip")
+@Document(indexName = "IPManage")
 @Data
 @NoArgsConstructor
 public class IPManage {

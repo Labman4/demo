@@ -1,7 +1,7 @@
 package com.elpsykongroo.services.elasticsearch.server;
 
-import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
-import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
+import com.elpsykongroo.services.elasticsearch.client.domain.AccessRecord;
+import com.elpsykongroo.services.elasticsearch.client.domain.IPManage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;

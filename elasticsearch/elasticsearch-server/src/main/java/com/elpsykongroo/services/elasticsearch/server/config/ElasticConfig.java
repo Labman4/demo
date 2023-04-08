@@ -29,7 +29,7 @@ import javax.net.ssl.SSLContext;
 import java.time.Duration;
 
 @Configuration(proxyBeanMethods = false)
-@EnableElasticsearchRepositories("com.elpsykongroo.services.elasticsearch.server.domain")
+@EnableElasticsearchRepositories("com.elpsykongroo.services.elasticsearch.client.domain")
 public class ElasticConfig extends ElasticsearchConfiguration {
 
     @Autowired

@@ -24,7 +24,7 @@ import java.util.List;
 import com.elpsykongroo.gateway.exception.ServiceException;
 import com.elpsykongroo.gateway.utils.JsonUtils;
 import com.elpsykongroo.services.elasticsearch.client.SearchService;
-import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
+import com.elpsykongroo.services.elasticsearch.client.domain.IPManage;
 import com.elpsykongroo.services.redis.client.RedisService;
 import com.elpsykongroo.services.redis.client.dto.KV;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,8 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 

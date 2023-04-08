@@ -1,7 +1,7 @@
 package com.elpsykongroo.gateway;
 
 import com.elpsykongroo.gateway.utils.JsonUtils;
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
+import com.elpsykongroo.services.elasticsearch.client.domain.AccessRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.model.MediaType;

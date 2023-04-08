@@ -25,9 +25,7 @@ import java.io.Serializable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-//@TypeHint(types = {
-//		CommonResponse.class
-//}, access = { TypeAccess.PUBLIC_CONSTRUCTORS, TypeAccess.PUBLIC_METHODS })
+
 @Component
 @Data
 @NoArgsConstructor

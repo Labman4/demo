@@ -1,8 +1,7 @@
 package com.elpsykongroo.services.elasticsearch.client;
 
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
-import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
-import org.springframework.data.domain.Pageable;
+import com.elpsykongroo.services.elasticsearch.client.domain.AccessRecord;
+import com.elpsykongroo.services.elasticsearch.client.domain.IPManage;
 
 import java.util.List;
 
@@ -27,9 +26,9 @@ public interface SearchService {
 
     String findAllRecord(String pageNumber, String pageSize, String order);
 
-    void saveRecord(AccessRecord accessRecord);
+    void saveRecord(AccessRecord AccessRecord);
 
-    String saveIP(IPManage ipManage);
+    String saveIP(IPManage IPManage);
 
     List<AccessRecord> findByAccessPathLike(String path);
 

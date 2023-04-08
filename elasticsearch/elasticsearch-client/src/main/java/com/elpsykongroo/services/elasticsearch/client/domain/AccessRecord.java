@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.elasticsearch.client.dto;
-
-
+package com.elpsykongroo.services.elasticsearch.client.domain;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.Date;
 import java.util.Map;
 
 @Data
+@Document(indexName = "access_record")
 public class AccessRecord {
 
+	@Field(type = FieldType.Ip)
 	private String sourceIP;
 
 	private String accessPath;
@@ -34,7 +38,9 @@ public class AccessRecord {
 
 	private String userAgent;
 
+	@Field(type = FieldType.Date, pattern = "uuuu-MM-dd HH:mm:ss")
 	private Date timestamp;
 
+	@Id
 	private String id;
 }

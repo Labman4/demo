@@ -18,15 +18,13 @@ package com.elpsykongroo.services.elasticsearch.server.controller;
 
 import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
+import com.elpsykongroo.services.elasticsearch.client.domain.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.server.repo.AccessRecordRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -45,9 +43,9 @@ public class AccessRecordController {
 	private AccessRecordRepo accessRecordRepo;
 
 	@PutMapping("/add")
-	public String saveAccessRecord(@RequestBody AccessRecord accessRecord) {
+	public String saveAccessRecord(@RequestBody AccessRecord accessrecord) {
 		try {
-			accessRecordRepo.save(accessRecord);
+			accessRecordRepo.save(accessrecord);
 			return "done";
 		} catch (Exception e) {
 			return "0";
