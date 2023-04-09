@@ -8,8 +8,8 @@ spring:
 service:
   es:
     nodes: ${ES_URL:localhost:9200}
-    user: ${ES_USER:elastic}
-    pass: ${ES_PASS:elpsy}
+#    user: ${ES_USER:elastic}
+#    pass: ${ES_PASS:elpsy}
     ssl:
       type: ${SSL_TYPE:none}
       ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
