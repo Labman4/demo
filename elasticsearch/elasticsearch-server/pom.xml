@@ -63,7 +63,6 @@
             <groupId>com.elpsykongroo.services</groupId>
             <artifactId>elasticsearch-client</artifactId>
             <version>0.0.1</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
