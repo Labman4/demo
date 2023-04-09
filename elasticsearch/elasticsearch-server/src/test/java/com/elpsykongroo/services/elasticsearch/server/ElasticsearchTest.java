@@ -21,29 +21,29 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-@Testcontainers
+//@Testcontainers
 @DataElasticsearchTest
 @ActiveProfiles("test")
 public class ElasticsearchTest {
 
-    @Container
-    static ElasticsearchContainer elastic = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.17.3")
-            .withExposedPorts(9200)
-            .withPassword("elpsy").withStartupTimeout(Duration.ofSeconds(100));
+//    @Container
+//    static ElasticsearchContainer elastic = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.17.3")
+//            .withExposedPorts(9200)
+//            .withPassword("elpsy").withStartupTimeout(Duration.ofSeconds(100));
 
-    @BeforeAll
-    static void setUp() throws Exception {
-        elastic.start();
-    }
-
-    @DynamicPropertySource
-    static void overrideTestProperties(DynamicPropertyRegistry registry) {
-        registry.add("service.es.nodes", elastic::getHttpHostAddress);
-    }
-    @AfterAll
-    static void destroy() {
-        elastic.stop();
-    }
+//    @BeforeAll
+//    static void setUp() throws Exception {
+//        elastic.start();
+//    }
+//
+//    @DynamicPropertySource
+//    static void overrideTestProperties(DynamicPropertyRegistry registry) {
+//        registry.add("service.es.nodes", elastic::getHttpHostAddress);
+//    }
+//    @AfterAll
+//    static void destroy() {
+//        elastic.stop();
+//    }
 
     @Autowired
     private IPRepo ipRepo;
@@ -53,7 +53,7 @@ public class ElasticsearchTest {
 
 
     @Test
-    void ip() {
+    void elastic() {
         IPManage ipManage = new IPManage("127.0.0.1", false);
         ipRepo.save(new IPManage("127.0.0.1", false));
         ipRepo.save(new IPManage("127.0.0.1", true));
@@ -65,10 +65,7 @@ public class ElasticsearchTest {
         ipRepo.deleteByAddressAndIsBlackFalse("127.0.0.1");
         ipRepo.deleteByAddressAndIsBlackTrue("127.0.0.1");
         ipRepo.deleteAll();
-    }
 
-    @Test
-    void access() {
         AccessRecord accessRecord = new AccessRecord();
         accessRecord.setSourceIP("1.1.1.1");
         accessRecord.setAccessPath("/path");
