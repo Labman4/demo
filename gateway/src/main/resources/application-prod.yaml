@@ -59,10 +59,10 @@ service:
     cert:  ${TLS_CERT:tls.crt}
     key:  ${TLS_KEY:tls.key}
   redis:
-    url:  ${REDIS_SERVICE:localhost:8379}
+    url:  ${REDIS_SERVICE:http://localhost:8379}
   auth:
     url: ${AUTH_URL:http://localhost:9000}
   storage:
     url: ${STORAGE_URL:http://localhost:9999}
   es:
-    url: ${ES_URL:elasticsearch-master:9200}
+    url: ${ES_URL:http://localhost:9201}

@@ -17,8 +17,8 @@
 package com.elpsykongroo.services.elasticsearch.server.controller;
 
 import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.services.elasticsearch.client.domain.IPManage;
-import com.elpsykongroo.services.elasticsearch.server.repo.IPRepo;
+import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
+import com.elpsykongroo.services.elasticsearch.server.service.IPManageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -38,58 +38,67 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class IPManagerController {
 	@Autowired
-	private IPRepo ipRepo;
+	private IPManageService ipManageService;
 
 	@PutMapping("/add")
 	public String saveIP(@RequestBody IPManage ipManage) {
-		return ipRepo.save(ipManage).getAddress();
+		log.debug("ip add");
+		return ipManageService.save(ipManage).getAddress();
 	}
 
 	@GetMapping("/list")
 	public String list(@RequestParam String pageNumber,
 					   @RequestParam String pageSize) {
+		log.debug("ip list");
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-		return JsonUtils.toJson(ipRepo.findAll(pageable));
+		return JsonUtils.toJson(ipManageService.findAll(pageable));
 	}
 
 	@GetMapping("/list/white")
 	public String whiteList(@RequestParam String pageNumber,
 							@RequestParam String pageSize) {
+		log.debug("ip white");
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-		return JsonUtils.toJson(ipRepo.findByIsBlackFalse(pageable));
+		return JsonUtils.toJson(ipManageService.findByIsBlackFalse(pageable));
 	}
 
 	@GetMapping("/list/black")
 	public String blackList(@RequestParam String pageNumber,
 							@RequestParam String pageSize) {
+		log.debug("ip black");
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-		return JsonUtils.toJson(ipRepo.findByIsBlackTrue(pageable));
+		return JsonUtils.toJson(ipManageService.findByIsBlackTrue(pageable));
 	}
 
 	@GetMapping("/white/list")
 	public String whiteList() {
-		return JsonUtils.toJson(ipRepo.findByIsBlackFalse());
+		log.debug("white ip");
+		return JsonUtils.toJson(ipManageService.findByIsBlackFalse());
 	}
 
 	@GetMapping("/black/list")
 	public String blackList() {
-		return JsonUtils.toJson(ipRepo.findByIsBlackTrue());
+		log.debug("black ip");
+		return JsonUtils.toJson(ipManageService.findByIsBlackTrue());
 	}
 
 	@GetMapping("/white/count")
 	public String whiteCount(String address) {
-		return JsonUtils.toJson(ipRepo.countByAddressAndIsBlackFalse(address));
+		log.debug("white count");
+		return JsonUtils.toJson(ipManageService.countByAddressAndIsBlackFalse(address));
 	}
 
 	@GetMapping("/black/count")
 	public String blackCount(String address) {
-		return JsonUtils.toJson(ipRepo.countByAddressAndIsBlackTrue(address));
+		log.debug("black count");
+		return JsonUtils.toJson(ipManageService.countByAddressAndIsBlackTrue(address));
 	}
 
 	@DeleteMapping("/black/delete")
 	public String deleteBlack(String address) {
 		try {
-			ipRepo.deleteByAddressAndIsBlackTrue(address);
+			log.debug("black delete");
+			ipManageService.deleteByAddressAndIsBlackTrue(address);
 			return "done";
 		} catch (Exception e) {
 			return "0";
@@ -99,7 +108,8 @@ public class IPManagerController {
 	@DeleteMapping("/white/delete")
 	public String deleteWhite(String address) {
 		try {
-			ipRepo.deleteByAddressAndIsBlackFalse(address);
+			log.debug("white delete");
+			ipManageService.deleteByAddressAndIsBlackFalse(address);
 			return "done";
 		} catch (Exception e) {
 			return "0";
@@ -107,9 +117,10 @@ public class IPManagerController {
 	}
 
 	@DeleteMapping("/delete")
-	public String delete(String address) {
+	public String delete(String id) {
 		try {
-			ipRepo.deleteById(address);
+			log.debug("delete by id");
+			ipManageService.deleteById(id);
 			return "done";
 		} catch (Exception e) {
 			return "0";

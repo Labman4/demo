@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.elasticsearch.client.domain;
+package com.elpsykongroo.services.elasticsearch.server.domain;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "ip")
+import java.util.Date;
+import java.util.Map;
+
 @Data
-@NoArgsConstructor
-public class IPManage {
+@Document(indexName = "access_record")
+public class AccessRecord {
+	@Field(type = FieldType.Ip)
+	private String sourceIP;
+	private String accessPath;
+	private Map<String, String> requestHeader;
+	private String userAgent;
+	@Field(type = FieldType.Date, pattern = "uuuu-MM-dd HH:mm:ss")
+	private Date timestamp;
+
 	private @Id String id;
-
-	private String address;
-
-	private boolean isBlack;
-
-	public IPManage(String address) {
-		this.address = address;
-		this.isBlack = true;
-	}
-
-	public IPManage(String address, boolean black) {
-		this.address = address;
-		this.isBlack = black;
-	}
 }

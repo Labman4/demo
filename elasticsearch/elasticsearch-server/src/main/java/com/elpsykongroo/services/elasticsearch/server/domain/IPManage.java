@@ -14,11 +14,26 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.repo;
+package com.elpsykongroo.services.elasticsearch.server.domain;
 
-import org.springframework.data.repository.CrudRepository;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 
-import com.elpsykongroo.gateway.domain.Secrets;
-
-public interface SecretsRepo extends CrudRepository<Secrets, String>{
+@Document(indexName = "ip")
+@Data
+@NoArgsConstructor
+public class IPManage {
+	private @Id String id;
+	private String address;
+	private boolean isBlack;
+	public IPManage(String address) {
+		this.address = address;
+		this.isBlack = true;
+	}
+	public IPManage(String address, boolean black) {
+		this.address = address;
+		this.isBlack = black;
+	}
 }

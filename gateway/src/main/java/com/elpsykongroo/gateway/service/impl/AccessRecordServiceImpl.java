@@ -29,7 +29,7 @@ import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.base.utils.IPRegexUtils;
 import com.elpsykongroo.gateway.exception.ServiceException;
 import com.elpsykongroo.services.elasticsearch.client.SearchService;
-import com.elpsykongroo.services.elasticsearch.client.domain.AccessRecord;
+import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.gateway.config.RequestConfig;
@@ -113,8 +113,8 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			if (StringUtils.isNotEmpty(sourceIP)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(sourceIP);
 				for (InetAddress addr: inetAddresses) {
-					List<AccessRecord> accessrecord = searchService.findBySourceIP(addr.getHostAddress());
-					for (AccessRecord record: accessrecord) {
+					List<AccessRecord> accessRecord = searchService.findBySourceIP(addr.getHostAddress());
+					for (AccessRecord record: accessRecord) {
 						recordIds.add(record.getId());
 					}
 				}
@@ -138,8 +138,8 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			if (IPRegexUtils.vaildateHost(params)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(params);
 				for (InetAddress addr: inetAddresses) {
-					List<AccessRecord> accessrecord = searchService.findBySourceIP(addr.getHostAddress());
-					records.addAll(accessrecord);
+					List<AccessRecord> accessRecord = searchService.findBySourceIP(addr.getHostAddress());
+					records.addAll(accessRecord);
 				}
 			}
 			records.addAll(searchService.findByUserAgentLike(params));

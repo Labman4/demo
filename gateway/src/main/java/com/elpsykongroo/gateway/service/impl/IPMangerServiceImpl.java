@@ -27,7 +27,7 @@ import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.PathUtils;
 import com.elpsykongroo.gateway.exception.ServiceException;
 import com.elpsykongroo.services.elasticsearch.client.SearchService;
-import com.elpsykongroo.services.elasticsearch.client.domain.IPManage;
+import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
 import com.elpsykongroo.services.redis.client.RedisService;
 import com.elpsykongroo.services.redis.client.dto.KV;
 import jakarta.servlet.http.HttpServletRequest;
@@ -68,7 +68,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 	@Override
 	public String list(String isBlack, String pageNumber, String pageSize) {
 		List<IPManage> ipManages = null;
-		if ("".equals(isBlack)) {
+		if (StringUtils.isBlank(isBlack)) {
 			String ipManage = searchService.findAllIP(pageNumber, pageSize);
 			return ipManage;
 		}

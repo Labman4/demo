@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.elasticsearch.server.repo;
-
+package com.elpsykongroo.services.elasticsearch.server.service;
 
 import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
-public interface IPRepo extends ElasticsearchRepository<IPManage, String> {
+public interface IPManageService {
+    IPManage save(IPManage ipManage);
 
-	List<IPManage> findByIsBlackTrue();
+    List<IPManage> findAll(Pageable pageable);
 
-	List<IPManage> findByIsBlackFalse();
+    List<IPManage> findByIsBlackTrue();
 
-	List<IPManage> findByIsBlackTrue(Pageable pageable);
+    List<IPManage> findByIsBlackFalse();
 
-	List<IPManage> findByIsBlackFalse(Pageable pageable);
+    List<IPManage> findByIsBlackTrue(Pageable pageable);
 
-	long countByAddressAndIsBlackTrue(String address);
+    List<IPManage> findByIsBlackFalse(Pageable pageable);
 
-	long countByAddressAndIsBlackFalse(String address);
+    long countByAddressAndIsBlackTrue(String address);
 
-	void deleteByAddressAndIsBlackTrue(String address);
+    long countByAddressAndIsBlackFalse(String address);
 
-	void deleteByAddressAndIsBlackFalse(String address);
+    void deleteByAddressAndIsBlackTrue(String address);
 
+    void deleteByAddressAndIsBlackFalse(String address);
+
+    void deleteById(String id);
 }

@@ -51,14 +51,9 @@ service:
     key:  ${TLS_KEY}
   redis:
     url: http://localhost:8379
+  auth:
+    url: http://localhost:9000
+  storage:
+    url: http://localhost:9999
   es:
-    nodes: ${ES_URL:elasticsearch.elpsykongroo.com:443}
-    ssl:
-      type: public
-      ca: ${ES_CA_CRT:ca.crt}
-      cert: ${ES_TLS_CERT:tls.crt}
-      key: ${ES_TLS_KEY:tls.key}
-    timeout:
-      connect: ${ES_CONNECT_TIME:10}
-      socket: ${ES_SOCKET_TIME:10}
- 
+    url: http://localhost:9201
