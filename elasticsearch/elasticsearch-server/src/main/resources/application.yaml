@@ -16,7 +16,7 @@ spring:
         enabled: true
 logging:
   level:
-    root: ${ROOT_LEVEL:debug}
+    root: ${ROOT_LEVEL:info}
     web: ${WEB_LEVEL:debug}
     com:
       elpsykongroo:

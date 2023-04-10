@@ -16,8 +16,6 @@
 
 package com.elpsykongroo.services.elasticsearch.server.controller;
 
-import com.elpsykongroo.base.common.CommonResponse;
-import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecordDto;
 import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.server.service.AccessRecordService;
@@ -26,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,40 +54,40 @@ public class AccessRecordController {
 	}
 
 	@GetMapping("/list")
-	public String findAll(@RequestParam String order,
-						  @RequestParam String pageNumber,
-						  @RequestParam String pageSize) {
+	public ResponseEntity<List<AccessRecord>> findAll(@RequestParam String order,
+												  @RequestParam String pageNumber,
+												  @RequestParam String pageSize) {
 		log.debug("record list");
 		Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
 		if ("1".equals(order)) {
 			sort = Sort.by(Sort.Direction.ASC, "timestamp");
 		}
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), sort);
-		return JsonUtils.toJson(CommonResponse.success(accessRecordService.findAll(pageable).get().toList()));
+		return ResponseEntity.ok(accessRecordService.findAll(pageable).get().toList());
 	}
 
 	@GetMapping("/list/ip")
-	public String findByIP(@RequestParam String ip) {
+	public ResponseEntity<List<AccessRecord>> findByIP(@RequestParam String ip) {
 		log.debug("record list ip");
-		return JsonUtils.toJson(accessRecordService.findBySourceIP(ip));
+		return ResponseEntity.ok(accessRecordService.findBySourceIP(ip));
 	}
 
 	@GetMapping("/list/path")
-	public String findByPath(@RequestParam String path) {
+	public ResponseEntity<List<AccessRecord>> findByPath(@RequestParam String path) {
 		log.debug("record path");
-		return JsonUtils.toJson(accessRecordService.findByAccessPathLike(path));
+		return ResponseEntity.ok(accessRecordService.findByAccessPathLike(path));
 	}
 
 	@GetMapping("/list/agent")
-	public String findByUserAgent(@RequestParam String agent) {
+	public ResponseEntity<List<AccessRecord>> findByUserAgent(@RequestParam String agent) {
 		log.debug("record agent");
-		return JsonUtils.toJson(accessRecordService.findByUserAgentLike(agent));
+		return ResponseEntity.ok(accessRecordService.findByUserAgentLike(agent));
 	}
 
 	@GetMapping("/list/header")
-	public String findByHeader(@RequestParam String header) {
+	public ResponseEntity<List<AccessRecord>> findByHeader(@RequestParam String header) {
 		log.debug("record header");
-		return JsonUtils.toJson(accessRecordService.findByRequestHeaderLike(header));
+		return ResponseEntity.ok(accessRecordService.findByRequestHeaderLike(header));
 	}
 
 	@PostMapping("delete")
@@ -103,13 +102,13 @@ public class AccessRecordController {
 	}
 
 	@PostMapping("/filter")
-	public String filter(@RequestBody AccessRecordDto accessRecordDto) {
+	public ResponseEntity<List<AccessRecord>> filter(@RequestBody AccessRecordDto accessRecordDto) {
 		try {
 			log.debug("filter");
-			return JsonUtils.toJson(accessRecordService.searchSimilar(accessRecordDto));
+			return ResponseEntity.ok(accessRecordService.searchSimilar(accessRecordDto));
 		} catch (Exception e) {
 			log.error("filter error: {}", e.getMessage());
-			return "0";
+			return ResponseEntity.ofNullable(null);
 		}
 	}
 }

@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -47,39 +50,39 @@ public class IPManagerController {
 	}
 
 	@GetMapping("/list")
-	public String list(@RequestParam String pageNumber,
-					   @RequestParam String pageSize) {
+	public ResponseEntity<List<IPManage>> list(@RequestParam String pageNumber,
+												  @RequestParam String pageSize) {
 		log.debug("ip list");
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-		return JsonUtils.toJson(ipManageService.findAll(pageable));
+		return ResponseEntity.ok().body(ipManageService.findAll(pageable));
 	}
 
 	@GetMapping("/list/white")
-	public String whiteList(@RequestParam String pageNumber,
+	public ResponseEntity<List<IPManage>> whiteList(@RequestParam String pageNumber,
 							@RequestParam String pageSize) {
 		log.debug("ip white");
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-		return JsonUtils.toJson(ipManageService.findByIsBlackFalse(pageable));
+		return ResponseEntity.ok().body(ipManageService.findByIsBlackFalse(pageable));
 	}
 
 	@GetMapping("/list/black")
-	public String blackList(@RequestParam String pageNumber,
+	public ResponseEntity<List<IPManage>> blackList(@RequestParam String pageNumber,
 							@RequestParam String pageSize) {
 		log.debug("ip black");
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-		return JsonUtils.toJson(ipManageService.findByIsBlackTrue(pageable));
+		return ResponseEntity.ok().body(ipManageService.findByIsBlackTrue(pageable));
 	}
 
 	@GetMapping("/white/list")
-	public String whiteList() {
+	public ResponseEntity<List<IPManage>> whiteList() {
 		log.debug("white ip");
-		return JsonUtils.toJson(ipManageService.findByIsBlackFalse());
+		return ResponseEntity.ok().body(ipManageService.findByIsBlackFalse());
 	}
 
 	@GetMapping("/black/list")
-	public String blackList() {
+	public ResponseEntity<List<IPManage>> blackList() {
 		log.debug("black ip");
-		return JsonUtils.toJson(ipManageService.findByIsBlackTrue());
+		return ResponseEntity.ok().body(ipManageService.findByIsBlackTrue());
 	}
 
 	@GetMapping("/white/count")
