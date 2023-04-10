@@ -16,7 +16,7 @@
 
 package com.elpsykongroo.services.elasticsearch.server.service.impl;
 
-import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
+import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
 import com.elpsykongroo.services.elasticsearch.server.repo.IPRepo;
 import com.elpsykongroo.services.elasticsearch.server.service.IPManageService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -17,8 +17,8 @@
 package com.elpsykongroo.services.elasticsearch.server.service.impl;
 
 import com.elpsykongroo.base.utils.JsonUtils;
+import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecordDto;
-import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.server.repo.AccessRecordRepo;
 import com.elpsykongroo.services.elasticsearch.server.service.AccessRecordService;
 import org.apache.commons.lang3.StringUtils;

@@ -16,7 +16,7 @@
 
 package com.elpsykongroo.services.elasticsearch.server.service;
 
-import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
+import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

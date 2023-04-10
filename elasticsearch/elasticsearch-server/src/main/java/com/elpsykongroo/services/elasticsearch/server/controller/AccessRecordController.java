@@ -16,8 +16,8 @@
 
 package com.elpsykongroo.services.elasticsearch.server.controller;
 
+import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecordDto;
-import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.server.service.AccessRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

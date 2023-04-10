@@ -16,8 +16,8 @@
 
 package com.elpsykongroo.services.elasticsearch.server.service;
 
+import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecordDto;
-import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

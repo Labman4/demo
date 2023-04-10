@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Steve Riesenberg
  * @since 0.2.3
  */
-@SpringBootApplication
+@SpringBootApplication(proxyBeanMethods = false)
 public class FederatedIdentityAuthorizationServerApplication {
 
 	public static void main(String[] args) {

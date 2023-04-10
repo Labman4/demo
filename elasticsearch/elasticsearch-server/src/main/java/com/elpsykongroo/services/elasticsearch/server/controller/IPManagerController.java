@@ -17,7 +17,7 @@
 package com.elpsykongroo.services.elasticsearch.server.controller;
 
 import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
+import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
 import com.elpsykongroo.services.elasticsearch.server.service.IPManageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
