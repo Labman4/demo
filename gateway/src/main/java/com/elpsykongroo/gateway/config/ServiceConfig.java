@@ -25,6 +25,10 @@ import lombok.Data;
 @Component
 @ConfigurationProperties(prefix = "service")
 public class ServiceConfig {
+    private String env;
+
+    private String whiteDomain;
+
     private Url es;
 
     private Url storage;
@@ -32,8 +36,6 @@ public class ServiceConfig {
     private  Url auth;
 
     private Url redis;
-
-    private String vault;
 
     //public ca
     private SSL ssl;

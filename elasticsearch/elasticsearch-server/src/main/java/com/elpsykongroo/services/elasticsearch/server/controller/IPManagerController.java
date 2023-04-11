@@ -86,13 +86,13 @@ public class IPManagerController {
 	@GetMapping("/count/white/{address}")
 	public String whiteCount(@PathVariable String address) {
 		log.debug("white count");
-		return CommonResponse.data(ipManageService.countByAddressAndIsBlackFalse(address));
+		return CommonResponse.string(ipManageService.countByAddressAndIsBlackFalse(address));
 	}
 
 	@GetMapping("/count/black/{address}")
 	public String blackCount(@PathVariable String address) {
 		log.debug("black count");
-		return CommonResponse.data(ipManageService.countByAddressAndIsBlackTrue(address));
+		return CommonResponse.string(ipManageService.countByAddressAndIsBlackTrue(address));
 	}
 
 	@DeleteMapping("/black/delete/{address}")

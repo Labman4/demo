@@ -1,4 +1,14 @@
+management:
+  endpoint:
+    shutdown.enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: ${ENDPOINTS_WEB:shutdown}
+
 spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
   #  cloud:
   #    kubernetes:
   #      discovery:
@@ -66,3 +76,5 @@ service:
     url: ${STORAGE_URL:http://localhost:9999}
   es:
     url: ${ES_URL:http://localhost:9201}
+  whiteDomain: ${WHITE_DOMAIN:ip.elpsykongroo.com,localhost}
+  env: ${DEPLOY_ENV:prod}

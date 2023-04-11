@@ -34,7 +34,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.model.Parameter;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateBuilderConfigurer;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.mock.web.MockFilterChain;
@@ -57,7 +56,6 @@ public class filterTest {
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
     private FilterChain filterChain;
-
     private MockServerClient mockServerClient;
 
     @Before
@@ -72,10 +70,7 @@ public class filterTest {
         mockServerClient
                 .when(request()
                         .withPath("/redis/get")
-                        .withMethod("GET")
-                        .withQueryStringParameters(
-                                Parameter.param("key", "blackList")
-                        ))
+                        .withMethod("GET"))
                 .respond(response()
                         .withStatusCode(200)
                         .withBody(""));
@@ -85,6 +80,10 @@ public class filterTest {
                         .withMethod("POST"))
                 .respond(response()
                         .withStatusCode(200));
+        mockServerClient.when(request().withPath("/search/ip/add"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withBody(JsonUtils.toJson(Collections.singleton(ipManage.getAddress())), MediaType.APPLICATION_JSON));
         mockServerClient.when(request().withPath("/search/ip/list.*"))
                 .respond(response()
                         .withStatusCode(200)

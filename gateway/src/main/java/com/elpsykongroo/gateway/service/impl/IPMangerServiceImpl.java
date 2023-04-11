@@ -38,11 +38,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class IPMangerServiceImpl implements IPManagerService {
+	@Value("${service.whiteDomain}")
+	private String whiteDomain = "localhost";
+
+	@Value("${service.env}")
+	private String env = "prod";
+
     @Autowired
 	private SearchService searchService;
 
@@ -167,11 +174,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 		KV kv = new KV();
 		if ("true".equals(isBlack)) {
 			list = searchService.findByIsBlackTrue();
-			kv.setKey("blackList");
+			kv.setKey(env + "blackList");
 		}
 		else {
 			list = searchService.findByIsBlackFalse();
-			kv.setKey("whiteList");
+			kv.setKey(env + "whiteList");
 		}
 		if (list.size() > 0) {
 			for (IPManage ad: list) {
@@ -234,16 +241,19 @@ public class IPMangerServiceImpl implements IPManagerService {
 				String ip = "";
 				if ("true".equals(isBlack)) {
 					ip = accessIP(request, "black");
-					list = redisService.get("blackList");
+					list = redisService.get(env + "blackList");
 				}
 				else {
 					ip = accessIP(request, "white");
-					list = redisService.get("whiteList");
+					list = redisService.get(env + "whiteList");
 				}
 				log.debug("cacheList: {}", list);
 				if (StringUtils.isNotBlank(list)) {
-					if (!list.contains("localhost")) {
-						initWhite();
+					String domain = whiteDomain;
+					for(String d: domain.split(",")) {
+						if (!list.contains(d)) {
+							initWhite();
+						}
 					}
 					if (list.contains(ip)) {
 						return true;
@@ -264,6 +274,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 					}
 				} else {
 					log.info("updateCache");
+					initWhite();
 					updateCache(isBlack);
 				}
 				/**
@@ -342,7 +353,10 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	private void initWhite(){
 		try {
-			add("localhost", "false");
+			String domain = whiteDomain;
+			for(String d: domain.split(",")) {
+				add(d, "false");
+			}
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}

@@ -85,3 +85,5 @@ service:
     url: http://localhost:9999
   es:
     url: http://localhost:9201
+  whiteDomain: ${WHITE_DOMAIN:ip.elpsykongroo.com,localhost}
+  env: ${DEPLOY_ENV:test}
