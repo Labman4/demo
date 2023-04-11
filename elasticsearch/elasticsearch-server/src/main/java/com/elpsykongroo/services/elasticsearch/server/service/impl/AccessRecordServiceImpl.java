@@ -43,8 +43,13 @@ public class AccessRecordServiceImpl implements AccessRecordService {
     }
 
     @Override
-    public Page<AccessRecord> findAll(Pageable pageable) {
-        return accessRecordRepo.findAll(pageable);
+    public List<AccessRecord> findAll(String pageNum, String pageSize, String order) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
+        if ("1".equals(order)) {
+            sort = Sort.by(Sort.Direction.ASC, "timestamp");
+        }
+        Pageable pageable = PageRequest.of(Integer.parseInt(pageNum), Integer.parseInt(pageSize), sort);
+        return accessRecordRepo.findAll(pageable).get().toList();
     }
 
     @Override

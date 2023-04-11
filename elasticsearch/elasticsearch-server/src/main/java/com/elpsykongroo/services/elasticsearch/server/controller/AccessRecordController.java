@@ -57,12 +57,7 @@ public class AccessRecordController {
 												  @RequestParam String pageNumber,
 												  @RequestParam String pageSize) {
 		log.debug("record list");
-		Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
-		if ("1".equals(order)) {
-			sort = Sort.by(Sort.Direction.ASC, "timestamp");
-		}
-		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), sort);
-		return CommonResponse.data(accessRecordService.findAll(pageable).get().toList());
+		return CommonResponse.success(accessRecordService.findAll(pageNumber, pageSize, order));
 	}
 
 	@GetMapping("/list/ip")
