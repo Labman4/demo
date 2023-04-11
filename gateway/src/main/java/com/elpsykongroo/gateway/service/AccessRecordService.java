@@ -17,6 +17,7 @@
 package com.elpsykongroo.gateway.service;
 
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import com.elpsykongroo.base.common.CommonResponse;
@@ -30,10 +31,10 @@ public interface AccessRecordService {
 
 	String findAll(String pageNumber, String pageSize, String sort);
 
-	CommonResponse<List<AccessRecord>> filterByParams(String params, String pageNumber, String pageSize);
+	List<AccessRecord> filterByParams(String params, String pageNumber, String pageSize) throws UnknownHostException;
 
-	CommonResponse<Integer> deleteRecord(String sourceIP, String ids);
+	int deleteRecord(String sourceIP, String ids) throws UnknownHostException;
 
-	void saveAcessRecord(HttpServletRequest request);
+	void saveAccessRecord(HttpServletRequest request);
 
 }

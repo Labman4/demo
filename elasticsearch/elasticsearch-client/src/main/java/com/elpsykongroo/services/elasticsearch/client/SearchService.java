@@ -27,11 +27,11 @@ public interface SearchService {
 
     List<IPManage> findByIsBlackTrue();
 
-    List<IPManage>  findByIsBlackFalse();
+    List<IPManage> findByIsBlackFalse();
 
-    List<IPManage> findByIsBlackTrue(String pageNumber, String pageSize);
+    String findByIsBlackTrue(String pageNumber, String pageSize);
 
-    List<IPManage>  findByIsBlackFalse(String pageNumber, String pageSize);
+    String findByIsBlackFalse(String pageNumber, String pageSize);
 
     Long countByAddressAndIsBlackTrue(String address);
 

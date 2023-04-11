@@ -75,13 +75,13 @@ public class IPManageServiceImpl implements IPManageService {
     }
 
     @Override
-    public void deleteByAddressAndIsBlackTrue(String address) {
-        ipRepo.deleteByAddressAndIsBlackTrue(address);
+    public int deleteByAddressAndIsBlackTrue(String address) {
+       return ipRepo.deleteByAddressAndIsBlackTrue(address);
     }
 
     @Override
-    public void deleteByAddressAndIsBlackFalse(String address) {
-        ipRepo.deleteByAddressAndIsBlackTrue(address);
+    public int deleteByAddressAndIsBlackFalse(String address) {
+       return ipRepo.deleteByAddressAndIsBlackFalse(address);
     }
 
     @Override

@@ -38,5 +38,5 @@ public interface AccessRecordService {
 
     void deleteAllById(List<String> ids);
 
-    void save(AccessRecord accessRecord);
+    String save(AccessRecord accessRecord);
 }

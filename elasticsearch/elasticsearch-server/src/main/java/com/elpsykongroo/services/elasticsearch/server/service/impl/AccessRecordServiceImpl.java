@@ -107,8 +107,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
     }
 
     @Override
-    public void save(AccessRecord accessRecord) {
-        accessRecordRepo.save(accessRecord);
-
+    public String save(AccessRecord accessRecord) {
+        return accessRecordRepo.save(accessRecord).getId();
     }
 }

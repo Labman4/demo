@@ -21,11 +21,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.base.utils.IPRegexUtils;
-import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.PathUtils;
-import com.elpsykongroo.gateway.exception.ServiceException;
 import com.elpsykongroo.services.elasticsearch.client.SearchService;
 import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
 import com.elpsykongroo.services.redis.client.RedisService;
@@ -67,42 +64,32 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	@Override
 	public String list(String isBlack, String pageNumber, String pageSize) {
-		List<IPManage> ipManages = null;
+		String ipManages = null;
 		if (StringUtils.isBlank(isBlack)) {
-			String ipManage = searchService.findAllIP(pageNumber, pageSize);
-			return ipManage;
-		}
-		else if ("true".equals(isBlack)) {
+			ipManages = searchService.findAllIP(pageNumber, pageSize);
+		} else if ("true".equals(isBlack)) {
 			ipManages = searchService.findByIsBlackTrue(pageNumber, pageSize);
-		}
-		else {
+		} else {
 			ipManages = searchService.findByIsBlackFalse(pageNumber, pageSize);
 		}
-		return JsonUtils.toJson(ipManages);
+		return ipManages;
 	}
 
 	@Override
-	public CommonResponse<String> patch(String addresses, String isBlack, String id) throws ServiceException {
-			try {
-				String[] addr = addresses.split(",");
-				if (StringUtils.isNotEmpty(id)) {
-					searchService.deleteIPById(id);
-					updataCache(isBlack);
-					return CommonResponse.success("done");
-				}
-				for (String ad: addr) {
-					InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
-					for (InetAddress inetAd: inetAddresses) {
-						deleteIPManage(isBlack, inetAd.getHostAddress());
-						deleteIPManage(isBlack, inetAd.getHostName());
-					}
-				}
-				updataCache(isBlack);
-			} catch (Exception e) {
-				throw new ServiceException(e);
+	public void patch(String addresses, String isBlack, String id) throws UnknownHostException {
+		String[] addr = addresses.split(",");
+		if (StringUtils.isNotEmpty(id)) {
+			searchService.deleteIPById(id);
+			updateCache(isBlack);
+		}
+		for (String ad: addr) {
+			InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
+			for (InetAddress inetAd: inetAddresses) {
+				deleteIPManage(isBlack, inetAd.getHostAddress());
+				deleteIPManage(isBlack, inetAd.getHostName());
 			}
-		
-		return CommonResponse.success("done");
+		}
+		updateCache(isBlack);
 	}
 
 	private void deleteIPManage(String isBlack, String ad) {
@@ -115,14 +102,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	@Override
-	public CommonResponse<List<String>> add(String addrs, String isBlack) throws ServiceException {
-		List<String> addresses = null;
-		try {
-			addresses = new ArrayList<>();
-			Boolean flag = false;
-			if ("true".equals(isBlack)) {
-				flag = true;
-			}
+	public List<String> add(String addrs, String isBlack) throws UnknownHostException {
+		List<String> addresses = new ArrayList<>();
+		Boolean flag = false;
+		if ("true".equals(isBlack)) {
+			flag = true;
+		}
 //            RLock lock = redissonClient.getLock("blackList");
 ////            lock.tryLockAsync().get()
 //            if (lock.tryLock(Constant.REDIS_LOCK_WAIT_TIME, Constant.REDIS_LOCK_LEASE_TIME, TimeUnit.SECONDS)) {
@@ -151,13 +136,10 @@ public class IPMangerServiceImpl implements IPManagerService {
 //            }
 //        } catch (InterruptedException e) {
 //            return commonResponse.error(Constant.ERROR_CODE, "please retry");
+		log.info("black result------------:{}", addresses);
+		updateCache(isBlack);
 
-			log.info("black result------------:{}", addresses);
-			updataCache(isBlack);
-		} catch (Exception e) {
-			throw new ServiceException(e);
-		}
-		return CommonResponse.success(addresses);
+		return addresses;
 	}
 
 	private Long exist(String ad, String isBlack) {
@@ -174,7 +156,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		}
 	}
 
-	private void updataCache(String isBlack) {
+	private void updateCache(String isBlack) {
 		StringBuffer cache = new StringBuffer();
 		List<IPManage> list = new ArrayList<>();
 		KV kv = new KV();
@@ -194,27 +176,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 			redisService.set(kv);
 		}
 	}
-//	private void updataCache(String isBlack) {
-//		List<String> cache = new ArrayList<>();
-//		List<IPManage> list = new ArrayList<>();
-//		IPList ipList = new IPList();
-//		ipList.setIsBlack(isBlack);
-//		if ("true".equals(isBlack)) {
-//			list = ipRepo.findByIsBlackTrue();
-//		}
-//		else {
-//			list = ipRepo.findByIsBlackFalse();
-//		}
-//		for (IPManage ad: list) {
-//			cache.add(ad.getAddress());
-//		}
-//		ipList.setIpList(cache);
-//		try {
-//			ipListRepo.save(ipList);
-//		} catch (Exception e) {
-//			log.error("redis excepetion:{}", e);
-//		}
-//	}
 
 	@Override
 	public String accessIP(HttpServletRequest request, String headerType) {		
@@ -295,7 +256,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 					}
 				} else {
 					log.info("updateCache");
-					updataCache(isBlack);
+					updateCache(isBlack);
 				}
 				/**
 				 * 	Todo
@@ -330,7 +291,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 //				}
 			log.info("flag:{}, black:{}", flag, isBlack);
 		} catch (UnknownHostException e) {
-			throw new ServiceException(String.valueOf(HttpStatus.SERVICE_UNAVAILABLE.value()), e);
+			log.error("UnknownHostException");
 		}
 		return flag;
     }
@@ -366,7 +327,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 					return true;
 			}
 		} catch (UnknownHostException e) {
-			throw new ServiceException(e);
+			log.error("UnknownHostException");
 		}
 		return false;
 	}

@@ -17,7 +17,9 @@
 package com.elpsykongroo.base.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 public final class JsonUtils {
 	private JsonUtils() {
@@ -44,9 +46,15 @@ public final class JsonUtils {
 		catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static <T> T toList(String str, TypeReference<T> typeReference){
+		try {
+			return objectMapper.readValue(str, typeReference);
+		}
+		catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 
 	}
-//	public static String toString(Object o) {
-//		return gson.toJson(o);
-//	}
 }

@@ -17,6 +17,7 @@
 package com.elpsykongroo.gateway.service.impl;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -25,9 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.base.utils.IPRegexUtils;
-import com.elpsykongroo.gateway.exception.ServiceException;
 import com.elpsykongroo.services.elasticsearch.client.SearchService;
 import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,10 +59,10 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	@Autowired
 	private RequestConfig requestConfig;
 
-	public void saveAcessRecord(HttpServletRequest request) {
+	public void saveAccessRecord(HttpServletRequest request) {
 		try {
 			String ip = ipMangerService.accessIP(request, "record");
-		    Exclude recordExclude = requestConfig.getRecord().getExclude();		
+			Exclude recordExclude = requestConfig.getRecord().getExclude();
 			boolean recordFlag = ipMangerService.filterByIpOrList(recordExclude.getIp(), ip);
 			if (!(StringUtils.isNotEmpty(recordExclude.getPath()) && beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
 				if (!recordFlag) {
@@ -86,30 +85,23 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			    }
 		  	}
 		} catch (Exception e) {
-			throw new ServiceException(e);
+			log.error("save record error: {}", e.getMessage());
 		}
 	}
 
 	@Override
 	public String findAll(String pageNo, String pageSize, String order) {
-		String records = null;
-		try {
-			records = searchService.findAllRecord(pageNo, pageSize ,order);
-		} catch (NumberFormatException e) {
-			throw new ServiceException(e);
-		}
+		String records = searchService.findAllRecord(pageNo, pageSize ,order);
 		return records;
 	}
 
 	@Override
-	public CommonResponse<Integer> deleteRecord(String sourceIP, String ids) {
-		List<String> recordIds = null;
-		try {
+	public int deleteRecord(String sourceIP, String ids) throws UnknownHostException {
+		List<String> recordIds = new ArrayList<>();
 			recordIds = new ArrayList<>();
 			if (StringUtils.isNotEmpty(ids)) {
 				recordIds = new ArrayList<String>(Arrays.asList(ids.split(",")));
 			}
-
 			if (StringUtils.isNotEmpty(sourceIP)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(sourceIP);
 				for (InetAddress addr: inetAddresses) {
@@ -120,17 +112,13 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				}
 			}
 			searchService.deleteAllRecordById(recordIds);
-		} catch (Exception e) {
-			throw new ServiceException(e);
-		}
-		return CommonResponse.success(recordIds.size());
+			return recordIds.size();
 	}
 
 
 	@Override
-	public CommonResponse<List<AccessRecord>> filterByParams(String params, String pageNo, String pageSize) {
+	public List<AccessRecord> filterByParams(String params, String pageNo, String pageSize) throws UnknownHostException {
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize));
-		try {
 			List<AccessRecord> records = new ArrayList<>();
 			if (IPRegexUtils.vaildate(params)) {
 				records = searchService.findBySourceIP(params);
@@ -149,10 +137,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			int end = (int) ((start + pageable.getPageSize()) > records.size() ? records.size() : (start + pageable.getPageSize()));
 			Page<AccessRecord> page =
 					new PageImpl<AccessRecord>(records.subList(start, end), pageable, records.size());
-		    return CommonResponse.success(page.get().toList());
-		} catch (Exception e) {
-			throw new ServiceException(e);
-		}
+		    return page.get().toList();
 	}
 
 	private boolean beginWithPath(String paths, String url) {

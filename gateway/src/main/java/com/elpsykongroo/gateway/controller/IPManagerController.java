@@ -17,8 +17,6 @@
 package com.elpsykongroo.gateway.controller;
 
 import com.elpsykongroo.base.common.CommonResponse;
-import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.gateway.exception.ServiceException;
 import com.elpsykongroo.gateway.service.IPManagerService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @CrossOrigin
 @RestController
 @RequestMapping("/ip")
@@ -44,26 +43,27 @@ public class IPManagerController {
 	public String addBlacklist(@RequestParam("address") String address, @RequestParam("black") String isBlack) {
 		log.info("add sourceIP:{}, black:{}", address, isBlack);
 			try {
-				return JsonUtils.toJson(ipManagerService.add(address, isBlack));
+				return CommonResponse.success(ipManagerService.add(address, isBlack));
 			}
 			catch (Exception e) {
-				return JsonUtils.toJson(CommonResponse.error
-						(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+				return CommonResponse.error
+						(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 		}
 	}
 	@GetMapping("/manage/list")
 	public String blacklist(@RequestParam("black") String isBlack, @RequestParam("pageNumber") String pageNumber, @RequestParam("pageSize") String pageSize) {
-		log.info("black:{}, pageNumber:{}, pageSize:{}", isBlack, pageNumber, pageSize );
+		log.debug("black:{}, pageNumber:{}, pageSize:{}", isBlack, pageNumber, pageSize);
 		return ipManagerService.list(isBlack, pageNumber, pageSize);
 	}
 
 	@PatchMapping("/manage/patch")
 	public String updateBlacklist(@RequestParam("address") String addresses, @RequestParam("black") String isBlack, @RequestParam("id") String ids) {
 		try {
-		  return JsonUtils.toJson(ipManagerService.patch(addresses, isBlack, ids));
-		}
-		catch (ServiceException e) {
-			return JsonUtils.toJson(CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
+			log.debug("black:{}, addresses:{}, ids:{}", isBlack, addresses, ids);
+			ipManagerService.patch(addresses, isBlack, ids);
+			return CommonResponse.success();
+		} catch (Exception e) {
+			return CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 		}
 	}
 }

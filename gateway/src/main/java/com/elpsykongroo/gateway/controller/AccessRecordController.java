@@ -16,11 +16,13 @@
 
 package com.elpsykongroo.gateway.controller;
 
-import com.elpsykongroo.base.utils.JsonUtils;
+import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.gateway.service.AccessRecordService;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.UnknownHostException;
 
 @CrossOrigin
 @RestController
@@ -44,15 +48,23 @@ public class AccessRecordController {
 		return accessRecordService.findAll(pageNumber, pageSize, order);
 	}
 	@DeleteMapping("/delete")
-	public String deleterecord(@RequestParam("sourceIP") String sourceIP, @RequestParam("id") String ids) {
+	public String deleteRecord(@RequestParam("sourceIP") String sourceIP, @RequestParam("id") String ids) {
 		log.info("delete accessRecord by sourceIP:{}", sourceIP);
-		return JsonUtils.toJson(accessRecordService.deleteRecord(sourceIP, ids));
+		try {
+			return CommonResponse.success(accessRecordService.deleteRecord(sourceIP, ids));
+		} catch (UnknownHostException e) {
+			return CommonResponse.error(HttpStatus.SC_CLIENT_ERROR, e.getMessage());
+		}
 	}
 
 	@PostMapping("/filter")
 	public String filter( @RequestParam("param") String params,
 						  @RequestParam("pageNumber") String pageNumber,
 						  @RequestParam("pageSize") String pageSize) {
-		return JsonUtils.toJson(accessRecordService.filterByParams(params, pageNumber, pageSize));
+		try {
+			return CommonResponse.success(accessRecordService.filterByParams(params, pageNumber, pageSize));
+		} catch (UnknownHostException e) {
+			return CommonResponse.error(HttpStatus.SC_CLIENT_ERROR, e.getMessage());
+		}
 	}
 }

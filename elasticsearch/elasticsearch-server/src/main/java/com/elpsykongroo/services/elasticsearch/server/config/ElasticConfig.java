@@ -16,7 +16,7 @@
 
 package com.elpsykongroo.services.elasticsearch.server.config;
 
-import com.elpsykongroo.base.utils.SSLUtils;
+import com.elpsykongroo.services.elasticsearch.server.utils.SSLUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

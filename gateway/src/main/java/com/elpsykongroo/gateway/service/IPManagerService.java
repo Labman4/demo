@@ -16,10 +16,9 @@
 
 package com.elpsykongroo.gateway.service;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
-import com.elpsykongroo.base.common.CommonResponse;
-import com.elpsykongroo.gateway.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
@@ -28,15 +27,15 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IPManagerService {
 
-	CommonResponse<List<String>> add(String address, String isBlack) throws ServiceException;
+	List<String> add(String address, String isBlack) throws UnknownHostException;
 
 	String list(String isBlack, String pageNumber, String pageSize);
 
-	CommonResponse<String> patch(String addresses, String isBlack, String ids) throws ServiceException;
+	void patch(String addresses, String isBlack, String ids) throws UnknownHostException;
 
 	String accessIP(HttpServletRequest request, String type);
 
-	Boolean blackOrWhiteList(HttpServletRequest request, String isBlack) throws ServiceException;
+	Boolean blackOrWhiteList(HttpServletRequest request, String isBlack);
 
 	boolean filterByIpOrList(String ip, String accessIP);
 

@@ -38,9 +38,9 @@ public interface IPManageService {
 
     long countByAddressAndIsBlackFalse(String address);
 
-    void deleteByAddressAndIsBlackTrue(String address);
+    int deleteByAddressAndIsBlackTrue(String address);
 
-    void deleteByAddressAndIsBlackFalse(String address);
+    int deleteByAddressAndIsBlackFalse(String address);
 
     void deleteById(String id);
 }

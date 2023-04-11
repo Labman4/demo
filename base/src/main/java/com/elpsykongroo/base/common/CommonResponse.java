@@ -16,9 +16,9 @@
 
 package com.elpsykongroo.base.common;
 
+import com.elpsykongroo.base.utils.JsonUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.hc.core5.http.HttpStatus;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -39,6 +39,10 @@ public class CommonResponse<T> implements Serializable{
 
 	private T data;
 
+	public CommonResponse(Integer code) {
+		this.code = code;
+	}
+
 	public CommonResponse(Integer code, String msg) {
 		this.code = code;
 		this.msg = msg;
@@ -49,11 +53,27 @@ public class CommonResponse<T> implements Serializable{
 		this.data = data;
 	}
 
-	public static <T> CommonResponse<T> success(T data) {
-		return new CommonResponse<T>(HttpStatus.SC_OK, data);
+	public CommonResponse(Integer code, String msg, T data) {
+		this.code = code;
+		this.msg  = msg;
+		this.data = data;
 	}
 
-	public static <T> CommonResponse<T> error(Integer code, String msg) {
-		return new CommonResponse<T>(code, msg);
+	public static <T> String data(T data) {
+		return JsonUtils.toJson(data);
 	}
+
+	public static <T> String success() {
+		return JsonUtils.toJson(new CommonResponse<T>(200));
+	}
+
+	public static <T> String success(T data) {
+		return JsonUtils.toJson(new CommonResponse<T>(200, "success", data));
+	}
+
+	public static <T> String error(Integer code, String msg) {
+		return JsonUtils.toJson(new CommonResponse<T>(code, msg));
+	}
+
+
 }

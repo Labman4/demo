@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.base.utils;
+package com.elpsykongroo.services.elasticsearch.server.utils;
 
 import nl.altindag.ssl.SSLFactory;
 import nl.altindag.ssl.util.PemUtils;
