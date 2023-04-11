@@ -16,8 +16,8 @@
 
 package com.elpsykongroo.services.elasticsearch.server;
 
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
-import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
+import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
+import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
 import com.elpsykongroo.services.elasticsearch.server.repo.AccessRecordRepo;
 import com.elpsykongroo.services.elasticsearch.server.repo.IPRepo;
 import org.junit.jupiter.api.AfterAll;
