@@ -1,6 +1,6 @@
 package com.elpsykongroo.gateway;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.Before;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +22,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureObservability
 @MockServerTest("server.url=http://localhost:${mockServerPort}")
 @SpringBootTest(properties = {
-        "service.redis.url=${server.url}",
-        "service.auth.url=${server.url}",
-        "service.storage.url=${server.url}",
-        "service.es.url=${server.url}"
-},
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+                    "service.redis.url=${server.url}",
+                    "service.auth.url=${server.url}",
+                    "service.storage.url=${server.url}",
+                    "service.es.url=${server.url}"
+                },
+                webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+
 @ActiveProfiles("test")
 public class BaseTest {
 
@@ -37,22 +38,22 @@ public class BaseTest {
     MockServerClient client;
 
     @Value("${server.url}")
-    private String serverUrl;
+    protected String serverUrl;
 
     @Autowired
-    private WebApplicationContext context;
+    protected WebApplicationContext context;
 
     protected WebTestClient webTestClient;
 
 
-    @BeforeEach
+    @Before
     void setup() {
         webTestClient = MockMvcWebTestClient.bindToApplicationContext(context)
                 .apply(springSecurity())
                 .defaultRequest(get("/").with(csrf()))
                 .configureClient()
                 .build();
-        client.when(request().withMethod("POST").withPath("/redis.*"))
+        client.when(request().withPath("/redis.*"))
                 .respond(response().withStatusCode(200));
         client.when(request().withPath("/search/ip.*"))
                 .respond(response().withStatusCode(200));

@@ -83,13 +83,13 @@ public class IPManagerController {
 		return CommonResponse.data(ipManageService.findByIsBlackTrue());
 	}
 
-	@GetMapping("/white/count/{address}")
+	@GetMapping("/count/white/{address}")
 	public String whiteCount(@PathVariable String address) {
 		log.debug("white count");
 		return CommonResponse.data(ipManageService.countByAddressAndIsBlackFalse(address));
 	}
 
-	@GetMapping("/black/count/{address}")
+	@GetMapping("/count/black/{address}")
 	public String blackCount(@PathVariable String address) {
 		log.debug("black count");
 		return CommonResponse.data(ipManageService.countByAddressAndIsBlackTrue(address));

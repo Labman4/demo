@@ -30,9 +30,11 @@ request:
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
     permit: ${PERMIT_PATH:/**}
-    nonPrivate: ${PUBLIC_PATH:/}
+    nonPrivate: ${PUBLIC_PATH:/public}
+    exclude: ${EXCLUDE_PATH:/actuator}
+#    nonPrivate: ${PUBLIC_PATH:/}
+#    exclude: ${EXCLUDE_PATH:/}
     limit: ${LIMIT_PATH:/}
-    exclude: ${EXCLUDE_PATH:/}
     filter: ${FILTER_PATH:/}
   record: 
     exclude:

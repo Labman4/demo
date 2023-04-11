@@ -44,7 +44,11 @@ public class SearchServiceImpl implements SearchService {
     public SearchServiceImpl() {
 
     }
-    
+
+    public SearchServiceImpl(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+    }
+
     public SearchServiceImpl(String serverUrl, RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
         this.serverUrl = serverUrl;
@@ -146,18 +150,18 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Long countByAddressAndIsBlackTrue(String address) {
-        return restTemplate.exchange(serverUrl + ipPrefix + "/black/count/" + address,
+    public String countByAddressAndIsBlackTrue(String address) {
+        return restTemplate.exchange(serverUrl + ipPrefix + "/count/black/" + address,
                 HttpMethod.GET,
                 null,
-                Long.class).getBody();    }
+                String.class).getBody();    }
 
     @Override
-    public Long countByAddressAndIsBlackFalse(String address) {
-        return restTemplate.exchange(serverUrl + ipPrefix + "/white/count/" + address,
+    public String countByAddressAndIsBlackFalse(String address) {
+        return restTemplate.exchange(serverUrl + ipPrefix + "/count/white/" + address,
                 HttpMethod.GET,
                 null,
-                Long.class).getBody();
+                String.class).getBody();
     }
 
     @Override

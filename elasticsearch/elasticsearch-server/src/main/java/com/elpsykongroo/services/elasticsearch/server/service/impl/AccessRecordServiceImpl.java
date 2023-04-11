@@ -34,7 +34,6 @@ import java.util.List;
 @Service
 public class AccessRecordServiceImpl implements AccessRecordService {
 
-
     @Autowired
     private AccessRecordRepo accessRecordRepo;
 

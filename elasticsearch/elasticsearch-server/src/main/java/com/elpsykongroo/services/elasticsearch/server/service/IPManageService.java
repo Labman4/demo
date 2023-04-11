@@ -34,13 +34,13 @@ public interface IPManageService {
 
     List<IPManage> findByIsBlackFalse(Pageable pageable);
 
-    long countByAddressAndIsBlackTrue(String address);
+    String countByAddressAndIsBlackTrue(String address);
 
-    long countByAddressAndIsBlackFalse(String address);
+    String countByAddressAndIsBlackFalse(String address);
 
-    int deleteByAddressAndIsBlackTrue(String address);
+    String deleteByAddressAndIsBlackTrue(String address);
 
-    int deleteByAddressAndIsBlackFalse(String address);
+    String deleteByAddressAndIsBlackFalse(String address);
 
     void deleteById(String id);
 }

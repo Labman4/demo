@@ -68,6 +68,11 @@ public class AccessRecordTest extends BaseTest {
             .uri("/record/delete?sourceIP=ip.elpsykongroo.com&id=1")
             .exchange()
             .expectStatus().isOk();
+        webTestClient
+                .delete()
+                .uri("/record/delete?sourceIP=test.elpsykongroo.com&id=1")
+                .exchange()
+                .expectStatus().isOk();
     }
 
     @Test
@@ -77,5 +82,20 @@ public class AccessRecordTest extends BaseTest {
             .uri("/record/filter?param=man&pageNumber=0&pageSize=10")
             .exchange()
             .expectStatus().isOk();
+        webTestClient
+                .post()
+                .uri("/record/filter?param=test.elpsykongroo.com&pageNumber=0&pageSize=10")
+                .exchange()
+                .expectStatus().isOk();
+        webTestClient
+                .post()
+                .uri("/record/filter?param=127.0.0.1&pageNumber=0&pageSize=10")
+                .exchange()
+                .expectStatus().isOk();
+        webTestClient
+                .post()
+                .uri("/record/filter?param=ip.elpsykongroo.com&pageNumber=0&pageSize=10")
+                .exchange()
+                .expectStatus().isOk();
     }
 }

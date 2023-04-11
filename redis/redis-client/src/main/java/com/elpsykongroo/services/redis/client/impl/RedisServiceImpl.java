@@ -17,6 +17,10 @@ public class RedisServiceImpl implements RedisService {
         this.serverUrl = serverUrl;
     }
 
+    public RedisServiceImpl(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+    }
+
     @Override
     public void set(KV kv) {
         restTemplate.postForObject(serverUrl + servicePrefix + "/set", kv, String.class);

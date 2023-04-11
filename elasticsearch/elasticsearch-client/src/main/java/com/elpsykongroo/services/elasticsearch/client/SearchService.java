@@ -33,9 +33,9 @@ public interface SearchService {
 
     String findByIsBlackFalse(String pageNumber, String pageSize);
 
-    Long countByAddressAndIsBlackTrue(String address);
+    String countByAddressAndIsBlackTrue(String address);
 
-    Long countByAddressAndIsBlackFalse(String address);
+    String countByAddressAndIsBlackFalse(String address);
 
     void deleteByAddressAndIsBlackTrue(String address);
 

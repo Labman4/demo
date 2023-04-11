@@ -65,22 +65,22 @@ public class IPManageServiceImpl implements IPManageService {
     }
 
     @Override
-    public long countByAddressAndIsBlackTrue(String address) {
+    public String countByAddressAndIsBlackTrue(String address) {
         return ipRepo.countByAddressAndIsBlackTrue(address);
     }
 
     @Override
-    public long countByAddressAndIsBlackFalse(String address) {
+    public String countByAddressAndIsBlackFalse(String address) {
         return ipRepo.countByAddressAndIsBlackFalse(address);
     }
 
     @Override
-    public int deleteByAddressAndIsBlackTrue(String address) {
+    public String deleteByAddressAndIsBlackTrue(String address) {
        return ipRepo.deleteByAddressAndIsBlackTrue(address);
     }
 
     @Override
-    public int deleteByAddressAndIsBlackFalse(String address) {
+    public String deleteByAddressAndIsBlackFalse(String address) {
        return ipRepo.deleteByAddressAndIsBlackFalse(address);
     }
 

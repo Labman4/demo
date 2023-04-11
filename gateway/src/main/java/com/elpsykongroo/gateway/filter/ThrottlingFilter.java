@@ -61,6 +61,14 @@ public class ThrottlingFilter implements Filter {
 	@Autowired
 	private IPManagerService ipMangerService;
 
+	public ThrottlingFilter(RequestConfig requestConfig,
+							AccessRecordService accessRecordService,
+							IPManagerService ipMangerService) {
+		this.requestConfig = requestConfig;
+		this.accessRecordService = accessRecordService;
+		this.ipMangerService = ipMangerService;
+	}
+
 	private Bucket createNewBucket() {
 		Refill refill = Refill.greedy(requestConfig.getLimit().getScope().getSpeed(),
 					    Duration.ofSeconds(requestConfig.getLimit().getScope().getDuration()));

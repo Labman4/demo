@@ -38,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,7 +49,15 @@ public class IPMangerServiceImpl implements IPManagerService {
 	@Autowired
 	private RedisService redisService;
 
-    @Autowired
+	public IPMangerServiceImpl(RequestConfig requestConfig,
+							   RedisService redisService,
+							   SearchService searchService) {
+		this.requestConfig = requestConfig;
+		this.redisService = redisService;
+		this.searchService = searchService;
+	}
+
+	@Autowired
 	private RequestConfig requestConfig;
 
 	/*
@@ -141,17 +148,16 @@ public class IPMangerServiceImpl implements IPManagerService {
 		return addresses;
 	}
 
-	private Long exist(String ad, String isBlack) {
-		long size = 0;
+	private int exist(String ad, String isBlack) {
 		if ("true".equals(isBlack)) {
-			size = searchService.countByAddressAndIsBlackTrue(ad);
+			String size = searchService.countByAddressAndIsBlackTrue(ad);
 			log.debug("black.size:{}", size);
-			return size;
+			return Integer.parseInt(size);
 		}
 		else {
-			size = searchService.countByAddressAndIsBlackFalse(ad);
+			String size = searchService.countByAddressAndIsBlackFalse(ad);
 			log.debug("white.size:{}", size);
-			return size;
+			return Integer.parseInt(size);
 		}
 	}
 
@@ -238,7 +244,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if (StringUtils.isNotBlank(list)) {
 					if (!list.contains("localhost")) {
 						initWhite();
-					} else if (list.contains(ip)) {
+					}
+					if (list.contains(ip)) {
 						return true;
 					} else {
 						for (String s : list.split(",")) {

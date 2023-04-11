@@ -59,6 +59,12 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	@Autowired
 	private RequestConfig requestConfig;
 
+	public AccessRecordServiceImpl(SearchService searchService, IPManagerService ipMangerService, RequestConfig requestConfig) {
+		this.searchService = searchService;
+		this.ipMangerService = ipMangerService;
+		this.requestConfig = requestConfig;
+	}
+
 	public void saveAccessRecord(HttpServletRequest request) {
 		try {
 			String ip = ipMangerService.accessIP(request, "record");
