@@ -17,7 +17,7 @@
 package com.elpsykongroo.services.elasticsearch.server.controller;
 
 import com.elpsykongroo.base.common.CommonResponse;
-import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
+import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
 import com.elpsykongroo.services.elasticsearch.server.service.IPManageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @CrossOrigin
 @RestController
 @RequestMapping("/search/ip")
@@ -46,7 +44,7 @@ public class IPManagerController {
 	@PutMapping("/add")
 	public String saveIP(@RequestBody IPManage ipManage) {
 		log.debug("ip add");
-		return CommonResponse.data(ipManageService.save(ipManage).getAddress());
+		return CommonResponse.string(ipManageService.save(ipManage).getAddress());
 	}
 
 	@GetMapping("/list")

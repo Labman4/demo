@@ -138,7 +138,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 //            return commonResponse.error(Constant.ERROR_CODE, "please retry");
 		log.info("black result------------:{}", addresses);
 		updateCache(isBlack);
-
 		return addresses;
 	}
 
@@ -237,7 +236,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 				}
 				log.debug("cacheList: {}", list);
 				if (StringUtils.isNotBlank(list)) {
-					if (list.contains(ip)) {
+					if (!list.contains("localhost")) {
+						initWhite();
+					} else if (list.contains(ip)) {
 						return true;
 					} else {
 						for (String s : list.split(",")) {
@@ -330,5 +331,13 @@ public class IPMangerServiceImpl implements IPManagerService {
 			log.error("UnknownHostException");
 		}
 		return false;
+	}
+
+	private void initWhite(){
+		try {
+			add("localhost", "false");
+		} catch (UnknownHostException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

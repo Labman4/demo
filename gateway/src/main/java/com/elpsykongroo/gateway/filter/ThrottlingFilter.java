@@ -86,11 +86,11 @@ public class ThrottlingFilter implements Filter {
 		if (StringUtils.isNotEmpty(limitPath) && PathUtils.beginWithPath(limitPath, requestUri)) {
 			limitFlag = limitByBucket("global", httpResponse, session);
 			accessRecordService.saveAccessRecord(httpRequest);
-			String filtertPath = requestConfig.getPath().getFilter();
+			String filterPath = requestConfig.getPath().getFilter();
 			String excludePath = requestConfig.getPath().getExclude();
 			if (limitFlag) {
-				if (StringUtils.isNotEmpty(filtertPath)
-						&& PathUtils.beginWithPath(filtertPath, requestUri)
+				if (StringUtils.isNotEmpty(filterPath)
+						&& PathUtils.beginWithPath(filterPath, requestUri)
 						&& !PathUtils.beginWithPath(excludePath, requestUri)) {
 					log.info("start filter:{}", requestUri);
 					filterPath(httpRequest, httpResponse, session, requestUri);
@@ -113,6 +113,9 @@ public class ThrottlingFilter implements Filter {
 
 	private void blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri){
 		if (!ipMangerService.blackOrWhiteList(httpRequest, "true")) {
+			blackFlag = false;
+			publicFlag = isPublic(requestUri, httpRequest, httpResponse);
+		} else if (ipMangerService.blackOrWhiteList(httpRequest, "false")) {
 			blackFlag = false;
 			publicFlag = isPublic(requestUri, httpRequest, httpResponse);
 		}

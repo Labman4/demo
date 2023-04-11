@@ -18,7 +18,7 @@ public class RedisController {
 
     @PostMapping("set")
     public void set(@RequestBody KV kv) {
-        redisService.setCache(kv.getKey(), kv.getValue());
+        redisService.setCache(kv.getKey(), kv.getValue(), kv.getTime());
     }
 
     @GetMapping("get")

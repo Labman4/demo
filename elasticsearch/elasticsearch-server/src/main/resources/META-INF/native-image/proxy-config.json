@@ -24,6 +24,9 @@
     "interfaces":["org.springframework.web.bind.annotation.CrossOrigin"]
   },
   {
+    "interfaces":["org.springframework.web.bind.annotation.PathVariable"]
+  },
+  {
     "interfaces":["org.springframework.web.bind.annotation.RequestMapping"]
   },
   {

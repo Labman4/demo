@@ -929,6 +929,9 @@
       "pattern":"\\Qorg/springframework/boot/sql/init/dependency/DatabaseInitializationDependencyConfigurer.class\\E"
     }, 
     {
+      "pattern":"\\Qorg/springframework/boot/web/server/mime-mappings.properties\\E"
+    }, 
+    {
       "pattern":"\\Qorg/springframework/context/ApplicationContextAware.class\\E"
     }, 
     {
@@ -1020,6 +1023,9 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/data/web/config/SpringDataWebConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/http/mime.types\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/transaction/annotation/AbstractTransactionManagementConfiguration.class\\E"

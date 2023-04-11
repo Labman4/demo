@@ -63,6 +63,10 @@ public class CommonResponse<T> implements Serializable{
 		return JsonUtils.toJson(data);
 	}
 
+	public static <T> String string(String data) {
+		return data;
+	}
+
 	public static <T> String success() {
 		return JsonUtils.toJson(new CommonResponse<T>(200));
 	}

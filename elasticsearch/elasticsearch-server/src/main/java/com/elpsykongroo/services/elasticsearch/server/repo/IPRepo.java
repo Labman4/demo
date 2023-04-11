@@ -17,7 +17,7 @@
 package com.elpsykongroo.services.elasticsearch.server.repo;
 
 
-import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
+import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
