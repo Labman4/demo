@@ -17,7 +17,7 @@
 package com.elpsykongroo.gateway;
 
 import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecordDto;
+import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.model.MediaType;
@@ -33,7 +33,7 @@ public class AccessRecordTest extends BaseTest {
     @BeforeEach
     void setup() {
         super.setup();
-        AccessRecordDto accessRecord = new AccessRecordDto();
+        AccessRecord accessRecord = new AccessRecord();
         accessRecord.setSourceIP("1.1.1.1");
         accessRecord.setAccessPath("/path");
         accessRecord.setUserAgent("postman");
