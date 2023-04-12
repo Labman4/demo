@@ -18,6 +18,7 @@ package com.elpsykongroo.auth.server.config;
 
 
 import com.elpsykongroo.auth.server.jose.Jwks;
+import com.elpsykongroo.auth.server.security.CustomLogoutSuccessHandler;
 import com.elpsykongroo.auth.server.security.FederatedIdentityConfigurer;
 import com.elpsykongroo.auth.server.security.FederatedIdentityIdTokenCustomizer;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -119,7 +120,8 @@ public class AuthorizationServerConfig {
 						}
 					}))
 			.cors().and()
-			.csrf().disable().logout();
+			.csrf().disable().logout()
+				.logoutSuccessHandler(new CustomLogoutSuccessHandler());
 //			.exceptionHandling((exceptions) -> exceptions
 //							.authenticationEntryPoint((req, resp, e) -> {
 //							resp.setContentType("application/json;charset=utf-8");

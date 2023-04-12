@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.elpsykongroo.auth.server.service.custom.impl;
 
 import com.elpsykongroo.auth.server.entity.user.Authenticator;
@@ -8,8 +24,8 @@ import com.elpsykongroo.auth.server.repository.user.UserRepository;
 import com.elpsykongroo.auth.server.service.custom.UserService;
 import com.elpsykongroo.auth.server.service.webauthn.RegistrationService;
 import com.elpsykongroo.auth.server.service.webauthn.WebAuthnAuthenticationToken;
-import com.elpsykongroo.auth.server.utils.JsonUtils;
 import com.elpsykongroo.auth.server.utils.Random;
+import com.elpsykongroo.base.utils.JsonUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -90,7 +106,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
+        log.debug("load user: {}", user.getUsername());
+        return user;
     }
 
     @Override
@@ -285,19 +303,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public OidcUserInfo loadUser(String username) {
-        Map<String, Object> claims = loadUserByUsername(username).getUserInfo();
-        if (claims != null) {
-            return new OidcUserInfo(claims);
-        }
-        return null;
-    }
-
-    @Override
     public String loadUserInfo(String username) {
         return JsonUtils.toJson(loadUserByUsername(username).getUserInfo());
     }
-
 
     @Override
     public List<User> list(String pageNumber, String pageSize, String order) {

@@ -18,6 +18,7 @@ package com.elpsykongroo.auth.server.security;
 
 import java.io.IOException;
 
+import com.elpsykongroo.base.utils.DomainUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -62,6 +63,18 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 //		if (StringUtils.isNotBlank(uri) && "/userinfo".equals(uri)) {
 //
 //		}
+		String query = request.getQueryString();
+		String redirect = request.getParameter("redirect_uri");
+		String state = request.getParameter("state");
+		if (redirect != null && state != null) {
+			String parent = DomainUtils.getParentDomain(redirect);
+			String subDomain = DomainUtils.getSubDomain(redirect);
+			ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(subDomain);
+			if (clientRegistration != null) {
+				this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
+				return;
+			}
+		}
 		String idp = request.getParameter("idp");
 		if (idp != null) {
 			ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(idp);

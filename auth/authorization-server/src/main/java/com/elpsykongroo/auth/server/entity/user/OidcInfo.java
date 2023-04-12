@@ -17,11 +17,10 @@
 package com.elpsykongroo.auth.server.entity.user;
 
 import lombok.Data;
-
-
 @Data
-public class UserInfo {
+public class OidcInfo {
     public String sub;
+
     public String name;
     public String given_name;
     public String family_name;
@@ -36,12 +35,10 @@ public class UserInfo {
     public String gender;
     public String birthdate;
     public String zoneinfo;
+
     public String locale;
     public String phone_number;
     public String phone_number_verified;
     public String address;
     public String updated_at;
-    public String claims;
-    public String username;
-
 }

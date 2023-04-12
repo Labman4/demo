@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.elpsykongroo.auth.server.repository.authorization.consent;
 
 import java.util.Optional;
@@ -20,7 +21,6 @@ import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 
 import com.elpsykongroo.auth.server.entity.authorization.consent.AuthorizationConsent;
-
 
 public interface AuthorizationConsentRepository extends CrudRepository<AuthorizationConsent, AuthorizationConsent.AuthorizationConsentId> {
 	Optional<AuthorizationConsent> findByRegisteredClientIdAndPrincipalName(String registeredClientId, String principalName);

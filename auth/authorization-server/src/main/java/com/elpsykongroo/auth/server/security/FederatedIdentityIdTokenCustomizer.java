@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.elpsykongroo.auth.server.entity.user.Group;
+import com.elpsykongroo.auth.server.entity.user.OidcInfo;
 import com.elpsykongroo.auth.server.entity.user.User;
-import com.elpsykongroo.auth.server.entity.user.UserInfo;
 import com.elpsykongroo.auth.server.service.custom.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +72,15 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 	@Override
 	public void customize(JwtEncodingContext context) {
 		if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
-			OidcUserInfo userInfo = userService.loadUser(
-					context.getPrincipal().getName());
-			Map<String, Object> customClaims = new HashMap<>();
 			User user = userService.loadUserByUsername(context.getPrincipal().getName());
+			Map<String, Object> customClaims = new HashMap<>();
+			Map<String, Object> info = user.getUserInfo();
+			OidcUserInfo userInfo;
+			if (info != null) {
+				userInfo = new OidcUserInfo(info);
+			} else {
+				userInfo = null;
+			}
 			if (userInfo != null) {
 				if ( user != null && user.getGroups().size() > 0) {
 					for (String scope : context.getAuthorizedScopes()) {
@@ -103,15 +108,15 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 //						customClaims.put(scope, authList);
 //					}
 				}
-				for (Field field : UserInfo.class.getDeclaredFields()) {
+				for (Field field : OidcInfo.class.getDeclaredFields()) {
 					for (String claim: userInfo.getClaims().keySet()) {
 						if (field.getName().equals(claim)) {
 							context.getClaims().claims(claims ->
-									claims.put(claim, userInfo.getClaims().get((claim))));
+									claims.put(claim, userInfo.getClaims().get(claim)));
 						}
 						if (customClaims.containsKey(claim)) {
 							context.getClaims().claims(claims ->
-									claims.put(claim, userInfo.getClaims().get((claim))));						}
+									claims.put(claim, userInfo.getClaims().get(claim)));						}
 					}
 				}
 			}
