@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package com.elpsykongroo.gateway.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

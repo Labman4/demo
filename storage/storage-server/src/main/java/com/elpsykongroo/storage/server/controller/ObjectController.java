@@ -37,7 +37,7 @@ public class ObjectController {
         try {
             objectService.download(s3, response);
         } catch (IOException e) {
-            log.info("download error");
+            log.error("download error");
         }
     }
 

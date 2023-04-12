@@ -100,7 +100,7 @@ public class ThrottlingFilter implements Filter {
 				if (StringUtils.isNotEmpty(filterPath)
 						&& PathUtils.beginWithPath(filterPath, requestUri)
 						&& !PathUtils.beginWithPath(excludePath, requestUri)) {
-					log.info("start filter:{}", requestUri);
+					log.debug("start filter:{}", requestUri);
 					filterPath(httpRequest, httpResponse, session, requestUri);
 				}
 			}

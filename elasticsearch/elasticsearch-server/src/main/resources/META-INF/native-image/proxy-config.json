@@ -6,6 +6,9 @@
     "interfaces":["com.elpsykongroo.services.elasticsearch.server.repo.IPRepo","org.springframework.data.repository.Repository","org.springframework.transaction.interceptor.TransactionalProxy","org.springframework.aop.framework.Advised","org.springframework.core.DecoratingProxy"]
   },
   {
+    "interfaces":["java.lang.reflect.GenericArrayType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
+  },
+  {
     "interfaces":["java.lang.reflect.ParameterizedType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
   },
   {
@@ -19,6 +22,9 @@
   },
   {
     "interfaces":["org.springframework.data.elasticsearch.annotations.Field"]
+  },
+  {
+    "interfaces":["org.springframework.stereotype.Component"]
   },
   {
     "interfaces":["org.springframework.web.bind.annotation.CrossOrigin"]

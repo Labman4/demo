@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
     public String login(String username, HttpServletRequest servletRequest) {
         DeferredSecurityContext securityContext = securityContextRepository.loadDeferredContext(servletRequest);
         if (securityContext.get().getAuthentication() != null) {
-            log.info("already login");
+            log.debug("already login");
             return "200";
         }
         AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
@@ -125,14 +125,14 @@ public class UserServiceImpl implements UserService {
                     .response(pkc)
                     .build());
             if (result.isSuccess()) {
-                log.info("login success");
+                log.debug("login success");
                 SecurityContext context = securityContextHolderStrategy.createEmptyContext();
                 Authentication authentication =
                         WebAuthnAuthenticationToken.authenticated(result.getUsername(), result.getCredential(), user.getAuthorities());
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);
-                log.info("set SecurityContext success");
+                log.debug("set SecurityContext success");
                 return "200";
             } else {
                 return "401";
@@ -163,7 +163,7 @@ public class UserServiceImpl implements UserService {
                 RegistrationResult result = relyingParty.finishRegistration(options);
                 Authenticator savedAuth = new Authenticator(result, pkc.getResponse(), user, credname);
                 authRepository.save(savedAuth);
-                log.info("save authenticator success");
+                log.debug("save authenticator success");
                 return "200";
             } else {
                 removeInvalidUser(username);
@@ -203,19 +203,19 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findByUsername(username);
             if (user != null) {
                 if (user.getHandle().isEmpty()) {
-                    log.info("remove invalid user with no handle");
+                    log.debug("remove invalid user with no handle");
                     userRepository.deleteByUsername(username);
                     authRepository.deleteByName(username);
                 }
                 Optional<Authenticator> authenticator = authRepository.findByName(username);
                 if (authenticator.isPresent()) {
                     if (authenticator.get().getCredentialId().isEmpty()) {
-                        log.info("remove invalid user with no cred");
+                        log.debug("remove invalid user with no cred");
                         authRepository.deleteByName(username);
                         userRepository.deleteByUsername(username);
                     }
                 } else {
-                    log.info("remove invalid user with no auth");
+                    log.debug("remove invalid user with no auth");
                     userRepository.deleteByUsername(username);
                 }
             }
@@ -229,8 +229,8 @@ public class UserServiceImpl implements UserService {
         Consumer<Map<String, Object>> claims = null;
         Map<String, Object> userInfo = null;
         try {
-            if (info.getClaims() != null && !info.getClaims().isEmpty()) {
-                Map<String, Object> claim = objectMapper.readValue(info.getClaims(), new TypeReference<Map<String, Object>>() {});
+            Map<String, Object> claim = objectMapper.readValue(info.getClaims(), new TypeReference<Map<String, Object>>() {});
+            if (claim != null && !claim.isEmpty()) {
                 claims = claimMap -> {
                     claim.forEach((key, value) -> {
                         claimMap.put(key, value);
@@ -266,11 +266,9 @@ public class UserServiceImpl implements UserService {
         } else {
             userInfo = builder.claims(claims).build().getClaims();
         }
-
         if (StringUtils.isNotBlank(info.getEmail()) && "true".equals(info.getEmail_verified())) {
             userRepository.updateEmailByUsername(info.getEmail(), info.getUsername());
         }
-
         return userRepository.updateUserInfoByUsername(userInfo, info.getUsername());
     }
 

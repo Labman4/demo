@@ -1,8 +1,15 @@
 server:
   port: 9000
-
+management:
+  endpoint:
+    shutdown.enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: ${ENDPOINTS_WEB:shutdown}
 spring:
-
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
   jpa:
     #    defer-datasource-initialization: true
     open-in-view: false
@@ -11,8 +18,8 @@ spring:
 ##         dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
-      # naming:
-#      #   implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+#      # naming:
+##      #   implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   liquibase:
@@ -54,9 +61,13 @@ spring:
 
 logging:
   level:
-    root: ${GLOBAL_LOG_LEVEL:info}
+    root: ${ROOT_LOG_LEVEL:info}
+    web: ${WEB_LOG_LEVEL:debug}
     org:
       springframework:
-        web: ${WEB_LOG_LEVEL:debug}
         security: ${SECURITY_LOG_LEVEL:debug}
+    com:
+      elpsykongroo:
+        auth:
+          server: ${LOG_LEVEL:debug}
 #    org.springframework.boot.autoconfigure: DEBUG

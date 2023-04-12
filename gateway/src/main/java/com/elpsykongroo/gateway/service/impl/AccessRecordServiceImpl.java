@@ -87,7 +87,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 					record.setTimestamp(new Date());
 					record.setUserAgent(request.getHeader("user-agent"));
 					searchService.saveRecord(record);
-					log.info("request header------------{} ", result);
+					log.debug("request header------------{} ", result);
 			    }
 		  	}
 		} catch (Exception e) {

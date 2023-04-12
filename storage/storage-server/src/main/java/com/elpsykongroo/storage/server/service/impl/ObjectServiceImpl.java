@@ -91,13 +91,13 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void upload(S3 s3) throws IOException {
-        log.info("upload");
+        log.debug("upload");
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(s3.getBucket())
                     .key(s3.getKey())
                     .build();
         s3Client.putObject(objectRequest, RequestBody.fromBytes(s3.getData()[0].getBytes()));
-        log.info("upload complete");
+        log.debug("upload complete");
 
     }
 
@@ -150,7 +150,7 @@ public class ObjectServiceImpl implements ObjectService {
         try {
             HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
             Long length = headObjectResponse.getValueForField("ContentLength", Long.class).get();
-            log.info("exist object length:{}", length);
+            log.debug("exist object length:{}", length);
             if (length > 0) {
                 continueUpload(s3, uploadId);
             }
@@ -166,12 +166,12 @@ public class ObjectServiceImpl implements ObjectService {
             upload(s3);
             return;
         }
-        log.info("uploadPart");
+        log.debug("uploadPart");
         int num = (int) Math.ceil((double) s3.getData()[0].getSize() / partSize);
         List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
             for(int i = 0; i< num ; i++) {
                 int percent = (int) Math.ceil((double) (i + 1) / num * 100);
-                log.info("uploadPart complete:{} ", percent + "%");
+                log.debug("uploadPart complete:{} ", percent + "%");
                 long startOffset = i * partSize;
                 long endOffset = Math.min(partSize, fileSize - startOffset);
                 UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
@@ -201,7 +201,7 @@ public class ObjectServiceImpl implements ObjectService {
                                         .build())
                                 .build();
                 s3Client.completeMultipartUpload(completeMultipartUploadRequest);
-            log.info("uploadPart complete");
+            log.debug("uploadPart complete");
     }
 
     private void continueUpload(S3 s3, String uploadId) throws Exception {
@@ -211,7 +211,7 @@ public class ObjectServiceImpl implements ObjectService {
             upload(s3);
             return;
         }
-        log.info("continue to upload");
+        log.debug("continue to upload");
         List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
 
         ListPartsRequest listRequest = ListPartsRequest.builder()
@@ -237,7 +237,7 @@ public class ObjectServiceImpl implements ObjectService {
 
             for (int i = completedParts.size(); i < partCount; i++) {
                 int percent = (int) Math.ceil((double) (i + 1) / partCount * 100);
-                log.info("uploadPart complete:{} ", percent + "%");
+                log.debug("uploadPart complete:{} ", percent + "%");
                 long startPos = i * partSize;
                 long partLength = Math.min(partSize, fileSize - startPos);
                 UploadPartRequest uploadRequest = UploadPartRequest.builder()
@@ -265,9 +265,9 @@ public class ObjectServiceImpl implements ObjectService {
                                         .build()
                         )
                         .build();
-                log.info("continue to upload complete");
+                log.debug("continue to upload complete");
             }
-        log.info("continue to upload complete");
+        log.debug("continue to upload complete");
     }
 
     private void initClient(S3 s3) {

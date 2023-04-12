@@ -23,12 +23,10 @@ import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecordDto;
 import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 

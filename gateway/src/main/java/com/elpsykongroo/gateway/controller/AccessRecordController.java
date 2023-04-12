@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +48,7 @@ public class AccessRecordController {
 	}
 	@DeleteMapping("/delete")
 	public String deleteRecord(@RequestParam("sourceIP") String sourceIP, @RequestParam("id") String ids) {
-		log.info("delete accessRecord by sourceIP:{}", sourceIP);
+		log.debug("delete accessRecord by sourceIP:{}", sourceIP);
 		try {
 			return CommonResponse.success(accessRecordService.deleteRecord(sourceIP, ids));
 		} catch (UnknownHostException e) {

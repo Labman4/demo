@@ -1747,8 +1747,10 @@
 },
 {
   "name":"io.micrometer.core.instrument.Clock",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"io.micrometer.core.instrument.Clock$1",
@@ -1792,8 +1794,10 @@
 },
 {
   "name":"io.micrometer.core.instrument.binder.MeterBinder",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"io.micrometer.core.instrument.binder.jersey.server.MetricsApplicationEventListener"
@@ -1805,6 +1809,7 @@
   "name":"io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
@@ -1814,12 +1819,14 @@
   "name":"io.micrometer.core.instrument.binder.jvm.JvmCompilationMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
   "name":"io.micrometer.core.instrument.binder.jvm.JvmGcMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }, 
     {"name":"close","parameterTypes":[] }
@@ -1829,6 +1836,7 @@
   "name":"io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }, 
     {"name":"close","parameterTypes":[] }
@@ -1838,18 +1846,21 @@
   "name":"io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
   "name":"io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
   "name":"io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
@@ -1862,6 +1873,7 @@
   "name":"io.micrometer.core.instrument.binder.logging.LogbackMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }, 
     {"name":"close","parameterTypes":[] }
@@ -1871,18 +1883,21 @@
   "name":"io.micrometer.core.instrument.binder.system.FileDescriptorMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
   "name":"io.micrometer.core.instrument.binder.system.ProcessorMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
   "name":"io.micrometer.core.instrument.binder.system.UptimeMetrics",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
@@ -1893,8 +1908,10 @@
 },
 {
   "name":"io.micrometer.core.instrument.config.MeterFilter",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"map","parameterTypes":["io.micrometer.core.instrument.Meter$Id"] }]
 },
 {
@@ -1910,12 +1927,16 @@
   "name":"io.micrometer.core.instrument.config.MeterRegistryConfig",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"requireValid","parameterTypes":[] }]
+  "methods":[
+    {"name":"get","parameterTypes":["java.lang.String"] }, 
+    {"name":"requireValid","parameterTypes":[] }
+  ]
 },
 {
   "name":"io.micrometer.core.instrument.observation.DefaultMeterObservationHandler",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"onEvent","parameterTypes":["io.micrometer.observation.Observation$Event","io.micrometer.observation.Observation$Context"] }, 
     {"name":"onStart","parameterTypes":["io.micrometer.observation.Observation$Context"] }, 
@@ -1924,21 +1945,29 @@
 },
 {
   "name":"io.micrometer.core.instrument.observation.MeterObservationHandler",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"supportsContext","parameterTypes":["io.micrometer.observation.Observation$Context"] }]
 },
 {
   "name":"io.micrometer.core.instrument.simple.SimpleConfig",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
-  "methods":[{"name":"validate","parameterTypes":[] }]
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"prefix","parameterTypes":[] }, 
+    {"name":"validate","parameterTypes":[] }
+  ]
 },
 {
   "name":"io.micrometer.core.instrument.simple.SimpleMeterRegistry",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"io.micrometer.datadog.DatadogMeterRegistry"
@@ -1986,8 +2015,10 @@
 },
 {
   "name":"io.micrometer.observation.ObservationRegistry",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"io.micrometer.observation.SimpleObservationRegistry",
@@ -2437,8 +2468,10 @@
 },
 {
   "name":"java.lang.AutoCloseable",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"java.lang.Boolean",
@@ -4996,6 +5029,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"match","parameterTypes":["org.springframework.boot.actuate.endpoint.ExposableEndpoint"] }]
 },
 {
@@ -5012,6 +5046,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -5071,6 +5106,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
@@ -5078,9 +5114,16 @@
   ]
 },
 {
+  "name":"org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties$Discovery",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
   "name":"org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties$Exposure",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"getInclude","parameterTypes":[] }, 
@@ -5103,6 +5146,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration$EndpointObjectMapperWebMvcConfigurer",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"configureMessageConverters","parameterTypes":["java.util.List"] }]
 },
 {
@@ -5141,8 +5185,15 @@
   "name":"org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.info.InfoContributorProperties$Git",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.info.OnEnabledInfoContributorCondition",
@@ -5163,8 +5214,15 @@
   "name":"org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthIndicatorProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.AutoTimeProperties",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration",
@@ -5214,6 +5272,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryPostProcessor",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"afterSingletonsInstantiated","parameterTypes":[] }, 
     {"name":"postProcessAfterInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }
@@ -5235,8 +5294,69 @@
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$Data",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$Data$Repository",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$Distribution",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$System",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$System$Diskspace",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$Web",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$Web$Client",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$Web$Client$ClientRequest",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$Web$Server",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties$Web$Server$ServerRequest",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.NoOpMeterRegistryConfiguration"
@@ -5245,11 +5365,18 @@
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.PropertiesMeterFilter",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"accept","parameterTypes":["io.micrometer.core.instrument.Meter$Id"] }, 
     {"name":"configure","parameterTypes":["io.micrometer.core.instrument.Meter$Id","io.micrometer.core.instrument.distribution.DistributionStatisticConfig"] }, 
     {"name":"map","parameterTypes":["io.micrometer.core.instrument.Meter$Id"] }
   ]
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.ServiceLevelObjectiveBoundary",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration",
@@ -5265,9 +5392,14 @@
   ]
 },
 {
+  "name":"org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer",
+  "queryAllDeclaredConstructors":true
+},
+{
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.data.MetricsRepositoryMethodInvocationListenerBeanPostProcessor",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"postProcessBeforeInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }]
 },
 {
@@ -5310,6 +5442,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -5352,6 +5485,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration$DataSourcePoolMetadataMetricsConfiguration$DataSourcePoolMetadataMeterBinder",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
@@ -5368,6 +5502,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration$HikariDataSourceMetricsConfiguration$HikariDataSourceMeterBinder",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
@@ -5442,19 +5577,52 @@
 {
   "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationHandlerGrouping",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties$Http",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties$Http$Client",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties$Http$Client$ClientRequests",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties$Http$Server",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties$Http$Server$ServerRequests",
+  "allDeclaredFields":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryPostProcessor",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"postProcessAfterInitialization","parameterTypes":["java.lang.Object","java.lang.String"] }]
 },
 {
@@ -5542,6 +5710,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthIndicatorProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -5555,7 +5724,8 @@
 {
   "name":"org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.web.ManagementContextType"
@@ -5604,6 +5774,7 @@
   "name":"org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -5613,8 +5784,10 @@
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.web.servlet.ManagementServletContext",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration",
@@ -5637,19 +5810,34 @@
   "name":"org.springframework.boot.actuate.context.ShutdownEndpoint",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"setApplicationContext","parameterTypes":["org.springframework.context.ApplicationContext"] }]
+},
+{
+  "name":"org.springframework.boot.actuate.context.ShutdownEndpoint$ShutdownDescriptor",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
 },
 {
   "name":"org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint"
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.EndpointFilter",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.EndpointsSupplier",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.endpoint.OperationResponseBody",
   "queryAllPublicMethods":true
 },
 {
@@ -5674,18 +5862,26 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.boot.actuate.endpoint.annotation.OperationReflectiveProcessor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"org.springframework.boot.actuate.endpoint.annotation.WriteOperation",
   "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper",
@@ -5697,59 +5893,89 @@
   "name":"org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"apply","parameterTypes":["org.springframework.boot.actuate.endpoint.EndpointId","org.springframework.boot.actuate.endpoint.OperationType","org.springframework.boot.actuate.endpoint.invoke.OperationParameters","org.springframework.boot.actuate.endpoint.invoke.OperationInvoker"] }]
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.endpoint.web.Link",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"iterator","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.PathMapper",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"onStartup","parameterTypes":["jakarta.servlet.ServletContext"] }]
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer$ControllerEndpointDiscovererRuntimeHints",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer$ServletEndpointDiscovererRuntimeHints",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint",
@@ -5758,7 +5984,12 @@
 {
   "name":"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer$WebEndpointDiscovererRuntimeHints",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping",
@@ -5770,26 +6001,43 @@
   ]
 },
 {
+  "name":"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$AbstractWebMvcEndpointHandlerMappingRuntimeHints",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$LinksHandler",
-  "queryAllPublicMethods":true
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler",
-  "queryAllDeclaredMethods":true
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcEndpointHandlerMappingRuntimeHints",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping$WebMvcLinksHandler",
-  "queryAllDeclaredMethods":true
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.env.EnvironmentEndpoint"
@@ -5802,22 +6050,27 @@
 },
 {
   "name":"org.springframework.boot.actuate.health.HealthContributor",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.health.HealthEndpoint"
 },
 {
   "name":"org.springframework.boot.actuate.health.HealthIndicator",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"getHealth","parameterTypes":["boolean"] }]
 },
 {
   "name":"org.springframework.boot.actuate.health.PingHealthIndicator",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.info.InfoEndpoint"
@@ -5853,23 +6106,28 @@
   "name":"org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"repositoryTags","parameterTypes":["org.springframework.data.repository.core.support.RepositoryMethodInvocationListener$RepositoryMethodInvocation"] }]
 },
 {
   "name":"org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"afterInvocation","parameterTypes":["org.springframework.data.repository.core.support.RepositoryMethodInvocationListener$RepositoryMethodInvocation"] }]
 },
 {
   "name":"org.springframework.boot.actuate.metrics.data.RepositoryTagsProvider",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.metrics.startup.StartupTimeMetricsListener",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] }, 
     {"name":"supportsEventType","parameterTypes":["java.lang.Class"] }
@@ -5879,18 +6137,21 @@
   "name":"org.springframework.boot.actuate.metrics.system.DiskSpaceMetricsBinder",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"bindTo","parameterTypes":["io.micrometer.core.instrument.MeterRegistry"] }]
 },
 {
   "name":"org.springframework.boot.actuate.metrics.web.client.ObservationRestTemplateCustomizer",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[{"name":"customize","parameterTypes":["org.springframework.web.client.RestTemplate"] }]
 },
 {
   "name":"org.springframework.boot.actuate.metrics.web.tomcat.TomcatMetricsBinder",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"destroy","parameterTypes":[] }, 
     {"name":"onApplicationEvent","parameterTypes":["org.springframework.context.ApplicationEvent"] }
@@ -5905,7 +6166,8 @@
 {
   "name":"org.springframework.boot.actuate.system.DiskSpaceHealthIndicator",
   "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository"
@@ -6980,8 +7242,10 @@
 },
 {
   "name":"org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration",
@@ -8754,8 +9018,10 @@
 },
 {
   "name":"org.springframework.boot.web.client.RestTemplateCustomizer",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.boot.web.context.MissingWebServerFactoryBeanFailureAnalyzer",
@@ -9438,8 +9704,10 @@
 },
 {
   "name":"org.springframework.context.event.SmartApplicationListener",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"getListenerId","parameterTypes":[] }, 
     {"name":"getOrder","parameterTypes":[] }, 
@@ -10094,8 +10362,10 @@
 },
 {
   "name":"org.springframework.data.repository.core.support.RepositoryMethodInvocationListener",
+  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllPublicMethods":true
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.springframework.data.repository.core.support.TransactionalRepositoryFactoryBeanSupport",

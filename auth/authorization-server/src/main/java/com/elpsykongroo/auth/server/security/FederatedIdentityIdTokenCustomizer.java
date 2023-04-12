@@ -76,7 +76,6 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 					context.getPrincipal().getName());
 			Map<String, Object> customClaims = new HashMap<>();
 			User user = userService.loadUserByUsername(context.getPrincipal().getName());
-			System.out.println(user.getGroups());
 			if (userInfo != null) {
 				if ( user != null && user.getGroups().size() > 0) {
 					for (String scope : context.getAuthorizedScopes()) {

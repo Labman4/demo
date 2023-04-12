@@ -135,6 +135,172 @@
   "queryAllPublicMethods":true
 },
 {
+  "name":"com.elpsykongroo.auth.client.dto.Client",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getAuthorizationGrantTypes","parameterTypes":[] }, 
+    {"name":"getClientAuthenticationMethods","parameterTypes":[] }, 
+    {"name":"getClientId","parameterTypes":[] }, 
+    {"name":"getClientIdIssuedAt","parameterTypes":[] }, 
+    {"name":"getClientName","parameterTypes":[] }, 
+    {"name":"getClientSecret","parameterTypes":[] }, 
+    {"name":"getClientSecretExpiresAt","parameterTypes":[] }, 
+    {"name":"getClientSettings","parameterTypes":[] }, 
+    {"name":"getId","parameterTypes":[] }, 
+    {"name":"getRedirectUris","parameterTypes":[] }, 
+    {"name":"getScopes","parameterTypes":[] }, 
+    {"name":"getTokenSettings","parameterTypes":[] }, 
+    {"name":"setAuthorizationGrantTypes","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClientAuthenticationMethods","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClientId","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClientIdIssuedAt","parameterTypes":["java.time.Instant"] }, 
+    {"name":"setClientName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClientSecret","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClientSecretExpiresAt","parameterTypes":["java.time.Instant"] }, 
+    {"name":"setClientSettings","parameterTypes":["java.lang.String"] }, 
+    {"name":"setId","parameterTypes":["java.lang.String"] }, 
+    {"name":"setRedirectUris","parameterTypes":["java.lang.String"] }, 
+    {"name":"setScopes","parameterTypes":["java.lang.String"] }, 
+    {"name":"setTokenSettings","parameterTypes":["java.lang.String"] }
+  ]
+},
+{
+  "name":"com.elpsykongroo.auth.client.dto.ClientRegistry",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getAuthorizationGrantType","parameterTypes":[] }, 
+    {"name":"getClientAuthenticationMethod","parameterTypes":[] }, 
+    {"name":"getClientId","parameterTypes":[] }, 
+    {"name":"getClientName","parameterTypes":[] }, 
+    {"name":"getClientSecret","parameterTypes":[] }, 
+    {"name":"getProviderDetails","parameterTypes":[] }, 
+    {"name":"getRedirectUri","parameterTypes":[] }, 
+    {"name":"getRegistrationId","parameterTypes":[] }, 
+    {"name":"getScopes","parameterTypes":[] }, 
+    {"name":"setAuthorizationGrantType","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClientAuthenticationMethod","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClientId","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClientName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClientSecret","parameterTypes":["java.lang.String"] }, 
+    {"name":"setProviderDetails","parameterTypes":["com.elpsykongroo.auth.client.dto.ClientRegistry$ProviderDetails"] }, 
+    {"name":"setRedirectUri","parameterTypes":["java.lang.String"] }, 
+    {"name":"setRegistrationId","parameterTypes":["java.lang.String"] }, 
+    {"name":"setScopes","parameterTypes":["java.util.Set"] }
+  ]
+},
+{
+  "name":"com.elpsykongroo.auth.client.dto.ClientRegistry$ProviderDetails",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getAuthorizationUri","parameterTypes":[] }, 
+    {"name":"getConfigurationMetadata","parameterTypes":[] }, 
+    {"name":"getIssuerUri","parameterTypes":[] }, 
+    {"name":"getJwkSetUri","parameterTypes":[] }, 
+    {"name":"getTokenUri","parameterTypes":[] }, 
+    {"name":"getUserInfoEndpoint","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.elpsykongroo.auth.client.dto.ClientRegistry$ProviderDetails$UserInfoEndpoint",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getAuthenticationMethod","parameterTypes":[] }, 
+    {"name":"getUri","parameterTypes":[] }, 
+    {"name":"getUserNameAttributeName","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.elpsykongroo.auth.client.dto.User",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getCreateTime","parameterTypes":[] }, 
+    {"name":"getEmail","parameterTypes":[] }, 
+    {"name":"getId","parameterTypes":[] }, 
+    {"name":"getNickName","parameterTypes":[] }, 
+    {"name":"getPassword","parameterTypes":[] }, 
+    {"name":"getUpdateTime","parameterTypes":[] }, 
+    {"name":"getUserInfo","parameterTypes":[] }, 
+    {"name":"getUsername","parameterTypes":[] }, 
+    {"name":"isLocked","parameterTypes":[] }, 
+    {"name":"setCreateTime","parameterTypes":["java.time.Instant"] }, 
+    {"name":"setEmail","parameterTypes":["java.lang.String"] }, 
+    {"name":"setId","parameterTypes":["java.lang.String"] }, 
+    {"name":"setLocked","parameterTypes":["boolean"] }, 
+    {"name":"setNickName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setPassword","parameterTypes":["java.lang.String"] }, 
+    {"name":"setUpdateTime","parameterTypes":["java.time.Instant"] }, 
+    {"name":"setUsername","parameterTypes":["java.lang.String"] }
+  ]
+},
+{
+  "name":"com.elpsykongroo.auth.client.dto.UserInfo",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getAddress","parameterTypes":[] }, 
+    {"name":"getBirthdate","parameterTypes":[] }, 
+    {"name":"getClaims","parameterTypes":[] }, 
+    {"name":"getEmail","parameterTypes":[] }, 
+    {"name":"getEmail_verified","parameterTypes":[] }, 
+    {"name":"getFamily_name","parameterTypes":[] }, 
+    {"name":"getGender","parameterTypes":[] }, 
+    {"name":"getGiven_name","parameterTypes":[] }, 
+    {"name":"getLocale","parameterTypes":[] }, 
+    {"name":"getMiddle_name","parameterTypes":[] }, 
+    {"name":"getName","parameterTypes":[] }, 
+    {"name":"getNickname","parameterTypes":[] }, 
+    {"name":"getPhone_number","parameterTypes":[] }, 
+    {"name":"getPhone_number_verified","parameterTypes":[] }, 
+    {"name":"getPicture","parameterTypes":[] }, 
+    {"name":"getPreferred_username","parameterTypes":[] }, 
+    {"name":"getProfile","parameterTypes":[] }, 
+    {"name":"getSub","parameterTypes":[] }, 
+    {"name":"getUpdated_at","parameterTypes":[] }, 
+    {"name":"getUsername","parameterTypes":[] }, 
+    {"name":"getWebsite","parameterTypes":[] }, 
+    {"name":"getZoneinfo","parameterTypes":[] }, 
+    {"name":"setAddress","parameterTypes":["java.lang.String"] }, 
+    {"name":"setBirthdate","parameterTypes":["java.lang.String"] }, 
+    {"name":"setClaims","parameterTypes":["java.lang.String"] }, 
+    {"name":"setEmail","parameterTypes":["java.lang.String"] }, 
+    {"name":"setEmail_verified","parameterTypes":["java.lang.String"] }, 
+    {"name":"setFamily_name","parameterTypes":["java.lang.String"] }, 
+    {"name":"setGender","parameterTypes":["java.lang.String"] }, 
+    {"name":"setGiven_name","parameterTypes":["java.lang.String"] }, 
+    {"name":"setLocale","parameterTypes":["java.lang.String"] }, 
+    {"name":"setMiddle_name","parameterTypes":["java.lang.String"] }, 
+    {"name":"setName","parameterTypes":["java.lang.String"] }, 
+    {"name":"setNickname","parameterTypes":["java.lang.String"] }, 
+    {"name":"setPhone_number","parameterTypes":["java.lang.String"] }, 
+    {"name":"setPhone_number_verified","parameterTypes":["java.lang.String"] }, 
+    {"name":"setPicture","parameterTypes":["java.lang.String"] }, 
+    {"name":"setPreferred_username","parameterTypes":["java.lang.String"] }, 
+    {"name":"setProfile","parameterTypes":["java.lang.String"] }, 
+    {"name":"setSub","parameterTypes":["java.lang.String"] }, 
+    {"name":"setUpdated_at","parameterTypes":["java.lang.String"] }, 
+    {"name":"setUsername","parameterTypes":["java.lang.String"] }, 
+    {"name":"setWebsite","parameterTypes":["java.lang.String"] }, 
+    {"name":"setZoneinfo","parameterTypes":["java.lang.String"] }
+  ]
+},
+{
   "name":"com.elpsykongroo.auth.client.impl.AuthServiceImpl",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -352,10 +518,12 @@
     {"name":"getSsl","parameterTypes":[] }, 
     {"name":"getStorage","parameterTypes":[] }, 
     {"name":"setAuth","parameterTypes":["com.elpsykongroo.gateway.config.ServiceConfig$Url"] }, 
+    {"name":"setEnv","parameterTypes":["java.lang.String"] }, 
     {"name":"setEs","parameterTypes":["com.elpsykongroo.gateway.config.ServiceConfig$Url"] }, 
     {"name":"setRedis","parameterTypes":["com.elpsykongroo.gateway.config.ServiceConfig$Url"] }, 
     {"name":"setSsl","parameterTypes":["com.elpsykongroo.gateway.config.ServiceConfig$SSL"] }, 
-    {"name":"setStorage","parameterTypes":["com.elpsykongroo.gateway.config.ServiceConfig$Url"] }
+    {"name":"setStorage","parameterTypes":["com.elpsykongroo.gateway.config.ServiceConfig$Url"] }, 
+    {"name":"setWhiteDomain","parameterTypes":["java.lang.String"] }
   ]
 },
 {
@@ -427,7 +595,15 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"addClient","parameterTypes":["java.lang.String","com.elpsykongroo.auth.client.dto.Client"] }, 
+    {"name":"addRegister","parameterTypes":["java.lang.String","com.elpsykongroo.auth.client.dto.ClientRegistry"] }, 
+    {"name":"deleteClient","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"deleteRegister","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"listClient","parameterTypes":["java.lang.String"] }, 
+    {"name":"listRegister","parameterTypes":["java.lang.String"] }
+  ]
 },
 {
   "name":"com.elpsykongroo.gateway.controller.IPManagerController",
@@ -460,7 +636,26 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"addAuthority","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"addGroup","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"authorityGroupList","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"authorityList","parameterTypes":["java.lang.String"] }, 
+    {"name":"deleteAuthority","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"deleteGroup","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"groupAuthorityList","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"groupList","parameterTypes":["java.lang.String"] }, 
+    {"name":"updateAuthority","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
+    {"name":"updateGroup","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
+    {"name":"updateGroupAuthority","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
+    {"name":"userAuthorityList","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"userGroupList","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"userinfo","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"userlist","parameterTypes":["java.lang.String","com.elpsykongroo.auth.client.dto.User"] }, 
+    {"name":"userlist","parameterTypes":["java.lang.String","com.elpsykongroo.auth.client.dto.UserInfo"] }, 
+    {"name":"userlist","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String"] }
+  ]
 },
 {
   "name":"com.elpsykongroo.gateway.controller.external.IPController",
@@ -486,6 +681,7 @@
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
+    {"name":"<init>","parameterTypes":["com.elpsykongroo.gateway.config.RequestConfig","com.elpsykongroo.gateway.service.AccessRecordService","com.elpsykongroo.gateway.service.IPManagerService"] }, 
     {"name":"doFilter","parameterTypes":["jakarta.servlet.ServletRequest","jakarta.servlet.ServletResponse","jakarta.servlet.FilterChain"] }
   ]
 },
@@ -506,6 +702,7 @@
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
+    {"name":"<init>","parameterTypes":["com.elpsykongroo.services.elasticsearch.client.SearchService","com.elpsykongroo.gateway.service.IPManagerService","com.elpsykongroo.gateway.config.RequestConfig"] }, 
     {"name":"deleteRecord","parameterTypes":["java.lang.String","java.lang.String"] }, 
     {"name":"filterByParams","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
     {"name":"findAll","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
@@ -519,6 +716,7 @@
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
+    {"name":"<init>","parameterTypes":["com.elpsykongroo.gateway.config.RequestConfig","com.elpsykongroo.services.redis.client.RedisService","com.elpsykongroo.services.elasticsearch.client.SearchService"] }, 
     {"name":"accessIP","parameterTypes":["jakarta.servlet.http.HttpServletRequest","java.lang.String"] }, 
     {"name":"add","parameterTypes":["java.lang.String","java.lang.String"] }, 
     {"name":"blackOrWhiteList","parameterTypes":["jakarta.servlet.http.HttpServletRequest","java.lang.String"] }, 
@@ -2237,6 +2435,9 @@
   "queryAllPublicMethods":true
 },
 {
+  "name":"java.lang.reflect.Method"
+},
+{
   "name":"java.lang.reflect.ParameterizedType",
   "methods":[
     {"name":"getActualTypeArguments","parameterTypes":[] }, 
@@ -2358,6 +2559,12 @@
   "name":"java.security.SecurityPermission"
 },
 {
+  "name":"java.security.interfaces.RSAPrivateKey"
+},
+{
+  "name":"java.security.interfaces.RSAPublicKey"
+},
+{
   "name":"java.sql.Date"
 },
 {
@@ -2365,6 +2572,9 @@
 },
 {
   "name":"java.sql.Timestamp"
+},
+{
+  "name":"java.util.AbstractList"
 },
 {
   "name":"java.util.ArrayList"
@@ -2379,7 +2589,10 @@
   "name":"java.util.Enumeration"
 },
 {
-  "name":"java.util.HashSet"
+  "name":"java.util.HashSet",
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"java.util.LinkedHashMap",
@@ -2477,6 +2690,12 @@
 {
   "name":"jdk.internal.misc.Unsafe",
   "methods":[{"name":"getUnsafe","parameterTypes":[] }]
+},
+{
+  "name":"jdk.internal.reflect.DelegatingMethodAccessorImpl"
+},
+{
+  "name":"jdk.internal.reflect.NativeMethodAccessorImpl"
 },
 {
   "name":"jdk.management.jfr.ConfigurationInfo",
@@ -7278,6 +7497,10 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.web.bind.annotation.RequestHeader",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"org.springframework.web.bind.annotation.RequestMapping",
   "queryAllDeclaredMethods":true
 },
@@ -7394,6 +7617,10 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.web.method.annotation.ExceptionHandlerMethodResolver",
+  "methods":[{"name":"noMatchingExceptionHandler","parameterTypes":[] }]
+},
+{
   "name":"org.springframework.web.method.support.CompositeUriComponentsContributor",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true
@@ -7402,6 +7629,9 @@
   "name":"org.springframework.web.method.support.HandlerMethodArgumentResolver",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"org.springframework.web.method.support.InvocableHandlerMethod"
 },
 {
   "name":"org.springframework.web.method.support.UriComponentsContributor",
@@ -7784,6 +8014,9 @@
     {"name":"useSuffixPatternMatch","parameterTypes":[] }, 
     {"name":"useTrailingSlashMatch","parameterTypes":[] }
   ]
+},
+{
+  "name":"org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod"
 },
 {
   "name":"org.springframework.web.servlet.resource.ResourceUrlProvider",
@@ -8185,6 +8418,10 @@
 },
 {
   "name":"sun.security.rsa.RSAKeyFactory$Legacy",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.rsa.RSASignature$SHA256withRSA",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

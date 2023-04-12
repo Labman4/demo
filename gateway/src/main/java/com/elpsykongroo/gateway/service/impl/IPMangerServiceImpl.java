@@ -150,7 +150,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 //            }
 //        } catch (InterruptedException e) {
 //            return commonResponse.error(Constant.ERROR_CODE, "please retry");
-		log.info("black result------------:{}", addresses);
+		log.debug("black result------------:{}", addresses);
 		updateCache(isBlack);
 		return addresses;
 	}
@@ -260,11 +260,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 					} else {
 						for (String s : list.split(",")) {
 							if (IPRegexUtils.vaildateHost(s)) {
-								log.info("query domain: {}", s);
+								log.debug("query domain: {}", s);
 								InetAddress[] inetAddress = InetAddress.getAllByName(s);
 								for (InetAddress address : inetAddress) {
 									if (address.getHostAddress().equals(ip)) {
-										log.info("update domain ip: {}", address.getHostAddress());
+										log.debug("update domain ip: {}", address.getHostAddress());
 										add(address.getHostAddress(), isBlack);
 										return true;
 									}
@@ -308,7 +308,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 //						}
 //					}
 //				}
-			log.info("flag:{}, black:{}", flag, isBlack);
+			log.debug("flag:{}, black:{}", flag, isBlack);
 		} catch (UnknownHostException e) {
 			log.error("UnknownHostException");
 		}

@@ -41,7 +41,7 @@ public class IPManagerController {
 
 	@PutMapping("/manage/add")
 	public String addBlacklist(@RequestParam("address") String address, @RequestParam("black") String isBlack) {
-		log.info("add sourceIP:{}, black:{}", address, isBlack);
+		log.debug("add sourceIP:{}, black:{}", address, isBlack);
 			try {
 				return CommonResponse.success(ipManagerService.add(address, isBlack));
 			}
