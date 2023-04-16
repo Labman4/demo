@@ -27,4 +27,10 @@ public class RedisServiceImpl implements RedisService {
         String result = restTemplate.getForEntity(serverUrl + servicePrefix + "/get?key=" + key, String.class).getBody();
         return result == null ? "" : result;
     }
+
+    @Override
+    public String getToken(String key) {
+        String result = restTemplate.getForEntity(serverUrl + servicePrefix + "/get/token?key=" + key, String.class).getBody();
+        return result == null ? "" : result;
+    }
 }

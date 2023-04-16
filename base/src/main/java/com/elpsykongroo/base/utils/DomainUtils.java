@@ -5,18 +5,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DomainUtils {
-    private static final Pattern parent = Pattern.compile("(?<=\\.)[^.]+\\.[^.]+$");
 
-    public static String getParentDomain(String url) {
-        try {
-            URL u = new URL(url);
-            String host = u.getHost();
-            Matcher matcher = parent.matcher(host);
-            if (matcher.find()) {
-                return matcher.group();
+    public static String getParentDomain(String domain) {
+        Pattern pattern = Pattern.compile("^(?:https?://)?(?:[^@\\n]+@)?(?:www\\.)?([^:/\\n]+)");
+        Matcher matcher = pattern.matcher(domain);
+        if (matcher.find()) {
+            String[] parts = matcher.group(1).split("\\.");
+            if (parts.length < 2) {
+                return matcher.group(1);
+            } else if (parts.length == 2) {
+                return matcher.group(1);
+            } else {
+                return parts[parts.length - 2] + "." + parts[parts.length - 1];
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }

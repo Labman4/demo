@@ -2,30 +2,15 @@ server:
   port: 8379
 
 spring:
-  data:
-    redis:
-      client-type: ${REDIS_TYPE:LETTUCE}
-      password: ${REDIS_PASS:pass}
-      # host: 127.0.0.1
-      cluster:
-        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
-      lettuce:
-        pool:
-          enabled: true
-          maxIdle: 5
-          minIdle: 1
-          maxActive: 5
-          maxWait: 5
-          timeBetweenEvictionRuns: 100000
-      # jedis:
-      #   pool:
-      #     enabled: false
-      #     maxIdle: 5
-      #     minIdle: 1
-      #     maxActive: 5
-      #     maxWait: 5
-      #     timeBetweenEvictionRuns: 100000
+  profiles:
+    active:
+      - ${ENV:prod}
+
 logging:
   level:
     root: ${GLOBAL_LOG_LEVEL:info}
     web: ${WEB_LOG_LEVEL:info}
+    com:
+      elpsykongroo:
+        services:
+          redis: ${LOG_LEVEL:debug}

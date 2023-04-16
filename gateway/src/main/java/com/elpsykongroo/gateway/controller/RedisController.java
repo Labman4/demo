@@ -19,6 +19,7 @@ package com.elpsykongroo.gateway.controller;
 import com.elpsykongroo.services.redis.client.RedisService;
 import com.elpsykongroo.services.redis.client.dto.KV;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,8 +38,15 @@ public class RedisController {
         redisService.set(kv);
     }
 
+    @CrossOrigin
     @GetMapping("get")
     public String get(@RequestParam("key") String key) {
         return redisService.get(key);
+    }
+
+    @CrossOrigin
+    @GetMapping("get/token")
+    public String getToken(@RequestParam("key") String key) {
+        return redisService.getToken(key);
     }
 }

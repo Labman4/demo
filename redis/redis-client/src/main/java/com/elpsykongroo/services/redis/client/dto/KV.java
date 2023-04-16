@@ -15,4 +15,6 @@ public class KV {
 
     private String value;
 
+    private String time;
+
 }

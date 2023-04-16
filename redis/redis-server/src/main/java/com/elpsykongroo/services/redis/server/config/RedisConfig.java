@@ -16,11 +16,15 @@
 
 package com.elpsykongroo.services.redis.server.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
- @Configuration(proxyBeanMethods = false)
-// @EnableRedisRepositories("com.elpsykongroo.services.repo")
- public class RedisConfig {
+@Configuration(proxyBeanMethods = false)
+public class RedisConfig {
 
     // @Bean
     // public JedisConnectionFactory redisConnectionFactory() {      
@@ -29,15 +33,16 @@ import org.springframework.context.annotation.Configuration;
         //   singleConfig.setPassword(pass);
         // return new JedisConnectionFactory(singleConfig);
     //}
-//     @Bean
-//     public <K, V> RedisTemplate<String, Object> redisTemplate(JedisConnectionFactory factory) {
-//         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-//         redisTemplate.setConnectionFactory(factory);
-//         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-//         redisTemplate.setKeySerializer(stringRedisSerializer);
-//         redisTemplate.setHashKeySerializer(stringRedisSerializer);
-//         redisTemplate.setValueSerializer(stringRedisSerializer);
-//         redisTemplate.afterPropertiesSet();
-//         return redisTemplate;
-//     }
+     @Bean
+     public <K, V> RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+         redisTemplate.setConnectionFactory(factory);
+         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
+         redisTemplate.setKeySerializer(stringRedisSerializer);
+         redisTemplate.setHashKeySerializer(stringRedisSerializer);
+         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+         redisTemplate.setValueSerializer(stringRedisSerializer);
+         redisTemplate.afterPropertiesSet();
+         return redisTemplate;
+     }
 }

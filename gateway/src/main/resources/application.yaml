@@ -30,9 +30,7 @@ logging:
     web: ${WEB_LOG_LEVEL:info}
     org:
       springframework:
-        security:
-          web:
-            csrf: ${CSRF_LEVEL:DEBUG}
+        security: ${SECURITY_LEVEL:DEBUG}
     com:
       elpsykongroo:
         gateway: ${GATEWAY_LOG_LEVEL:INFO}

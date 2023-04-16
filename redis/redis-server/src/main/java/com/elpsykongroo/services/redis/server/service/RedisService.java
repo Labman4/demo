@@ -7,4 +7,6 @@ public interface RedisService {
     void setCache(String key, String vaule, String minutes);
 
     String getCache(String key);
+
+    String getToken(String key);
 }

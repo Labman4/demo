@@ -6,4 +6,6 @@ public interface RedisService {
     void set(KV kv);
 
     String get(String key);
+
+    String getToken(String key);
 }

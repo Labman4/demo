@@ -111,12 +111,11 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 				for (Field field : OidcInfo.class.getDeclaredFields()) {
 					for (String claim: userInfo.getClaims().keySet()) {
 						if (field.getName().equals(claim)) {
-							context.getClaims().claims(claims ->
-									claims.put(claim, userInfo.getClaims().get(claim)));
+							addClaim(context, claim, userInfo);
 						}
 						if (customClaims.containsKey(claim)) {
-							context.getClaims().claims(claims ->
-									claims.put(claim, userInfo.getClaims().get(claim)));						}
+							addClaim(context, claim, userInfo);
+						}
 					}
 				}
 			}
@@ -147,6 +146,13 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 			claims = Collections.emptyMap();
 		}
 		return new HashMap<>(claims);
+	}
+
+	private void addClaim(JwtEncodingContext context, String claim, OidcUserInfo userInfo) {
+		Object info =  userInfo.getClaims().get(claim);
+		if (info != null && !info.toString().isBlank()) {
+			context.getClaims().claims(claims -> claims.put(claim, info));
+		}
 	}
 
 }
