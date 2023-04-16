@@ -120,8 +120,7 @@ public class AuthorizationServerConfig {
 						}
 					}))
 			.cors().and()
-			.csrf().disable().logout()
-				.logoutSuccessHandler(new CustomLogoutSuccessHandler());
+			.csrf().disable();
 //			.exceptionHandling((exceptions) -> exceptions
 //							.authenticationEntryPoint((req, resp, e) -> {
 //							resp.setContentType("application/json;charset=utf-8");

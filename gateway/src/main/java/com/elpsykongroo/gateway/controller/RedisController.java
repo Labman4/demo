@@ -43,10 +43,4 @@ public class RedisController {
     public String get(@RequestParam("key") String key) {
         return redisService.get(key);
     }
-
-    @CrossOrigin
-    @GetMapping("get/token")
-    public String getToken(@RequestParam("key") String key) {
-        return redisService.getToken(key);
-    }
 }

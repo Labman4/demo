@@ -33,7 +33,9 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         final HttpSession session = request.getSession();
         if (session != null) {
-            session.removeAttribute(authentication.getName());
+            if (authentication != null) {
+                session.removeAttribute(authentication.getName());
+            }
         }
     }
 }

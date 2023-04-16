@@ -71,3 +71,6 @@ logging:
         auth:
           server: ${LOG_LEVEL:debug}
 #    org.springframework.boot.autoconfigure: DEBUG
+service:
+  redis:
+    url:  ${REDIS_SERVICE:http://localhost:8379}

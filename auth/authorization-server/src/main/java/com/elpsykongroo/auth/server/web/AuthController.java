@@ -18,11 +18,13 @@ package com.elpsykongroo.auth.server.web;
 
 import com.elpsykongroo.auth.server.service.custom.UserService;
 
+import com.elpsykongroo.services.redis.client.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,6 +36,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RedisService redisService;
+
 
     @PostMapping("/register")
     @ResponseBody
@@ -69,5 +75,10 @@ public class AuthController {
             @RequestParam String username,
             HttpServletRequest request, HttpServletResponse response) {
             return userService.handlelogin(credential, username, request, response);
+    }
+
+    @GetMapping("/access")
+    public String getToken(@RequestParam("key") String key) {
+        return redisService.getToken(key);
     }
 }

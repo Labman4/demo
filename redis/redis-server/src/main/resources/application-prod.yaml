@@ -7,6 +7,7 @@ spring:
       client-type: ${REDIS_TYPE:LETTUCE}
       cluster:
         nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
+      password: ${REDIS_PASS:pass}
       lettuce:
         pool:
           enabled: true

@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.auth.server.config;
 
+import com.elpsykongroo.auth.server.security.CustomLogoutSuccessHandler;
 import com.elpsykongroo.auth.server.security.FederatedIdentityConfigurer;
 import com.elpsykongroo.auth.server.security.UserRepositoryOAuth2UserHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
 
 
 /**
@@ -58,6 +58,8 @@ public class DefaultSecurityConfig {
 									"/finishauth").permitAll()
 							.anyRequest().authenticated())
 			.formLogin().disable()
+			.logout((logout) -> logout
+					.logoutSuccessHandler(new CustomLogoutSuccessHandler()))
 			.apply(federatedIdentityConfigurer);
 		return http.build();
 	}
