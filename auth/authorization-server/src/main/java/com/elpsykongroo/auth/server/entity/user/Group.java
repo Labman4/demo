@@ -36,10 +36,6 @@ import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-/**
- * Group model
- */
-
 @Data
 @Entity
 @Table(name = "`group`")

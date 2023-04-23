@@ -26,8 +26,6 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration(proxyBeanMethods = false)
-// @EnableWebSecurity
-// @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 	@Value("${request.path.permit}")
 	private String permit_path;
@@ -52,7 +50,7 @@ public class SecurityConfig {
 //						.requestMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
 						.anyRequest().authenticated()
 				)
-				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 		return http.build();
 	}
 }

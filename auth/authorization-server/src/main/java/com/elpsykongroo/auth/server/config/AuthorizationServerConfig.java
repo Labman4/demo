@@ -16,9 +16,8 @@
 
 package com.elpsykongroo.auth.server.config;
 
-
-import com.elpsykongroo.auth.server.jose.Jwks;
-import com.elpsykongroo.auth.server.security.CustomLogoutSuccessHandler;
+import com.elpsykongroo.auth.server.security.convert.PublicRevokeAuthenticationConverter;
+import com.elpsykongroo.auth.server.utils.jose.Jwks;
 import com.elpsykongroo.auth.server.security.FederatedIdentityConfigurer;
 import com.elpsykongroo.auth.server.security.FederatedIdentityIdTokenCustomizer;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -38,6 +37,8 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
@@ -49,6 +50,7 @@ import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedCli
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
@@ -60,10 +62,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.function.Function;
-
 
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
@@ -71,15 +73,15 @@ public class AuthorizationServerConfig {
 	Environment env;
 
 	@Autowired
-	ClientRegistrationRepository clientRegistrationRepository;
+	RegisteredClientRepository registeredClientRepository;
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
-		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 		http.apply(new FederatedIdentityConfigurer());
+		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 
 		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
 				new OAuth2AuthorizationServerConfigurer();
@@ -100,7 +102,17 @@ public class AuthorizationServerConfig {
 						)
 						.providerConfigurationEndpoint(Customizer.withDefaults())
 						.clientRegistrationEndpoint(Customizer.withDefaults())
-				).authorizationEndpoint(Customizer.withDefaults());
+				).authorizationEndpoint(Customizer.withDefaults())
+				.clientAuthentication(clientAuthentication ->
+						clientAuthentication
+								.authenticationConverter(new PublicRevokeAuthenticationConverter(registeredClientRepository)))
+				.tokenRevocationEndpoint(tokenRevocationEndpoint ->
+						tokenRevocationEndpoint
+								.revocationRequestConverter(new PublicRevokeAuthenticationConverter(registeredClientRepository))
+				);
+
+
+
 
 //				.oauth2Client()
 //					.authorizationCodeGrant()
@@ -110,8 +122,9 @@ public class AuthorizationServerConfig {
 		http
 			.securityMatcher(endpointsMatcher)
 			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.NEVER).and()
-			.httpBasic((basic) -> basic
+			.sessionCreationPolicy(SessionCreationPolicy.NEVER)
+				.maximumSessions(1);
+			http.httpBasic((basic) -> basic
 					.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
 						@Override
 						public <O extends BasicAuthenticationFilter> O postProcess(O filter) {
@@ -180,5 +193,15 @@ public class AuthorizationServerConfig {
 		DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientRepository);
 		authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
 		return authorizedClientManager;
+	}
+
+	@Bean
+	public SessionRegistry sessionRegistry() {
+		return new SessionRegistryImpl();
+	}
+
+	@Bean
+	public HttpSessionEventPublisher httpSessionEventPublisher() {
+		return new HttpSessionEventPublisher();
 	}
 }

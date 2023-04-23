@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.elpsykongroo.auth.client.dto;
 
+package com.elpsykongroo.auth.client.dto;
 
 import lombok.Data;
 
@@ -39,6 +39,8 @@ public class Client {
 	private String authorizationGrantTypes;
 
 	private String redirectUris;
+
+	private String postLogoutRedirectUris;
 
 	private String scopes;
 

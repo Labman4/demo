@@ -40,7 +40,6 @@ public class AuthController {
     @Autowired
     private RedisService redisService;
 
-
     @PostMapping("/register")
     @ResponseBody
     public String newUserRegistration(
@@ -74,7 +73,7 @@ public class AuthController {
             @RequestParam String credential,
             @RequestParam String username,
             HttpServletRequest request, HttpServletResponse response) {
-            return userService.handlelogin(credential, username, request, response);
+            return userService.handleLogin(credential, username, request, response);
     }
 
     @GetMapping("/access")

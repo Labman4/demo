@@ -22,20 +22,20 @@ import com.elpsykongroo.auth.server.security.UserRepositoryOAuth2UserHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
-
-/**
- * @author Steve Riesenberg
- * @since 0.2.3
- */
 @EnableWebSecurity
 @Configuration(proxyBeanMethods = false)
 public class DefaultSecurityConfig {
@@ -46,21 +46,38 @@ public class DefaultSecurityConfig {
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer()
 				.oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
-		http.cors().and()
-			.csrf().disable()
-			.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-			.authorizeHttpRequests(authorize ->
+		http.authorizeHttpRequests(authorize ->
 			 	authorize.requestMatchers(
 								 	"/oauth2/**",
 									"/welcome",
 									"/login",
 									"/register",
+									"/email/verify/**",
 									"/finishauth").permitAll()
+						.requestMatchers("/auth/**").hasAuthority("admin")
 							.anyRequest().authenticated())
 			.formLogin().disable()
 			.logout((logout) -> logout
-					.logoutSuccessHandler(new CustomLogoutSuccessHandler()))
-			.apply(federatedIdentityConfigurer);
+					.clearAuthentication(true)
+					.invalidateHttpSession(true)
+					.addLogoutHandler(new SecurityContextLogoutHandler())
+					.logoutSuccessHandler(new CustomLogoutSuccessHandler())
+					.deleteCookies("JSESSIONID"))
+				.apply(federatedIdentityConfigurer);
+		http.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.NEVER)
+				.maximumSessions(1);
+		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
+		http.httpBasic((basic) -> basic
+						.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
+							@Override
+							public <O extends BasicAuthenticationFilter> O postProcess(O filter) {
+								filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
+								return filter;
+							}
+						}))
+				.cors().and()
+				.csrf().disable();
 		return http.build();
 	}
 
@@ -68,7 +85,6 @@ public class DefaultSecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
-
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

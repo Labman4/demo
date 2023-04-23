@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.server.service.webauthn;
+package com.elpsykongroo.auth.server.security.provider;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,12 +22,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class WebAuthnAuthenticationProvider implements AuthenticationProvider {
 
-    private AuthenticationProvider delegate; // this can be either of the above providers
-    @Override
+     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         if (!supports(authentication.getClass())) {
             throw new IllegalArgumentException("Only WebAuthnAuthenticationToken is supported, " + authentication.getClass() + " was attempted");

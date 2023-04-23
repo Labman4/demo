@@ -8,6 +8,21 @@ management:
       exposure:
         include: ${ENDPOINTS_WEB:shutdown}
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USER:tmp@tmp.com}
+    password: ${EMAIL_PASS:pass}
+    properties:
+      mail:
+        smtp:
+#          proxy:
+#            host: 127.0.0.1
+#            port: 10811
+          auth: true
+          starttls:
+            enable: true
+
   lifecycle:
     timeout-per-shutdown-phase: 10s
   jpa:
@@ -55,9 +70,13 @@ spring:
           google:
             user-name-attribute: email
       resourceserver:
-        jwt:
-          issuer-uri: ${JWT_ISSUER_URL:http://127.0.0.1:9000}
-          jwk-set-uri: ${AUTH_URL:http://127.0.0.1:9000}/oauth2/jwks
+        opaque-token:
+          introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
+          client-id:  ${CLIENT_ID:clientId}
+          client-secret:  ${CLIENT_SECRET:clientSecret}
+#        jwt:
+#          issuer-uri: ${JWT_ISSUER_URL:http://127.0.0.1:9000}
+#          jwk-set-uri: ${AUTH_URL:http://127.0.0.1:9000}/oauth2/jwks
 
 logging:
   level:

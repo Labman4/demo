@@ -18,7 +18,6 @@ package com.elpsykongroo.auth.server.entity.user;
 
 import lombok.Data;
 
-
 @Data
 public class UserInfo {
     public String sub;

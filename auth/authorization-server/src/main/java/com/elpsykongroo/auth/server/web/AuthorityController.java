@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@CrossOrigin("*")
 @RestController
 @RequestMapping("/auth/authority")
 @Slf4j

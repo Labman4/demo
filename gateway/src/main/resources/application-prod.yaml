@@ -69,7 +69,7 @@ service:
     cert:  ${TLS_CERT:tls.crt}
     key:  ${TLS_KEY:tls.key}
   redis:
-    url:  ${REDIS_SERVICE:http://localhost:8379}
+    url: ${REDIS_SERVICE:http://localhost:8379}
   auth:
     url: ${AUTH_URL:http://localhost:9000}
   storage:

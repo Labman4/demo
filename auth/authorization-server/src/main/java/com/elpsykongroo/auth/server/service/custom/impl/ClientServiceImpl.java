@@ -34,8 +34,8 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public String add(Client client) {
-        Optional<Client> regirtryClient = clientRepository.findByClientId(client.getClientId());
-           if (!regirtryClient.isPresent()) {
+        Optional<Client> registryClient = clientRepository.findByClientId(client.getClientId());
+           if (!registryClient.isPresent()) {
                client.setClientIdIssuedAt(Instant.now());
                return clientRepository.save(client).getClientId();
            } else {
@@ -62,6 +62,7 @@ public class ClientServiceImpl implements ClientService {
                 client.getClientAuthenticationMethods(),
                 client.getAuthorizationGrantTypes(),
                 client.getRedirectUris(),
+                client.getPostLogoutRedirectUris(),
                 client.getScopes(),
                 client.getClientSettings(),
                 client.getTokenSettings(),

@@ -30,13 +30,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
-/**
- * An {@link AuthenticationSuccessHandler} for capturing the {@link OidcUser} or
- * {@link OAuth2User} for Federated Account Linking or JIT Account Provisioning.
- *
- * @author Steve Riesenberg
- * @since 0.2.3
- */
 public final class FederatedIdentityAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final AuthenticationSuccessHandler delegate = new SavedRequestAwareAuthenticationSuccessHandler();

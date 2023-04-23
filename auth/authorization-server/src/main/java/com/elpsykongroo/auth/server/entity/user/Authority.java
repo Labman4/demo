@@ -37,9 +37,6 @@ import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-/**
- * Authority model
- */
 @Data
 @Entity
 @Table(name = "`authority`")

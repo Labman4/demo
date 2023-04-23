@@ -75,7 +75,7 @@ public class SearchServiceImpl implements SearchService {
                     HttpMethod.POST,
                     requestEntity,
                     String.class).getBody();
-        return JsonUtils.toList(records, new TypeReference<List<AccessRecord>>() {});
+        return JsonUtils.toType(records, new TypeReference<List<AccessRecord>>() {});
     }
 
     @Override
@@ -91,7 +91,7 @@ public class SearchServiceImpl implements SearchService {
                 HttpMethod.GET,
                 null,
                 String.class).getBody();
-        return JsonUtils.toList(ips, new TypeReference<List<IPManage>>() {});
+        return JsonUtils.toType(ips, new TypeReference<List<IPManage>>() {});
     }
 
     @Override
@@ -107,7 +107,7 @@ public class SearchServiceImpl implements SearchService {
                 HttpMethod.GET,
                 null,
                 String.class).getBody();
-        return JsonUtils.toList(ips, new TypeReference<List<IPManage>>() {});
+        return JsonUtils.toType(ips, new TypeReference<List<IPManage>>() {});
     }
 
     @Override
@@ -225,7 +225,7 @@ public class SearchServiceImpl implements SearchService {
                 HttpMethod.GET,
                 null,
                 String.class).getBody();
-        return JsonUtils.toList(records, new TypeReference<List<AccessRecord>>() {});
+        return JsonUtils.toType(records, new TypeReference<List<AccessRecord>>() {});
     }
 
     @Override
@@ -241,7 +241,7 @@ public class SearchServiceImpl implements SearchService {
                 HttpMethod.GET,
                 null,
                 String.class).getBody();
-        return JsonUtils.toList(records, new TypeReference<List<AccessRecord>>() {});
+        return JsonUtils.toType(records, new TypeReference<List<AccessRecord>>() {});
     }
 
     @Override
@@ -257,7 +257,7 @@ public class SearchServiceImpl implements SearchService {
                 HttpMethod.GET,
                 null,
                 String.class).getBody();
-        return JsonUtils.toList(records, new TypeReference<List<AccessRecord>>() {});
+        return JsonUtils.toType(records, new TypeReference<List<AccessRecord>>() {});
     }
 
     @Override
@@ -272,7 +272,7 @@ public class SearchServiceImpl implements SearchService {
                 HttpMethod.GET,
                 null,
                 String.class).getBody();
-        return JsonUtils.toList(records, new TypeReference<List<AccessRecord>>() {});
+        return JsonUtils.toType(records, new TypeReference<List<AccessRecord>>() {});
     }
 
     @Override

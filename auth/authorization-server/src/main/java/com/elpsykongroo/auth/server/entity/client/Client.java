@@ -57,6 +57,9 @@ public class Client {
 	private String redirectUris;
 
 	@Column(length = 1000)
+	private String postLogoutRedirectUris;
+
+	@Column(length = 1000)
 	private String scopes;
 
 	@Column(length = 2000)

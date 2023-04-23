@@ -13,8 +13,12 @@ spring:
   security:
     oauth2:
       resource-server:
-        jwt:
-          jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
+        opaque-token:
+          introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
+          client-id: ${CLIENT_ID:id}
+          client-secret: ${CLIENT_SECRET:pass}
+#        jwt:
+#          jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
       
 #mybatis:
 #  mapper-locations: classpath:mapper/*.xml

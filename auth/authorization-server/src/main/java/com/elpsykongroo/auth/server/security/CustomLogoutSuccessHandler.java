@@ -20,22 +20,20 @@ import java.io.IOException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        final HttpSession session = request.getSession();
-        if (session != null) {
-            if (authentication != null) {
-                session.removeAttribute(authentication.getName());
-            }
-        }
+        log.debug("logout success");
+//        SecurityContextLogoutHandler handler = new SecurityContextLogoutHandler();
+//        handler.logout(request, response, null);
     }
 }

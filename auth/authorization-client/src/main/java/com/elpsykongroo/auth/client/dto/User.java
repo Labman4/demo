@@ -16,7 +16,6 @@
 
 package com.elpsykongroo.auth.client.dto;
 
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,10 +23,6 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.Map;
 
-
-/**
- * User model
- */
 @Data
 @NoArgsConstructor
 public class User {

@@ -50,7 +50,7 @@ public final class JsonUtils {
 		}
 	}
 
-	public static <T> T toList(String str, TypeReference<T> typeReference){
+	public static <T> T toType(String str, TypeReference<T> typeReference){
 		try {
 			return objectMapper.readValue(str, typeReference);
 		}

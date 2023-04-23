@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.server.jose;
+package com.elpsykongroo.auth.server.utils.jose;
 
 import java.math.BigInteger;
 import java.security.KeyPair;

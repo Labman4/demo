@@ -22,10 +22,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface UserService extends UserDetailsService {
@@ -33,7 +33,7 @@ public interface UserService extends UserDetailsService {
 
     String login(String username, HttpServletRequest request);
 
-    String handlelogin(String credential, String username, HttpServletRequest request, HttpServletResponse response);
+    String handleLogin(String credential, String username, HttpServletRequest request, HttpServletResponse response);
 
     String saveAuth(String credential, String username, String credname);
 
@@ -41,12 +41,15 @@ public interface UserService extends UserDetailsService {
 
     int updateUserInfo(UserInfo userinfo);
 
+    int updateUserInfoEmail(String email, String username, Map<String, Object> userInfo, Boolean emailVerified);
+
     int updateUser(User user);
 
     String loadUserInfo(String username);
 
     List<User> list(String pageNumber, String pageSize, String order);
 
+    String addAuthenticator(String username);
 }
 
 

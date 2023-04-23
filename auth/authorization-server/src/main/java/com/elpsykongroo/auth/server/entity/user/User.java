@@ -43,9 +43,6 @@ import java.util.Map;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-/**
- * User model
- */
 @Data
 @Entity
 @Table(name = "`user`")

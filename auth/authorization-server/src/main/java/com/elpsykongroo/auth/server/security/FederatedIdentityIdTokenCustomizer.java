@@ -41,13 +41,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 
-/**
- * An {@link OAuth2TokenCustomizer} to map claims from a federated identity to
- * the {@code id_token} produced by this authorization server.
- *
- * @author Steve Riesenberg
- * @since 0.2.3
- */
 @Slf4j
 public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCustomizer<JwtEncodingContext> {
 

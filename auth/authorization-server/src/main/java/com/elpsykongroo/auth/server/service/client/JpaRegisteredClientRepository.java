@@ -83,6 +83,8 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
 				client.getAuthorizationGrantTypes());
 		Set<String> redirectUris = StringUtils.commaDelimitedListToSet(
 				client.getRedirectUris());
+		Set<String> postLogoutRedirectUris = StringUtils.commaDelimitedListToSet(
+				client.getPostLogoutRedirectUris());
 		Set<String> clientScopes = StringUtils.commaDelimitedListToSet(
 				client.getScopes());
 
@@ -99,6 +101,7 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
 						authorizationGrantTypes.forEach(grantType ->
 								grantTypes.add(resolveAuthorizationGrantType(grantType))))
 				.redirectUris((uris) -> uris.addAll(redirectUris))
+				.postLogoutRedirectUris((uris) -> uris.addAll(postLogoutRedirectUris))
 				.scopes((scopes) -> scopes.addAll(clientScopes));
 
 		Map<String, Object> clientSettingsMap = parseMap(client.getClientSettings());
@@ -129,6 +132,7 @@ public class JpaRegisteredClientRepository implements RegisteredClientRepository
 		entity.setClientAuthenticationMethods(StringUtils.collectionToCommaDelimitedString(clientAuthenticationMethods));
 		entity.setAuthorizationGrantTypes(StringUtils.collectionToCommaDelimitedString(authorizationGrantTypes));
 		entity.setRedirectUris(StringUtils.collectionToCommaDelimitedString(registeredClient.getRedirectUris()));
+		entity.setPostLogoutRedirectUris(StringUtils.collectionToCommaDelimitedString(registeredClient.getPostLogoutRedirectUris()));
 		entity.setScopes(StringUtils.collectionToCommaDelimitedString(registeredClient.getScopes()));
 		entity.setClientSettings(writeMap(registeredClient.getClientSettings().getSettings()));
 		entity.setTokenSettings(writeMap(registeredClient.getTokenSettings().getSettings()));

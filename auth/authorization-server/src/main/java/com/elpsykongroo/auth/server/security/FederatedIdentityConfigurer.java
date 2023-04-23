@@ -26,12 +26,6 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.util.Assert;
 
-/**
- * A configurer for setting up Federated Identity Management.
- *
- * @author Steve Riesenberg
- * @since 0.2.3
- */
 public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<FederatedIdentityConfigurer, HttpSecurity> {
 
 	private String loginPageUrl = "https://elpsykongroo.com";
@@ -121,6 +115,4 @@ public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<Fe
 				}
 			});
 	}
-	// @formatter:on
-
 }

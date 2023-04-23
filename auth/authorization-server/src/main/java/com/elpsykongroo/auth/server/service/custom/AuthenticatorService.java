@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 the original author or authors.
+ * Copyright 2022-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,24 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.server.repository.user;
+package com.elpsykongroo.auth.server.service.custom;
 
 import com.elpsykongroo.auth.server.entity.user.Authenticator;
 import com.elpsykongroo.auth.server.entity.user.User;
 import com.yubico.webauthn.data.ByteArray;
-import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface AuthenticatorRepository extends JpaRepository<Authenticator, String> {
-    @Transactional
-    @Modifying
-    @Query("update Authenticator a set a.count = ?1 where a.credentialId = ?2")
-    int updateCountByCredentialId(Long count, ByteArray credentialId);
-
-
-    @Transactional
-    long deleteByName(String name);
+public interface AuthenticatorService {
 
     Optional<Authenticator> findByName(String name);
+
+    void deleteByName(String name);
+
+    Authenticator add(Authenticator authenticator);
+
+    int updateCount(Authenticator authenticator);
 
     Optional<Authenticator> findByCredentialId(ByteArray credentialId);
 

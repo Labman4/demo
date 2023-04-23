@@ -34,10 +34,6 @@ import java.util.Optional;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-/**
- * Authenticator model
- */
-
 @Data
 @Entity
 @Table(name = "authenticator")

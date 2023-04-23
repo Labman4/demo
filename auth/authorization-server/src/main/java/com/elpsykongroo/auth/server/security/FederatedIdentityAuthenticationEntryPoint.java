@@ -36,14 +36,6 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.web.util.UriComponentsBuilder;
 
-/**
- * An {@link AuthenticationEntryPoint} for initiating the login flow to an
- * external provider using the {@code idp} query parameter, which represents the
- * {@code registrationId} of the desired {@link ClientRegistration}.
- *
- * @author Steve Riesenberg
- * @since 0.2.3
- */
 @Slf4j
 public final class FederatedIdentityAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

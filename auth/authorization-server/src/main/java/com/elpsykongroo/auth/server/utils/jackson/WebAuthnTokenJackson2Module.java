@@ -17,7 +17,7 @@
 package com.elpsykongroo.auth.server.utils.jackson;
 
 import com.elpsykongroo.auth.server.entity.user.Authority;
-import com.elpsykongroo.auth.server.service.webauthn.WebAuthnAuthenticationToken;
+import com.elpsykongroo.auth.server.security.provider.WebAuthnAuthenticationToken;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
