@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.gateway.controller.external;
 
+import com.elpsykongroo.base.common.CommonResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
@@ -34,6 +35,6 @@ public class IPController {
 	@CrossOrigin(origins = "*")
 	@GetMapping("/ip")
 	public String accessIP(HttpServletRequest request) {
-		return ipManagerService.accessIP(request, "");
+		return CommonResponse.string(ipManagerService.accessIP(request, ""));
 	}
 }

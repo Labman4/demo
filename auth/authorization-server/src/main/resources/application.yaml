@@ -2,11 +2,15 @@ server:
   port: 9000
 management:
   endpoint:
-    shutdown.enabled: true
+    shutdown:
+      enabled: true
+    health:
+      probes:
+        enabled: true
   endpoints:
     web:
       exposure:
-        include: ${ENDPOINTS_WEB:shutdown}
+        include: ${ENDPOINTS_WEB:shutdown,health}
 spring:
   mail:
     host: smtp.gmail.com
@@ -16,9 +20,9 @@ spring:
     properties:
       mail:
         smtp:
-#          proxy:
-#            host: 127.0.0.1
-#            port: 10811
+          proxy:
+            host: ${EMAIL_PROXY:127.0.0.1}
+            port: ${EMAIL_PROXY_PORT:1080}
           auth: true
           starttls:
             enable: true

@@ -16,20 +16,18 @@
 
 package com.elpsykongroo.auth.server.service.custom;
 
-import com.elpsykongroo.auth.server.entity.user.Group;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import java.util.List;
+public interface LoginService {
+    String login(String username, HttpServletRequest request);
 
-public interface GroupService {
-    String addGroup(String group);
+    String handleLogin(String credential, String username, HttpServletRequest request, HttpServletResponse response);
 
-    int deleteGroup(String group);
+    String saveAuth(String credential, String username, String credname);
 
-    List<Group> groupList();
+    String register(String username, String display);
 
-    List<Group> userGroup(String id);
+    String addAuthenticator(String username);
 
-    List<Group> findByAuthority(String name);
-
-    int updateUserGroup(String groups, String id);
 }

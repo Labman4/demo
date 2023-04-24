@@ -17,10 +17,9 @@
 package com.elpsykongroo.auth.server.web;
 
 import com.elpsykongroo.auth.server.service.custom.GroupService;
-import com.elpsykongroo.base.utils.JsonUtils;
+import com.elpsykongroo.base.common.CommonResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,44 +40,35 @@ public class GroupController {
     @GetMapping("/list")
     public String groupList(
     ) {
-        return JsonUtils.toJson(groupService.groupList());
+        return CommonResponse.data(groupService.groupList());
     }
 
     @PutMapping("/add")
     public String addGroup(
             @RequestParam String group
     ) {
-        try {
-            groupService.addGroup(group);
-            return "done";
-        } catch (Exception e) {
-            log.error("add group error:{}", e.getMessage());
-            return "0";
-        }
+        return CommonResponse.string(groupService.addGroup(group));
     }
 
     @DeleteMapping("/delete/{name}")
     public String deleteGroup(
             @PathVariable String name
     ) {
-        if (groupService.deleteGroup(name) > 0) {
-            return "done";
-        }
-        return "0";
+       return CommonResponse.data(groupService.deleteGroup(name));
     }
 
     @GetMapping("/user/list")
     public String userGroupList(
             @RequestParam String id
     ) {
-        return JsonUtils.toJson(groupService.userGroup(id));
+        return CommonResponse.data(groupService.userGroup(id));
     }
 
     @GetMapping("/authority/list")
     public String groupAuthorityList(
             @RequestParam String name
     ) {
-        return JsonUtils.toJson(groupService.findByAuthority(name));
+        return CommonResponse.data(groupService.findByAuthority(name));
     }
 
     @PatchMapping("/user/patch")
@@ -86,11 +76,6 @@ public class GroupController {
             @RequestParam("groups") String groups,
             @RequestParam("ids") String ids
     ) {
-        if (groupService.updateUserGroup(groups, ids) > 0) {
-            return "done";
-        }
-        return "0";
+        return CommonResponse.data(groupService.updateUserGroup(groups, ids));
     }
-
-
 }

@@ -17,6 +17,7 @@
 package com.elpsykongroo.auth.server.web;
 
 import com.elpsykongroo.auth.server.service.custom.EmailService;
+import com.elpsykongroo.base.common.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +34,7 @@ public class EmailController {
     @GetMapping("/email/verify/{text}")
     @ResponseBody
     public String emailVerify(@PathVariable String text) {
-        return emailService.verify(text);
+        return CommonResponse.success(emailService.verify(text));
     }
 
 }

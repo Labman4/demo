@@ -19,6 +19,7 @@ package com.elpsykongroo.gateway.controller;
 import com.elpsykongroo.auth.client.AuthService;
 import com.elpsykongroo.auth.client.dto.Client;
 import com.elpsykongroo.auth.client.dto.ClientRegistry;
+import com.elpsykongroo.base.common.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,27 +40,27 @@ public class AuthController {
 
     @PostMapping("/client/add")
     public String addClient (@RequestHeader("Authorization") String auth, @RequestBody Client client) {
-        return authService.addClient(auth, client);
+        return CommonResponse.string(authService.addClient(auth, client));
     }
     @DeleteMapping("/client/delete")
     public String deleteClient (@RequestHeader("Authorization") String auth, @RequestParam("clientId")String clientId) {
-        return authService.deleteClient(auth, clientId);
+        return CommonResponse.string(authService.deleteClient(auth, clientId));
     }
     @GetMapping("/client/list")
     public String listClient (@RequestHeader("Authorization") String auth) {
-        return authService.findAllClient(auth);
+        return CommonResponse.string(authService.findAllClient(auth));
     }
 
     @PostMapping("/client/register/add")
     public String addRegister (@RequestHeader("Authorization") String auth, @RequestBody ClientRegistry client) {
-        return authService.addRegister(auth, client);
+        return CommonResponse.string(authService.addRegister(auth, client));
     }
     @DeleteMapping("/client/register/delete")
     public String deleteRegister (@RequestHeader("Authorization") String auth, @RequestParam("registerId")String clientId) {
-        return authService.deleteRegister(auth, clientId);
+        return CommonResponse.string(authService.deleteRegister(auth, clientId));
     }
     @GetMapping("/client/register/list")
     public String listRegister (@RequestHeader("Authorization") String auth) {
-        return authService.findAllRegister(auth).toString();
+        return CommonResponse.string(authService.findAllRegister(auth));
     }
 }

@@ -18,8 +18,7 @@ package com.elpsykongroo.auth.server.service.custom;
 
 import com.elpsykongroo.auth.server.entity.user.User;
 import com.elpsykongroo.auth.server.entity.user.UserInfo;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.yubico.webauthn.data.ByteArray;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,14 +30,6 @@ import java.util.Map;
 public interface UserService extends UserDetailsService {
     User loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    String login(String username, HttpServletRequest request);
-
-    String handleLogin(String credential, String username, HttpServletRequest request, HttpServletResponse response);
-
-    String saveAuth(String credential, String username, String credname);
-
-    String register(String username, String display);
-
     int updateUserInfo(UserInfo userinfo);
 
     int updateUserInfoEmail(String email, String username, Map<String, Object> userInfo, Boolean emailVerified);
@@ -49,7 +40,11 @@ public interface UserService extends UserDetailsService {
 
     List<User> list(String pageNumber, String pageSize, String order);
 
-    String addAuthenticator(String username);
+    void deleteByUsername(String username);
+
+    User add(User user);
+
+    User findByHandle(ByteArray handle);
 }
 
 

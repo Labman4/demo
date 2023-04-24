@@ -40,13 +40,14 @@ public class GroupServiceImpl implements GroupService {
     private EntityManager entityManager;
 
     @Override
-    public void addGroup(String groupName) {
+    public String addGroup(String groupName) {
         if (StringUtils.isNotBlank(groupName)) {
             Optional<Group> group = groupRepository.findByGroupName(groupName);
             if (!group.isPresent()) {
-                groupRepository.save(new Group(groupName));
+                return groupRepository.save(new Group(groupName)).getGroupName();
             }
         }
+        return "";
     }
     @Override
     public int deleteGroup(String groupName) {

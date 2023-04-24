@@ -37,13 +37,13 @@ public interface AuthService {
 
     String addGroup(String auth, String name);
 
-    String addAuthority(String auth, String name);
-
-    String authorityList(String auth);
-
     String groupList(String auth);
 
     String deleteGroup(String auth, String name);
+
+    String addAuthority(String auth, String name);
+
+    String authorityList(String auth);
 
     String deleteAuthority(String auth, String name);
 
@@ -69,4 +69,5 @@ public interface AuthService {
 
     String authorityGroupList(String auth, String name);
 
+    String loadUser(String auth, String username);
 }

@@ -18,13 +18,12 @@ package com.elpsykongroo.auth.server.service.webauthn;
 
 import com.elpsykongroo.auth.server.entity.user.Authenticator;
 import com.elpsykongroo.auth.server.entity.user.User;
-import com.elpsykongroo.auth.server.repository.user.UserRepository;
 import com.elpsykongroo.auth.server.service.custom.AuthenticatorService;
+import com.elpsykongroo.auth.server.service.custom.UserService;
 import com.yubico.webauthn.CredentialRepository;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -36,13 +35,13 @@ import java.util.stream.Collectors;
 @Repository
 public class RegistrationService implements CredentialRepository  {
     @Autowired
-    private UserRepository userRepo;
+    private UserService userService;
     @Autowired
     private AuthenticatorService authenticatorService;
 
     @Override
     public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
-        User user = userRepo.findByUsername(username);
+        User user = userService.loadUserByUsername(username);
         List<Authenticator> auth = authenticatorService.findAllByUser(user);
         return auth.stream()
         .map(
@@ -55,13 +54,13 @@ public class RegistrationService implements CredentialRepository  {
 
     @Override
     public Optional<ByteArray> getUserHandleForUsername(String username) {
-        User user = userRepo.findByUsername(username);
+        User user = userService.loadUserByUsername(username);
         return Optional.of(user.getHandle());
     }
 
     @Override
     public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
-        User user = userRepo.findByHandle(userHandle);
+        User user = userService.findByHandle(userHandle);
         return Optional.of(user.getUsername());
     }
 

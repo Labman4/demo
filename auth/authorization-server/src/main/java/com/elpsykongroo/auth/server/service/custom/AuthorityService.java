@@ -22,7 +22,7 @@ import java.util.List;
 
 public interface AuthorityService {
 
-    void addAuthority(String authority);
+    String addAuthority(String authority);
 
     int deleteAuthority(String authority);
 

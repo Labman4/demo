@@ -51,7 +51,7 @@ public class CustomAuthoritiesOpaqueTokenIntrospector implements OpaqueTokenIntr
 
     public OAuth2AuthenticatedPrincipal introspect(String token) {
         OpaqueTokenIntrospector delegate =
-                new NimbusOpaqueTokenIntrospector("introspectionUri", clientId, clientSecret);
+                new NimbusOpaqueTokenIntrospector(introspectionUri, clientId, clientSecret);
         OAuth2AuthenticatedPrincipal principal = delegate.introspect(token);
         return new DefaultOAuth2AuthenticatedPrincipal(
                 principal.getName(), principal.getAttributes(), extractAuthorities(principal));

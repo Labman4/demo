@@ -16,8 +16,9 @@
 
 package com.elpsykongroo.auth.server.web;
 
-import com.elpsykongroo.auth.server.service.custom.UserService;
+import com.elpsykongroo.auth.server.service.custom.LoginService;
 
+import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.services.redis.client.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController {
     @Autowired
-    private UserService userService;
+    private LoginService loginService;
 
     @Autowired
     private RedisService redisService;
@@ -46,7 +47,7 @@ public class AuthController {
         @RequestParam String username,
         @RequestParam String display
     ) {
-        return userService.register(username, display);
+        return CommonResponse.string(loginService.register(username, display));
     }
 
     @PostMapping("/finishauth")
@@ -56,7 +57,7 @@ public class AuthController {
             @RequestParam String username,
             @RequestParam String credname
     ) {
-        return userService.saveAuth(credential, username, credname);
+        return CommonResponse.string(loginService.saveAuth(credential, username, credname));
     }
 
     @PostMapping("/login")
@@ -64,7 +65,7 @@ public class AuthController {
     public String startLogin(
         @RequestParam String username, HttpServletRequest request
     ) {
-        return userService.login(username, request);
+        return CommonResponse.string(loginService.login(username, request));
     }
 
     @PostMapping("/welcome")
@@ -73,11 +74,16 @@ public class AuthController {
             @RequestParam String credential,
             @RequestParam String username,
             HttpServletRequest request, HttpServletResponse response) {
-            return userService.handleLogin(credential, username, request, response);
+        return CommonResponse.string(loginService.handleLogin(credential, username, request, response));
     }
 
     @GetMapping("/access")
     public String getToken(@RequestParam("key") String key) {
-        return redisService.getToken(key);
+        return CommonResponse.string(redisService.getToken(key));
+    }
+
+    @PostMapping("/authenticator/add")
+    public String addAuthenticator(@RequestParam String username) {
+        return CommonResponse.string(loginService.addAuthenticator(username));
     }
 }

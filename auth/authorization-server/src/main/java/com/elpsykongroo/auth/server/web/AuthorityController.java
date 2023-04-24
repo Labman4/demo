@@ -17,10 +17,9 @@
 package com.elpsykongroo.auth.server.web;
 
 import com.elpsykongroo.auth.server.service.custom.AuthorityService;
-import com.elpsykongroo.base.utils.JsonUtils;
+import com.elpsykongroo.base.common.CommonResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth/authority")
 @Slf4j
 public class AuthorityController {
-
     @Autowired
     private AuthorityService authorityService;
 
@@ -44,10 +42,7 @@ public class AuthorityController {
             @RequestParam String authorities,
             @RequestParam String ids
     ) {
-        if (authorityService.updateGroupAuthority(authorities, ids)> 0) {
-            return "done";
-        }
-        return "0";
+        return CommonResponse.data(authorityService.updateGroupAuthority(authorities, ids));
     }
 
     @PatchMapping("/user/patch")
@@ -55,52 +50,40 @@ public class AuthorityController {
             @RequestParam String authorities,
             @RequestParam String ids
     ) {
-        if (authorityService.updateUserAuthority(authorities, ids)> 0) {
-            return "done";
-        }
-        return "0";
+        return CommonResponse.data(authorityService.updateUserAuthority(authorities, ids));
     }
 
     @GetMapping("/user/list")
     public String userAuthorityList(
             @RequestParam String id
     ) {
-        return JsonUtils.toJson(authorityService.userAuthority(id));
+        return CommonResponse.data(authorityService.userAuthority(id));
     }
 
     @DeleteMapping("/delete/{name}")
     public String deleteAuthority(
             @PathVariable String name
     ) {
-        if (authorityService.deleteAuthority(name) > 0) {
-            return "done";
-        }
-        return "0";
+        return CommonResponse.data(authorityService.deleteAuthority(name));
     }
 
     @GetMapping("/list")
     public String authorityList(
     ) {
-        return JsonUtils.toJson(authorityService.authorityList());
+        return CommonResponse.data(authorityService.authorityList());
     }
 
     @GetMapping("/group/list")
     public String authorityGroupList(
             @RequestParam String name
     ) {
-        return JsonUtils.toJson(authorityService.findByGroup(name));
+        return CommonResponse.data(authorityService.findByGroup(name));
     }
 
     @PutMapping("/add")
     public String addAuthority(
             @RequestParam("name") String authority
     ) {
-        try {
-            authorityService.addAuthority(authority);
-            return "done";
-        } catch (Exception e) {
-            log.error("add authority error:{}", e.getMessage());
-            return "0";
-        }
+        return  CommonResponse.string(authorityService.addAuthority(authority));
     }
 }

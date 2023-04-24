@@ -53,7 +53,7 @@ public class IPManagerController {
 	@GetMapping("/manage/list")
 	public String blacklist(@RequestParam("black") String isBlack, @RequestParam("pageNumber") String pageNumber, @RequestParam("pageSize") String pageSize) {
 		log.debug("black:{}, pageNumber:{}, pageSize:{}", isBlack, pageNumber, pageSize);
-		return ipManagerService.list(isBlack, pageNumber, pageSize);
+		return CommonResponse.string(ipManagerService.list(isBlack, pageNumber, pageSize));
 	}
 
 	@PatchMapping("/manage/patch")

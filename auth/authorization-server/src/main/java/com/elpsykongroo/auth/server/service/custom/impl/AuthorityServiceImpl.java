@@ -41,13 +41,14 @@ public class AuthorityServiceImpl implements AuthorityService {
     private EntityManager entityManager;
 
     @Override
-    public void addAuthority(String authority) {
+    public String addAuthority(String authority) {
         if (StringUtils.isNotBlank(authority)) {
             Optional<Authority> auth = authorityRepository.findByAuthority(authority);
             if (!auth.isPresent()) {
-                authorityRepository.save(new Authority(authority));
+                return authorityRepository.save(new Authority(authority)).getAuthority();
             }
         }
+        return "";
     }
     @Override
     public int deleteAuthority(String authority) {
