@@ -322,4 +322,15 @@ public class AuthServiceImpl implements AuthService {
                 HttpMethod.GET,
                 requestEntity,
                 String.class).getBody();        }
+
+    @Override
+    public String loadUser(String auth, String username) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", auth);
+        HttpEntity<String> requestEntity = new HttpEntity(headers);
+        return restTemplate.exchange(
+                serverUrl + userPrefix + "/" + username,
+                HttpMethod.GET,
+                requestEntity,
+                String.class).getBody();          }
 }
