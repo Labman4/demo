@@ -60,7 +60,7 @@ public class UserController {
     @PatchMapping("/patch")
     public String updateUser(
             @RequestBody User user) {
-        return CommonResponse.data(userService.updateUser(user) > 0);
+        return CommonResponse.data(userService.updateUser(user));
     }
 
     @PatchMapping("/info/patch")

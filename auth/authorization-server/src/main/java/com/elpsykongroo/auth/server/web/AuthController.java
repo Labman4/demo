@@ -26,10 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
 @CrossOrigin(originPatterns = "*", allowCredentials = "true")
@@ -80,6 +82,13 @@ public class AuthController {
     @GetMapping("/access")
     public String getToken(@RequestParam("key") String key) {
         return CommonResponse.string(redisService.getToken(key));
+    }
+
+    @GetMapping("/tmp/{text}")
+    public ModelAndView tmpLogin(@PathVariable String text,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) {
+        return new ModelAndView(loginService.tmpLogin(text, request, response));
     }
 
     @PostMapping("/authenticator/add")

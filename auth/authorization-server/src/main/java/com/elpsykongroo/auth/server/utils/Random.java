@@ -22,9 +22,9 @@ import java.security.SecureRandom;
 
 public class Random {
 	private static final SecureRandom random = new SecureRandom();
-	public static ByteArray generateRandom(int length) {
+	public static byte[] generateRandomByte(int length) {
 		byte[] bytes = new byte[length];
 		random.nextBytes(bytes);
-		return new ByteArray(bytes);
+		return bytes;
 	}
 }

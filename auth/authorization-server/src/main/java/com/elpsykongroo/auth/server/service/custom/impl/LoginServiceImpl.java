@@ -23,6 +23,8 @@ import com.elpsykongroo.auth.server.service.custom.AuthenticatorService;
 import com.elpsykongroo.auth.server.service.custom.LoginService;
 import com.elpsykongroo.auth.server.service.custom.UserService;
 import com.elpsykongroo.auth.server.utils.Random;
+import com.elpsykongroo.services.redis.client.RedisService;
+import com.elpsykongroo.services.redis.client.dto.KV;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
@@ -34,6 +36,7 @@ import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
+import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
@@ -57,7 +60,11 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -78,6 +85,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private AuthenticatorService authenticatorService;
+
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public String login(String username, HttpServletRequest servletRequest) {
@@ -116,7 +126,7 @@ public class LoginServiceImpl implements LoginService {
                     .request(assertionRequest)
                     .response(pkc)
                     .build());
-            if (result.isSuccess()) {
+            if (result.isSuccess() && !user.isLocked()) {
                 Authenticator authenticator = authenticatorService.findByCredentialId(pkc.getId()).get();
                 authenticatorService.updateCount(authenticator);
                 log.debug("login success");
@@ -147,7 +157,7 @@ public class LoginServiceImpl implements LoginService {
             UserIdentity userIdentity = UserIdentity.builder()
                     .name(username)
                     .displayName(display)
-                    .id(Random.generateRandom(32))
+                    .id(new ByteArray(Random.generateRandomByte(32)))
                     .build();
             User saveUser = new User(userIdentity);
             saveUser.setCreateTime(Instant.now());
@@ -242,6 +252,42 @@ public class LoginServiceImpl implements LoginService {
             }
         } catch (Exception e) {
             log.error("remove invalid user error:{}", e.getMessage());
+        }
+    }
+
+    public String tmpLogin(String text, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String[] texts = text.split("\\.");
+            String codeVerifier = texts[0];
+            String username = texts[1];
+            String encodedVerifier = verifyChallenge(codeVerifier);
+            String tmp = redisService.get("TmpCert_" + username);
+            if (tmp.equals(encodedVerifier)) {
+                SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+                Authentication authentication =
+                        WebAuthnAuthenticationToken.authenticated(username, null, null);
+                context.setAuthentication(authentication);
+                securityContextHolderStrategy.setContext(context);
+                securityContextRepository.saveContext(context, request, response);
+                log.debug("set tmp SecurityContext");
+                KV kv = new KV("TmpCert_" + username, "");
+                redisService.set(kv);
+                return "redirect:https://elpsykongroo.com";
+            }
+        } catch (Exception e) {
+            log.error("set tmp SecurityContext error:{}", e.getMessage());
+        }
+        return "redirect:https://elpsykongroo.com/error";
+    }
+
+    public static String verifyChallenge(String codeVerifier) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(codeVerifier.getBytes(StandardCharsets.US_ASCII));
+            String encodedVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+            return encodedVerifier;
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 }

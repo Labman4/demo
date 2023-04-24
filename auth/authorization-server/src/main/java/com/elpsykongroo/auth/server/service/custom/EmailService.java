@@ -21,4 +21,8 @@ public interface EmailService {
 
     String verify(String text);
 
+    void sendTmpLoginCert(String username);
+
+    void sendVerify(String username);
+
 }

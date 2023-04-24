@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,7 +36,19 @@ public class EmailController {
     @GetMapping("/email/verify/{text}")
     @ResponseBody
     public String emailVerify(@PathVariable String text) {
-        return CommonResponse.success(emailService.verify(text));
+        return CommonResponse.string(emailService.verify(text));
     }
 
+
+    @PostMapping("/email/tmp")
+    @ResponseBody
+    public void tmpLogin(@RequestParam String username) {
+        emailService.sendTmpLoginCert(username);
+    }
+
+    @PostMapping("/email/verify")
+    @ResponseBody
+    public void sendVerify(@RequestParam String username) {
+        emailService.sendVerify(username);
+    }
 }

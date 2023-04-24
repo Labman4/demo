@@ -53,7 +53,9 @@ public class DefaultSecurityConfig {
 									"/login",
 									"/register",
 									"/email/verify/**",
-									"/finishauth").permitAll()
+								"/email/tmp/**",
+								"/tmp/**",
+								"/finishauth").permitAll()
 						.requestMatchers("/auth/**").hasAuthority("admin")
 							.anyRequest().authenticated())
 			.formLogin().disable()

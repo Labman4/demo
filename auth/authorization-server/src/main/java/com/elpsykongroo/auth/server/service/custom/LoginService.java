@@ -30,4 +30,6 @@ public interface LoginService {
 
     String addAuthenticator(String username);
 
+    String tmpLogin(String text, HttpServletRequest request, HttpServletResponse response);
+
 }
