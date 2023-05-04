@@ -9,3 +9,4 @@ on:
 jobs:
   build:
     uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
+    secrets: inherit
