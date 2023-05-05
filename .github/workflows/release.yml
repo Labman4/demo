@@ -8,5 +8,5 @@ on:
 
 jobs:
   build:
-    uses: Labman4/workflow/.github/workflows/deploy.yml@deploy
+    uses: Labman4/workflow/.github/workflows/release.yml@deploy
     secrets: inherit
