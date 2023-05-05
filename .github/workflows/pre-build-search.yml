@@ -9,8 +9,6 @@ on:
     - native-image
     paths:
       -  'elasticsearch/elasticsearch-server/**'
-      -  'pom.xml'
-
 jobs:
   build:
     uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks

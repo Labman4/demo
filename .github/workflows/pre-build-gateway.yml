@@ -9,7 +9,6 @@ on:
     - native-image
     paths:
       - gateway/**   
-      - 'pom.xml'
       - '**/*-client/**'	
 
 jobs:
