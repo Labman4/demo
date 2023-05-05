@@ -102,9 +102,7 @@ public class LoginServiceImpl implements LoginService {
         }
         AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
                 .username(username)
-                .userVerification(UserVerificationRequirement.DISCOURAGED)
                 .build());
-
         try {
             servletContext.setAttribute(username, request);
             return request.toCredentialsGetJson();
@@ -127,8 +125,12 @@ public class LoginServiceImpl implements LoginService {
                     .response(pkc)
                     .build());
             if (result.isSuccess() && !user.isLocked()) {
-                Authenticator authenticator = authenticatorService.findByCredentialId(pkc.getId()).get();
-                authenticatorService.updateCount(authenticator);
+                /**
+                 * multi device sign count will always as 0, dont add it
+                 */
+//                authenticatorService.updateCount(
+//                        result.getSignatureCount(),
+//                        result.getCredential().getCredentialId());
                 log.debug("login success");
                 SecurityContext context = securityContextHolderStrategy.createEmptyContext();
                 Authentication authentication =
@@ -144,7 +146,7 @@ public class LoginServiceImpl implements LoginService {
         } catch (IOException e) {
             return "400";
         } catch (AssertionFailedException e) {
-            log.error("saveUser error:{}", e.getMessage());
+            log.error("login error:{}", e);
             return "500";
         }
     }

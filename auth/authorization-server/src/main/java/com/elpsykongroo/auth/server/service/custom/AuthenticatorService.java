@@ -31,7 +31,7 @@ public interface AuthenticatorService {
 
     Authenticator add(Authenticator authenticator);
 
-    int updateCount(Authenticator authenticator);
+    int updateCount(Long count, ByteArray credId);
 
     Optional<Authenticator> findByCredentialId(ByteArray credentialId);
 

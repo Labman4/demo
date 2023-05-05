@@ -166,9 +166,11 @@
                         <env>
                             <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
+                            <HTTP_PROXY>http://192.168.1.30:10811</HTTP_PROXY>
+                            <HTTPS_PROXY>http://192.168.1.30:10811</HTTPS_PROXY>
                         </env>
                         <name>
-                            registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
+                            registry.elpsykongroo.com/library/${project.parent.artifactId}:${project.version}
                         </name>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                     </image>

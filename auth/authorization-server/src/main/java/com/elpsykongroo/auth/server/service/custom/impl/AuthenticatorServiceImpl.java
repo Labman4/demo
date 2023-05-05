@@ -49,8 +49,8 @@ public class AuthenticatorServiceImpl implements AuthenticatorService {
     }
 
     @Override
-    public int updateCount(Authenticator authenticator) {
-        return authenticatorRepository.updateCountByCredentialId(authenticator.getCount() + 1, authenticator.getCredentialId());
+    public int updateCount(Long count, ByteArray credId) {
+        return authenticatorRepository.updateCountByCredentialId(count + 1, credId);
     }
 
     @Override
