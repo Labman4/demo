@@ -247,7 +247,9 @@ public class LoginServiceImpl implements LoginService {
                 Authenticator savedAuth = new Authenticator(result, pkc.getResponse(), user, credname);
                 authenticatorService.add(savedAuth);
                 log.debug("save authenticator success");
-                userService.updateUserInfoEmail(username + "@tmp.com", username, null, false);
+                if(user.getUserInfo() == null || user.getUserInfo().isEmpty()) {
+                    userService.updateUserInfoEmail(username + "@tmp.com", username, null, false);
+                };
                 return "200";
             } else {
                 removeInvalidUser(username);
