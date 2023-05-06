@@ -52,7 +52,7 @@ public class AuthController {
         return CommonResponse.string(loginService.register(username, display));
     }
 
-    @PostMapping("/finishauth")
+    @PostMapping("/finishAuth")
     @ResponseBody
     public String finishRegisration(
             @RequestParam String credential,

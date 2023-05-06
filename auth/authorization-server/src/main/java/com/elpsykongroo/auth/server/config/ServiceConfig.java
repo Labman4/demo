@@ -24,6 +24,9 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "service")
 public class ServiceConfig {
+
+    private String adminEmail;
+
     private Url redis;
 
     @Data

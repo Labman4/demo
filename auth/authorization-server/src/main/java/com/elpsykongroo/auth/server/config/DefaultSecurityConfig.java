@@ -56,7 +56,7 @@ public class DefaultSecurityConfig {
 								"/actuator/health/**",
 								"/email/tmp/**",
 								"/tmp/**",
-								"/finishauth").permitAll()
+								"/finishAuth").permitAll()
 						.requestMatchers("/auth/user/list").hasAuthority("admin")
 						.requestMatchers("/auth/user/**").authenticated()
 						.requestMatchers("/auth/**").hasAuthority("admin")

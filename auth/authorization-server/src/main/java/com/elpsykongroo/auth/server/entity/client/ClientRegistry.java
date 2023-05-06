@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,6 @@ import java.util.Set;
 @Entity
 @Table( name = "`oauth2_client_registered`")
 public class ClientRegistry {
-
     @Id
     private String registrationId;
 
@@ -69,159 +67,6 @@ public class ClientRegistry {
     public ClientRegistry() {
     }
 
-    public Builder withRegistrationId(String registrationId) {
-        Assert.hasText(registrationId, "registrationId cannot be empty");
-        return new Builder(registrationId);
-    }
-
-    /**
-     * Returns a new {@link Builder}, initialized with the provided
-     * {@link ClientRegistry}.
-     *
-     * @param clientRegistry the {@link ClientRegistry} to copy from
-     * @return the {@link Builder}
-     */
-    public Builder withClientRegistration(ClientRegistry clientRegistry) {
-        Assert.notNull(clientRegistry, "clientRegistry cannot be null");
-        return new Builder(clientRegistry);
-    }
-
-//    public static class ClientAuthenticationMethod implements Serializable {
-//
-//        private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
-//
-//        /**
-//         * @since 5.5
-//         */
-//        public static final ClientAuthenticationMethod CLIENT_SECRET_BASIC = new ClientAuthenticationMethod(
-//                "client_secret_basic");
-//
-//        /**
-//         * @since 5.5
-//         */
-//        public static final ClientAuthenticationMethod CLIENT_SECRET_POST = new ClientAuthenticationMethod(
-//                "client_secret_post");
-//
-//        /**
-//         * @since 5.5
-//         */
-//        public static final ClientAuthenticationMethod CLIENT_SECRET_JWT = new ClientAuthenticationMethod(
-//                "client_secret_jwt");
-//
-//        /**
-//         * @since 5.5
-//         */
-//        public static final ClientAuthenticationMethod PRIVATE_KEY_JWT = new ClientAuthenticationMethod("private_key_jwt");
-//
-//        /**
-//         * @since 5.2
-//         */
-//        public static final ClientAuthenticationMethod NONE = new org.springframework.security.oauth2.core.ClientAuthenticationMethod("none");
-//
-//        private final String value;
-//
-//        /**
-//         * Constructs a {@code ClientAuthenticationMethod} using the provided value.
-//         * @param value the value of the client authentication method
-//         */
-//        public ClientAuthenticationMethod(String value) {
-//            Assert.hasText(value, "value cannot be empty");
-//            this.value = value;
-//        }
-//
-//        /**
-//         * Returns the value of the client authentication method.
-//         * @return the value of the client authentication method
-//         */
-//        public String getValue() {
-//            return this.value;
-//        }
-//
-//        @Override
-//        public boolean equals(Object obj) {
-//            if (this == obj) {
-//                return true;
-//            }
-//            if (obj == null || this.getClass() != obj.getClass()) {
-//                return false;
-//            }
-//            ClientAuthenticationMethod that = (ClientAuthenticationMethod)obj;
-//            return getValue().equals(that.getValue());
-//        }
-//
-//        @Override
-//        public int hashCode() {
-//            return getValue().hashCode();
-//        }
-//
-//    }
-//    public static class AuthorizationGrantType implements Serializable {
-//
-//        private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
-//
-//        public static final AuthorizationGrantType AUTHORIZATION_CODE = new AuthorizationGrantType("authorization_code");
-//
-//        public static final AuthorizationGrantType REFRESH_TOKEN = new AuthorizationGrantType("refresh_token");
-//
-//        public static final AuthorizationGrantType CLIENT_CREDENTIALS = new AuthorizationGrantType("client_credentials");
-//
-//        /**
-//         * @deprecated The latest OAuth 2.0 Security Best Current Practice disallows the use
-//         * of the Resource Owner Password Credentials grant. See reference
-//         * <a target="_blank" href=
-//         * "https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics-19#section-2.4">OAuth
-//         * 2.0 Security Best Current Practice.</a>
-//         */
-//        @Deprecated
-//        public static final AuthorizationGrantType PASSWORD = new AuthorizationGrantType("password");
-//
-//        /**
-//         * @since 5.5
-//         */
-//        public static final AuthorizationGrantType JWT_BEARER = new AuthorizationGrantType(
-//                "urn:ietf:params:oauth:grant-type:jwt-bearer");
-//
-//        private final String value;
-//
-//        /**
-//         * Constructs an {@code AuthorizationGrantType} using the provided value.
-//         * @param value the value of the authorization grant type
-//         */
-//        public AuthorizationGrantType(String value) {
-//            Assert.hasText(value, "value cannot be empty");
-//            this.value = value;
-//        }
-//
-//        /**
-//         * Returns the value of the authorization grant type.
-//         * @return the value of the authorization grant type
-//         */
-//        public String getValue() {
-//            return this.value;
-//        }
-//
-//        @Override
-//        public boolean equals(Object obj) {
-//            if (this == obj) {
-//                return true;
-//            }
-//            if (obj == null || this.getClass() != obj.getClass()) {
-//                return false;
-//            }
-//            AuthorizationGrantType that = (AuthorizationGrantType) obj;
-//            return this.getValue().equals(that.getValue());
-//        }
-//
-//        @Override
-//        public int hashCode() {
-//            return this.getValue().hashCode();
-//        }
-//
-//    }
-
-    /**
-     * Details of the Provider.
-     */
     public static class ProviderDetails implements Serializable {
 
         private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
@@ -394,10 +239,6 @@ public class ClientRegistry {
 
         private String clientName;
 
-        private Builder(String registrationId) {
-            this.registrationId = registrationId;
-        }
-
         private static AuthorizationGrantType resolveAuthorizationGrantType(String authorizationGrantType) {
             if (AuthorizationGrantType.AUTHORIZATION_CODE.getValue().equals(authorizationGrantType)) {
                 return AuthorizationGrantType.AUTHORIZATION_CODE;
@@ -452,17 +293,6 @@ public class ClientRegistry {
         }
 
         /**
-         * Sets the registration id.
-         *
-         * @param registrationId the registration id
-         * @return the {@link Builder}
-         */
-        public Builder registrationId(String registrationId) {
-            this.registrationId = registrationId;
-            return this;
-        }
-
-        /**
          * Sets the client identifier.
          *
          * @param clientId the client identifier
@@ -470,66 +300,6 @@ public class ClientRegistry {
          */
         public Builder clientId(String clientId) {
             this.clientId = clientId;
-            return this;
-        }
-
-        /**
-         * Sets the client secret.
-         *
-         * @param clientSecret the client secret
-         * @return the {@link Builder}
-         */
-        public Builder clientSecret(String clientSecret) {
-            this.clientSecret = clientSecret;
-            return this;
-        }
-
-        /**
-         * Sets the {@link ClientAuthenticationMethod authentication method} used when
-         * authenticating the client with the authorization server.
-         *
-         * @param clientAuthenticationMethod the authentication method used for the client
-         * @return the {@link Builder}
-         */
-        public Builder clientAuthenticationMethod(ClientAuthenticationMethod clientAuthenticationMethod) {
-            this.clientAuthenticationMethod = clientAuthenticationMethod;
-            return this;
-        }
-
-        /**
-         * Sets the {@link AuthorizationGrantType authorization grant type} used for the
-         * client.
-         *
-         * @param authorizationGrantType the authorization grant type used for the client
-         * @return the {@link Builder}
-         */
-        public Builder authorizationGrantType(AuthorizationGrantType authorizationGrantType) {
-            this.authorizationGrantType = authorizationGrantType;
-            return this;
-        }
-
-        /**
-         * Sets the uri (or uri template) for the redirection endpoint.
-         * <p>
-         * <br />
-         * The supported uri template variables are: {baseScheme}, {baseHost}, {basePort},
-         * {basePath} and {registrationId}.
-         * <p>
-         * <br />
-         * <b>NOTE:</b> {baseUrl} is also supported, which is the same as
-         * {baseScheme}://{baseHost}{basePort}{basePath}.
-         * <p>
-         * <br />
-         * Configuring uri template variables is especially useful when the client is
-         * running behind a Proxy Server. This ensures that the X-Forwarded-* headers are
-         * used when expanding the redirect-uri.
-         *
-         * @param redirectUri the uri (or uri template) for the redirection endpoint
-         * @return the {@link Builder}
-         * @since 5.4
-         */
-        public Builder redirectUri(String redirectUri) {
-            this.redirectUri = redirectUri;
             return this;
         }
 
@@ -556,116 +326,6 @@ public class ClientRegistry {
             if (scope != null && !scope.isEmpty()) {
                 this.scopes = Collections.unmodifiableSet(new LinkedHashSet<>(scope));
             }
-            return this;
-        }
-
-        /**
-         * Sets the uri for the authorization endpoint.
-         *
-         * @param authorizationUri the uri for the authorization endpoint
-         * @return the {@link Builder}
-         */
-        public Builder authorizationUri(String authorizationUri) {
-            this.authorizationUri = authorizationUri;
-            return this;
-        }
-
-        /**
-         * Sets the uri for the token endpoint.
-         *
-         * @param tokenUri the uri for the token endpoint
-         * @return the {@link Builder}
-         */
-        public Builder tokenUri(String tokenUri) {
-            this.tokenUri = tokenUri;
-            return this;
-        }
-
-        /**
-         * Sets the uri for the user info endpoint.
-         *
-         * @param userInfoUri the uri for the user info endpoint
-         * @return the {@link Builder}
-         */
-        public Builder userInfoUri(String userInfoUri) {
-            this.userInfoUri = userInfoUri;
-            return this;
-        }
-
-        /**
-         * Sets the authentication method for the user info endpoint.
-         *
-         * @param userInfoAuthenticationMethod the authentication method for the user info
-         *                                     endpoint
-         * @return the {@link Builder}
-         * @since 5.1
-         */
-        public Builder userInfoAuthenticationMethod(AuthenticationMethod userInfoAuthenticationMethod) {
-            this.userInfoAuthenticationMethod = userInfoAuthenticationMethod;
-            return this;
-        }
-
-        /**
-         * Sets the attribute name used to access the user's name from the user info
-         * response.
-         *
-         * @param userNameAttributeName the attribute name used to access the user's name
-         *                              from the user info response
-         * @return the {@link Builder}
-         */
-        public Builder userNameAttributeName(String userNameAttributeName) {
-            this.userNameAttributeName = userNameAttributeName;
-            return this;
-        }
-
-        /**
-         * Sets the uri for the JSON Web Key (JWK) Set endpoint.
-         *
-         * @param jwkSetUri the uri for the JSON Web Key (JWK) Set endpoint
-         * @return the {@link Builder}
-         */
-        public Builder jwkSetUri(String jwkSetUri) {
-            this.jwkSetUri = jwkSetUri;
-            return this;
-        }
-
-        /**
-         * Sets the issuer identifier uri for the OpenID Connect 1.0 provider or the OAuth
-         * 2.0 Authorization Server.
-         *
-         * @param issuerUri the issuer identifier uri for the OpenID Connect 1.0 provider
-         *                  or the OAuth 2.0 Authorization Server
-         * @return the {@link Builder}
-         * @since 5.4
-         */
-        public Builder issuerUri(String issuerUri) {
-            this.issuerUri = issuerUri;
-            return this;
-        }
-
-        /**
-         * Sets the metadata describing the provider's configuration.
-         *
-         * @param configurationMetadata the metadata describing the provider's
-         *                              configuration
-         * @return the {@link Builder}
-         * @since 5.1
-         */
-        public Builder providerConfigurationMetadata(Map<String, Object> configurationMetadata) {
-            if (configurationMetadata != null) {
-                this.configurationMetadata = new LinkedHashMap<>(configurationMetadata);
-            }
-            return this;
-        }
-
-        /**
-         * Sets the logical name of the client or registration.
-         *
-         * @param clientName the client or registration name
-         * @return the {@link Builder}
-         */
-        public Builder clientName(String clientName) {
-            this.clientName = clientName;
             return this;
         }
 
@@ -745,13 +405,6 @@ public class ClientRegistry {
             Assert.hasText(this.tokenUri, "tokenUri cannot be empty");
         }
 
-        private void validatePasswordGrantType() {
-            Assert.isTrue(AuthorizationGrantType.PASSWORD.equals(this.authorizationGrantType),
-                    () -> "authorizationGrantType must be " + AuthorizationGrantType.PASSWORD.getValue());
-            Assert.hasText(this.registrationId, "registrationId cannot be empty");
-            Assert.hasText(this.clientId, "clientId cannot be empty");
-            Assert.hasText(this.tokenUri, "tokenUri cannot be empty");
-        }
 
         private void validateAuthorizationGrantTypes() {
             for (AuthorizationGrantType authorizationGrantType : AUTHORIZATION_GRANT_TYPES) {

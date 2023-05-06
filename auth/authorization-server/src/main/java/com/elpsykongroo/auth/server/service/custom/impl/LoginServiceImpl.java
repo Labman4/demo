@@ -16,10 +16,13 @@
 
 package com.elpsykongroo.auth.server.service.custom.impl;
 
+import com.elpsykongroo.auth.server.config.ServiceConfig;
 import com.elpsykongroo.auth.server.entity.user.Authenticator;
 import com.elpsykongroo.auth.server.entity.user.User;
 import com.elpsykongroo.auth.server.security.provider.WebAuthnAuthenticationToken;
 import com.elpsykongroo.auth.server.service.custom.AuthenticatorService;
+import com.elpsykongroo.auth.server.service.custom.AuthorityService;
+import com.elpsykongroo.auth.server.service.custom.EmailService;
 import com.elpsykongroo.auth.server.service.custom.LoginService;
 import com.elpsykongroo.auth.server.service.custom.UserService;
 import com.elpsykongroo.auth.server.utils.Random;
@@ -42,13 +45,13 @@ import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.UserIdentity;
-import com.yubico.webauthn.data.UserVerificationRequirement;
 import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.DeferredSecurityContext;
@@ -89,32 +92,56 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private ServiceConfig serviceConfig;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private AuthorityService authorityService;
+
     @Override
     public String login(String username, HttpServletRequest servletRequest) {
-        DeferredSecurityContext securityContext = securityContextRepository.loadDeferredContext(servletRequest);
-        if (securityContext.get().getAuthentication() != null) {
-            log.debug("already login");
-            if (username.equals(securityContext.get().getAuthentication().getName())) {
-                return "200";
-            } else {
-                return "202";
-            }
-        }
-        AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
-                .username(username)
-                .build());
         try {
-            servletContext.setAttribute(username, request);
-            return request.toCredentialsGetJson();
+            DeferredSecurityContext securityContext = securityContextRepository.loadDeferredContext(servletRequest);
+            if (securityContext.get().getAuthentication() != null) {
+                log.debug("already login");
+                if (username.equals(securityContext.get().getAuthentication().getName())) {
+                    return "200";
+                } else {
+                    return "202";
+                }
+            }
+            User user = userService.loadUserByUsername(username);
+            if (user != null) {
+                if (user.isAccountNonLocked() && existAuth(username)) {
+                    AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
+                            .username(username)
+                            .build());
+                    servletContext.setAttribute(username, request);
+                    return request.toCredentialsGetJson();
+                } else {
+                    if ("admin".equals(username)) {
+                        return "400";
+                    }
+                    return "401";
+                }
+            } else {
+                if ("admin".equals(username)){
+                    initAdminUser();
+                    return "400";
+                }
+                return "404";
+            }
         } catch (JsonProcessingException e) {
-            return "502";
+            return  "500";
         }
     }
 
     @Override
     public String handleLogin(String credential, String username, HttpServletRequest request, HttpServletResponse response) {
         try {
-            User user = userService.loadUserByUsername(username);
             PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>
                     pkc = PublicKeyCredential.parseAssertionResponseJson(credential);
             AssertionRequest assertionRequest = (AssertionRequest) servletContext.getAttribute(username);
@@ -124,7 +151,7 @@ public class LoginServiceImpl implements LoginService {
                     .request(assertionRequest)
                     .response(pkc)
                     .build());
-            if (result.isSuccess() && !user.isLocked()) {
+            if (result.isSuccess()) {
                 /**
                  * multi device sign count will always as 0, dont add it
                  */
@@ -134,7 +161,10 @@ public class LoginServiceImpl implements LoginService {
                 log.debug("login success");
                 SecurityContext context = securityContextHolderStrategy.createEmptyContext();
                 Authentication authentication =
-                        WebAuthnAuthenticationToken.authenticated(result.getUsername(), result.getCredential(), user.getAuthorities());
+                        WebAuthnAuthenticationToken.authenticated(
+                                result.getUsername(),
+                                result.getCredential(),
+                                userService.loadUserByUsername(username).getAuthorities());
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);
@@ -234,7 +264,7 @@ public class LoginServiceImpl implements LoginService {
     private void removeInvalidUser(String username) {
         try {
             User user = userService.loadUserByUsername(username);
-            if (user != null) {
+            if (user != null && !"admin".equals(username)) {
                 if (user.getHandle().isEmpty()) {
                     log.debug("remove invalid user with no handle");
                     userService.deleteByUsername(username);
@@ -291,5 +321,33 @@ public class LoginServiceImpl implements LoginService {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void initAdminUser() {
+        log.debug("init admin");
+        UserIdentity userIdentity = UserIdentity.builder()
+                .name("admin")
+                .displayName("admin")
+                .id(new ByteArray(Random.generateRandomByte(32)))
+                .build();
+        User user = new User(userIdentity);
+        user.setCreateTime(Instant.now());
+        user.setUpdateTime(Instant.now());
+        String id = userService.add(user).getId();
+        authorityService.updateUserAuthority("admin,group,permission", id);
+        if (StringUtils.isNotBlank(serviceConfig.getAdminEmail())) {
+            userService.updateUserInfoEmail(serviceConfig.getAdminEmail(), "admin", null, true);
+            emailService.sendTmpLoginCert("admin");
+        }
+    }
+    private Boolean existAuth(String username) {
+        Optional<Authenticator> authenticator = authenticatorService.findByName(username);
+        if (authenticator.isEmpty()) {
+            if ("admin".equals(username)) {
+                emailService.sendTmpLoginCert("admin");
+            }
+            return false;
+        }
+        return true;
     }
 }

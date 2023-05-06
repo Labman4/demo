@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @PatchMapping("/user/info/patch")
-    public String userlist (@RequestHeader("Authorization") String auth,
+    public String userInfoPatch (@RequestHeader("Authorization") String auth,
                             @RequestBody UserInfo userinfo) {
         return CommonResponse.string(authService.updateUserInfo(auth, userinfo));
     }

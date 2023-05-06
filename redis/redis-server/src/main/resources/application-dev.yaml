@@ -6,24 +6,4 @@ spring:
     redis:
       client-type: ${REDIS_TYPE:LETTUCE}
       host: 127.0.0.1
-#      password: elpsy9657
 #      password: ${REDIS_PASS:pass}
-#      host: 127.0.0.1
-#      cluster:
-#        nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
-      lettuce:
-        pool:
-          enabled: true
-          maxIdle: 5
-          minIdle: 1
-          maxActive: 5
-          maxWait: 5
-          timeBetweenEvictionRuns: 100000
-      # jedis:
-      #   pool:
-      #     enabled: false
-      #     maxIdle: 5
-      #     minIdle: 1
-      #     maxActive: 5
-      #     maxWait: 5
-      #     timeBetweenEvictionRuns: 100000

@@ -17,8 +17,6 @@
 package com.elpsykongroo.auth.server.service.custom.impl;
 
 import com.elpsykongroo.auth.server.entity.user.User;
-import com.elpsykongroo.auth.server.repository.user.UserRepository;
-import com.elpsykongroo.auth.server.service.custom.AuthenticatorService;
 import com.elpsykongroo.auth.server.service.custom.EmailService;
 import com.elpsykongroo.auth.server.service.custom.UserService;
 import com.elpsykongroo.auth.server.utils.Random;
@@ -44,15 +42,10 @@ public class EmailServiceImpl implements EmailService {
     private JavaMailSender emailSender;
 
     @Autowired
-    private AuthenticatorService authenticatorService;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
     private RedisService redisService;
-    @Autowired
-    private UserRepository userRepository;
 
     public void send(String to, String subject, String text) {
         try {
