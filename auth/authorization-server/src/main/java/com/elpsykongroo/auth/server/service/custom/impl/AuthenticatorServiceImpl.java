@@ -34,13 +34,23 @@ public class AuthenticatorServiceImpl implements AuthenticatorService {
     private AuthenticatorRepository authenticatorRepository;
 
     @Override
-    public Optional<Authenticator> findByName(String name) {
+    public List<Authenticator> findByUser(String username) {
+        return authenticatorRepository.findByUser_Username(username);
+    }
+
+    @Override
+    public List<Authenticator> findByName(String name) {
         return authenticatorRepository.findByName(name);
     }
 
     @Override
-    public void deleteByName(String name) {
-        authenticatorRepository.deleteByName(name);
+    public long deleteByName(String name) {
+       return authenticatorRepository.deleteByName(name);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        authenticatorRepository.deleteById(id);
     }
 
     @Override

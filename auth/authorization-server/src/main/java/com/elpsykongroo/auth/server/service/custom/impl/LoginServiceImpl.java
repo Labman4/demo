@@ -68,7 +68,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Base64;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -272,11 +272,17 @@ public class LoginServiceImpl implements LoginService {
                     userService.deleteByUsername(username);
                     authenticatorService.deleteByName(username);
                 }
-                Optional<Authenticator> authenticator = authenticatorService.findByName(username);
-                if (authenticator.isPresent()) {
-                    if (authenticator.get().getCredentialId().isEmpty()) {
-                        log.debug("remove invalid user with no cred");
-                        authenticatorService.deleteByName(username);
+                List<Authenticator> authenticators = authenticatorService.findByUser(username);
+                if (!authenticators.isEmpty()) {
+                    int inValidCount = 0;
+                    for (Authenticator authenticator : authenticators) {
+                        if (authenticator.getCredentialId().isEmpty()) {
+                            log.debug("remove invalid user with no cred");
+                            authenticatorService.deleteById(authenticator.getId());
+                            inValidCount++;
+                        }
+                    }
+                    if (inValidCount >= authenticators.size()) {
                         userService.deleteByUsername(username);
                     }
                 } else {
@@ -343,7 +349,7 @@ public class LoginServiceImpl implements LoginService {
         }
     }
     private Boolean existAuth(String username) {
-        Optional<Authenticator> authenticator = authenticatorService.findByName(username);
+        List<Authenticator> authenticator = authenticatorService.findByUser(username);
         if (authenticator.isEmpty()) {
             if ("admin".equals(username)) {
                 emailService.sendTmpLoginCert("admin");

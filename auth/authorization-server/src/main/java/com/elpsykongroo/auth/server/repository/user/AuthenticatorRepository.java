@@ -28,16 +28,18 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AuthenticatorRepository extends JpaRepository<Authenticator, String> {
+
     @Transactional
     @Modifying
     @Query("update Authenticator a set a.count = ?1 where a.credentialId = ?2")
     int updateCountByCredentialId(Long count, ByteArray credentialId);
 
-
     @Transactional
     long deleteByName(String name);
 
-    Optional<Authenticator> findByName(String name);
+    List<Authenticator> findByUser_Username(String username);
+
+    List<Authenticator> findByName(String name);
 
     Optional<Authenticator> findByCredentialId(ByteArray credentialId);
 

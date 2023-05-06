@@ -24,10 +24,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AuthenticatorService {
+    List<Authenticator> findByUser(String username);
 
-    Optional<Authenticator> findByName(String name);
+    List<Authenticator> findByName(String name);
 
-    void deleteByName(String name);
+    long deleteByName(String name);
+
+    void deleteById(String id);
 
     Authenticator add(Authenticator authenticator);
 
