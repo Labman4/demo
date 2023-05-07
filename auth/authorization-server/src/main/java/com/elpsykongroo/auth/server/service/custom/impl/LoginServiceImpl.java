@@ -312,7 +312,7 @@ public class LoginServiceImpl implements LoginService {
                 log.debug("set tmp SecurityContext");
                 KV kv = new KV("TmpCert_" + username, "");
                 redisService.set(kv);
-                return "redirect:https://elpsykongroo.com";
+                return "redirect:https://elpsykongroo.com?username=" + username;
             }
         } catch (Exception e) {
             log.error("set tmp SecurityContext error:{}", e.getMessage());
