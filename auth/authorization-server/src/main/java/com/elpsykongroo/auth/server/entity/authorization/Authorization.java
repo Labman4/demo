@@ -40,7 +40,7 @@ public class Authorization {
 	@Column(length = 1000)
 	private String authorizedScopes;
 
-	@Column(length = 4000)
+	@Column(length = 5000)
 	private String attributes;
 
 	@Column(length = 500)

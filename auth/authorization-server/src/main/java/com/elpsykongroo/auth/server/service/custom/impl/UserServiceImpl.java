@@ -138,6 +138,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private int updateEmail(String email, String username) {
+        updateUserInfoEmail(email, username, loadUserByUsername(username).getUserInfo(), false);
         return userRepository.updateEmailByUsername(email, username);
     }
 

@@ -71,7 +71,8 @@ public class DefaultSecurityConfig {
 				.apply(federatedIdentityConfigurer);
 		http.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.NEVER)
-				.maximumSessions(1);
+				.maximumSessions(1)
+				.maxSessionsPreventsLogin(true);
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 		http.httpBasic((basic) -> basic
 						.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
