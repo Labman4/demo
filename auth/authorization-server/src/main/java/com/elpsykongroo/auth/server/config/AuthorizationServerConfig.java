@@ -123,8 +123,8 @@ public class AuthorizationServerConfig {
 			.securityMatcher(endpointsMatcher)
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.NEVER)
-				.maximumSessions(1)
-				.maxSessionsPreventsLogin(true);
+				.maximumSessions(1);
+//				.maxSessionsPreventsLogin(true);
 		http.httpBasic((basic) -> basic
 					.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
 						@Override
