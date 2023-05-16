@@ -20,7 +20,7 @@ jobs:
       version: dev
       env: dev
   native:
-    uses: Labman4/workflow/.github/workflows/native-image.yml@native-image
+    uses: Labman4/workflow/.github/workflows/native-image-gateway.yml@native-image
     secrets: inherit
     with: 
       module: gateway
