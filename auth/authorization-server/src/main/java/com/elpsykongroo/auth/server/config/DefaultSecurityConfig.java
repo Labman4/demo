@@ -35,6 +35,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 @EnableWebSecurity
 @Configuration(proxyBeanMethods = false)
@@ -69,10 +70,11 @@ public class DefaultSecurityConfig {
 					.logoutSuccessHandler(new CustomLogoutSuccessHandler())
 					.deleteCookies("JSESSIONID"))
 				.apply(federatedIdentityConfigurer);
-		http.sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.NEVER)
-				.maximumSessions(1)
-				.maxSessionsPreventsLogin(true);
+		http
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.NEVER)
+			.maximumSessions(1)
+			.maxSessionsPreventsLogin(true);
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 		http.httpBasic((basic) -> basic
 						.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
@@ -95,5 +97,10 @@ public class DefaultSecurityConfig {
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService);
+	}
+
+	@Bean
+	public HttpSessionRequestCache httpSessionRequestCache() {
+		return new HttpSessionRequestCache();
 	}
 }

@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.gateway.config;
 
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.services.redis.client.RedisService;
 import com.elpsykongroo.services.redis.client.impl.RedisServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.server.config;
+package com.elpsykongroo.base.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,10 +24,56 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "service")
 public class ServiceConfig {
-
-    private String adminEmail;
-
+    private TimeOut timeout;
+    private String env;
+    private String whiteDomain;
+    private Url es;
+    private Url storage;
+    private Url auth;
     private Url redis;
+    private String adminEmail;
+    private String vault;
+    private ES elastic;
+    //public ca
+    private SSL ssl;
+
+    @Data
+    public static class SSL {
+        
+        private String type;
+
+        private String ca ;
+
+        private String cert;
+
+        private String key;
+    }
+
+    @Data
+    public static class ES {
+
+        private TimeOut timeout;
+
+        private String user;
+
+        private String pass;
+
+        //self ca
+        private SSL ssl ;
+
+        private String[] nodes;
+
+    }
+
+    @Data
+    public static class TimeOut {
+
+        private Long connect;
+
+        private Long socket;
+
+        private Long read;
+    }
 
     @Data
     public static class Url {

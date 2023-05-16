@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.gateway.config;
 
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.storage.client.StorageService;
 import com.elpsykongroo.storage.client.impl.StorageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

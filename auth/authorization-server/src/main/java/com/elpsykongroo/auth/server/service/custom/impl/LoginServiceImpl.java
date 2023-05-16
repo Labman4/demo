@@ -16,7 +16,6 @@
 
 package com.elpsykongroo.auth.server.service.custom.impl;
 
-import com.elpsykongroo.auth.server.config.ServiceConfig;
 import com.elpsykongroo.auth.server.entity.user.Authenticator;
 import com.elpsykongroo.auth.server.entity.user.User;
 import com.elpsykongroo.auth.server.security.provider.WebAuthnAuthenticationToken;
@@ -26,6 +25,7 @@ import com.elpsykongroo.auth.server.service.custom.EmailService;
 import com.elpsykongroo.auth.server.service.custom.LoginService;
 import com.elpsykongroo.auth.server.service.custom.UserService;
 import com.elpsykongroo.auth.server.utils.Random;
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.services.redis.client.RedisService;
 import com.elpsykongroo.services.redis.client.dto.KV;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -90,7 +90,7 @@ public class LoginServiceImpl implements LoginService {
 
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
-    private SecurityContextRepository securityContextRepository =
+    private final SecurityContextRepository securityContextRepository =
             new HttpSessionSecurityContextRepository();
     @Autowired
     private RelyingParty relyingParty;
@@ -209,8 +209,7 @@ public class LoginServiceImpl implements LoginService {
             saveUser.setCreateTime(Instant.now());
             saveUser.setUpdateTime(Instant.now());
             userService.add(saveUser);
-            String response = registerAuth(saveUser);
-            return response;
+            return registerAuth(saveUser);
         } else {
             return "409";
         }
@@ -219,8 +218,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public String addAuthenticator(String username) {
         User user = userService.loadUserByUsername(username);
-        String response = registerAuth(user);
-        return response;
+        return registerAuth(user);
     }
 
     private String registerAuth(User user) {
@@ -263,7 +261,7 @@ public class LoginServiceImpl implements LoginService {
                 log.debug("save authenticator success");
                 if(user.getUserInfo() == null || user.getUserInfo().isEmpty()) {
                     userService.updateUserInfoEmail(username + "@tmp.com", username, null, false);
-                };
+                }
                 return "200";
             } else {
                 removeInvalidUser(username);
@@ -338,8 +336,7 @@ public class LoginServiceImpl implements LoginService {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] digest = md.digest(codeVerifier.getBytes(StandardCharsets.US_ASCII));
-            String encodedVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
-            return encodedVerifier;
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
