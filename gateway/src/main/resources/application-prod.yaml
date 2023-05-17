@@ -64,6 +64,9 @@ request:
     white: ${WHITE_HEADER:x-forward-for}
     record: ${RECORD_HEADER:x-forward-for}
 service:
+  timeout:
+    connect: 10
+    read: 10
   ssl:
     ca:  ${CA_CRT:ca.crt}
     cert:  ${TLS_CERT:tls.crt}

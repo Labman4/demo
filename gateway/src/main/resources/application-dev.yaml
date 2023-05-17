@@ -30,10 +30,10 @@ request:
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
     permit: ${PERMIT_PATH:/**}
-    nonPrivate: ${PUBLIC_PATH:/public}
-    exclude: ${EXCLUDE_PATH:/actuator}
-#    nonPrivate: ${PUBLIC_PATH:/}
-#    exclude: ${EXCLUDE_PATH:/}
+#    nonPrivate: ${PUBLIC_PATH:/public}
+#    exclude: ${EXCLUDE_PATH:/actuator}
+    nonPrivate: ${PUBLIC_PATH:/}
+    exclude: ${EXCLUDE_PATH:/}
     limit: ${LIMIT_PATH:/}
     filter: ${FILTER_PATH:/}
   record: 
@@ -46,6 +46,9 @@ request:
     white: ${WHITE_HEADER:x-forward-for}
     record: ${RECORD_HEADER:x-forward-for}
 service:
+  timeout:
+    connect: 10
+    read: 10
   ssl:
     ca:  ${CA_CRT}
     cert:  ${TLS_CERT}
