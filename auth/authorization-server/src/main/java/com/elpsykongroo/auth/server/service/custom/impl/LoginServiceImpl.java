@@ -58,8 +58,6 @@ import org.springframework.security.core.context.DeferredSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -85,8 +83,6 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private HttpSessionRequestCache requestCache;
-
-    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
@@ -180,8 +176,7 @@ public class LoginServiceImpl implements LoginService {
                 log.debug("set SecurityContext success");
                 SavedRequest savedRequest = requestCache.getRequest(request, response);
                 if (savedRequest != null && savedRequest.getRedirectUrl() != null) {
-                    String targetUrl = savedRequest.getRedirectUrl();
-                    this.redirectStrategy.sendRedirect(request, response, targetUrl);
+                    return savedRequest.getRedirectUrl();
                 }
                 return "200";
             } else {

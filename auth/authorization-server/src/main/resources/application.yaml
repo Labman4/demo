@@ -22,7 +22,7 @@ spring:
         smtp:
           proxy:
             host: ${EMAIL_PROXY:127.0.0.1}
-            port: ${EMAIL_PROXY_PORT:1080}
+            port: ${EMAIL_PROXY_PORT:10811}
           auth: true
           starttls:
             enable: true
@@ -42,24 +42,22 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   liquibase:
-    drop-first: true
-    enabled: false
-    clear-checksums: true
+    drop-first: false
+    enabled: true
+    clear-checksums: false
     change-log: classpath:liquibase/changelog.xml
 #    rollback-file: rollback.sh
   datasource:
+    hikari:
+      auto-commit: false
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_IP:localhost}:${DB_PORT:5432}/${DB_DATABASE:auth}?useUnicode=true&characterEncoding=UTF-8
     username: ${DB_USER:postgres}
     password: ${DB_PASS:elpsy}
-#    driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://${DB_IP:192.168.1.106}:${DB_PORT:5432}/${DB_DATABASE:auth}?useUnicode=true&characterEncoding=UTF-8
-#    username: ${DB_USER:postgres}
-#    password: ${DB_PASS:Elpsy9657}
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://${DB_IP:localhost}:${DB_PORT:13306}/${DB_DATABASE:auth}?useUnicode=true&characterEncoding=UTF-8
 #    username: ${DB_USER:root}
-#    password: ${DB_PASS:elpsy}
+#    password: ${DB_PASS:pass}
   security:
     oauth2:
       client:
@@ -97,3 +95,4 @@ logging:
 service:
   redis:
     url:  ${REDIS_SERVICE:http://localhost:8379}
+  adminEmail: ${ADMIN_EMAIL:woxiangqusia@gmail.com}

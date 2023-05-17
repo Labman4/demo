@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.5</version>
+        <version>3.0.6</version>
     </parent>
 
     <groupId>com.elpsykongroo</groupId>
@@ -63,9 +63,9 @@
                                 -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/
                             </jvmArguments>
                             <image>
-                                <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
+                                <builder>paketobuildpacks/builder:tiny</builder>
                                 <env>
-                                    <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
+                                    <BP_JVM_VERSION>17</BP_JVM_VERSION>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
                                 </env>
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy>
@@ -125,10 +125,10 @@
                                 -agentlib:native-image-agent=config-merge-dir=src/main/resources/META-INF/native-image/
                             </jvmArguments>
                             <image>
-                                <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
+                                <builder>paketobuildpacks/builder:tiny</builder>
                                 <buildpacks></buildpacks>
                                 <env>
-                                    <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
+                                    <BP_JVM_VERSION>17</BP_JVM_VERSION>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>     
                                 </env>
                                 <name>
@@ -162,12 +162,12 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
+                        <builder>paketobuildpacks/builder:tiny</builder>
                         <env>
-                            <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
+                            <BP_JVM_VERSION>17</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
-                            <HTTP_PROXY>http://192.168.1.30:10811</HTTP_PROXY>
-                            <HTTPS_PROXY>http://192.168.1.30:10811</HTTPS_PROXY>
+                            <HTTP_PROXY>http://192.168.1.100:1080</HTTP_PROXY>
+                            <HTTPS_PROXY>http://192.168.1.100:1080</HTTPS_PROXY>
                         </env>
                         <name>
                             registry.elpsykongroo.com/library/${project.parent.artifactId}:${project.version}
