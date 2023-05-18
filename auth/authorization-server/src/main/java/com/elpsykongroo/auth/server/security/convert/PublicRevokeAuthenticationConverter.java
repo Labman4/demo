@@ -42,18 +42,18 @@ public class PublicRevokeAuthenticationConverter implements AuthenticationConver
             if (authentication != null) {
                 log.debug("public revoke:{}", authentication.getPrincipal());
                 RegisteredClient registeredClient = repository.findByClientId(request.getParameter("client_id"));
-                OAuth2ClientAuthenticationToken
-                        client = new OAuth2ClientAuthenticationToken(
-                        registeredClient,
-                        ClientAuthenticationMethod.NONE,
-                        null);
-                OAuth2TokenRevocationAuthenticationToken revoke =
-                        new OAuth2TokenRevocationAuthenticationToken(
-                                request.getParameter("token"),
-                                client,
-                                tokenType != null ? tokenType : "");
+                if (registeredClient != null ) {
+                    OAuth2ClientAuthenticationToken client =
+                            new OAuth2ClientAuthenticationToken(registeredClient,
+                                    ClientAuthenticationMethod.NONE, null);
+                    OAuth2TokenRevocationAuthenticationToken revoke =
+                            new OAuth2TokenRevocationAuthenticationToken(
+                                    request.getParameter("token"),
+                                    client,
+                                    tokenType != null ? tokenType : "");
                     revoke.setAuthenticated(true);
                     return revoke;
+                }
             }
         }
         return null;

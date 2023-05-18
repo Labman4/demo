@@ -63,6 +63,8 @@ public interface AuthService {
 
     String userAuthority(String auth, String id);
 
+    String userAllAuthority(String auth, String username);
+
     String userGroup(String auth, String id);
 
     String groupAuthorityList(String auth, String name);

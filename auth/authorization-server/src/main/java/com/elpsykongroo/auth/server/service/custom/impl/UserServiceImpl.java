@@ -16,6 +16,8 @@
 
 package com.elpsykongroo.auth.server.service.custom.impl;
 
+import com.elpsykongroo.auth.server.entity.user.Authority;
+import com.elpsykongroo.auth.server.entity.user.Group;
 import com.elpsykongroo.auth.server.entity.user.User;
 import com.elpsykongroo.auth.server.entity.user.UserInfo;
 import com.elpsykongroo.auth.server.repository.user.UserRepository;
@@ -36,6 +38,7 @@ import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -135,6 +138,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByHandle(ByteArray handle) {
         return userRepository.findByHandle(handle);
+    }
+
+    @Override
+    public List<Authority> userAuthority(String username) {
+        User user = userRepository.findByUsername(username);
+        List<Authority> authorities = new ArrayList<>();
+        authorities.addAll(user.getAuthorities());
+        for (Group group : user.getGroups()) {
+            authorities.addAll(group.getAuthorities());
+        }
+        return authorities;
     }
 
     private int updateEmail(String email, String username) {

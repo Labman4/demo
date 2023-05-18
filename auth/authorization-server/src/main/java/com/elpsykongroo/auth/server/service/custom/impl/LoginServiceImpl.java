@@ -17,6 +17,7 @@
 package com.elpsykongroo.auth.server.service.custom.impl;
 
 import com.elpsykongroo.auth.server.entity.user.Authenticator;
+import com.elpsykongroo.auth.server.entity.user.Authority;
 import com.elpsykongroo.auth.server.entity.user.User;
 import com.elpsykongroo.auth.server.security.provider.WebAuthnAuthenticationToken;
 import com.elpsykongroo.auth.server.service.custom.AuthenticatorService;
@@ -175,7 +176,9 @@ public class LoginServiceImpl implements LoginService {
                 securityContextRepository.saveContext(context, request, response);
                 log.debug("set SecurityContext success");
                 SavedRequest savedRequest = requestCache.getRequest(request, response);
-                if (savedRequest != null && savedRequest.getRedirectUrl() != null) {
+                if (savedRequest != null
+                        && savedRequest.getRedirectUrl() != null
+                        && !savedRequest.getRedirectUrl().contains("access?key=")) {
                     return savedRequest.getRedirectUrl();
                 }
                 return "200";
@@ -348,7 +351,15 @@ public class LoginServiceImpl implements LoginService {
         user.setCreateTime(Instant.now());
         user.setUpdateTime(Instant.now());
         String id = userService.add(user).getId();
-        authorityService.updateUserAuthority("admin,group,permission", id);
+        String[] init = serviceConfig.getInitAuth().split(",");
+        List<Authority> exist = authorityService.userAuthority(id);
+        for (Authority authority: exist) {
+            for (int i=0; i < init.length; i++) {
+                if(authority.getAuthority().equals(init[i])){
+                    authorityService.updateUserAuthority(init[i], id);
+                }
+            }
+        }
         if (StringUtils.isNotBlank(serviceConfig.getAdminEmail())) {
             userService.updateUserInfoEmail(serviceConfig.getAdminEmail(), "admin", null, true);
             emailService.sendTmpLoginCert("admin");

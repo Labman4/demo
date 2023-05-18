@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.auth.server.service.custom;
 
+import com.elpsykongroo.auth.server.entity.user.Authority;
 import com.elpsykongroo.auth.server.entity.user.User;
 import com.elpsykongroo.auth.server.entity.user.UserInfo;
 import com.yubico.webauthn.data.ByteArray;
@@ -45,6 +46,8 @@ public interface UserService extends UserDetailsService {
     User add(User user);
 
     User findByHandle(ByteArray handle);
+
+    List<Authority> userAuthority(String username);
 }
 
 

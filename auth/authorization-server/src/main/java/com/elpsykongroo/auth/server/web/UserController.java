@@ -68,4 +68,9 @@ public class UserController {
             @RequestBody UserInfo userInfo) {
         return CommonResponse.data(userService.updateUserInfo(userInfo));
     }
+
+    @GetMapping("/authority/list")
+    public String authorityList(@RequestParam("username") String username) {
+        return CommonResponse.data(userService.userAuthority(username));
+    }
 }
