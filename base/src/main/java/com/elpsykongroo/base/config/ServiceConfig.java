@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "service")
 public class ServiceConfig {
-    private String initAuth;
+    private String initAdminAuth;
     private TimeOut timeout;
     private String env;
     private String whiteDomain;

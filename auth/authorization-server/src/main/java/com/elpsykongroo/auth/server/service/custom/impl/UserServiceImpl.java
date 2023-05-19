@@ -152,8 +152,12 @@ public class UserServiceImpl implements UserService {
     }
 
     private int updateEmail(String email, String username) {
-        updateUserInfoEmail(email, username, loadUserByUsername(username).getUserInfo(), false);
-        return userRepository.updateEmailByUsername(email, username);
+        User user = loadUserByUsername(username);
+        if (user != null) {
+            updateUserInfoEmail(email, username, user.getUserInfo(), false);
+            return userRepository.updateEmailByUsername(email, username);
+        }
+        return 0;
     }
 
     private static OidcUserInfo.Builder getBuilder(UserInfo info) {

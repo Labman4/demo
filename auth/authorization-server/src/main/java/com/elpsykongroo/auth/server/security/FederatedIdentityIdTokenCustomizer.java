@@ -21,9 +21,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.elpsykongroo.auth.server.entity.user.Authority;
 import com.elpsykongroo.auth.server.entity.user.Group;
 import com.elpsykongroo.auth.server.entity.user.OidcInfo;
 import com.elpsykongroo.auth.server.entity.user.User;
@@ -66,6 +68,7 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 	public void customize(JwtEncodingContext context) {
 		if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
 			User user = userService.loadUserByUsername(context.getPrincipal().getName());
+			List<Authority> authorityList = user.getAuthorities();
 			Map<String, Object> customClaims = new HashMap<>();
 			Map<String, Object> info = user.getUserInfo();
 			OidcUserInfo userInfo;
@@ -122,6 +125,13 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 
 				// Add all other claims directly to id_token
 				existingClaims.putAll(thirdPartyClaims);
+				String authorities = "";
+				for (Authority authority: authorityList) {
+					authorities = authorities + "," + authority.getAuthority();
+					if ("permission".equals(authority.getAuthority())) {
+						existingClaims.put("permission", authorities);
+					}
+				}
 			});
 		}
 	}

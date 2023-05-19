@@ -64,6 +64,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -178,7 +179,7 @@ public class LoginServiceImpl implements LoginService {
                 SavedRequest savedRequest = requestCache.getRequest(request, response);
                 if (savedRequest != null
                         && savedRequest.getRedirectUrl() != null
-                        && !savedRequest.getRedirectUrl().contains("access?key=")) {
+                        && savedRequest.getRedirectUrl().contains("oauth2/authorize")) {
                     return savedRequest.getRedirectUrl();
                 }
                 return "200";
@@ -340,6 +341,7 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
+    @Transactional
     private void initAdminUser() {
         log.debug("init admin");
         UserIdentity userIdentity = UserIdentity.builder()
@@ -351,13 +353,18 @@ public class LoginServiceImpl implements LoginService {
         user.setCreateTime(Instant.now());
         user.setUpdateTime(Instant.now());
         String id = userService.add(user).getId();
-        String[] init = serviceConfig.getInitAuth().split(",");
-        List<Authority> exist = authorityService.userAuthority(id);
-        for (Authority authority: exist) {
-            for (int i=0; i < init.length; i++) {
+        String[] init = serviceConfig.getInitAdminAuth().split(",");
+        log.debug("init auth with: {}");
+        List<Authority> existAuth = authorityService.userAuthority(id);
+        for (int i = 0; i < init.length; i++) {
+            boolean exist = false;
+            for (Authority authority: existAuth) {
                 if(authority.getAuthority().equals(init[i])){
-                    authorityService.updateUserAuthority(init[i], id);
+                    exist = true;
                 }
+            }
+            if (!exist) {
+                authorityService.updateUserAuthority(init[i], id);
             }
         }
         if (StringUtils.isNotBlank(serviceConfig.getAdminEmail())) {
