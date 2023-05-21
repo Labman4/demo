@@ -144,7 +144,7 @@ public class UserController {
     public String allAuthorityList(
             @RequestHeader("Authorization") String auth,
             @RequestParam("username") String username) {
-        return CommonResponse.data(authService.userAllAuthority(auth, username));
+        return CommonResponse.string(authService.userAllAuthority(auth, username));
     }
 
     @GetMapping("/group/user/list")

@@ -43,13 +43,13 @@ spring:
 
   liquibase:
     drop-first: false
-    enabled: true
+    enabled: false
     clear-checksums: false
     change-log: classpath:liquibase/changelog.xml
 #    rollback-file: rollback.sh
   datasource:
-    hikari:
-      auto-commit: false
+#    hikari:
+#      auto-commit: false
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_IP:localhost}:${DB_PORT:5432}/${DB_DATABASE:auth}?useUnicode=true&characterEncoding=UTF-8
     username: ${DB_USER:postgres}
@@ -96,3 +96,4 @@ service:
   redis:
     url:  ${REDIS_SERVICE:http://localhost:8379}
   adminEmail: ${ADMIN_EMAIL:woxiangqusia@gmail.com}
+  initAdminAuth: ${INIT_ADMIN_AUTH:admin,permission,group}

@@ -73,6 +73,9 @@ request:
     record: ${RECORD_HEADER:x-forward-for}
 
 service:
+  timeout:
+    connect: 10
+    read: 10
   ssl:
     ca:  ${CA_CRT}
     cert:  ${TLS_CERT}

@@ -143,8 +143,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Authority> userAuthority(String username) {
         User user = userRepository.findByUsername(username);
-        List<Authority> authorities = new ArrayList<>();
-        authorities.addAll(user.getAuthorities());
+        List<Authority> authorities = user.getAuthorities();
         for (Group group : user.getGroups()) {
             authorities.addAll(group.getAuthorities());
         }

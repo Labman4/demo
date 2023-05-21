@@ -79,7 +79,7 @@ public class AuthController {
         return CommonResponse.string(loginService.handleLogin(credential, username, request, response));
     }
 
-    @GetMapping("/access")
+    @PostMapping("/access")
     public String getToken(@RequestParam("key") String key) {
         return CommonResponse.string(redisService.getToken(key));
     }
