@@ -331,18 +331,23 @@ public class IPMangerServiceImpl implements IPManagerService {
 	@Override
 	public boolean filterByIp(String ip, String accessIP) {
 		try {
+			InetAddress inetAddress = InetAddress.getByName(accessIP);
+			if (inetAddress.isSiteLocalAddress()) {
+				log.trace("ignore private ip");
+				return inetAddress.isSiteLocalAddress();
+			}
 			if(IPRegexUtils.vaildateHost(ip)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
 				for (InetAddress addr: inetAddresses) {
 					if (accessIP.equals(addr.getHostAddress())) {
-						log.debug("accessIp:{}, ip:{}", accessIP, addr.getHostAddress());
+						log.trace("host: {} match, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
 						return true;
 					} else {
-						log.debug("result accessIp:{}, ip:{}", accessIP, addr.getHostAddress());
+						log.trace("host: {} mismatch, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
 					}
 				}			
 			} else if (accessIP.equals(ip)) {
-					log.debug("ip:{}, accessIp:{}", ip, accessIP);
+					log.trace("ip match, ip:{}, accessIp:{}", ip, accessIP);
 					return true;
 			}
 		} catch (UnknownHostException e) {
