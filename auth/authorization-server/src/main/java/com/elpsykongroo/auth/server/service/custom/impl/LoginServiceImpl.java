@@ -122,7 +122,7 @@ public class LoginServiceImpl implements LoginService {
             }
             User user = userService.loadUserByUsername(username);
             if (user != null) {
-                if (user.isAccountNonLocked() && existAuth(username)) {
+                if (user.isAccountNonLocked() && existAuth(user)) {
                     AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
                             .username(username)
                             .build());
@@ -130,6 +130,7 @@ public class LoginServiceImpl implements LoginService {
                     return request.toCredentialsGetJson();
                 } else {
                     if ("admin".equals(username)) {
+                        initAdminAuth(user);
                         return "400";
                     }
                     return "401";
@@ -160,7 +161,7 @@ public class LoginServiceImpl implements LoginService {
                     .build());
             if (result.isSuccess()) {
                 /**
-                 * multi device sign count will always as 0, dont add it
+                 * multi device sign count will always as 0, dont update it
                  */
 //                authenticatorService.updateCount(
 //                        result.getSignatureCount(),
@@ -180,6 +181,7 @@ public class LoginServiceImpl implements LoginService {
                 if (savedRequest != null
                         && savedRequest.getRedirectUrl() != null
                         && savedRequest.getRedirectUrl().contains("oauth2/authorize")) {
+                    log.debug("get saved authorize url");
                     return savedRequest.getRedirectUrl();
                 }
                 return "200";
@@ -352,10 +354,17 @@ public class LoginServiceImpl implements LoginService {
         User user = new User(userIdentity);
         user.setCreateTime(Instant.now());
         user.setUpdateTime(Instant.now());
-        String id = userService.add(user).getId();
+        userService.add(user);
+        initAdminAuth(user);
+        if (StringUtils.isNotBlank(serviceConfig.getAdminEmail())) {
+            userService.updateUserInfoEmail(serviceConfig.getAdminEmail(), "admin", null, true);
+            emailService.sendTmpLoginCert("admin");
+        }
+    }
+
+    private void initAdminAuth(User user) {
         String[] init = serviceConfig.getInitAdminAuth().split(",");
-        log.debug("init auth with: {}");
-        List<Authority> existAuth = authorityService.userAuthority(id);
+        List<Authority> existAuth = userService.userAuthority(user.getUsername());
         for (int i = 0; i < init.length; i++) {
             boolean exist = false;
             for (Authority authority: existAuth) {
@@ -364,18 +373,17 @@ public class LoginServiceImpl implements LoginService {
                 }
             }
             if (!exist) {
-                authorityService.updateUserAuthority(init[i], id);
+                log.debug("init auth with:{}", init[i]);
+                authorityService.updateUserAuthority(init[i], user.getId());
             }
         }
-        if (StringUtils.isNotBlank(serviceConfig.getAdminEmail())) {
-            userService.updateUserInfoEmail(serviceConfig.getAdminEmail(), "admin", null, true);
-            emailService.sendTmpLoginCert("admin");
-        }
     }
-    private Boolean existAuth(String username) {
-        List<Authenticator> authenticator = authenticatorService.findByUser(username);
+
+    private Boolean existAuth(User user) {
+        List<Authenticator> authenticator = authenticatorService.findByUser(user.getUsername());
         if (authenticator.isEmpty()) {
-            if ("admin".equals(username)) {
+            if ("admin".equals(user.getUsername())) {
+                initAdminAuth(user);
                 emailService.sendTmpLoginCert("admin");
             }
             return false;
