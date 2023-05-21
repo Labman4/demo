@@ -17,6 +17,7 @@
 package com.elpsykongroo.auth.server.security;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -69,6 +70,11 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 		if (OidcParameterNames.ID_TOKEN.equals(context.getTokenType().getValue())) {
 			User user = userService.loadUserByUsername(context.getPrincipal().getName());
 			List<Authority> authorityList = user.getAuthorities();
+			List<String> groups = new ArrayList<>();
+			for (Group group : user.getGroups()) {
+				groups.add(group.getGroupName());
+				authorityList.addAll(group.getAuthorities());
+			}
 			Map<String, Object> customClaims = new HashMap<>();
 			Map<String, Object> info = user.getUserInfo();
 			OidcUserInfo userInfo;
@@ -78,31 +84,30 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 				userInfo = null;
 			}
 			if (userInfo != null) {
-				if ( user != null && user.getGroups().size() > 0) {
-					for (String scope : context.getAuthorizedScopes()) {
-						for (Group group : user.getGroups()) {
-							for (GrantedAuthority auth : group.getAuthorities()) {
-								if (auth.getAuthority().equals(scope)) {
-									customClaims.put(scope, null);
-								}
-							}
-						}
-					}
-				}
 				for (String scope : context.getAuthorizedScopes()) {
-//					List<String> authList = new ArrayList<>();
-					for (GrantedAuthority authority : context.getPrincipal().getAuthorities()) {
-						if(authority.getAuthority().equals(scope)) {
+					List<String> authList = new ArrayList<>();
+					List<String> auths = new ArrayList<>();
+					for (GrantedAuthority authority : authorityList) {
+						auths.add(authority.getAuthority());
+						String[] auth = authority.getAuthority().split(scope + ".");
+						if (authority.getAuthority().equals(scope)) {
 							customClaims.put(scope, null);
 						}
-//						String[] auth = authority.getAuthority().split(scope + ".");
-//						if (auth.length > 1) {
-//							authList.add(auth[1]);
-//						}
+						if (auth.length > 1) {
+							log.debug("scope:{}, auth:{}", scope, auth);
+							authList.add(auth[1]);
+						}
+						if ("permission".equals(authority.getAuthority())) {
+							info.put("permission", auths);
+						}
+						if ("group".equals(authority.getAuthority())) {
+							info.put("group", groups);
+						}
 					}
-//					if (authList.size() > 0) {
-//						customClaims.put(scope, authList);
-//					}
+					if (authList.size() > 0) {
+						info.put(scope, authList);
+					}
+					userInfo = new OidcUserInfo(info);
 				}
 				for (Field field : OidcInfo.class.getDeclaredFields()) {
 					for (String claim: userInfo.getClaims().keySet()) {
@@ -110,6 +115,7 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 							addClaim(context, claim, userInfo);
 						}
 						if (customClaims.containsKey(claim)) {
+							log.debug("userInfo:{}", userInfo.getClaims());
 							addClaim(context, claim, userInfo);
 						}
 					}
@@ -125,13 +131,6 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 
 				// Add all other claims directly to id_token
 				existingClaims.putAll(thirdPartyClaims);
-				String authorities = "";
-				for (Authority authority: authorityList) {
-					authorities = authorities + "," + authority.getAuthority();
-					if ("permission".equals(authority.getAuthority())) {
-						existingClaims.put("permission", authorities);
-					}
-				}
 			});
 		}
 	}
@@ -157,5 +156,4 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 			context.getClaims().claims(claims -> claims.put(claim, info));
 		}
 	}
-
 }
