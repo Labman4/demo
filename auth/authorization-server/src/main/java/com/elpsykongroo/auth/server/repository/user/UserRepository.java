@@ -24,9 +24,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 public interface UserRepository extends JpaRepository<User, String> {
+
+    @Query("select u from User u where u.username = ?1")
+    List<User> findAllByUsername(String username);
+
+    boolean existsByHandleNullOrAuthenticatorsEmptyAndUsername(String username);
+
+    boolean existsByHandleNullOrAuthenticatorsEmptyAndId(String id);
+
+    long countByUsername(String username);
+
     @Transactional
     @Modifying
     @Query("update User u set u.email = ?1 where u.username = ?2")
@@ -35,9 +46,9 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Transactional
     @Modifying
     @Query("""
-            update User u set u.email = ?1, u.nickName = ?2, u.locked = ?3, u.password = ?4, u.updateTime = ?5
-            where u.username = ?6""")
-    int updateUser(String email, String nickName, boolean locked, String password, Instant time, String username);
+            update User u set u.nickName = ?1, u.locked = ?2, u.password = ?3, u.updateTime = ?4
+            where u.username = ?5""")
+    int updateUser(String nickName, boolean locked, String password, Instant time, String username);
 
     @Transactional
     @Modifying

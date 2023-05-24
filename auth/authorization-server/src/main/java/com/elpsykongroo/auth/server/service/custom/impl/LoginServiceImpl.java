@@ -137,7 +137,8 @@ public class LoginServiceImpl implements LoginService {
                 }
             } else {
                 if ("admin".equals(username)){
-                    initAdminUser();
+                    initAdminAuth(initAdminUser());
+                    emailService.sendTmpLoginCert("admin");
                     return "400";
                 }
                 return "404";
@@ -180,7 +181,7 @@ public class LoginServiceImpl implements LoginService {
                 SavedRequest savedRequest = requestCache.getRequest(request, response);
                 if (savedRequest != null
                         && savedRequest.getRedirectUrl() != null
-                        && savedRequest.getRedirectUrl().contains("oauth2/authorize")) {
+                        && savedRequest.getRedirectUrl().contains("oauth2/authorize?client_id")) {
                     log.debug("get saved authorize url");
                     return savedRequest.getRedirectUrl();
                 }
@@ -198,22 +199,33 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String register(String username, String display) {
-        removeInvalidUser(username);
+        Long count = userService.countUser(username);
+        if (count <= 1) {
+            removeInvalidUser(username, "");
+        }  else {
+            List<User> users = userService.findByUsername(username);
+            users.stream().forEach(user -> removeInvalidUser(username, user.getId()));
+        }
         User existingUser = userService.loadUserByUsername(username);
         if (existingUser == null) {
-            UserIdentity userIdentity = UserIdentity.builder()
-                    .name(username)
-                    .displayName(display)
-                    .id(new ByteArray(Random.generateRandomByte(32)))
-                    .build();
-            User saveUser = new User(userIdentity);
-            saveUser.setCreateTime(Instant.now());
-            saveUser.setUpdateTime(Instant.now());
-            userService.add(saveUser);
+            User saveUser = saveUser(username, display);
             return registerAuth(saveUser);
         } else {
             return "409";
         }
+    }
+
+    private User saveUser(String username, String display) {
+        UserIdentity userIdentity = UserIdentity.builder()
+                .name(username)
+                .displayName(display)
+                .id(new ByteArray(Random.generateRandomByte(32)))
+                .build();
+        User saveUser = new User(userIdentity);
+        saveUser.setCreateTime(Instant.now());
+        saveUser.setUpdateTime(Instant.now());
+        userService.add(saveUser);
+        return saveUser;
     }
 
     @Override
@@ -265,7 +277,7 @@ public class LoginServiceImpl implements LoginService {
                 }
                 return "200";
             } else {
-                removeInvalidUser(username);
+                removeInvalidUser(username, "");
                 return "500";
             }
         } catch (RegistrationFailedException e) {
@@ -276,32 +288,25 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
-    private void removeInvalidUser(String username) {
+    private void removeInvalidUser(String username, String id) {
         try {
-            User user = userService.loadUserByUsername(username);
-            if (user != null && !"admin".equals(username)) {
-                if (user.getHandle().isEmpty()) {
-                    log.debug("remove invalid user with no handle");
-                    userService.deleteByUsername(username);
-                    authenticatorService.deleteByName(username);
+            if (userService.ValidUser(username, id)) {
+                log.debug("remove invalid user with no handle");
+                userService.deleteByUsername(username);
+                authenticatorService.deleteByName(username);
+            }
+            List<Authenticator> authenticators = authenticatorService.findByUser(username);
+            int inValidCount = 0;
+            for (Authenticator authenticator : authenticators) {
+                if (authenticator.getCredentialId().isEmpty()) {
+                    log.debug("remove invalid user with no cred");
+                    authenticatorService.deleteById(authenticator.getId());
+                    inValidCount++;
                 }
-                List<Authenticator> authenticators = authenticatorService.findByUser(username);
-                if (!authenticators.isEmpty()) {
-                    int inValidCount = 0;
-                    for (Authenticator authenticator : authenticators) {
-                        if (authenticator.getCredentialId().isEmpty()) {
-                            log.debug("remove invalid user with no cred");
-                            authenticatorService.deleteById(authenticator.getId());
-                            inValidCount++;
-                        }
-                    }
-                    if (inValidCount >= authenticators.size()) {
-                        userService.deleteByUsername(username);
-                    }
-                } else {
-                    log.debug("remove invalid user with no auth");
-                    userService.deleteByUsername(username);
-                }
+            }
+            if (inValidCount >= authenticators.size()) {
+                log.debug("remove user with no valid cred");
+                userService.deleteByUsername(username);
             }
         } catch (Exception e) {
             log.error("remove invalid user error:{}", e.getMessage());
@@ -343,23 +348,13 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
-    @Transactional
-    private void initAdminUser() {
+    private User initAdminUser() {
         log.debug("init admin");
-        UserIdentity userIdentity = UserIdentity.builder()
-                .name("admin")
-                .displayName("admin")
-                .id(new ByteArray(Random.generateRandomByte(32)))
-                .build();
-        User user = new User(userIdentity);
-        user.setCreateTime(Instant.now());
-        user.setUpdateTime(Instant.now());
-        userService.add(user);
-        initAdminAuth(user);
+        User user = saveUser("admin", "admin");
         if (StringUtils.isNotBlank(serviceConfig.getAdminEmail())) {
             userService.updateUserInfoEmail(serviceConfig.getAdminEmail(), "admin", null, true);
-            emailService.sendTmpLoginCert("admin");
         }
+        return user;
     }
 
     private void initAdminAuth(User user) {
@@ -380,8 +375,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private Boolean existAuth(User user) {
-        List<Authenticator> authenticator = authenticatorService.findByUser(user.getUsername());
-        if (authenticator.isEmpty()) {
+        if (user.getAuthenticators().isEmpty()) {
             if ("admin".equals(user.getUsername())) {
                 initAdminAuth(user);
                 emailService.sendTmpLoginCert("admin");

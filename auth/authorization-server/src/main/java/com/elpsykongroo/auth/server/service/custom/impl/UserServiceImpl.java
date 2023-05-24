@@ -56,6 +56,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> findByUsername(String username) {
+        return userRepository.findAllByUsername(username);
+    }
+
+    @Override
     public int updateUserInfo(UserInfo info) {
         Consumer<Map<String, Object>> claims = null;
         Map<String, Object> userInfo = null;
@@ -76,14 +81,15 @@ public class UserServiceImpl implements UserService {
         } else {
             userInfo = builder.claims(claims).build().getClaims();
         }
+        int result = userRepository.updateUserInfoByUsername(userInfo, info.getUsername());
         if (StringUtils.isNotBlank(info.getEmail()) && "true".equals(info.getEmail_verified())) {
-            updateEmail(info.getEmail(), info.getUsername());
+            updateEmail(info.getEmail(), info.getUsername(), true);
         }
-        return userRepository.updateUserInfoByUsername(userInfo, info.getUsername());
+        return result;
     }
 
     @Override
-    public int updateUserInfoEmail(String email, String username, Map<String, Object> userInfo, Boolean emailVerified) {
+    public void updateUserInfoEmail(String email, String username, Map<String, Object> userInfo, Boolean emailVerified) {
         if (userInfo == null) {
             UserInfo info = new UserInfo();
             info.setEmail(email);
@@ -95,13 +101,12 @@ public class UserServiceImpl implements UserService {
             userInfo.put("email_verified", emailVerified);
             userRepository.updateUserInfoByUsername(userInfo, username);
         }
-        return 1;
     }
 
     @Override
     public int updateUser(User user) {
+        updateEmail(user.getEmail(), user.getUsername(), false);
         return userRepository.updateUser(
-                    user.getEmail(),
                     user.getNickName(),
                     user.isLocked(),
                     user.getPassword(),
@@ -143,20 +148,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Authority> userAuthority(String username) {
         User user = userRepository.findByUsername(username);
-        List<Authority> authorities = user.getAuthorities();
+        List<Authority> authorities = new ArrayList<>();
+        authorities.addAll(user.getAuthorities());
         for (Group group : user.getGroups()) {
             authorities.addAll(group.getAuthorities());
         }
         return authorities;
     }
 
-    private int updateEmail(String email, String username) {
+    @Override
+    public long countUser(String username) {
+        return userRepository.countByUsername(username);
+    }
+
+    @Override
+    public boolean ValidUser(String username, String id) {
+        if (StringUtils.isNotEmpty(id)) {
+           return userRepository.existsByHandleNullOrAuthenticatorsEmptyAndId(username);
+        }
+        return userRepository.existsByHandleNullOrAuthenticatorsEmptyAndUsername(username);
+    }
+
+    private void updateEmail(String email, String username, Boolean verify) {
         User user = loadUserByUsername(username);
         if (user != null) {
-            updateUserInfoEmail(email, username, user.getUserInfo(), false);
-            return userRepository.updateEmailByUsername(email, username);
+            if (!email.equals(user.getEmail())) {
+                updateUserInfoEmail(email, username, user.getUserInfo(), verify);
+                userRepository.updateEmailByUsername(email, username);
+            }
         }
-        return 0;
     }
 
     private static OidcUserInfo.Builder getBuilder(UserInfo info) {

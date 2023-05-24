@@ -31,9 +31,11 @@ import java.util.Map;
 public interface UserService extends UserDetailsService {
     User loadUserByUsername(String username) throws UsernameNotFoundException;
 
+    List<User> findByUsername(String username);
+
     int updateUserInfo(UserInfo userinfo);
 
-    int updateUserInfoEmail(String email, String username, Map<String, Object> userInfo, Boolean emailVerified);
+    void updateUserInfoEmail(String email, String username, Map<String, Object> userInfo, Boolean emailVerified);
 
     int updateUser(User user);
 
@@ -48,6 +50,11 @@ public interface UserService extends UserDetailsService {
     User findByHandle(ByteArray handle);
 
     List<Authority> userAuthority(String username);
+
+    long countUser(String name);
+
+    boolean ValidUser(String username, String id);
+
 }
 
 
