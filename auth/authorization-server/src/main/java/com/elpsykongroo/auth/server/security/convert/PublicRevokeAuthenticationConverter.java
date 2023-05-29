@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2TokenRevocationAuthenticationToken;
@@ -36,24 +35,23 @@ public class PublicRevokeAuthenticationConverter implements AuthenticationConver
     private RegisteredClientRepository repository;
     @Override
     public Authentication convert(HttpServletRequest request) {
-        if (request.getParameter("token") != null && request.getParameter("client_id") != null) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String tokenType = request.getParameter("token_type_hint");
-            if (authentication != null) {
-                log.debug("public revoke:{}", authentication.getPrincipal());
-                RegisteredClient registeredClient = repository.findByClientId(request.getParameter("client_id"));
-                if (registeredClient != null ) {
-                    OAuth2ClientAuthenticationToken client =
-                            new OAuth2ClientAuthenticationToken(registeredClient,
-                                    ClientAuthenticationMethod.NONE, null);
-                    OAuth2TokenRevocationAuthenticationToken revoke =
-                            new OAuth2TokenRevocationAuthenticationToken(
-                                    request.getParameter("token"),
-                                    client,
-                                    tokenType != null ? tokenType : "");
-                    revoke.setAuthenticated(true);
-                    return revoke;
-                }
+        String token = request.getParameter("token");
+        String tokenType = request.getParameter("token_type_hint");
+        String clientId = request.getParameter("client_id");
+        if (token != null && clientId != null) {
+            log.debug("public revoke");
+            RegisteredClient registeredClient = repository.findByClientId(clientId);
+            if (registeredClient != null ) {
+                OAuth2ClientAuthenticationToken client =
+                        new OAuth2ClientAuthenticationToken(registeredClient,
+                                ClientAuthenticationMethod.NONE, null);
+                OAuth2TokenRevocationAuthenticationToken revoke =
+                        new OAuth2TokenRevocationAuthenticationToken(
+                                request.getParameter("token"),
+                                client,
+                                tokenType != null ? tokenType : "");
+                revoke.setAuthenticated(true);
+                return revoke;
             }
         }
         return null;

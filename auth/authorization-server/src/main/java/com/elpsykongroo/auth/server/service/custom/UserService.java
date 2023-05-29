@@ -43,7 +43,7 @@ public interface UserService extends UserDetailsService {
 
     List<User> list(String pageNumber, String pageSize, String order);
 
-    void deleteByUsername(String username);
+    int deleteByUsername(String username);
 
     User add(User user);
 

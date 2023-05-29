@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserRepository extends JpaRepository<User, String> {
+    @Transactional
+    @Modifying
+    @Query("delete from User u where u.username = ?1")
+    int deleteByUsername(String username);
 
     @Query("select u from User u where u.username = ?1")
     List<User> findAllByUsername(String username);
@@ -58,8 +62,5 @@ public interface UserRepository extends JpaRepository<User, String> {
     User findByUsername(String username);
 
     User findByHandle(ByteArray handle);
-
-    @Transactional
-    int  deleteByUsername(String username);
 
 }

@@ -32,6 +32,7 @@ public class LiquibaseConfig {
         liquibase.setChangeLog("classpath:liquibase/changelog.xml");
         liquibase.setDataSource(dataSource);
         liquibase.setShouldRun(true);
+        liquibase.setClearCheckSums(true);
         return new LiquibaseBeanConfig(liquibase);
     }
 }

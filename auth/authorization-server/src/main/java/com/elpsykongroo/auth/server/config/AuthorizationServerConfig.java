@@ -17,6 +17,7 @@
 package com.elpsykongroo.auth.server.config;
 
 import com.elpsykongroo.auth.server.security.convert.PublicRevokeAuthenticationConverter;
+import com.elpsykongroo.auth.server.security.provider.WebAuthnAuthenticationProvider;
 import com.elpsykongroo.auth.server.utils.jose.Jwks;
 import com.elpsykongroo.auth.server.security.FederatedIdentityConfigurer;
 import com.elpsykongroo.auth.server.security.FederatedIdentityIdTokenCustomizer;
@@ -96,16 +97,19 @@ public class AuthorizationServerConfig {
 //		resolver.setAuthorizationRequestCustomizer(OAuth2AuthorizationRequestCustomizers.withPkce());
 
 		authorizationServerConfigurer
-				.oidc((oidc) -> oidc
-						.userInfoEndpoint((userInfo) -> userInfo
-								.userInfoMapper(userInfoMapper)
-						)
-						.providerConfigurationEndpoint(Customizer.withDefaults())
-						.clientRegistrationEndpoint(Customizer.withDefaults())
-				).authorizationEndpoint(Customizer.withDefaults())
+				.oidc(Customizer.withDefaults())
+//				.oidc((oidc) -> oidc
+//						.userInfoEndpoint((userInfo) -> userInfo
+//								.userInfoMapper(userInfoMapper)
+//						)
+//						.providerConfigurationEndpoint(Customizer.withDefaults())
+//						.clientRegistrationEndpoint(Customizer.withDefaults())
+//				)
+				.authorizationEndpoint(Customizer.withDefaults())
 				.clientAuthentication(clientAuthentication ->
 						clientAuthentication
-								.authenticationConverter(new PublicRevokeAuthenticationConverter(registeredClientRepository)))
+								.authenticationConverter(new PublicRevokeAuthenticationConverter(registeredClientRepository))
+								.authenticationProvider(new WebAuthnAuthenticationProvider()))
 				.tokenRevocationEndpoint(tokenRevocationEndpoint ->
 						tokenRevocationEndpoint
 								.revocationRequestConverter(new PublicRevokeAuthenticationConverter(registeredClientRepository))

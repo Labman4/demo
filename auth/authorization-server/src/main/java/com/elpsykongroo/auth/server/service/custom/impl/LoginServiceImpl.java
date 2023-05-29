@@ -122,18 +122,17 @@ public class LoginServiceImpl implements LoginService {
             }
             User user = userService.loadUserByUsername(username);
             if (user != null) {
-                if (user.isAccountNonLocked() && existAuth(user)) {
+                if (user.isLocked()) {
+                    return "401";
+                }
+                if (existAuth(user)) {
                     AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
                             .username(username)
                             .build());
                     servletContext.setAttribute(username, request);
                     return request.toCredentialsGetJson();
                 } else {
-                    if ("admin".equals(username)) {
-                        initAdminAuth(user);
-                        return "400";
-                    }
-                    return "401";
+                    return "400";
                 }
             } else {
                 if ("admin".equals(username)){
@@ -199,19 +198,23 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String register(String username, String display) {
+        User saveUser = null;
+        try {
+            removeInvalid(username);
+            saveUser = saveUser(username, display);
+        } catch (Exception e) {
+            log.error("register with error:{}", e.getMessage());
+        }
+        return registerAuth(saveUser);
+    }
+
+    private void removeInvalid(String username) {
         Long count = userService.countUser(username);
         if (count <= 1) {
             removeInvalidUser(username, "");
         }  else {
             List<User> users = userService.findByUsername(username);
             users.stream().forEach(user -> removeInvalidUser(username, user.getId()));
-        }
-        User existingUser = userService.loadUserByUsername(username);
-        if (existingUser == null) {
-            User saveUser = saveUser(username, display);
-            return registerAuth(saveUser);
-        } else {
-            return "409";
         }
     }
 
@@ -289,28 +292,26 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private void removeInvalidUser(String username, String id) {
-        try {
-            if (userService.ValidUser(username, id)) {
-                log.debug("remove invalid user with no handle");
-                userService.deleteByUsername(username);
-                authenticatorService.deleteByName(username);
-            }
-            List<Authenticator> authenticators = authenticatorService.findByUser(username);
-            int inValidCount = 0;
-            for (Authenticator authenticator : authenticators) {
-                if (authenticator.getCredentialId().isEmpty()) {
-                    log.debug("remove invalid user with no cred");
-                    authenticatorService.deleteById(authenticator.getId());
-                    inValidCount++;
-                }
-            }
-            if (inValidCount >= authenticators.size()) {
-                log.debug("remove user with no valid cred");
-                userService.deleteByUsername(username);
-            }
-        } catch (Exception e) {
-            log.error("remove invalid user error:{}", e.getMessage());
+        int result = 0;
+        if (userService.ValidUser(username, id)) {
+            log.debug("remove invalid user with no handle");
+            result += userService.deleteByUsername(username);
+            authenticatorService.deleteByName(username);
         }
+        List<Authenticator> authenticators = authenticatorService.findByUser(username);
+        int inValidCount = 0;
+        for (Authenticator authenticator : authenticators) {
+            if (authenticator.getCredentialId().isEmpty()) {
+                log.debug("remove invalid user with no cred");
+                authenticatorService.deleteById(authenticator.getId());
+                inValidCount++;
+            }
+        }
+        if (inValidCount >= authenticators.size()) {
+            log.debug("remove user with no valid cred");
+            result += userService.deleteByUsername(username);
+        }
+        log.debug("remove user result:{}", result);
     }
 
     public String tmpLogin(String text, HttpServletRequest request, HttpServletResponse response) {
@@ -320,7 +321,7 @@ public class LoginServiceImpl implements LoginService {
             String username = texts[1];
             String encodedVerifier = verifyChallenge(codeVerifier);
             String tmp = redisService.get("TmpCert_" + username);
-            if (tmp.equals(encodedVerifier)) {
+            if (StringUtils.isNotBlank(tmp) && tmp.equals(encodedVerifier)) {
                 SecurityContext context = securityContextHolderStrategy.createEmptyContext();
                 Authentication authentication =
                         WebAuthnAuthenticationToken.authenticated(username, null, null);
@@ -375,11 +376,11 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private Boolean existAuth(User user) {
+        if ("admin".equals(user.getUsername())) {
+            initAdminAuth(user);
+        }
         if (user.getAuthenticators().isEmpty()) {
-            if ("admin".equals(user.getUsername())) {
-                initAdminAuth(user);
-                emailService.sendTmpLoginCert("admin");
-            }
+            emailService.sendTmpLoginCert(user.getUsername());
             return false;
         }
         return true;

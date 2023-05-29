@@ -62,7 +62,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public String verify(String text) {
-        String[] texts = text.split("\\.");
+        String[] texts = text.split("\\.", 2);
         String codeVerifier = texts[0];
         String username = texts[1];
         String encodedVerifier = verifyChallenge(codeVerifier);
@@ -70,6 +70,8 @@ public class EmailServiceImpl implements EmailService {
         if (tmp.equals(encodedVerifier)) {
             User user = userService.loadUserByUsername(username);
             Map<String, Object> info = user.getUserInfo();
+            KV kv = new KV("email_verify_" + username, "");
+            redisService.set(kv);
             userService.updateUserInfoEmail(user.getEmail(), user.getUsername(), info, true);
             return "success";
         } else {
@@ -79,31 +81,31 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendTmpLoginCert(String username) {
-        String codeVerifier =  genertateVerifier();
-        String codeChallenge = genertateChallenge(codeVerifier);
-        KV kv = new KV("TmpCert_" + username, codeChallenge);
-        redisService.set(kv);
-        String email = "";
         Map<String, Object> userInfo = userService.loadUserByUsername(username).getUserInfo();
-        if (userInfo.get("email") != null && "true".equals(userInfo.get("email_verified").toString())) {
-            email = userInfo.get("email").toString();
+        if (userInfo != null && !userInfo.isEmpty()) {
+            if (userInfo.get("email") != null && "true".equals(userInfo.get("email_verified").toString())) {
+                String codeVerifier = genertateVerifier();
+                String codeChallenge = generateChallenge(codeVerifier);
+                KV kv = new KV("TmpCert_" + username, codeChallenge);
+                redisService.set(kv);
+                send(userInfo.get("email").toString(), "once login", "https://auth.elpsykongroo.com/tmp/" + codeVerifier + "." + username);
+            }
         }
-        send(email, "once login", "https://auth.elpsykongroo.com/tmp/" + codeVerifier + "." + username);
     }
 
     @Override
     public void sendVerify(String username) {
-        String codeVerifier = genertateVerifier();
-        String codeChallenge = genertateChallenge(codeVerifier);
-        KV kv = new KV("email_verify_" + username, codeChallenge);
-        redisService.set(kv);
         User user = userService.loadUserByUsername(username);
         if (StringUtils.isNotEmpty(user.getEmail())) {
+            String codeVerifier = genertateVerifier();
+            String codeChallenge = generateChallenge(codeVerifier);
+            KV kv = new KV("email_verify_" + username, codeChallenge);
+            redisService.set(kv);
             send(user.getEmail(), "verfiy email", "https://auth.elpsykongroo.com/email/verify/" + codeVerifier + "." + username);
         }
     }
 
-    private String genertateChallenge(String codeVerifier) {
+    private String generateChallenge(String codeVerifier) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(codeVerifier.getBytes());

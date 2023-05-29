@@ -115,7 +115,6 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 							addClaim(context, claim, userInfo);
 						}
 						if (customClaims.containsKey(claim)) {
-							log.debug("userInfo:{}", userInfo.getClaims());
 							addClaim(context, claim, userInfo);
 						}
 					}
