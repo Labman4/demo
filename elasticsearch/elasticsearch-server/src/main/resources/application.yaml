@@ -23,12 +23,14 @@ logging:
         services: ${LOG_LEVEL:debug}
 
 service:
-  es:
-    nodes: ${ES_URL:localhost:9200}
-    user: ${ES_USER:elastic}
-    pass: ${ES_PASS:elpsy}
+  env: ${ENV:dev}
+  vault: ${VAULT_ENABLE:true}
+  elastic:
+    nodes: ${ES_URL:elasticsearch.elpsykongroo.com:443}
+    user: ${ES_USER:user}
+    pass: ${ES_PASS:pass}
     ssl:
-      type: ${SSL_TYPE:none}
+      type: ${SSL_TYPE:public}
       ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
       cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
       key: ${ES_TLS_KEY:/var/ssl/es/tls.key}
