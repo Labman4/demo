@@ -28,13 +28,10 @@ public class ServiceConfig {
     private TimeOut timeout;
     private String env;
     private String whiteDomain;
-    private Url es;
-    private Url storage;
-    private Url auth;
-    private Url redis;
+    private Url url;
     private String adminEmail;
     private String vault;
-    private ES elastic;
+    private Elastic es;
     //public ca
     private SSL ssl;
 
@@ -51,14 +48,9 @@ public class ServiceConfig {
     }
 
     @Data
-    public static class ES {
+    public static class Elastic {
 
         private TimeOut timeout;
-
-        private String user;
-
-        private String pass;
-
         //self ca
         private SSL ssl ;
 
@@ -78,7 +70,9 @@ public class ServiceConfig {
 
     @Data
     public static class Url {
-
-        private String url;
+        private String es;
+        private String redis;
+        private String storage;
+        private String auth;
     }
 }

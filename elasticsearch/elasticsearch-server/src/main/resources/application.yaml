@@ -14,26 +14,6 @@ spring:
     elasticsearch:        
       repositories:
         enabled: true
-logging:
-  level:
-    root: ${ROOT_LEVEL:info}
-    web: ${WEB_LEVEL:debug}
-    com:
-      elpsykongroo:
-        services: ${LOG_LEVEL:debug}
-
 service:
   env: ${ENV:dev}
   vault: ${VAULT_ENABLE:true}
-  elastic:
-    nodes: ${ES_URL:elasticsearch.elpsykongroo.com:443}
-    user: ${ES_USER:user}
-    pass: ${ES_PASS:pass}
-    ssl:
-      type: ${SSL_TYPE:public}
-      ca: ${ES_CA_CRT:/var/ssl/es/ca.crt}
-      cert: ${ES_TLS_CERT:/var/ssl/es/tls.crt}
-      key: ${ES_TLS_KEY:/var/ssl/es/tls.key}
-    timeout:
-      connect: ${ES_CONNECT_TIME:30}
-      socket: ${ES_SOCKET_TIME:30}
