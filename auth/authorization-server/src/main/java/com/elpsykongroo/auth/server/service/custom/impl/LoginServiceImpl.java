@@ -26,7 +26,6 @@ import com.elpsykongroo.auth.server.service.custom.EmailService;
 import com.elpsykongroo.auth.server.service.custom.LoginService;
 import com.elpsykongroo.auth.server.service.custom.UserService;
 import com.elpsykongroo.auth.server.utils.Random;
-import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.services.redis.client.RedisService;
 import com.elpsykongroo.services.redis.client.dto.KV;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,6 +53,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.DeferredSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
@@ -76,6 +76,13 @@ import java.util.List;
 @Service
 @Slf4j
 public class LoginServiceImpl implements LoginService {
+
+    @Value("${service.adminEmail}")
+    private String adminEmail;
+
+    @Value("${service.initAdminAuth}")
+    private String initAdminAuth;
+
     @Autowired
     private UserService userService;
 
@@ -97,9 +104,6 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private RedisService redisService;
-
-    @Autowired
-    private ServiceConfig serviceConfig;
 
     @Autowired
     private EmailService emailService;
@@ -356,14 +360,14 @@ public class LoginServiceImpl implements LoginService {
     private User initAdminUser() {
         log.debug("init admin");
         User user = saveUser("admin", "admin");
-        if (StringUtils.isNotBlank(serviceConfig.getAdminEmail())) {
-            userService.updateUserInfoEmail(serviceConfig.getAdminEmail(), "admin", null, true);
+        if (StringUtils.isNotBlank(adminEmail)) {
+            userService.updateUserInfoEmail(adminEmail, "admin", null, true);
         }
         return user;
     }
 
     private void initAdminAuth(User user) {
-        String[] init = serviceConfig.getInitAdminAuth().split(",");
+        String[] init = initAdminAuth.split(",");
         List<Authority> existAuth = userService.userAuthority(user.getUsername());
         for (int i = 0; i < init.length; i++) {
             boolean exist = false;

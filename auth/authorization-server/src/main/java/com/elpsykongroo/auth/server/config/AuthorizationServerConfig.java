@@ -27,11 +27,11 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -70,8 +70,8 @@ import java.util.function.Function;
 
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
-	@Autowired
-	Environment env;
+	@Value("${ISSUER_URL}")
+	private String issuerUrl;
 
 	@Autowired
 	RegisteredClientRepository registeredClientRepository;
@@ -170,7 +170,7 @@ public class AuthorizationServerConfig {
 
 	@Bean
 	public AuthorizationServerSettings authorizationServerSettings() {
-		return AuthorizationServerSettings.builder().issuer(env.getProperty("ISSUER_URL")).build();
+		return AuthorizationServerSettings.builder().issuer(issuerUrl).build();
 	}
 
 	@Bean

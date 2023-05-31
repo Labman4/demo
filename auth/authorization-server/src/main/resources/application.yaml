@@ -38,7 +38,7 @@ spring:
 #      # naming:
 ##      #   implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
+# keep below config
   liquibase:
     drop-first: false
     enabled: false
@@ -73,27 +73,8 @@ spring:
       resourceserver:
         opaque-token:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
-#          client-id: init
-#          client-secret: just for init
 #        jwt:
 #          issuer-uri: ${JWT_ISSUER_URL:http://127.0.0.1:9000}
 #          jwk-set-uri: ${AUTH_URL:http://127.0.0.1:9000}/oauth2/jwks
-
-logging:
-  level:
-    root: ${ROOT_LOG_LEVEL:info}
-    web: ${WEB_LOG_LEVEL:debug}
-    org:
-      springframework:
-        security: ${SECURITY_LOG_LEVEL:debug}
-    com:
-      elpsykongroo:
-        auth:
-          server: ${LOG_LEVEL:debug}
-#    org.springframework.boot.autoconfigure: DEBUG
 service:
   vault: ${VAULT_ENABLE:true}
-  redis:
-    url:  ${REDIS_SERVICE:http://localhost:8379}
-  adminEmail: ${ADMIN_EMAIL:woxiangqusia@gmail.com}
-  initAdminAuth: ${INIT_ADMIN_AUTH:admin,permission,group}
