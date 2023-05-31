@@ -16,18 +16,18 @@
 
 package com.elpsykongroo.gateway.config;
 
-import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.services.elasticsearch.client.SearchService;
 import com.elpsykongroo.services.elasticsearch.client.impl.SearchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
 public class SearchServiceConfig {
-    @Autowired
-    private ServiceConfig serviceConfig;
+    @Value("${service.url.es}")
+    private String esUrl;
 
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
@@ -43,6 +43,6 @@ public class SearchServiceConfig {
 //                    .setReadTimeout(Duration.ofSeconds(20)).detectRequestFactory(true);
 ////                    .additionalMessageConverters(converters);
 
-        return new SearchServiceImpl(serviceConfig.getEs().getUrl(),  restTemplateBuilder);
+        return new SearchServiceImpl(esUrl,  restTemplateBuilder);
     }
 }

@@ -15,8 +15,6 @@ spring:
       resource-server:
         opaque-token:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
-#          client-id: init
-#          client-secret: init
 #        jwt:
 #          jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
       
@@ -24,20 +22,11 @@ spring:
 #  mapper-locations: classpath:mapper/*.xml
 #  liquibase:
 # change-log: classpath:liquibase/changelog/*.sql
-logging:
+#logging:
 #  log4j2:
 #    config:
 #      override:
 #        - classpath:log4j2-spring.xml
-  level:
-    root: ${ROOT_LOG_LEVEL:INFO}
-    web: ${WEB_LOG_LEVEL:info}
-    org:
-      springframework:
-        security: ${SECURITY_LEVEL:DEBUG}
-    com:
-      elpsykongroo:
-        gateway: ${GATEWAY_LOG_LEVEL:INFO}
 #    org:
 #      springframework:
 #        web:

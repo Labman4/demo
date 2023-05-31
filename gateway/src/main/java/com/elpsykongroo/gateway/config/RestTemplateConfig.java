@@ -16,8 +16,7 @@
 
 package com.elpsykongroo.gateway.config;
 
- import com.elpsykongroo.base.config.ServiceConfig;
- import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Value;
  import org.springframework.boot.autoconfigure.web.client.RestTemplateBuilderConfigurer;
  import org.springframework.boot.web.client.RestTemplateBuilder;
  import org.springframework.context.annotation.Bean;
@@ -27,14 +26,17 @@ package com.elpsykongroo.gateway.config;
 
  @Configuration(proxyBeanMethods = false)
  public class RestTemplateConfig {
-     @Autowired
-     private ServiceConfig serviceConfig;
-    
+      @Value("${service.timeout.connect}")
+      private int connect;
+
+      @Value("${service.timeout.read}")
+      private int read;
+
       @Bean
       public RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer configurer) {
           return configurer.configure(new RestTemplateBuilder())
-                  .setConnectTimeout(Duration.ofSeconds(serviceConfig.getTimeout().getConnect()))
-                  .setReadTimeout(Duration.ofSeconds(serviceConfig.getTimeout().getRead())).detectRequestFactory(true);
+                  .setConnectTimeout(Duration.ofSeconds(connect))
+                  .setReadTimeout(Duration.ofSeconds(read)).detectRequestFactory(true);
       }
 
  }

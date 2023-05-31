@@ -19,8 +19,8 @@ package com.elpsykongroo.gateway.config;
 import com.elpsykongroo.auth.client.AuthService;
 import com.elpsykongroo.auth.client.impl.AuthServiceImpl;
 
-import com.elpsykongroo.base.config.ServiceConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,14 +28,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 
 public class AuthServiceConfig {
-    @Autowired
-    private ServiceConfig serviceConfig;
+    @Value("${service.url.auth}")
+    private String authUrl;
 
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
     @Bean
     public AuthService authService() {
-        return  new AuthServiceImpl(serviceConfig.getAuth().getUrl(),  restTemplateBuilder);
+        return  new AuthServiceImpl(authUrl,  restTemplateBuilder);
     }
 }

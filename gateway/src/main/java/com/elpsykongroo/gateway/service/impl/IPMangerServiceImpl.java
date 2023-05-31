@@ -40,15 +40,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.vault.annotation.VaultPropertySource;
 
 @Service
 @Slf4j
+@VaultPropertySource(value = "${SECRETS_PATH:kv/app/gateway}")
 public class IPMangerServiceImpl implements IPManagerService {
-	@Value("${service.whiteDomain}")
-	private String whiteDomain = "localhost";
+	@Value("${ENV}")
+	private String env;
 
-	@Value("${service.env}")
-	private String env = "prod";
+	@Value("${service.whiteDomain}")
+	private String whiteDomain;
 
     @Autowired
 	private SearchService searchService;
@@ -249,10 +251,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 				}
 				log.debug("cacheList: {}", list);
 				if (StringUtils.isNotBlank(list)) {
-					String domain = whiteDomain;
-					for(String d: domain.split(",")) {
-						if (!list.contains(d)) {
-							initWhite();
+					if ("false".equals(isBlack)) {
+						log.debug("whiteDomain:{}", whiteDomain);
+						for (String d : whiteDomain.split(",")) {
+							if (!list.contains(d)) {
+								initWhite();
+							}
 						}
 					}
 					if (list.contains(ip)) {
@@ -274,7 +278,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 					}
 				} else {
 					log.info("updateCache");
-					initWhite();
+					if ("false".equals(isBlack)) {
+						initWhite();
+					}
 					updateCache(isBlack);
 				}
 				/**
@@ -358,8 +364,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	private void initWhite(){
 		try {
-			String domain = whiteDomain;
-			for(String d: domain.split(",")) {
+			for(String d: whiteDomain.split(",")) {
 				add(d, "false");
 			}
 		} catch (UnknownHostException e) {

@@ -18,6 +18,7 @@ package com.elpsykongroo.gateway.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.vault.annotation.VaultPropertySource;
 import org.springframework.vault.authentication.ClientAuthentication;
 import org.springframework.vault.authentication.KubernetesAuthentication;
 import org.springframework.vault.authentication.KubernetesAuthenticationOptions;
@@ -33,8 +34,8 @@ import java.net.URI;
     name = "vault",
     havingValue = "true",
     matchIfMissing = false)
+@VaultPropertySource(value = "${SECRETS_PATH:kv/app/dev/gateway}")
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
-
     @Override
     public ClientAuthentication clientAuthentication() {
          if ("prod".equals(getEnvironment().getProperty("ENV"))) {

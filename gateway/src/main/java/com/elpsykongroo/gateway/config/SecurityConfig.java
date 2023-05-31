@@ -24,10 +24,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.vault.annotation.VaultPropertySource;
 
 @Configuration(proxyBeanMethods = false)
-@VaultPropertySource(value = "${SECRETS_PATH:kv/app/gateway}")
 public class SecurityConfig {
 	@Value("${request.path.permit}")
 	private String permit_path;
