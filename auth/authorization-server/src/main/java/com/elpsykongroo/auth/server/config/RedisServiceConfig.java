@@ -16,24 +16,24 @@
 
 package com.elpsykongroo.auth.server.config;
 
-import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.services.redis.client.RedisService;
 import com.elpsykongroo.services.redis.client.impl.RedisServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
 public class RedisServiceConfig {
-    @Autowired
-    private ServiceConfig serviceConfig;
+    @Value("${service.url.redis}")
+    private String redisUrl;
 
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
     @Bean
     public RedisService redisService() {
-        return  new RedisServiceImpl(serviceConfig.getRedis().getUrl(),  restTemplateBuilder);
+        return  new RedisServiceImpl(redisUrl,  restTemplateBuilder);
     }
 }

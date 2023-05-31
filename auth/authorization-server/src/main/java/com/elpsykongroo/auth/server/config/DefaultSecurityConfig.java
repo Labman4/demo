@@ -22,6 +22,7 @@ import com.elpsykongroo.auth.server.security.UserRepositoryOAuth2UserHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,11 +38,9 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.vault.annotation.VaultPropertySource;
 
 @EnableWebSecurity
 @Configuration(proxyBeanMethods = false)
-@VaultPropertySource(value = "${SECRETS_PATH:kv/app/auth}")
 public class DefaultSecurityConfig {
 	@Autowired
     private UserDetailsService userDetailsService;
@@ -56,11 +55,11 @@ public class DefaultSecurityConfig {
 									"/welcome",
 									"/login",
 									"/register",
-									"/email/verify/**",
 								"/actuator/health/**",
-								"/email/tmp/**",
+								"/email/tmp/",
 								"/tmp/**",
 								"/finishAuth").permitAll()
+						.requestMatchers(HttpMethod.GET,"/email/verify/**").permitAll()
 						.requestMatchers("/auth/user/list").hasAuthority("admin")
 						.requestMatchers("/auth/user/**").authenticated()
 						.requestMatchers("/auth/**").hasAuthority("admin")
