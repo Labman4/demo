@@ -8,8 +8,6 @@
         <artifactId>storage</artifactId>
         <version>0.0.1</version>
     </parent>
-    <!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
-
 
     <groupId>com.elpsykongroo.storage</groupId>
     <artifactId>storage-server</artifactId>
@@ -21,6 +19,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.vault</groupId>
+            <artifactId>spring-vault-core</artifactId>
+            <version>3.0.2</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -43,17 +46,17 @@
             <version>2.20.24</version>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.elpsykongroo</groupId>
+            <artifactId>base</artifactId>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
 </project>

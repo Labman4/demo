@@ -25,15 +25,26 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "service")
 public class ServiceConfig {
     private String initAdminAuth;
+
     private TimeOut timeout;
+
     private String env;
+
     private String whiteDomain;
+
     private Url url;
+
     private String adminEmail;
+
     private String vault;
+
     private Elastic es;
     //public ca
     private SSL ssl;
+
+    private String proxy;
+
+    private S3 s3;
 
     @Data
     public static class SSL {
@@ -55,6 +66,20 @@ public class ServiceConfig {
         private SSL ssl ;
 
         private String[] nodes;
+
+    }
+
+    @Data
+    public static class S3 {
+
+        private String accessKey;
+
+        private String accessSecret ;
+
+        private String endpoint;
+
+        private String region;
+
 
     }
 

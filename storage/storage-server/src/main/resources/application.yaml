@@ -7,3 +7,6 @@ spring:
       max-file-size: -1
   lifecycle:
     timeout-per-shutdown-phase: 10s
+service:
+  env: ${ENV:dev}
+  vault: ${VAULT_ENABLE:true}

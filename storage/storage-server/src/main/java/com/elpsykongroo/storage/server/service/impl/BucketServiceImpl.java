@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.storage.server;
+package com.elpsykongroo.storage.server.service.impl;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.elpsykongroo.storage.server.service.BucketService;
 
-@SpringBootApplication(proxyBeanMethods = false, scanBasePackages = {"com.elpsykongroo.base", "com.elpsykongroo.storage"})
-public class StorageApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(StorageApplication.class, args);
+public class BucketServiceImpl implements BucketService {
+    @Override
+    public void createBucket(String bucketName) {
+
+    }
+    @Override
+    public void deleteBucket(String bucketName) {
+
     }
 }

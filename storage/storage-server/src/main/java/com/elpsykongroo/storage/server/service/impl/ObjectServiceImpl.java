@@ -1,11 +1,27 @@
+/*
+ * Copyright 2022-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.elpsykongroo.storage.server.service.impl;
 
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.storage.server.entity.S3;
 import com.elpsykongroo.storage.server.service.ObjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -54,7 +70,7 @@ import java.util.Map;
 @Service
 public class ObjectServiceImpl implements ObjectService {
     @Autowired
-    Environment env;
+    private ServiceConfig serviceconfig;
 
     private S3Client s3Client;
 
@@ -271,11 +287,11 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void initClient(S3 s3) {
-        String accessKey = env.getProperty("AWS_ACCESS_KEY_ID");
-        String accessSecret = env.getProperty("AWS_SECRET_ACCESS_KEY");
-        String endpoint = env.getProperty("ENDPOINT");
-        String region = env.getProperty("REGION");
-        String proxyUrl = env.getProperty("PROXY_URL");
+        String accessKey = serviceconfig.getS3().getAccessKey();
+        String accessSecret = serviceconfig.getS3().getAccessSecret();
+        String endpoint = serviceconfig.getS3().getEndpoint();
+        String region = serviceconfig.getS3().getRegion();
+        String proxyUrl = serviceconfig.getProxy();
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, accessSecret);
         if (StringUtils.isNotBlank(s3.getRegion())) {
             region = s3.getRegion();
