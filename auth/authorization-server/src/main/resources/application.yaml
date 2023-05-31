@@ -15,8 +15,6 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${EMAIL_USER:tmp@tmp.com}
-    password: ${EMAIL_PASS:pass}
     properties:
       mail:
         smtp:
@@ -48,7 +46,8 @@ spring:
     change-log: classpath:liquibase/changelog.xml
 #    rollback-file: rollback.sh
   datasource:
-#    hikari:
+    hikari:
+      max-lifetime: 15
 #      auto-commit: false
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${DB_IP:localhost}:${DB_PORT:5432}/${DB_DATABASE:auth}?useUnicode=true&characterEncoding=UTF-8
@@ -74,8 +73,8 @@ spring:
       resourceserver:
         opaque-token:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
-          client-id:  ${CLIENT_ID:clientId}
-          client-secret:  ${CLIENT_SECRET:clientSecret}
+#          client-id: init
+#          client-secret: just for init
 #        jwt:
 #          issuer-uri: ${JWT_ISSUER_URL:http://127.0.0.1:9000}
 #          jwk-set-uri: ${AUTH_URL:http://127.0.0.1:9000}/oauth2/jwks
@@ -93,6 +92,7 @@ logging:
           server: ${LOG_LEVEL:debug}
 #    org.springframework.boot.autoconfigure: DEBUG
 service:
+  vault: ${VAULT_ENABLE:true}
   redis:
     url:  ${REDIS_SERVICE:http://localhost:8379}
   adminEmail: ${ADMIN_EMAIL:woxiangqusia@gmail.com}

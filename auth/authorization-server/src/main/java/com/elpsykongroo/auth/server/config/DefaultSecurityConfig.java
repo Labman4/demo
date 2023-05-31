@@ -37,9 +37,11 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.vault.annotation.VaultPropertySource;
 
 @EnableWebSecurity
 @Configuration(proxyBeanMethods = false)
+@VaultPropertySource(value = "${SECRETS_PATH:kv/app/auth}")
 public class DefaultSecurityConfig {
 	@Autowired
     private UserDetailsService userDetailsService;

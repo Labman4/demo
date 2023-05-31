@@ -24,8 +24,6 @@ spring:
 
   main:
     allow-bean-definition-overriding: true
-  datasource:
-    url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
   kafka:
     bootstrap-servers: ${KAFKA_URL:kafka}
     security:
@@ -64,6 +62,7 @@ request:
     white: ${WHITE_HEADER:x-forward-for}
     record: ${RECORD_HEADER:x-forward-for}
 service:
+  vault: ${VAULT_ENABLE:true}
   timeout:
     connect: 10
     read: 10

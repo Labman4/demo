@@ -36,7 +36,7 @@ import java.time.Duration;
         name = "vault",
         havingValue = "true",
         matchIfMissing = false)
-@VaultPropertySource(value = "${SECRETS_PATH:database/creds/elastic-internal}")
+@VaultPropertySource(value = "${SECRETS_PATH:database/creds/elastic}", renewal = VaultPropertySource.Renewal.RENEW)
 @Configuration(proxyBeanMethods = false)
 @EnableElasticsearchRepositories("com.elpsykongroo.services.elasticsearch.server.repo")
 public class ElasticConfig extends ElasticsearchConfiguration {

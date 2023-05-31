@@ -64,7 +64,6 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -201,7 +200,12 @@ public class LoginServiceImpl implements LoginService {
         User saveUser = null;
         try {
             removeInvalid(username);
-            saveUser = saveUser(username, display);
+            Long count = userService.countUser(username);
+            if (count == 0) {
+                saveUser = saveUser(username, display);
+            }  else {
+                return "409";
+            }
         } catch (Exception e) {
             log.error("register with error:{}", e.getMessage());
         }
