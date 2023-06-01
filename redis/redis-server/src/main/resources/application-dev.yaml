@@ -1,9 +1,0 @@
-server:
-  port: 8379
-
-spring:
-  data:
-    redis:
-      client-type: ${REDIS_TYPE:LETTUCE}
-      host: 127.0.0.1
-#      password: ${REDIS_PASS:pass}

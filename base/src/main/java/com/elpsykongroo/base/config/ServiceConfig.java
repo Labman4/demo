@@ -38,6 +38,8 @@ public class ServiceConfig {
 
     private String vault;
 
+    private Redis redis;
+
     private Elastic es;
     //public ca
     private SSL ssl;
@@ -67,6 +69,16 @@ public class ServiceConfig {
 
         private String[] nodes;
 
+    }
+
+    @Data
+    public static class Redis {
+
+        private String type ;
+
+        private String host;
+
+        private int port;
     }
 
     @Data

@@ -1,16 +1,6 @@
 server:
   port: 8379
 
-spring:
-  profiles:
-    active:
-      - ${ENV:prod}
-
-logging:
-  level:
-    root: ${GLOBAL_LOG_LEVEL:info}
-    web: ${WEB_LOG_LEVEL:info}
-    com:
-      elpsykongroo:
-        services:
-          redis: ${LOG_LEVEL:debug}
+service:
+  vault: ${VAULT_ENABLE:true}
+  env: ${ENV:dev}
