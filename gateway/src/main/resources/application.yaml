@@ -1,13 +1,45 @@
 server:
   http2:
     enabled: true
-  # shutdown: graceful
+  shutdown: graceful
   port: 8443
+  ssl:
+    enabled: ${SSL:false}
+    certificate: ${TLS_CERT}
+    certificate-private-key: ${TLS_KEY}
+  #    key-store: ${SSL_JKS:}
+  #    key-store-password: ${SSL_PASS:password}
+  #    key-alias: api
 
 spring:
-  profiles:
-    active:
-      - ${ENV:prod}
+#  cloud:
+#    openfeign:
+#      client:
+#        config:
+#          storage:
+#            url:
+#          auth:
+#            url:
+#          es:
+#            url: http://localhost:9201
+#          redis:
+#            url: http://localhost:8379
+  #  cloud:
+  #    kubernetes:
+  #      discovery:
+  #        enabled: true
+  #        all-namespaces: true
+  #        #        master-url: https://kubernetes.default.svc
+  #        #      include-not-ready-addresses: true
+  #        discovery-server-url: ${DISCOVERY_URL}
+  #    discovery:
+  #      client:
+  #        health-indicator:
+  #          enabled: false
+  main:
+    allow-bean-definition-overriding: true
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
   application:
     name: ${APP_NAME:demo}
   security:
@@ -15,14 +47,24 @@ spring:
       resource-server:
         opaque-token:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
-#        jwt:
-#          jwk-set-uri: ${AUTH_URL:http://localhost:9000}/oauth2/jwks
-      
-#mybatis:
-#  mapper-locations: classpath:mapper/*.xml
-#  liquibase:
-# change-log: classpath:liquibase/changelog/*.sql
-#logging:
+          client-id:
+          client-secret:
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:kafka}
+    security:
+      protocol: ssl
+    ssl:
+      trust-store-location: ${JKS:jks}
+      trust-store-password: ${JKS_PASS:pass}
+    consumer:
+      #      security:
+      #        protocol: ssl
+      auto-offset-reset: earliest
+
+logging:
+  level:
+    root: info
+    web: info
 #  log4j2:
 #    config:
 #      override:
@@ -34,13 +76,14 @@ spring:
 #            CommonsRequestLoggingFilter: DEBUG
 management:
   tracing:
-    enabled: ${TRACE_ENABLED:true}
----
-management:
+    enabled: ${TRACE_ENABLED:false}
+    sampling:
+      probability: ${TRACE_SAMPLING:1.0}
   httpexchanges:
     recording:
       enabled: ${HTTP_RECORD:true}
   endpoint:
+    shutdown.enabled: true
     health:
       probes:
         enabled: true
@@ -54,25 +97,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: ${ENDPOINTS_WEB:health,prometheus,httpexchanges}
+        include: ${ENDPOINTS_WEB:health,prometheus,httpexchanges,shutdown}
   zipkin:
     tracing:
       endpoint: ${ZIPKIN_HOST:http://localhost:9411/api/v2/spans}
-  tracing:
-    sampling:
-      probability: ${TRACE_SAMPLING:1.0}
 
-spring:
-  config:
-    activate:
-      on-profile:
-        - prod
-server:
-  ssl:
-    enabled: ${SSL:false}
-    certificate: ${TLS_CERT}
-    certificate-private-key: ${TLS_KEY}
+service:
+  vault: ${VAULT_ENABLE:false}
 
-#    key-store: ${SSL_JKS:}
-#    key-store-password: ${SSL_PASS:password}
-#    key-alias: api
+

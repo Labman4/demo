@@ -29,7 +29,7 @@ import java.time.Duration;
 @Configuration(proxyBeanMethods = false)
 
 public class StorageServiceConfig {
-    @Value("${service.url.storage}")
+    @Value("${service.url.storage:http://localhost:9999}")
     private String storageUrl;
 
     @Bean

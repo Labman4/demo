@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.elasticsearch.server.service;
+package com.elpsykongroo.gateway.service;
 
-import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
-import org.springframework.data.domain.Pageable;
+import feign.Param;
+import feign.RequestLine;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
+public interface RedisService {
 
-public interface IPManageService {
-    IPManage save(String address, String black);
+    @RequestLine("PUT /redis/key?key={key}&value={value}&duration={duration}")
+    void set(@Param("key") String key , @Param("value")String value, @Param("duration") String duration);
 
-    String ipList(String black);
+    @RequestLine("GET /redis/key/{key}")
+    String get(@Param("key")String key);
 
-    List<IPManage> ipPageList(Pageable pageable, String black);
-
-    String count(String address, String black);
-
-    String deleteByAddressAndIsBlackTrue(String address);
-
-    String deleteByAddressAndIsBlackFalse(String address);
-
-    void deleteById(String id);
+    @RequestLine("GET /redis/token/{key}")
+    String getToken(@PathVariable("key") String key);
 }

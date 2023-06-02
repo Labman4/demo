@@ -20,9 +20,9 @@ import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.services.elasticsearch.server.utils.SSLUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
@@ -36,22 +36,21 @@ import java.time.Duration;
         name = "vault",
         havingValue = "true",
         matchIfMissing = false)
-@Configuration(proxyBeanMethods = false)
 @VaultPropertySource(value = "${SECRETS_PATH:kv/app/dev/es}")
+@Configuration(proxyBeanMethods = false)
 @EnableElasticsearchRepositories("com.elpsykongroo.services.elasticsearch.server.repo")
 public class ElasticConfig extends ElasticsearchConfiguration {
-
-    @Value("${username}")
-    private String username;
-
-    @Value("${password}")
-    private String password;
 
     @Autowired
     private ServiceConfig serviceConfig;
 
+    @Autowired
+    Environment env;
+
    @Override
    public ClientConfiguration clientConfiguration() {
+       String username = env.getProperty("username");
+       String password = env.getProperty("password");
        String type = serviceConfig.getEs().getSsl().getType();
        String ca = serviceConfig.getEs().getSsl().getCa();
        String key = serviceConfig.getEs().getSsl().getKey();
@@ -59,6 +58,21 @@ public class ElasticConfig extends ElasticsearchConfiguration {
        String[] nodes = serviceConfig.getEs().getNodes();
        long connect = serviceConfig.getEs().getTimeout().getConnect();
        long socket = serviceConfig.getEs().getTimeout().getSocket();
+       String user = serviceConfig.getEs().getUser();
+       String pass = serviceConfig.getEs().getPass();
+       if (StringUtils.isNotBlank(pass)) {
+           password = pass;
+       }
+       if (StringUtils.isNotBlank(user)) {
+           username = user;
+       }
+       if (StringUtils.isBlank(password)) {
+           return ClientConfiguration.builder()
+                   .connectedTo(nodes)
+                   .withConnectTimeout(Duration.ofSeconds(connect))
+                   .withSocketTimeout(Duration.ofSeconds(socket))
+                   .build();
+       }
        if ("public".equals(type)) {
            return ClientConfiguration.builder()
                     .connectedTo(nodes)

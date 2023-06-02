@@ -39,8 +39,8 @@ public class IPManagerController {
 	@Autowired
 	private IPManagerService ipManagerService;
 
-	@PutMapping("/manage/add")
-	public String addBlacklist(@RequestParam("address") String address, @RequestParam("black") String isBlack) {
+	@PutMapping
+	public String add(@RequestParam String address, @RequestParam String isBlack) {
 		log.debug("add sourceIP:{}, black:{}", address, isBlack);
 			try {
 				return CommonResponse.success(ipManagerService.add(address, isBlack));
@@ -50,14 +50,14 @@ public class IPManagerController {
 						(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 		}
 	}
-	@GetMapping("/manage/list")
-	public String blacklist(@RequestParam("black") String isBlack, @RequestParam("pageNumber") String pageNumber, @RequestParam("pageSize") String pageSize) {
-		log.debug("black:{}, pageNumber:{}, pageSize:{}", isBlack, pageNumber, pageSize);
-		return CommonResponse.string(ipManagerService.list(isBlack, pageNumber, pageSize));
+	@GetMapping
+	public String ipPageList(@RequestParam String black, @RequestParam String pageNumber, @RequestParam String pageSize) {
+		log.debug("black:{}, pageNumber:{}, pageSize:{}", black, pageNumber, pageSize);
+		return CommonResponse.string(ipManagerService.list(black, pageNumber, pageSize));
 	}
 
-	@PatchMapping("/manage/patch")
-	public String updateBlacklist(@RequestParam("address") String addresses, @RequestParam("black") String isBlack, @RequestParam("id") String ids) {
+	@PatchMapping
+	public String delete(@RequestParam("address") String addresses, @RequestParam("black") String isBlack, @RequestParam("id") String ids) {
 		try {
 			log.debug("black:{}, addresses:{}, ids:{}", isBlack, addresses, ids);
 			ipManagerService.patch(addresses, isBlack, ids);

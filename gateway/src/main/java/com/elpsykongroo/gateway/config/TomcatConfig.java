@@ -26,8 +26,8 @@ public class TomcatConfig {
     @Bean
     public TomcatServletWebServerFactory servletContainer() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
-        tomcat.addAdditionalTomcatConnectors(createStandardConnector());
-        tomcat.addAdditionalTomcatConnectors(createHeadlessConnector());
+//        tomcat.addAdditionalTomcatConnectors(createStandardConnector());
+//        tomcat.addAdditionalTomcatConnectors(createHeadlessConnector());
         return tomcat;
     }
 

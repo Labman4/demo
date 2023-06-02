@@ -23,10 +23,8 @@ import java.util.List;
 
 import com.elpsykongroo.base.utils.IPRegexUtils;
 import com.elpsykongroo.base.utils.PathUtils;
-import com.elpsykongroo.services.elasticsearch.client.SearchService;
-import com.elpsykongroo.services.elasticsearch.client.dto.IPManage;
-import com.elpsykongroo.services.redis.client.RedisService;
-import com.elpsykongroo.services.redis.client.dto.KV;
+import com.elpsykongroo.gateway.service.RedisService;
+import com.elpsykongroo.gateway.service.SearchService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.gateway.config.RequestConfig;
@@ -40,16 +38,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.vault.annotation.VaultPropertySource;
 
 @Service
 @Slf4j
-@VaultPropertySource(value = "${SECRETS_PATH:kv/app/gateway}")
 public class IPMangerServiceImpl implements IPManagerService {
-	@Value("${ENV}")
+	@Value("${ENV:dev}")
 	private String env;
 
-	@Value("${service.whiteDomain}")
+	@Value("${service.whiteDomain:ip.elpsykongroo.com}")
 	private String whiteDomain;
 
     @Autowired
@@ -80,22 +76,14 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	@Override
 	public String list(String isBlack, String pageNumber, String pageSize) {
-		String ipManages = null;
-		if (StringUtils.isBlank(isBlack)) {
-			ipManages = searchService.findAllIP(pageNumber, pageSize);
-		} else if ("true".equals(isBlack)) {
-			ipManages = searchService.findByIsBlackTrue(pageNumber, pageSize);
-		} else {
-			ipManages = searchService.findByIsBlackFalse(pageNumber, pageSize);
-		}
-		return ipManages;
+		return searchService.ipPageList(pageNumber, pageSize, isBlack);
 	}
 
 	@Override
 	public void patch(String addresses, String isBlack, String id) throws UnknownHostException {
 		String[] addr = addresses.split(",");
 		if (StringUtils.isNotEmpty(id)) {
-			searchService.deleteIPById(id);
+			searchService.deleteIpById(id);
 			updateCache(isBlack);
 		}
 		for (String ad: addr) {
@@ -110,20 +98,16 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	private void deleteIPManage(String isBlack, String ad) {
 		if ("true".equals(isBlack)) {
-			searchService.deleteByAddressAndIsBlackTrue(ad);
+			searchService.deleteBlack(ad);
 		}
 		else {
-			searchService.deleteByAddressAndIsBlackFalse(ad);
+			searchService.deleteWhite(ad);
 		}
 	}
 
 	@Override
 	public List<String> add(String addrs, String isBlack) throws UnknownHostException {
 		List<String> addresses = new ArrayList<>();
-		Boolean flag = false;
-		if ("true".equals(isBlack)) {
-			flag = true;
-		}
 //            RLock lock = redissonClient.getLock("blackList");
 ////            lock.tryLockAsync().get()
 //            if (lock.tryLock(Constant.REDIS_LOCK_WAIT_TIME, Constant.REDIS_LOCK_LEASE_TIME, TimeUnit.SECONDS)) {
@@ -135,10 +119,10 @@ public class IPMangerServiceImpl implements IPManagerService {
 					InetAddress[] inetAddresses = InetAddress.getAllByName(addr);
 					for (InetAddress ad: inetAddresses) {
 						if (exist(ad.getHostAddress(), isBlack) == 0) {
-							addresses.add(searchService.saveIP(new IPManage(ad.getHostAddress(), flag)));
+							addresses.add(searchService.saveIP(ad.getHostAddress(), isBlack));
 						}
 						if (exist(ad.getHostName(), isBlack) == 0) {
-							addresses.add(searchService.saveIP(new IPManage(ad.getHostName(), flag)));
+							addresses.add(searchService.saveIP(ad.getHostName(), isBlack));
 						}
 					}
 				}
@@ -158,37 +142,14 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	private int exist(String ad, String isBlack) {
-		if ("true".equals(isBlack)) {
-			String size = searchService.countByAddressAndIsBlackTrue(ad);
-			log.debug("black.size:{}", size);
-			return Integer.parseInt(size);
-		}
-		else {
-			String size = searchService.countByAddressAndIsBlackFalse(ad);
-			log.debug("white.size:{}", size);
-			return Integer.parseInt(size);
-		}
+		String size = searchService.ipCount(ad, isBlack);
+		log.debug("ip: {}, black: {}, size: {}", ad, isBlack, size);
+		return Integer.parseInt(size);
 	}
 
 	private void updateCache(String isBlack) {
-		StringBuffer cache = new StringBuffer();
-		List<IPManage> list = new ArrayList<>();
-		KV kv = new KV();
-		if ("true".equals(isBlack)) {
-			list = searchService.findByIsBlackTrue();
-			kv.setKey(env + "blackList");
-		}
-		else {
-			list = searchService.findByIsBlackFalse();
-			kv.setKey(env + "whiteList");
-		}
-		if (list.size() > 0) {
-			for (IPManage ad: list) {
-				cache.append(ad.getAddress()).append(",");
-			}
-			kv.setValue(cache.toString().substring(0, cache.length() - 1));
-			redisService.set(kv);
-		}
+		String list = searchService.ipList(isBlack);
+		redisService.set(env + isBlack, list, "");
 	}
 
 	@Override
@@ -210,9 +171,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 	private String[] splitHeader (String headerType) {
 		Header header = requestConfig.getHeader();
 		switch(headerType){
-			case "black":
+			case "true":
 				return header.getBlack().split(",");
-			case "white":
+			case "false":
 				return header.getWhite().split(",");
 			case "record":
 				return header.getRecord().split(",");
@@ -238,65 +199,56 @@ public class IPMangerServiceImpl implements IPManagerService {
 	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack){
 		boolean flag = false;
 		try {
-				String list = null;
-				flag = false;
-				String ip = "";
-				if ("true".equals(isBlack)) {
-					ip = accessIP(request, "black");
-					list = redisService.get(env + "blackList");
-				}
-				else {
-					ip = accessIP(request, "white");
-					list = redisService.get(env + "whiteList");
-				}
-				log.debug("cacheList: {}", list);
-				if (StringUtils.isNotBlank(list)) {
-					if ("false".equals(isBlack)) {
-						log.debug("whiteDomain:{}", whiteDomain);
-						for (String d : whiteDomain.split(",")) {
-							if (!list.contains(d)) {
-								initWhite();
-							}
+			String list = redisService.get(env + isBlack);
+			String ip = accessIP(request, isBlack);
+			log.debug("cacheList: {}", list);
+			if (StringUtils.isNotBlank(list)) {
+				if ("false".equals(isBlack)) {
+					log.debug("whiteDomain:{}", whiteDomain);
+					for (String d : whiteDomain.split(",")) {
+						if (!list.contains(d)) {
+							initWhite();
 						}
 					}
-					if (list.contains(ip)) {
-						return true;
-					} else {
-						for (String s : list.split(",")) {
-							if (IPRegexUtils.vaildateHost(s)) {
-								log.debug("query domain: {}", s);
-								InetAddress[] inetAddress = InetAddress.getAllByName(s);
-								for (InetAddress address : inetAddress) {
-									if (address.getHostAddress().equals(ip)) {
-										log.debug("update domain ip: {}", address.getHostAddress());
-										add(address.getHostAddress(), isBlack);
-										return true;
-									}
+				}
+				if (list.contains(ip)) {
+					return true;
+				} else {
+					for (String s : list.split(",")) {
+						if (IPRegexUtils.vaildateHost(s)) {
+							log.debug("query domain: {}", s);
+							InetAddress[] inetAddress = InetAddress.getAllByName(s);
+							for (InetAddress address : inetAddress) {
+								if (address.getHostAddress().equals(ip)) {
+									log.debug("update domain ip: {}", address.getHostAddress());
+									add(address.getHostAddress(), isBlack);
+									return true;
 								}
 							}
 						}
 					}
-				} else {
-					log.info("updateCache");
-					if ("false".equals(isBlack)) {
-						initWhite();
-					}
-					updateCache(isBlack);
 				}
-				/**
-				 * 	Todo
-				 * 
-				 * 	reserve dns need ptr record and public static ip;
-				 *  cannot get hostname; need to search first; 
-				 *  if exist too many domain record in es may cause problem;		 
-				 *
-				 *  solved
-				 *    query all domain in cache when request don't match cache
-				 */
-//				InetAddress[] inetAddress = InetAddress.getAllByName(ip);
-				if (exist(ip, isBlack) > 0) {
-					flag = true;
-					// not work address.getHostName() only return ipaddress without ptr
+			} else {
+				log.info("updateCache");
+				if ("false".equals(isBlack)) {
+					initWhite();
+				}
+				updateCache(isBlack);
+			}
+			/**
+			 * 	Todo
+			 *
+			 * 	reserve dns need ptr record and public static ip;
+			 *  cannot get hostname; need to search first;
+			 *  if exist too many domain record in es may cause problem;
+			 *
+			 *  solved
+			 *    query all domain in cache when request don't match cache
+			 */
+//			InetAddress[] inetAddress = InetAddress.getAllByName(ip);
+			if (exist(ip, isBlack) > 0) {
+				flag = true;
+				// not work address.getHostName() only return ipaddress without ptr
 //					for (InetAddress address: inetAddress) {
 //						if (exist(address.getHostName(), isBlack) == 0) {
 //							String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
@@ -305,7 +257,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 //							log.info("Update list domain when IP domain change, {} -> {}", ip, newAddress);
 //						}
 //					}
-				}
+			}
 //				else {
 //					for (InetAddress address: inetAddress) {
 //						if (exist(address.getHostName(), isBlack) > 0) {

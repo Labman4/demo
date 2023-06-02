@@ -36,7 +36,8 @@ public class IPManageServiceImpl implements IPManageService {
     }
 
     @Override
-    public IPManage save(IPManage ipManage) {
+    public IPManage save(String address, String black) {
+        IPManage ipManage = new IPManage(address, Boolean.valueOf(black));
         return ipRepo.save(ipManage);
     }
 

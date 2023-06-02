@@ -17,7 +17,7 @@
 package com.elpsykongroo.gateway;
 
 import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
+import com.elpsykongroo.gateway.entity.AccessRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.model.MediaType;
@@ -42,19 +42,22 @@ public class AccessRecordTest extends BaseTest {
         header.put("x-real-ip", "127.0.0.1");
         accessRecord.setRequestHeader(header);
         String records = JsonUtils.toJson(Collections.singleton(accessRecord));
-        client.when(request().withPath("/search/record/list.*"))
+        client.when(request().withPath("/search/record.*").withMethod("GET"))
                 .respond(response()
                         .withStatusCode(200)
                         .withBody(records, MediaType.APPLICATION_JSON));
-        client.when(request().withPath("/search/record.*"))
+        client.when(request().withPath("/search/record").withMethod("DELETE"))
                 .respond(response().withStatusCode(200));
+        client.when(request().withPath("/search/record").withMethod("POST"))
+                .respond(response()
+                        .withStatusCode(200));
     }
     @Test
 //    @Timeout(value = 200, unit = TimeUnit.SECONDS)
-    void list() {
+    void get() {
         webTestClient
             .get()
-            .uri("/record/access?pageNumber=0&pageSize=10&order=0")
+            .uri("/record?pageNumber=0&pageSize=10&order=0")
             .exchange()
             .expectStatus().isOk();
 //            .expectBody().jsonPath("$.data").isNotEmpty();
@@ -65,36 +68,36 @@ public class AccessRecordTest extends BaseTest {
     void delete() {
         webTestClient
             .delete()
-            .uri("/record/delete?sourceIP=ip.elpsykongroo.com&id=1")
+            .uri("/record/ip.elpsykongroo.com")
             .exchange()
             .expectStatus().isOk();
         webTestClient
                 .delete()
-                .uri("/record/delete?sourceIP=test.elpsykongroo.com&id=1")
+                .uri("/record/1")
                 .exchange()
                 .expectStatus().isOk();
     }
 
     @Test
-    void filter() {
+    void post() {
         webTestClient
             .post()
-            .uri("/record/filter?param=man&pageNumber=0&pageSize=10")
+            .uri("/record?params=man&pageNumber=0&pageSize=10&order=0")
             .exchange()
             .expectStatus().isOk();
         webTestClient
                 .post()
-                .uri("/record/filter?param=test.elpsykongroo.com&pageNumber=0&pageSize=10")
+                .uri("/record?params=test.elpsykongroo.com&pageNumber=0&pageSize=10&order=0")
                 .exchange()
                 .expectStatus().isOk();
         webTestClient
                 .post()
-                .uri("/record/filter?param=127.0.0.1&pageNumber=0&pageSize=10")
+                .uri("/record?params=127.0.0.1&pageNumber=0&pageSize=10&order=0")
                 .exchange()
                 .expectStatus().isOk();
         webTestClient
                 .post()
-                .uri("/record/filter?param=ip.elpsykongroo.com&pageNumber=0&pageSize=10")
+                .uri("/record?params=ip.elpsykongroo.com&pageNumber=0&pageSize=10&order=0")
                 .exchange()
                 .expectStatus().isOk();
     }

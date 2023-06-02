@@ -69,16 +69,22 @@ public class ServiceConfig {
 
         private String[] nodes;
 
+        private String user;
+
+        private String pass;
+
     }
 
     @Data
     public static class Redis {
 
-        private String type ;
+        private String type;
 
-        private String host;
+        private String host = "127.0.0.1";
 
-        private int port;
+        private int port = 6379;
+
+        private String password;
     }
 
     @Data

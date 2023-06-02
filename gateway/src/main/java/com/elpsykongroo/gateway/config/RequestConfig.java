@@ -69,7 +69,7 @@ public class RequestConfig {
     
         private String limit = "/";
         
-        private String exclude;
+        private String exclude = "/actuator";
     
         private String filter = "/";  
     }

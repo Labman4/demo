@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.elpsykongroo.base.utils.IPRegexUtils;
-import com.elpsykongroo.services.elasticsearch.client.SearchService;
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
+import com.elpsykongroo.base.utils.JsonUtils;
+import com.elpsykongroo.gateway.entity.AccessRecord;
+import com.elpsykongroo.gateway.service.SearchService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.gateway.config.RequestConfig;
@@ -40,10 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -59,8 +57,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	@Autowired
 	private RequestConfig requestConfig;
 
-	public AccessRecordServiceImpl(SearchService searchService, IPManagerService ipMangerService, RequestConfig requestConfig) {
-		this.searchService = searchService;
+	public AccessRecordServiceImpl(IPManagerService ipMangerService, RequestConfig requestConfig) {
 		this.ipMangerService = ipMangerService;
 		this.requestConfig = requestConfig;
 	}
@@ -86,7 +83,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 					record.setSourceIP(ip);
 					record.setTimestamp(new Date());
 					record.setUserAgent(request.getHeader("user-agent"));
-					searchService.saveRecord(record);
+					searchService.save(record);
 					log.debug("request header------------{} ", result);
 			    }
 		  	}
@@ -97,53 +94,33 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	@Override
 	public String findAll(String pageNo, String pageSize, String order) {
-		String records = searchService.findAllRecord(pageNo, pageSize ,order);
-		return records;
+		return searchService.recordList(pageNo, pageSize ,order);
 	}
 
 	@Override
-	public int deleteRecord(String sourceIP, String ids) throws UnknownHostException {
+	public int deleteRecord(String params) throws UnknownHostException {
 		List<String> recordIds = new ArrayList<>();
-			recordIds = new ArrayList<>();
-			if (StringUtils.isNotEmpty(ids)) {
-				recordIds = new ArrayList<String>(Arrays.asList(ids.split(",")));
-			}
-			if (StringUtils.isNotEmpty(sourceIP)) {
-				InetAddress[] inetAddresses = InetAddress.getAllByName(sourceIP);
+		if (StringUtils.isNotEmpty(params)) {
+			if (IPRegexUtils.vaildate(params)) {
+				InetAddress[] inetAddresses = InetAddress.getAllByName(params);
 				for (InetAddress addr: inetAddresses) {
-					List<AccessRecord> accessRecord = searchService.findBySourceIP(addr.getHostAddress());
+					List<AccessRecord> accessRecord = JsonUtils.toType(searchService.findByIP(addr.getHostAddress()), new TypeReference<List<AccessRecord>>() {});
 					for (AccessRecord record: accessRecord) {
 						recordIds.add(record.getId());
 					}
 				}
+			} else {
+				recordIds = new ArrayList<String>(Arrays.asList(params.split(",")));
 			}
-			searchService.deleteAllRecordById(recordIds);
-			return recordIds.size();
+		}
+		searchService.deleteRecord(recordIds.toString());
+		return recordIds.size();
 	}
 
 
 	@Override
-	public List<AccessRecord> filterByParams(String params, String pageNo, String pageSize) throws UnknownHostException {
-		Pageable pageable = PageRequest.of(Integer.parseInt(pageNo), Integer.parseInt(pageSize));
-			List<AccessRecord> records = new ArrayList<>();
-			if (IPRegexUtils.vaildate(params)) {
-				records = searchService.findBySourceIP(params);
-			}
-			if (IPRegexUtils.vaildateHost(params)) {
-				InetAddress[] inetAddresses = InetAddress.getAllByName(params);
-				for (InetAddress addr: inetAddresses) {
-					List<AccessRecord> accessRecord = searchService.findBySourceIP(addr.getHostAddress());
-					records.addAll(accessRecord);
-				}
-			}
-			records.addAll(searchService.findByUserAgentLike(params));
-			records.addAll(searchService.findByAccessPathLike(params));
-			records.addAll(searchService.findByRequestHeaderLike(params));
-			int start = (int) pageable.getOffset();
-			int end = (int) ((start + pageable.getPageSize()) > records.size() ? records.size() : (start + pageable.getPageSize()));
-			Page<AccessRecord> page =
-					new PageImpl<AccessRecord>(records.subList(start, end), pageable, records.size());
-		    return page.get().toList();
+	public String filterByParams(String params, String pageNo, String pageSize, String order){
+		return searchService.filter(params, pageNo, pageSize, order);
 	}
 
 	private boolean beginWithPath(String paths, String url) {

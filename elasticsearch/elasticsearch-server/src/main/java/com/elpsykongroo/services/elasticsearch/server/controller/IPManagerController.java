@@ -42,27 +42,27 @@ public class IPManagerController {
 	private IPManageService ipManageService;
 
 	@PutMapping
-	public String save(@RequestBody IPManage ipManage) {
+	public String save(@RequestParam String address, @RequestParam String black) {
 		log.debug("ip add");
-		return CommonResponse.string(ipManageService.save(ipManage).getAddress());
+		return CommonResponse.string(ipManageService.save(address, black).getAddress());
 	}
 
 	@GetMapping("page")
 	public String ipPageList(@RequestParam String pageNumber,
-							@RequestParam String pageSize,
-							@RequestParam("black") String black) {
+							 @RequestParam String pageSize,
+							 @RequestParam String black) {
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
 		return CommonResponse.success(ipManageService.ipPageList(pageable, black));
 	}
 
 	@GetMapping
-	public String ipList(@RequestParam("black") String black) {
+	public String ipList(@RequestParam String black) {
 		return CommonResponse.data(ipManageService.ipList(black));
 	}
 
 	@GetMapping("/count")
-	public String whiteCount(@RequestParam("address") String address,
-							 @RequestParam("black") String black) {
+	public String whiteCount(@RequestParam String address,
+							 @RequestParam String black) {
 		return CommonResponse.string(ipManageService.count(address, black));
 	}
 

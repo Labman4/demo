@@ -27,7 +27,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
-	@Value("${request.path.permit}")
+	@Value("${request.path.permit:/**}")
 	private String permit_path;
 
 	@Bean

@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.elasticsearch.server.service;
+package com.elpsykongroo.gateway.entity;
 
-import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
-import org.springframework.data.domain.Pageable;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+@Data
+@NoArgsConstructor
+public class IPManage {
 
-public interface IPManageService {
-    IPManage save(String address, String black);
+	private String id;
 
-    String ipList(String black);
+	private String address;
 
-    List<IPManage> ipPageList(Pageable pageable, String black);
+	private boolean isBlack;
 
-    String count(String address, String black);
+	public IPManage(String address) {
+		this.address = address;
+		this.isBlack = true;
+	}
 
-    String deleteByAddressAndIsBlackTrue(String address);
-
-    String deleteByAddressAndIsBlackFalse(String address);
-
-    void deleteById(String id);
+	public IPManage(String address, boolean black) {
+		this.address = address;
+		this.isBlack = black;
+	}
 }

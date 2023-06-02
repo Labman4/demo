@@ -21,14 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @AutoConfigureObservability
 @MockServerTest("server.url=http://localhost:${mockServerPort}")
-@SpringBootTest(properties = {
-                    "service.redis.url=${server.url}",
-                    "service.auth.url=${server.url}",
-                    "service.storage.url=${server.url}",
-                    "service.es.url=${server.url}"
-                },
-                webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class BaseTest {
 
@@ -53,7 +46,9 @@ public class BaseTest {
                 .defaultRequest(get("/").with(csrf()))
                 .configureClient()
                 .build();
-        client.when(request().withPath("/redis.*"))
+        client.when(request().withPath("/redis/key.*").withMethod("GET"))
+                .respond(response().withStatusCode(200));
+        client.when(request().withPath("/redis/key.*").withMethod("PUT"))
                 .respond(response().withStatusCode(200));
         client.when(request().withPath("/search/ip.*"))
                 .respond(response().withStatusCode(200));

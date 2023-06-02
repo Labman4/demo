@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,29 +41,30 @@ public class AccessRecordController {
 	@Autowired
 	private AccessRecordService accessRecordService;
 
-	@GetMapping("/access")
-	public String getAccessRecord(@RequestParam("pageNumber") String pageNumber,
+	@GetMapping
+	public String recordPageList(@RequestParam("pageNumber") String pageNumber,
 								  @RequestParam("pageSize") String pageSize,
 								  @RequestParam("order") String order) {
 		return CommonResponse.string(accessRecordService.findAll(pageNumber, pageSize, order));
 	}
-	@DeleteMapping("/delete")
-	public String deleteRecord(@RequestParam("sourceIP") String sourceIP, @RequestParam("id") String ids) {
-		log.debug("delete accessRecord by sourceIP:{}", sourceIP);
+	@DeleteMapping("/{param}")
+	public String deleteRecord(@PathVariable String param) {
+		log.debug("delete accessRecord:{}", param);
 		try {
-			return CommonResponse.success(accessRecordService.deleteRecord(sourceIP, ids));
+			return CommonResponse.success(accessRecordService.deleteRecord(param));
 		} catch (UnknownHostException e) {
 			return CommonResponse.error(HttpStatus.SC_CLIENT_ERROR, e.getMessage());
 		}
 	}
 
-	@PostMapping("/filter")
-	public String filter( @RequestParam("param") String params,
+	@PostMapping
+	public String filter( @RequestParam("params") String params,
 						  @RequestParam("pageNumber") String pageNumber,
-						  @RequestParam("pageSize") String pageSize) {
+						  @RequestParam("pageSize") String pageSize,
+						  @RequestParam("order") String order) {
 		try {
-			return CommonResponse.success(accessRecordService.filterByParams(params, pageNumber, pageSize));
-		} catch (UnknownHostException e) {
+			return CommonResponse.string(accessRecordService.filterByParams(params, pageNumber, pageSize, order));
+		} catch (Exception e) {
 			return CommonResponse.error(HttpStatus.SC_CLIENT_ERROR, e.getMessage());
 		}
 	}

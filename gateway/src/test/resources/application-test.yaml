@@ -73,20 +73,5 @@ request:
     record: ${RECORD_HEADER:x-forward-for}
 
 service:
-  timeout:
-    connect: 10
-    read: 10
-  ssl:
-    ca:  ${CA_CRT}
-    cert:  ${TLS_CERT}
-    key:  ${TLS_KEY}
-  redis:
-    url: http://localhost:8379
-  auth:
-    url: http://localhost:9000
-  storage:
-    url: http://localhost:9999
-  es:
-    url: http://localhost:9201
-  whiteDomain: ${WHITE_DOMAIN:ip.elpsykongroo.com,localhost}
-  env: ${DEPLOY_ENV:test}
+  env: ${ENV:test}
+  vault: false

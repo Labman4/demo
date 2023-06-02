@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 
 public class AuthServiceConfig {
-    @Value("${service.url.auth}")
+    @Value("${service.url.auth:http://localhost:9000}")
     private String authUrl;
 
     @Autowired
@@ -36,6 +36,6 @@ public class AuthServiceConfig {
 
     @Bean
     public AuthService authService() {
-        return  new AuthServiceImpl(authUrl,  restTemplateBuilder);
+        return  new AuthServiceImpl(authUrl, restTemplateBuilder);
     }
 }

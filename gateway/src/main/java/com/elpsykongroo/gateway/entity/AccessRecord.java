@@ -14,15 +14,30 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.redis.server.entity;
+package com.elpsykongroo.gateway.entity;
 
 import lombok.Data;
 
+import java.util.Date;
+import java.util.Map;
+
 @Data
-public class KV {
-    private String key;
+public class AccessRecord {
 
-    private String value;
+	private String sourceIP;
 
-    private String time;
+	private String accessPath;
+
+	private Map<String, String> requestHeader;
+
+	private String userAgent;
+
+	private Date timestamp;
+
+	private String id;
+
+	@Override
+	public String toString() {
+		return id;
+	}
 }

@@ -29,18 +29,18 @@ public class IPmanageTest extends BaseTest{
     void ipList() {
         webTestClient
                 .get()
-                .uri("/ip/manage/list?black=false&pageNumber=0&pageSize=10")
+                .uri("/ip?black=false&pageNumber=0&pageSize=10")
                 .exchange()
                 .expectStatus().isOk();
 //            .expectBody().jsonPath("$.data").isNotEmpty();
         webTestClient
                 .get()
-                .uri("/ip/manage/list?black=true&pageNumber=0&pageSize=10")
+                .uri("/ip?black=true&pageNumber=0&pageSize=10")
                 .exchange()
                 .expectStatus().isOk();
         webTestClient
                 .get()
-                .uri("/ip/manage/list?black=&pageNumber=0&pageSize=10")
+                .uri("/ip?black=&pageNumber=0&pageSize=10")
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -49,7 +49,7 @@ public class IPmanageTest extends BaseTest{
     void ipAdd() {
         webTestClient
                 .put()
-                .uri("/ip/manage/add?address=ip.elpsykongroo.com&black=false")
+                .uri("/ip?address=ip.elpsykongroo.com&black=false")
                 .exchange()
                 .expectAll(
                         res -> res.expectStatus().isOk()
@@ -70,12 +70,12 @@ public class IPmanageTest extends BaseTest{
     void patchIP() {
         webTestClient
                 .patch()
-                .uri("/ip/manage/patch?address=ip.elpsykongroo.com&black=false&id=1")
+                .uri("/ip?address=ip.elpsykongroo.com&black=false&id=1")
                 .exchange()
                 .expectStatus().isOk();
         webTestClient
                 .patch()
-                .uri("/ip/manage/patch?address=localhost&black=false&id=")
+                .uri("/ip?address=localhost&black=false&id=")
                 .exchange()
                 .expectStatus().isOk();
     }

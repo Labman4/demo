@@ -26,10 +26,10 @@ package com.elpsykongroo.gateway.config;
 
  @Configuration(proxyBeanMethods = false)
  public class RestTemplateConfig {
-      @Value("${service.timeout.connect}")
+      @Value("${service.timeout.connect:10}")
       private int connect;
 
-      @Value("${service.timeout.read}")
+      @Value("${service.timeout.read:10}")
       private int read;
 
       @Bean

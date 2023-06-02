@@ -16,12 +16,8 @@
 
 package com.elpsykongroo.gateway.service;
 
-
 import java.net.UnknownHostException;
-import java.util.List;
 
-import com.elpsykongroo.base.common.CommonResponse;
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecord;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +27,9 @@ public interface AccessRecordService {
 
 	String findAll(String pageNumber, String pageSize, String sort);
 
-	List<AccessRecord> filterByParams(String params, String pageNumber, String pageSize) throws UnknownHostException;
+	String filterByParams(String params, String pageNumber, String pageSize, String order);
 
-	int deleteRecord(String sourceIP, String ids) throws UnknownHostException;
+	int deleteRecord(String param) throws UnknownHostException;
 
 	void saveAccessRecord(HttpServletRequest request);
 
