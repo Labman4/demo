@@ -16,7 +16,6 @@
 
 package com.elpsykongroo.gateway;
 
-import com.elpsykongroo.services.redis.client.dto.KV;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,15 +27,13 @@ public class RedisTest extends BaseTest {
 
     @Test
     void redis() {
-        KV kv = new KV("test", "1");
         webTestClient
-                .post()
-                .uri("/redis/set")
-                .bodyValue(kv)
+                .put()
+                .uri("/redis/key?key=1&value=1&duration=1")
                 .exchange().expectStatus().isOk();
         webTestClient
                 .get()
-                .uri("/redis/get?key=test")
+                .uri("/redis/key/test")
                 .exchange()
                 .expectStatus().isOk();
     }

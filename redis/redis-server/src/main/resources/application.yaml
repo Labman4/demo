@@ -1,6 +1,10 @@
 server:
   port: 8379
-
+logging:
+  level:
+    web: debug
+    root: info
 service:
-  vault: ${VAULT_ENABLE:true}
-  env: ${ENV:dev}
+  vault: ${VAULT_ENABLE:false}
+  redis:
+    type:

@@ -17,10 +17,11 @@
 package com.elpsykongroo.services.redis.server.config;
 
 import com.elpsykongroo.base.config.ServiceConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisClusterNode;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -30,38 +31,52 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.vault.annotation.VaultPropertySource;
 
 import java.util.Collections;
 
-@VaultPropertySource(value = "${SECRETS_DATA_PATH:database/creds/redis-cluster}", renewal = VaultPropertySource.Renewal.RENEW)
 @Configuration(proxyBeanMethods = false)
 public class RedisConfig {
     @Autowired
     private ServiceConfig serviceConfig;
 
-    @Value("${username}")
-    private String username;
-
-    @Value("${password}")
-    private String password;
+    @Autowired
+    Environment env;
 
      @Bean
      public JedisConnectionFactory redisConnectionFactory() {
+         String username = env.getProperty("username");
+         String password = env.getProperty("password");
+         String pass = "";
+         if (serviceConfig.getRedis() != null) {
+             pass = serviceConfig.getRedis().getPassword();
+         }
+         if (StringUtils.isNotBlank(pass)) {
+             password = pass;
+             username = "";
+         }
          if ("single".equals(serviceConfig.getRedis().getType())) {
-              RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
-              singleConfig.setHostName(serviceConfig.getRedis().getHost());
-              singleConfig.setPort(serviceConfig.getRedis().getPort());
-//              singleConfig.setUsername(username);
-//              singleConfig.setPassword(password);
-           return new JedisConnectionFactory(singleConfig);
-         } else {
+             RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
+             singleConfig.setHostName(serviceConfig.getRedis().getHost());
+             singleConfig.setPort(serviceConfig.getRedis().getPort());
+             if (StringUtils.isNotBlank(username)) {
+                 singleConfig.setUsername(username);
+             }
+             singleConfig.setPassword(password);
+             return new JedisConnectionFactory(singleConfig);
+         } else if ("cluster".equals(serviceConfig.getRedis().getType())) {
              RedisClusterConfiguration config = new RedisClusterConfiguration();
-             config.setUsername(username);
+             if (StringUtils.isNotBlank(username)) {
+                 config.setUsername(username);
+             }
              config.setPassword(password);
              RedisNode redisNode = new RedisClusterNode(serviceConfig.getRedis().getHost(), serviceConfig.getRedis().getPort());
              config.setClusterNodes(Collections.singletonList(redisNode));
              return new JedisConnectionFactory(config);
+         } else {
+             RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
+             singleConfig.setHostName(serviceConfig.getRedis().getHost());
+             singleConfig.setPort(serviceConfig.getRedis().getPort());
+             return new JedisConnectionFactory(singleConfig);
          }
     }
     //}

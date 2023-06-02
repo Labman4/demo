@@ -34,6 +34,7 @@ import java.net.URI;
     name = "vault",
     havingValue = "true",
     matchIfMissing = false)
+@VaultPropertySource(value = "${SECRETS_DATA_PATH:database/creds/redis-cluster}", renewal = VaultPropertySource.Renewal.RENEW)
 @VaultPropertySource(value = "${SECRETS_PATH:kv/app/dev/redis}", renewal = VaultPropertySource.Renewal.RENEW)
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
     @Override
@@ -45,12 +46,6 @@ public class VaultTemplateConfig extends AbstractVaultConfiguration  {
          } else {
              return new TokenAuthentication(getEnvironment().getProperty("vaultToken"));
          }
-//        AppRoleAuthenticationOptions options = AppRoleAuthenticationOptions.builder()
-//                .roleId(AppRoleAuthenticationOptions.RoleId.provided("c84b8b5a-6646-3295-b9b2-d8343335addb"))
-//                .secretId(AppRoleAuthenticationOptions.SecretId.wrapped(VaultToken.of("5cccc491-90d2-f297-5507-f6df543d803d")))
-//                .build();
-//
-//        return new AppRoleAuthentication(options, restOperations());
     }
     @Override
     public VaultEndpoint vaultEndpoint() {

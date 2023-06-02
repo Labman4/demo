@@ -17,12 +17,11 @@
 
 package com.elpsykongroo.services.redis.server.controller;
 
-import com.elpsykongroo.services.redis.server.entity.KV;
 import com.elpsykongroo.services.redis.server.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,18 +32,20 @@ public class RedisController {
     @Autowired
     private RedisService redisService;
 
-    @PostMapping("set")
-    public void set(@RequestBody KV kv) {
-        redisService.setCache(kv.getKey(), kv.getValue(), kv.getTime());
+    @PutMapping("key")
+    public void set(@RequestParam("key") String key,
+                    @RequestParam("value") String value,
+                    @RequestParam("duration") String duration) {
+        redisService.setCache(key, value, duration);
     }
 
-    @GetMapping("get")
-    public String get(@RequestParam("key") String key) {
+    @GetMapping("key/{key}")
+    public String get(@PathVariable("key") String key) {
         return redisService.getCache(key);
     }
 
-    @GetMapping("get/token")
-    public String getToken(@RequestParam("key") String key) {
+    @GetMapping("token/{key}")
+    public String getToken(@PathVariable("key") String key) {
         return redisService.getToken(key);
     }
 }
