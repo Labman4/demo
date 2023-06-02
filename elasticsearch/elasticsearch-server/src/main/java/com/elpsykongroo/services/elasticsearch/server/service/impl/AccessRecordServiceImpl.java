@@ -16,19 +16,25 @@
 
 package com.elpsykongroo.services.elasticsearch.server.service.impl;
 
-import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecordDto;
+import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.server.repo.AccessRecordRepo;
 import com.elpsykongroo.services.elasticsearch.server.service.AccessRecordService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHitSupport;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchPage;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,6 +42,9 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
     @Autowired
     private AccessRecordRepo accessRecordRepo;
+
+    @Autowired
+    private ElasticsearchOperations operations;
 
     @Autowired
     public AccessRecordServiceImpl(AccessRecordRepo accessRecordRepo) {
@@ -53,41 +62,31 @@ public class AccessRecordServiceImpl implements AccessRecordService {
     }
 
     @Override
-    public List<AccessRecord> findByAccessPathLike(String path) {
-        return accessRecordRepo.findByAccessPathLike(path);
-    }
-
-    @Override
-    public List<AccessRecord> searchSimilar(AccessRecordDto accessRecord) {
-        StringBuffer field = new StringBuffer();
-        if (StringUtils.isNotBlank(accessRecord.getAccessPath())) {
-            field.append(accessRecord.getAccessPath()).append(",");
-        }
-        if (StringUtils.isNotBlank(accessRecord.getSourceIP())) {
-            field.append(accessRecord.getSourceIP()).append(",");
-        }
-        if (StringUtils.isNotBlank(accessRecord.getUserAgent())) {
-            field.append(accessRecord.getUserAgent()).append(",");
-        }
-        if (accessRecord.getRequestHeader() != null && accessRecord.getRequestHeader().size() > 0) {
-            field.append(JsonUtils.toJson(accessRecord.getRequestHeader())).append(",");
-        }
+    public List<AccessRecord> filter(String param, String pageNum, String pageSize, String order) {
         Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
-        if ("1".equals(accessRecord.getOrder())) {
+        if ("1".equals(order)) {
             sort = Sort.by(Sort.Direction.ASC, "timestamp");
         }
-        String[] fields = field.toString().substring(0, field.length() - 1).split(",");
-        Pageable pageable = PageRequest.of(Integer.parseInt(accessRecord.getPageNum()), Integer.parseInt(accessRecord.getPageSize()), sort);
-        AccessRecord record = new AccessRecord();
-        record.setAccessPath(accessRecord.getAccessPath());
-        record.setUserAgent(accessRecord.getUserAgent());
-        record.setRequestHeader(accessRecord.getRequestHeader());
-        record.setSourceIP(accessRecord.getSourceIP());
-        record.setTimestamp(accessRecord.getTimestamp());
-        accessRecordRepo.save(record);
-        List<AccessRecord> records = accessRecordRepo.searchSimilar(record, fields, pageable).get().toList();
-        accessRecordRepo.deleteById(record.getId());
-        return records;
+        Pageable pageable = PageRequest.of(Integer.parseInt(pageNum), Integer.parseInt(pageSize), sort);
+        List<String>  fields = new ArrayList<>();
+        fields.add("sourceIP");
+        fields.add("userAgent");
+        fields.add("accessPath");
+        fields.add("requestHeader");
+        MultiMatchQuery multiMatchQuery = new MultiMatchQuery.Builder()
+                .query(param)
+                .fields(fields)
+                .fuzziness("auto")
+                .build();
+        Query query = NativeQuery.builder().withQuery(q ->
+                q.multiMatch(multiMatchQuery)
+
+        ).withPageable(pageable).build();
+        SearchHits<AccessRecord> searchHits = operations.search(query, AccessRecord.class, IndexCoordinates.of("access_record"));
+        SearchPage<AccessRecord> searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
+        Page<AccessRecord> page = (Page<AccessRecord>) SearchHitSupport.unwrapSearchHits(searchPage);
+        return page.get().toList();
+
     }
 
     @Override
@@ -96,17 +95,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
     }
 
     @Override
-    public List<AccessRecord> findByUserAgentLike(String agent) {
-        return accessRecordRepo.findByUserAgentLike(agent);
-    }
-
-    @Override
-    public List<AccessRecord> findByRequestHeaderLike(String header) {
-        return accessRecordRepo.findByRequestHeaderLike(header);
-    }
-
-    @Override
-    public void deleteAllById(List<String> ids) {
+    public void deleteAllById(Iterable<String> ids) {
         accessRecordRepo.deleteAllById(ids);
     }
 

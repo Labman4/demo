@@ -72,12 +72,6 @@
             <version>0.0.1</version>
         </dependency>
         <dependency>
-            <groupId>com.elpsykongroo.services</groupId>
-            <artifactId>elasticsearch-client</artifactId>
-            <version>0.0.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
@@ -137,6 +131,5 @@
                 </plugins>
             </build>
         </profile>
-
     </profiles>
 </project>

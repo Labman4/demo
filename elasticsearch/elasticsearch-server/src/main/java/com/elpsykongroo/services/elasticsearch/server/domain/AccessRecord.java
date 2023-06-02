@@ -29,8 +29,6 @@ import java.util.Map;
 @Document(indexName = "access_record")
 public class AccessRecord {
 
-	@Field(type = FieldType.Ip)
-
 	private String sourceIP;
 
 	private String accessPath;

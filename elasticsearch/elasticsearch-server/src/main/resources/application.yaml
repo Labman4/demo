@@ -15,5 +15,4 @@ spring:
       repositories:
         enabled: true
 service:
-  env: ${ENV:dev}
   vault: ${VAULT_ENABLE:true}

@@ -24,19 +24,11 @@ import java.util.List;
 public interface IPManageService {
     IPManage save(IPManage ipManage);
 
-    List<IPManage> findAll(Pageable pageable);
+    String ipList(String black);
 
-    List<IPManage> findByIsBlackTrue();
+    List<IPManage> ipPageList(Pageable pageable, String black);
 
-    List<IPManage> findByIsBlackFalse();
-
-    List<IPManage> findByIsBlackTrue(Pageable pageable);
-
-    List<IPManage> findByIsBlackFalse(Pageable pageable);
-
-    String countByAddressAndIsBlackTrue(String address);
-
-    String countByAddressAndIsBlackFalse(String address);
+    String count(String address, String black);
 
     String deleteByAddressAndIsBlackTrue(String address);
 

@@ -34,7 +34,7 @@ import java.net.URI;
     name = "vault",
     havingValue = "true",
     matchIfMissing = false)
-@VaultPropertySource(value = "${SECRETS_PATH:database/creds/elastic}", renewal = VaultPropertySource.Renewal.RENEW)
+@VaultPropertySource(value = "${SECRETS_DATA_PATH:database/creds/elastic}", renewal = VaultPropertySource.Renewal.RENEW)
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
 
     @Override

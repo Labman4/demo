@@ -16,27 +16,18 @@
 
 package com.elpsykongroo.services.elasticsearch.server.service;
 
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecordDto;
 import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface AccessRecordService {
     List<AccessRecord> findAll(String pageNum, String pageSize, String order);
 
-    List<AccessRecord> findByAccessPathLike(String path);
-
     List<AccessRecord> findBySourceIP(String ip);
 
-    List<AccessRecord> searchSimilar(AccessRecordDto accessRecord);
+    List<AccessRecord> filter(String param, String pageNo, String pageSize, String order);
 
-    List<AccessRecord> findByUserAgentLike(String agent);
-
-    List<AccessRecord> findByRequestHeaderLike(String header);
-
-    void deleteAllById(List<String> ids);
+    void deleteAllById(Iterable<String> ids);
 
     String save(AccessRecord accessRecord);
 }

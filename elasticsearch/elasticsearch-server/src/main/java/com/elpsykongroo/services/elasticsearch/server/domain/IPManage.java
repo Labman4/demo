@@ -31,6 +31,12 @@ public class IPManage {
 	private String address;
 
 	private boolean isBlack;
+
+	@Override
+	public String toString() {
+		return address;
+	}
+
 	public IPManage(String address) {
 		this.address = address;
 		this.isBlack = true;

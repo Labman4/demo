@@ -17,15 +17,13 @@
 package com.elpsykongroo.services.elasticsearch.server.controller;
 
 import com.elpsykongroo.base.common.CommonResponse;
-import com.elpsykongroo.services.elasticsearch.client.dto.AccessRecordDto;
 import com.elpsykongroo.services.elasticsearch.server.domain.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.server.service.AccessRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/search/record")
@@ -42,8 +41,8 @@ public class AccessRecordController {
 	@Autowired
 	private AccessRecordService accessRecordService;
 
-	@PutMapping("/add")
-	public String saveAccessRecord(@RequestBody AccessRecord accessrecord) {
+	@PutMapping
+	public String save(@RequestBody AccessRecord accessrecord) {
 		try {
 			log.debug("record add");
 			return CommonResponse.success(accessRecordService.save(accessrecord));
@@ -52,54 +51,39 @@ public class AccessRecordController {
 		}
 	}
 
-	@GetMapping("/list")
-	public String findAll(@RequestParam String order,
-												  @RequestParam String pageNumber,
-												  @RequestParam String pageSize) {
+	@GetMapping
+	public String pageList(@RequestParam String order,
+						   @RequestParam String pageNumber,
+						   @RequestParam String pageSize) {
 		log.debug("record list");
 		return CommonResponse.success(accessRecordService.findAll(pageNumber, pageSize, order));
 	}
 
-	@GetMapping("/list/ip")
-	public String findByIP(@RequestParam String ip) {
-		log.debug("record list ip");
+	@GetMapping("ip")
+	public String ipList(@RequestParam("ip") String ip) {
+		log.debug("record ip list");
 		return CommonResponse.data(accessRecordService.findBySourceIP(ip));
 	}
 
-	@GetMapping("/list/path")
-	public String findByPath(@RequestParam String path) {
-		log.debug("record path");
-		return CommonResponse.data(accessRecordService.findByAccessPathLike(path));
-	}
-
-	@GetMapping("/list/agent")
-	public String findByUserAgent(@RequestParam String agent) {
-		log.debug("record agent");
-		return CommonResponse.data(accessRecordService.findByUserAgentLike(agent));
-	}
-
-	@GetMapping("/list/header")
-	public String findByHeader(@RequestParam String header) {
-		log.debug("record header");
-		return CommonResponse.data(accessRecordService.findByRequestHeaderLike(header));
-	}
-
-	@PostMapping("delete")
-	public String deleteAllRecordById(@RequestBody List<String> ids) {
+	@DeleteMapping("{ids}")
+	public String deleteAllRecordById(@PathVariable String ids) {
 		try {
 			log.debug("record delete");
-			accessRecordService.deleteAllById(ids);
+			accessRecordService.deleteAllById(Arrays.stream(ids.split(",")).collect(Collectors.toList()));
 			return CommonResponse.success();
 		} catch (Exception e) {
 			return CommonResponse.error(500, e.getMessage());
 		}
 	}
 
-	@PostMapping("/filter")
-	public String filter(@RequestBody AccessRecordDto accessRecordDto) {
+	@PostMapping
+	public String filter(@RequestParam("params") String params,
+						 @RequestParam("pageNumber") String pageNumber,
+						 @RequestParam("pageSize") String pageSize,
+						 @RequestParam("order") String order) {
 		try {
 			log.debug("filter");
-			return CommonResponse.data(accessRecordService.searchSimilar(accessRecordDto));
+			return CommonResponse.data(accessRecordService.filter(params, pageNumber, pageSize, order));
 		} catch (Exception e) {
 			log.error("filter error: {}", e.getMessage());
 			return CommonResponse.error(500, e.getMessage());

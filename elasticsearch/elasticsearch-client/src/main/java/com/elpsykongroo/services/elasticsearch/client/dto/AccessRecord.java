@@ -34,5 +34,10 @@ public class AccessRecord {
 
 	private Date timestamp;
 
-	private  String id;
+	private String id;
+
+	@Override
+	public String toString() {
+		return id;
+	}
 }

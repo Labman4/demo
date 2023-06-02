@@ -41,61 +41,32 @@ public class IPManagerController {
 	@Autowired
 	private IPManageService ipManageService;
 
-	@PutMapping("/add")
-	public String saveIP(@RequestBody IPManage ipManage) {
+	@PutMapping
+	public String save(@RequestBody IPManage ipManage) {
 		log.debug("ip add");
 		return CommonResponse.string(ipManageService.save(ipManage).getAddress());
 	}
 
-	@GetMapping("/list")
-	public String list(@RequestParam String pageNumber,
-												  @RequestParam String pageSize) {
-		log.debug("ip list");
+	@GetMapping("page")
+	public String ipPageList(@RequestParam String pageNumber,
+							@RequestParam String pageSize,
+							@RequestParam("black") String black) {
 		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-		return CommonResponse.success(ipManageService.findAll(pageable));
+		return CommonResponse.success(ipManageService.ipPageList(pageable, black));
 	}
 
-	@GetMapping("/list/white")
-	public String whiteList(@RequestParam String pageNumber,
-							@RequestParam String pageSize) {
-		log.debug("ip white");
-		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-		return CommonResponse.success(ipManageService.findByIsBlackFalse(pageable));
+	@GetMapping
+	public String ipList(@RequestParam("black") String black) {
+		return CommonResponse.data(ipManageService.ipList(black));
 	}
 
-	@GetMapping("/list/black")
-	public String blackList(@RequestParam String pageNumber,
-							@RequestParam String pageSize) {
-		log.debug("ip black");
-		Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageSize));
-		return CommonResponse.success(ipManageService.findByIsBlackTrue(pageable));
+	@GetMapping("/count")
+	public String whiteCount(@RequestParam("address") String address,
+							 @RequestParam("black") String black) {
+		return CommonResponse.string(ipManageService.count(address, black));
 	}
 
-	@GetMapping("/white/list")
-	public String whiteList() {
-		log.debug("white ip");
-		return CommonResponse.data(ipManageService.findByIsBlackFalse());
-	}
-
-	@GetMapping("/black/list")
-	public String blackList() {
-		log.debug("black ip");
-		return CommonResponse.data(ipManageService.findByIsBlackTrue());
-	}
-
-	@GetMapping("/count/white/{address}")
-	public String whiteCount(@PathVariable String address) {
-		log.debug("white count");
-		return CommonResponse.string(ipManageService.countByAddressAndIsBlackFalse(address));
-	}
-
-	@GetMapping("/count/black/{address}")
-	public String blackCount(@PathVariable String address) {
-		log.debug("black count");
-		return CommonResponse.string(ipManageService.countByAddressAndIsBlackTrue(address));
-	}
-
-	@DeleteMapping("/black/delete/{address}")
+	@DeleteMapping("/black/{address}")
 	public String deleteBlack(@PathVariable String address) {
 		try {
 			log.debug("black delete");
@@ -105,7 +76,7 @@ public class IPManagerController {
 		}
 	}
 
-	@DeleteMapping("/white/delete/{address}")
+	@DeleteMapping("/white/{address}")
 	public String deleteWhite(@PathVariable String address) {
 		try {
 			log.debug("white delete");

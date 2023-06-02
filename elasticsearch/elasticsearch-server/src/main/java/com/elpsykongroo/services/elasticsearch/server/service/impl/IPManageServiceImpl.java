@@ -19,6 +19,7 @@ package com.elpsykongroo.services.elasticsearch.server.service.impl;
 import com.elpsykongroo.services.elasticsearch.server.domain.IPManage;
 import com.elpsykongroo.services.elasticsearch.server.repo.IPRepo;
 import com.elpsykongroo.services.elasticsearch.server.service.IPManageService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,38 +41,32 @@ public class IPManageServiceImpl implements IPManageService {
     }
 
     @Override
-    public List<IPManage> findAll(Pageable pageable) {
-        return ipRepo.findAll(pageable).get().toList();
+    public String ipList(String black) {
+        if ("true".equals(black)) {
+            return ipRepo.findByIsBlackTrue();
+        } else {
+            return ipRepo.findByIsBlackFalse();
+        }
     }
 
     @Override
-    public List<IPManage> findByIsBlackTrue() {
-        return ipRepo.findByIsBlackTrue();
+    public List<IPManage> ipPageList(Pageable pageable, String black) {
+        if (StringUtils.isBlank(black)) {
+            return ipRepo.findAll(pageable).get().toList();
+        } else if ("true".equals(black)) {
+            return ipRepo.findByIsBlackTrue(pageable);
+        } else {
+            return ipRepo.findByIsBlackFalse(pageable);
+        }
     }
 
     @Override
-    public List<IPManage> findByIsBlackFalse() {
-        return ipRepo.findByIsBlackFalse();
-    }
-
-    @Override
-    public List<IPManage> findByIsBlackTrue(Pageable pageable) {
-        return ipRepo.findByIsBlackTrue(pageable);
-    }
-
-    @Override
-    public List<IPManage> findByIsBlackFalse(Pageable pageable) {
-        return ipRepo.findByIsBlackFalse(pageable);
-    }
-
-    @Override
-    public String countByAddressAndIsBlackTrue(String address) {
-        return ipRepo.countByAddressAndIsBlackTrue(address);
-    }
-
-    @Override
-    public String countByAddressAndIsBlackFalse(String address) {
-        return ipRepo.countByAddressAndIsBlackFalse(address);
+    public String count(String address, String black) {
+        if ("true".equals(black)) {
+            return ipRepo.countByAddressAndIsBlackTrue(address);
+        } else {
+            return ipRepo.countByAddressAndIsBlackFalse(address);
+        }
     }
 
     @Override

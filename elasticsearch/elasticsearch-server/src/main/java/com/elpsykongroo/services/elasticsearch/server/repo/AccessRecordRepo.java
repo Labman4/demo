@@ -26,14 +26,5 @@ import java.util.List;
 
 @Repository
 public interface AccessRecordRepo extends ElasticsearchRepository<AccessRecord, String> {
-
-	Page<AccessRecord> findAll(Pageable pageable);
-
-	List<AccessRecord> findByAccessPathLike(String path);
-	
 	List<AccessRecord> findBySourceIP(String sourceip);
-
-	List<AccessRecord> findByUserAgentLike(String agent);
-
-	List<AccessRecord> findByRequestHeaderLike(String header);
 }
