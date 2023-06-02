@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.elasticsearch.server.config;
+package com.elpsykongroo.services.elasticsearch.config;
 
 import com.elpsykongroo.base.config.ServiceConfig;
-import com.elpsykongroo.services.elasticsearch.server.utils.SSLUtils;
+import com.elpsykongroo.services.elasticsearch.utils.SSLUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -42,10 +42,9 @@ import java.time.Duration;
 public class ElasticConfig extends ElasticsearchConfiguration {
 
     @Autowired
-    private ServiceConfig serviceConfig;
-
-    @Autowired
     Environment env;
+    @Autowired
+    private ServiceConfig serviceConfig;
 
    @Override
    public ClientConfiguration clientConfiguration() {
