@@ -5,6 +5,6 @@ logging:
     web: debug
     root: info
 service:
-  vault: ${VAULT_ENABLE:false}
+  vault: ${VAULT_ENABLE:true}
   redis:
     type:

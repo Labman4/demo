@@ -23,8 +23,8 @@ import java.util.List;
 
 import com.elpsykongroo.base.utils.IPRegexUtils;
 import com.elpsykongroo.base.utils.PathUtils;
-import com.elpsykongroo.gateway.service.RedisService;
-import com.elpsykongroo.gateway.service.SearchService;
+import com.elpsykongroo.base.service.RedisService;
+import com.elpsykongroo.base.service.SearchService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.gateway.config.RequestConfig;

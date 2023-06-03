@@ -17,7 +17,8 @@
 package com.elpsykongroo.storage.server.service.impl;
 
 import com.elpsykongroo.base.config.ServiceConfig;
-import com.elpsykongroo.storage.server.entity.S3;
+import com.elpsykongroo.base.domain.storage.object.ListObject;
+import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.storage.server.service.ObjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -62,9 +63,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -128,20 +127,20 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
-    public Map<String, Long> list(S3 s3) {
+    public List<ListObject> list(S3 s3) {
         initClient(s3);
         ListObjectsV2Request listReq = ListObjectsV2Request.builder()
                 .bucket(s3.getBucket())
                 .maxKeys(1)
                 .build();
-
+        List<ListObject> objects = new ArrayList<>();
         ListObjectsV2Iterable listRes = s3Client.listObjectsV2Paginator(listReq);
-
-        Map<String, Long> result = new HashMap<>();
         listRes.contents().stream()
-                .forEach(content -> result.put(content.key(), content.size()));
+                .forEach(content -> objects.add(new ListObject(content.key(),
+                                    content.lastModified(),
+                                    content.size())));
 
-        return result;
+        return objects;
     }
 
     @Override

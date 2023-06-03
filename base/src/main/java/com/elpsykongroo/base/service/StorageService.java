@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.storage.server.service;
+package com.elpsykongroo.base.service;
 
-import com.elpsykongroo.base.domain.storage.object.ListObject;
 import com.elpsykongroo.base.domain.storage.object.S3;
+import feign.QueryMap;
+import feign.RequestLine;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
-@Service
-public interface ObjectService {
+public interface StorageService {
 
-    void download(S3 s3, HttpServletResponse response) throws IOException;
+    @RequestLine("PUT /storage/object")
+    void uploadObject(S3 s3) throws IOException;
 
-    void delete(S3 s3);
+    @RequestLine("POST /storage/object/download")
+    void downloadObject(@QueryMap S3 s3, HttpServletResponse response) throws IOException;
 
-    List<ListObject> list(S3 s3);
+    @RequestLine("POST /storage/object/delete")
+    void deleteObject(@QueryMap S3 s3);
 
-    void multipartUpload(S3 s3) throws Exception;
+    @RequestLine("POST /storage/object/list")
+    String listObject(@QueryMap S3 s3);
 }

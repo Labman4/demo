@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.storage.server.service;
+package com.elpsykongroo.base.domain;
 
-import com.elpsykongroo.base.domain.storage.object.ListObject;
-import com.elpsykongroo.base.domain.storage.object.S3;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Service;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+@Data
+@NoArgsConstructor
+public class IPManage {
 
-@Service
-public interface ObjectService {
+	private String id;
 
-    void download(S3 s3, HttpServletResponse response) throws IOException;
+	private String address;
 
-    void delete(S3 s3);
+	private boolean isBlack;
 
-    List<ListObject> list(S3 s3);
+	public IPManage(String address) {
+		this.address = address;
+		this.isBlack = true;
+	}
 
-    void multipartUpload(S3 s3) throws Exception;
+	public IPManage(String address, boolean black) {
+		this.address = address;
+		this.isBlack = black;
+	}
 }

@@ -20,8 +20,7 @@ import com.elpsykongroo.auth.server.entity.user.User;
 import com.elpsykongroo.auth.server.service.custom.EmailService;
 import com.elpsykongroo.auth.server.service.custom.UserService;
 import com.elpsykongroo.auth.server.utils.Random;
-import com.elpsykongroo.services.redis.client.RedisService;
-import com.elpsykongroo.services.redis.client.dto.KV;
+import com.elpsykongroo.base.service.RedisService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -70,8 +69,7 @@ public class EmailServiceImpl implements EmailService {
         if (tmp.equals(encodedVerifier)) {
             User user = userService.loadUserByUsername(username);
             Map<String, Object> info = user.getUserInfo();
-            KV kv = new KV("email_verify_" + username, "");
-            redisService.set(kv);
+            redisService.set("email_verify_" + username, "", "");
             userService.updateUserInfoEmail(user.getEmail(), user.getUsername(), info, true);
             return "success";
         } else {
@@ -86,8 +84,7 @@ public class EmailServiceImpl implements EmailService {
             if (userInfo.get("email") != null && "true".equals(userInfo.get("email_verified").toString())) {
                 String codeVerifier = genertateVerifier();
                 String codeChallenge = generateChallenge(codeVerifier);
-                KV kv = new KV("TmpCert_" + username, codeChallenge);
-                redisService.set(kv);
+                redisService.set("TmpCert_" + username, codeChallenge, "");
                 send(userInfo.get("email").toString(), "once login", "https://auth.elpsykongroo.com/tmp/" + codeVerifier + "." + username);
             }
         }
@@ -99,8 +96,7 @@ public class EmailServiceImpl implements EmailService {
         if (StringUtils.isNotEmpty(user.getEmail())) {
             String codeVerifier = genertateVerifier();
             String codeChallenge = generateChallenge(codeVerifier);
-            KV kv = new KV("email_verify_" + username, codeChallenge);
-            redisService.set(kv);
+            redisService.set("email_verify_" + username, codeChallenge, "");
             send(user.getEmail(), "verfiy email", "https://auth.elpsykongroo.com/email/verify/" + codeVerifier + "." + username);
         }
     }

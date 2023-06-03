@@ -21,7 +21,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @AutoConfigureObservability
 @MockServerTest("server.url=http://localhost:${mockServerPort}")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(properties = {
+                    "service.url.redis=${server.url}",
+                    "service.url.es=${server.url}",
+                    "service.url.storage=${server.url}",
+                    "service.url.auth=${server.url}"
+                },
+                webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+
 @ActiveProfiles("test")
 public class BaseTest {
 

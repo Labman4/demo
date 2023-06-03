@@ -26,8 +26,7 @@ import com.elpsykongroo.auth.server.service.custom.EmailService;
 import com.elpsykongroo.auth.server.service.custom.LoginService;
 import com.elpsykongroo.auth.server.service.custom.UserService;
 import com.elpsykongroo.auth.server.utils.Random;
-import com.elpsykongroo.services.redis.client.RedisService;
-import com.elpsykongroo.services.redis.client.dto.KV;
+import com.elpsykongroo.base.service.RedisService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
@@ -337,8 +336,7 @@ public class LoginServiceImpl implements LoginService {
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);
                 log.debug("set tmp SecurityContext");
-                KV kv = new KV("TmpCert_" + username, "");
-                redisService.set(kv);
+                redisService.set("TmpCert_" + username, "", "");
                 return "redirect:https://elpsykongroo.com?username=" + username;
             }
         } catch (Exception e) {

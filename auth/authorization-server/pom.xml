@@ -79,16 +79,9 @@
             <version>6.1.0-M2</version>
         </dependency>
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.0.32</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.liquibase/liquibase-core -->
-        <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -102,12 +95,6 @@
             <groupId>com.elpsykongroo</groupId>
             <artifactId>base</artifactId>
             <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.elpsykongroo.services</groupId>
-            <artifactId>redis-client</artifactId>
-            <version>0.0.1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -20,15 +20,10 @@
         <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
     </properties>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>com.elpsykongroo</groupId>
+            <artifactId>base</artifactId>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
-
 </project>

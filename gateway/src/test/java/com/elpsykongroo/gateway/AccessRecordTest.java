@@ -20,7 +20,6 @@ import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.gateway.entity.AccessRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockserver.model.MediaType;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,9 +43,8 @@ public class AccessRecordTest extends BaseTest {
         String records = JsonUtils.toJson(Collections.singleton(accessRecord));
         client.when(request().withPath("/search/record.*").withMethod("GET"))
                 .respond(response()
-                        .withStatusCode(200)
-                        .withBody(records, MediaType.APPLICATION_JSON));
-        client.when(request().withPath("/search/record").withMethod("DELETE"))
+                        .withStatusCode(200));
+        client.when(request().withPath("/search/record.*").withMethod("DELETE"))
                 .respond(response().withStatusCode(200));
         client.when(request().withPath("/search/record").withMethod("POST"))
                 .respond(response()

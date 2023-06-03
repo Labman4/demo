@@ -28,8 +28,8 @@ import java.util.Map;
 
 import com.elpsykongroo.base.utils.IPRegexUtils;
 import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.gateway.entity.AccessRecord;
-import com.elpsykongroo.gateway.service.SearchService;
+import com.elpsykongroo.base.domain.AccessRecord;
+import com.elpsykongroo.base.service.SearchService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.servlet.http.HttpServletRequest;
 

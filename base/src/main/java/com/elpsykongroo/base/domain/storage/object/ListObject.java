@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.service;
+package com.elpsykongroo.base.domain.storage.object;
 
-import feign.Param;
-import feign.RequestLine;
-import org.springframework.web.bind.annotation.PathVariable;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public interface RedisService {
+import java.time.Instant;
 
-    @RequestLine("PUT /redis/key?key={key}&value={value}&duration={duration}")
-    void set(@Param("key") String key , @Param("value")String value, @Param("duration") String duration);
+@Data
+@NoArgsConstructor
+public class ListObject {
+    private String key;
+    private Instant timestamp;
+    private Long size;
 
-    @RequestLine("GET /redis/key/{key}")
-    String get(@Param("key")String key);
-
-    @RequestLine("GET /redis/token/{key}")
-    String getToken(@PathVariable("key") String key);
+    public ListObject(String key, Instant lastModified, Long size) {
+        this.key = key;
+        this.timestamp = lastModified;
+        this.size = size;
+    }
 }

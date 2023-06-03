@@ -1,25 +1,24 @@
 package com.elpsykongroo.storage.client.impl;
 
 import com.elpsykongroo.storage.client.StorageService;
-import com.elpsykongroo.storage.client.dto.S3;
+import com.elpsykongroo.base.domain.storage.object.S3;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.Arrays;
 
 @Component
@@ -38,24 +37,29 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void uploadObject(S3 s3) throws IOException {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
-        form.add("data", s3.getData()[0].getResource());
-        form.add("endpoint", s3.getEndpoint());
-        form.add("accessKey", s3.getAccessKey());
-        form.add("accessSecret", s3.getAccessSecret());
-        form.add("bucket", s3.getBucket());
-        form.add("region", s3.getRegion());
-        form.add("key", s3.getKey());
-        form.add("idToken", s3.getIdToken());
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(form, headers);
-        restTemplate.exchange(serverUrl + objectPrefix + "/upload",
-                HttpMethod.PUT,
-                requestEntity,
-                String.class).getBody();
+    public ResponseEntity uploadObject (S3 s3) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+            form.add("data", s3.getData()[0].getResource());
+            form.add("endpoint", s3.getEndpoint());
+            form.add("accessKey", s3.getAccessKey());
+            form.add("accessSecret", s3.getAccessSecret());
+            form.add("bucket", s3.getBucket());
+            form.add("region", s3.getRegion());
+            form.add("key", s3.getKey());
+            form.add("idToken", s3.getIdToken());
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(form, headers);
+            restTemplate.exchange(serverUrl + objectPrefix,
+                    HttpMethod.PUT,
+                    requestEntity,
+                    String.class).getBody();
+            return new ResponseEntity(HttpStatusCode.valueOf(200));
+        } catch (RestClientException e) {
+            return new ResponseEntity(HttpStatusCode.valueOf(500))    ;
+        }
     }
 
     @Override
@@ -63,7 +67,6 @@ public class StorageServiceImpl implements StorageService {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM));
         HttpEntity<S3> entity = new HttpEntity<S3>(s3, headers);
-
         ResponseEntity<byte[]> resp = restTemplate.exchange(
                 serverUrl + objectPrefix + "/download",
                 HttpMethod.POST,

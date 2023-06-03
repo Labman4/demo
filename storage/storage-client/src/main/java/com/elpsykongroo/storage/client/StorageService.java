@@ -1,12 +1,13 @@
 package com.elpsykongroo.storage.client;
 
-import com.elpsykongroo.storage.client.dto.S3;
 import jakarta.servlet.http.HttpServletResponse;
+import com.elpsykongroo.base.domain.storage.object.S3;
+import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 
 public interface StorageService {
-    void uploadObject(S3 s3) throws IOException;
+    ResponseEntity uploadObject(S3 s3);
 
     void downloadObject(S3 s3, HttpServletResponse response) throws IOException;
 

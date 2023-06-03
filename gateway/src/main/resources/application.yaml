@@ -12,6 +12,10 @@ server:
   #    key-alias: api
 
 spring:
+  servlet:
+    multipart:
+      max-request-size: -1
+      max-file-size: -1
 #  cloud:
 #    openfeign:
 #      client:
@@ -47,8 +51,8 @@ spring:
       resource-server:
         opaque-token:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
-          client-id:
-          client-secret:
+#          client-id:
+#          client-secret:
   kafka:
     bootstrap-servers: ${KAFKA_URL:kafka}
     security:
@@ -64,7 +68,7 @@ spring:
 logging:
   level:
     root: info
-    web: info
+    web: debug
 #  log4j2:
 #    config:
 #      override:
@@ -103,6 +107,6 @@ management:
       endpoint: ${ZIPKIN_HOST:http://localhost:9411/api/v2/spans}
 
 service:
-  vault: ${VAULT_ENABLE:false}
+  vault: ${VAULT_ENABLE:true}
 
 

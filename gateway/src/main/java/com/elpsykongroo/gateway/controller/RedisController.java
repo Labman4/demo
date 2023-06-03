@@ -16,7 +16,7 @@
 
 package com.elpsykongroo.gateway.controller;
 
-import com.elpsykongroo.gateway.service.RedisService;
+import com.elpsykongroo.base.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -14,25 +14,36 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.storage.server.service;
+package com.elpsykongroo.base.domain.storage.object;
 
-import com.elpsykongroo.base.domain.storage.object.ListObject;
-import com.elpsykongroo.base.domain.storage.object.S3;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Service;
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+@Data
+public class S3 {
+    String accessKey;
 
-@Service
-public interface ObjectService {
+    String accessSecret;
 
-    void download(S3 s3, HttpServletResponse response) throws IOException;
+    String region;
 
-    void delete(S3 s3);
+    String endpoint;
 
-    List<ListObject> list(S3 s3);
+    String bucket;
 
-    void multipartUpload(S3 s3) throws Exception;
+    String key;
+
+    MultipartFile data[];
+
+    byte[] byteData;
+
+    String partSize = "5242880";
+
+    String offset;
+
+    /*
+    use for sts
+     */
+    String idToken;
 }
+

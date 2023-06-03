@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.storage.server.service;
+package com.elpsykongroo.base.domain;
 
-import com.elpsykongroo.base.domain.storage.object.ListObject;
-import com.elpsykongroo.base.domain.storage.object.S3;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Service;
+import lombok.Data;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.Date;
 import java.util.Map;
 
-@Service
-public interface ObjectService {
+@Data
+public class AccessRecord {
 
-    void download(S3 s3, HttpServletResponse response) throws IOException;
+	private String sourceIP;
 
-    void delete(S3 s3);
+	private String accessPath;
 
-    List<ListObject> list(S3 s3);
+	private Map<String, String> requestHeader;
 
-    void multipartUpload(S3 s3) throws Exception;
+	private String userAgent;
+
+	private Date timestamp;
+
+	private String id;
+
+	@Override
+	public String toString() {
+		return id;
+	}
 }

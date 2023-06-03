@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2022 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,24 @@
 
 package com.elpsykongroo.auth.server.config;
 
-import com.elpsykongroo.services.redis.client.RedisService;
-import com.elpsykongroo.services.redis.client.impl.RedisServiceImpl;
+import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.service.RedisService;
+import feign.Feign;
+import feign.codec.Decoder;
+import feign.codec.Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-public class RedisServiceConfig {
-    @Value("${service.url.redis}")
-    private String redisUrl;
-
+public class FeginConfig {
     @Autowired
-    private RestTemplateBuilder restTemplateBuilder;
-
+    private ServiceConfig serviceConfig;
     @Bean
     public RedisService redisService() {
-        return  new RedisServiceImpl(redisUrl,  restTemplateBuilder);
+        return Feign.builder()
+                .decoder(new Decoder.Default())
+                .encoder(new Encoder.Default())
+                .target(RedisService.class, serviceConfig.getUrl().getRedis());
     }
 }

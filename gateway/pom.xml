@@ -22,77 +22,15 @@
         <start-class>com.elpsykongroo.gateway.GatewayApplication</start-class>
     </properties>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/io.github.openfeign/feign-core -->
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-core</artifactId>
-            <version>12.3</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.vault</groupId>
             <artifactId>spring-vault-core</artifactId>
             <version>3.0.2</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.apache.tomcat.embed</groupId>-->
-<!--                    <artifactId>tomcat-embed-core</artifactId>-->
-<!--                </exclusion>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.apache.tomcat.embed</groupId>-->
-<!--                    <artifactId>tomcat-embed-websocket</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.tomcat.experimental</groupId>-->
-<!--            <artifactId>tomcat-embed-programmatic</artifactId>-->
-<!--            <version>11.0.0-M1</version>-->
-<!--        </dependency>-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.springframework.boot</groupId>-->
-<!--                    <artifactId>spring-boot-starter-logging</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-log4j2</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.logging.log4j</groupId>-->
-<!--            <artifactId>log4j-web</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.logging.log4j</groupId>-->
-<!--            <artifactId>log4j-api</artifactId>-->
-<!--        </dependency>-->
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>mysql</groupId>-->
-<!--            <artifactId>mysql-connector-java</artifactId>-->
-<!--        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
-<!--        <dependency>-->
-<!--            <groupId>org.mybatis.spring.boot</groupId>-->
-<!--            <artifactId>mybatis-spring-boot-starter</artifactId>-->
-<!--            <version>3.0.1</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.mybatis.spring.native</groupId>-->
-<!--            <artifactId>mybatis-spring-native-core</artifactId>-->
-<!--            <version>0.1.0-SNAPSHOT</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>com.elpsykongroo</groupId>
             <artifactId>base</artifactId>
@@ -111,19 +49,7 @@
             <version>0.0.1</version>
             <scope>compile</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-kubernetes-fabric8-all</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-kubernetes-discoveryclient</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-kubernetes-client</artifactId>-->
-<!--        </dependency>-->
-       <dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
@@ -219,11 +145,6 @@
 <!--            <artifactId>connect-api</artifactId>-->
 <!--        </dependency>-->
 
-<!--        <dependency>-->
-<!--            <groupId>io.springfox</groupId>-->
-<!--            <artifactId>springfox-boot-starter</artifactId>-->
-<!--            <version>3.0.0</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-oauth2-resource-server</artifactId>
@@ -245,46 +166,6 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-semconv</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-api</artifactId>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/io.opentelemetry/opentelemetry-sdk-extension-autoconfigure &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-sdk</artifactId>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/io.opentelemetry/opentelemetry-sdk-extension-autoconfigure &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry</groupId>-->
-<!--            <artifactId>opentelemetry-sdk-extension-autoconfigure-spi</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentelemetry.contrib</groupId>-->
-<!--            <artifactId>opentelemetry-samplers</artifactId>-->
-<!--            <version>1.21.0-alpha</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-vault-config</artifactId>-->
-<!--            <version>4.0.0</version>-->
-<!--        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>4.0.0</version>
-        </dependency> -->
-       <!-- <dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-core-test</artifactId>
-           <version>6.0.3</version>
-       </dependency> -->
-        <!-- https://mvnrepository.com/artifact/org.mock-server/mockserver-client-java -->
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-spring-test-listener-no-dependencies</artifactId>

@@ -16,11 +16,13 @@
 
 package com.elpsykongroo.gateway.controller;
 
+import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.storage.client.StorageService;
-import com.elpsykongroo.storage.client.dto.S3;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 
+@CrossOrigin
 @Slf4j
 @RestController
 @RequestMapping("storage")
@@ -38,16 +41,12 @@ public class StorageController {
     @Autowired
     private StorageService storageService;
 
-    @PutMapping("/object/upload")
-    public void uploadObject(@ModelAttribute S3 s3) {
-        try {
-            storageService.uploadObject(s3);
-        } catch (Exception e) {
-            log.error("object upload multipart error: ", e);
-        }
+    @PutMapping("/object")
+    public ResponseEntity uploadObject(@ModelAttribute S3 s3) {
+        return storageService.uploadObject(s3);
     }
 
-    @GetMapping("/object/get")
+    @GetMapping("/object")
     public void get(S3 s3, HttpServletResponse response) {
         try {
             storageService.downloadObject(s3, response);
@@ -57,7 +56,7 @@ public class StorageController {
     }
 
     @PostMapping("/object/download")
-    public void download(S3 s3, HttpServletResponse response) {
+    public void download(@RequestBody S3 s3, HttpServletResponse response) {
         try {
             storageService.downloadObject(s3, response);
         } catch (IOException e) {

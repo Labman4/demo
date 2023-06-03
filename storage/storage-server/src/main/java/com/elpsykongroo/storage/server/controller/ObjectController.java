@@ -17,7 +17,7 @@
 package com.elpsykongroo.storage.server.controller;
 
 import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.storage.server.entity.S3;
+import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.storage.server.service.ObjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class ObjectController {
     @Autowired
     private ObjectService objectService;
 
-    @PutMapping("upload")
+    @PutMapping
     public void multipartUpload(@ModelAttribute S3 s3) {
         try {
             objectService.multipartUpload(s3);

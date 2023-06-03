@@ -19,7 +19,7 @@ package com.elpsykongroo.auth.server.web;
 import com.elpsykongroo.auth.server.service.custom.LoginService;
 
 import com.elpsykongroo.base.common.CommonResponse;
-import com.elpsykongroo.services.redis.client.RedisService;
+import com.elpsykongroo.base.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

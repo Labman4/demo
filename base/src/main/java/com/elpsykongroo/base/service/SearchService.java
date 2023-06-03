@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.service;
+package com.elpsykongroo.base.service;
 
-import com.elpsykongroo.gateway.entity.AccessRecord;
+import com.elpsykongroo.base.domain.AccessRecord;
 import feign.Param;
 import feign.QueryMap;
 import feign.RequestLine;

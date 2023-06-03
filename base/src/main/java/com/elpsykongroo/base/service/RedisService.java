@@ -14,36 +14,19 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.storage.server.entity;
+package com.elpsykongroo.base.service;
 
-import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
+import feign.Param;
+import feign.RequestLine;
 
-@Data
-public class S3 {
-    String accessKey;
+public interface RedisService {
 
-    String accessSecret;
+    @RequestLine("PUT /redis/key?key={key}&value={value}&duration={duration}")
+    void set(@Param("key") String key , @Param("value")String value, @Param("duration") String duration);
 
-    String region;
+    @RequestLine("GET /redis/key/{key}")
+    String get(@Param("key")String key);
 
-    String endpoint;
-
-    String bucket;
-
-    String key;
-
-    MultipartFile data[];
-
-    byte[] byteData;
-
-    String partSize = "5242880";
-
-    String offset;
-
-    /*
-    use for sts
-     */
-    String idToken;
+    @RequestLine("GET /redis/token/{key}")
+    String getToken(@Param("key") String key);
 }
-
