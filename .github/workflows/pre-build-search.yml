@@ -15,7 +15,6 @@ jobs:
     secrets: inherit
     with:
       module: elasticsearch
-      moduleName: elasticsearch-server
       version: 0.0.1
       env: dev
   pre-build:
@@ -23,12 +22,10 @@ jobs:
     secrets: inherit
     with:
       module: elasticsearch
-      moduleName: elasticsearch-server
       mode: pre
   native:
     uses: Labman4/workflow/.github/workflows/native-image-elasticsearch.yml@native-image
     secrets: inherit
     with:
       module: elasticsearch
-      moduleName: elasticsearch-server
       version: 0.0.1
