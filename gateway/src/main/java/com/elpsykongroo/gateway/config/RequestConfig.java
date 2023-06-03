@@ -42,13 +42,13 @@ public class RequestConfig {
 
     @Data
     public static class Header {
-        private String ip = "X-Forwarded-For";
+        private String ip = "x-real-ip";
 
-        private String black = "X-Forwarded-For";
+        private String black = "x-real-ip";
 
-        private String white = "X-Forwarded-For";
+        private String white = "x-real-ip";
 
-        private String record = "X-Forwarded-For";
+        private String record = "x-real-ip";
 
     }
 
