@@ -70,6 +70,26 @@ public class AuthController {
         return CommonResponse.string(loginService.login(username, request));
     }
 
+    @GetMapping("/qrcode")
+    public String generateQrcode() {
+        return CommonResponse.string(loginService.qrcode());
+    }
+
+    @GetMapping("/login/qrcode")
+    public String setToken(@RequestParam("text") String text) {
+        return loginService.setToken(text);
+    }
+
+    @PostMapping("/token/qrcode")
+    public String qrToken(@RequestParam("text") String text) {
+        return CommonResponse.string(loginService.checkQrcode(text));
+    }
+
+    @PostMapping("/access")
+    public String getToken(@RequestParam("key") String key) {
+        return CommonResponse.string(redisService.getToken(key));
+    }
+
     @PostMapping("/welcome")
     @ResponseBody
     public String finishLogin(
@@ -77,11 +97,6 @@ public class AuthController {
             @RequestParam String username,
             HttpServletRequest request, HttpServletResponse response) {
         return CommonResponse.string(loginService.handleLogin(credential, username, request, response));
-    }
-
-    @PostMapping("/access")
-    public String getToken(@RequestParam("key") String key) {
-        return CommonResponse.string(redisService.getToken(key));
     }
 
     @GetMapping("/tmp/{text}")

@@ -32,4 +32,9 @@ public interface LoginService {
 
     String tmpLogin(String text, HttpServletRequest request, HttpServletResponse response);
 
+    String qrcode();
+
+    String setToken(String text);
+
+    String checkQrcode(String code);
 }

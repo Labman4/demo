@@ -4,5 +4,13 @@ logging:
   level:
     web: debug
     root: info
+#spring:
+#  data:
+#    redis:
+#      cluster:
+#        -  ${REDIS_NODES:redis-cluster.redis.svc:6379}
+#      lettuce:
+#        pool:
+#          enabled: true
 service:
   vault: ${VAULT_ENABLE:true}

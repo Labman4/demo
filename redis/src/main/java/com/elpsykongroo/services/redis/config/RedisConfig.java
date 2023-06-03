@@ -27,7 +27,7 @@ import org.springframework.data.redis.connection.RedisClusterNode;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -42,8 +42,8 @@ public class RedisConfig {
     @Autowired
     Environment env;
 
-     @Bean
-     public JedisConnectionFactory redisConnectionFactory() {
+    @Bean
+    public LettuceConnectionFactory  redisConnectionFactory() {
          String username = env.getProperty("username");
          String password = env.getProperty("password");
          String pass = "";
@@ -61,7 +61,7 @@ public class RedisConfig {
                      singleConfig.setUsername(username);
                  }
                  singleConfig.setPassword(password);
-                 return new JedisConnectionFactory(singleConfig);
+                 return new LettuceConnectionFactory (singleConfig);
              } else if ("cluster".equals(serviceConfig.getRedis().getType())) {
                  RedisClusterConfiguration config = new RedisClusterConfiguration();
                  if (StringUtils.isNotBlank(username)) {
@@ -70,14 +70,13 @@ public class RedisConfig {
                  config.setPassword(password);
                  RedisNode redisNode = new RedisClusterNode(serviceConfig.getRedis().getHost(), serviceConfig.getRedis().getPort());
                  config.setClusterNodes(Collections.singletonList(redisNode));
-                 return new JedisConnectionFactory(config);
+                 return new LettuceConnectionFactory(config);
              }
 
          }
          RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
-         return new JedisConnectionFactory(singleConfig);
+         return new LettuceConnectionFactory (singleConfig);
     }
-    //}
      @Bean
      public <K, V> RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
          RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();

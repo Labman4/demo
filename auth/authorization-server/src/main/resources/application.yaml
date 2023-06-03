@@ -73,8 +73,8 @@ spring:
       resourceserver:
         opaque-token:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
-#        jwt:
-#          issuer-uri: ${JWT_ISSUER_URL:http://127.0.0.1:9000}
-#          jwk-set-uri: ${AUTH_URL:http://127.0.0.1:9000}/oauth2/jwks
 service:
   vault: ${VAULT_ENABLE:true}
+logging:
+  level:
+    web: debug

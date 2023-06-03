@@ -19,8 +19,8 @@ package com.elpsykongroo.auth.server.service.custom.impl;
 import com.elpsykongroo.auth.server.entity.user.User;
 import com.elpsykongroo.auth.server.service.custom.EmailService;
 import com.elpsykongroo.auth.server.service.custom.UserService;
-import com.elpsykongroo.auth.server.utils.Random;
 import com.elpsykongroo.base.service.RedisService;
+import com.elpsykongroo.base.utils.PkceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -28,9 +28,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Map;
 
 import static com.elpsykongroo.auth.server.service.custom.impl.LoginServiceImpl.verifyChallenge;
@@ -82,8 +79,8 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> userInfo = userService.loadUserByUsername(username).getUserInfo();
         if (userInfo != null && !userInfo.isEmpty()) {
             if (userInfo.get("email") != null && "true".equals(userInfo.get("email_verified").toString())) {
-                String codeVerifier = genertateVerifier();
-                String codeChallenge = generateChallenge(codeVerifier);
+                String codeVerifier = PkceUtils.generateVerifier();
+                String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
                 redisService.set("TmpCert_" + username, codeChallenge, "");
                 send(userInfo.get("email").toString(), "once login", "https://auth.elpsykongroo.com/tmp/" + codeVerifier + "." + username);
             }
@@ -94,28 +91,10 @@ public class EmailServiceImpl implements EmailService {
     public void sendVerify(String username) {
         User user = userService.loadUserByUsername(username);
         if (StringUtils.isNotEmpty(user.getEmail())) {
-            String codeVerifier = genertateVerifier();
-            String codeChallenge = generateChallenge(codeVerifier);
+            String codeVerifier = PkceUtils.generateVerifier();
+            String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
             redisService.set("email_verify_" + username, codeChallenge, "");
             send(user.getEmail(), "verfiy email", "https://auth.elpsykongroo.com/email/verify/" + codeVerifier + "." + username);
         }
-    }
-
-    private String generateChallenge(String codeVerifier) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(codeVerifier.getBytes());
-            byte[] digest = md.digest();
-            String codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
-            return codeChallenge;
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String genertateVerifier() {
-        byte[] bytes = Random.generateRandomByte(128);
-        String codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-        return codeVerifier;
     }
 }

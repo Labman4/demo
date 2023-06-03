@@ -22,11 +22,12 @@ import com.elpsykongroo.auth.server.entity.user.User;
 import com.elpsykongroo.auth.server.security.provider.WebAuthnAuthenticationToken;
 import com.elpsykongroo.auth.server.service.custom.AuthenticatorService;
 import com.elpsykongroo.auth.server.service.custom.AuthorityService;
+import com.elpsykongroo.auth.server.service.custom.AuthorizationService;
 import com.elpsykongroo.auth.server.service.custom.EmailService;
 import com.elpsykongroo.auth.server.service.custom.LoginService;
 import com.elpsykongroo.auth.server.service.custom.UserService;
-import com.elpsykongroo.auth.server.utils.Random;
 import com.elpsykongroo.base.service.RedisService;
+import com.elpsykongroo.base.utils.PkceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
@@ -109,6 +110,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private AuthorityService authorityService;
+
+    @Autowired
+    private AuthorizationService authorizationService;
 
     @Override
     public String login(String username, HttpServletRequest servletRequest) {
@@ -229,7 +233,7 @@ public class LoginServiceImpl implements LoginService {
         UserIdentity userIdentity = UserIdentity.builder()
                 .name(username)
                 .displayName(display)
-                .id(new ByteArray(Random.generateRandomByte(32)))
+                .id(new ByteArray(PkceUtils.generateRandomByte(32)))
                 .build();
         User saveUser = new User(userIdentity);
         saveUser.setCreateTime(Instant.now());
@@ -343,6 +347,36 @@ public class LoginServiceImpl implements LoginService {
             log.error("set tmp SecurityContext error:{}", e.getMessage());
         }
         return "redirect:https://elpsykongroo.com/error";
+    }
+
+    @Override
+    public String qrcode() {
+        String codeVeifier = PkceUtils.generateVerifier();
+        Instant instant = Instant.now();
+        redisService.set("QR_CODE-" + instant, PkceUtils.generateChallenge(codeVeifier), "5");
+        return codeVeifier + "*" + instant;
+    }
+
+    @Override
+    public String checkQrcode(String text) {
+        return redisService.get("QR_CODE-token-" + text);
+    }
+
+    @Override
+    public String setToken(String text) {
+        String[] texts= text.split("\\*");
+        String codeVerifier = texts[0];
+        String timestamp = texts[1];
+        String encodedVerifier = verifyChallenge(codeVerifier);
+        String challenge = redisService.get("QR_CODE-" + timestamp);
+        if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String token = authorizationService.getToken(authentication.getPrincipal().toString(), timestamp);
+            redisService.set("QR_CODE-token-" + codeVerifier, token, "");
+            redisService.set("QR_CODE-" + timestamp , "", "1");
+            return "200";
+        }
+        return "400";
     }
 
     public static String verifyChallenge(String codeVerifier) {

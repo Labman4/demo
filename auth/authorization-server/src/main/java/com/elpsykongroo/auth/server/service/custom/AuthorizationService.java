@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 the original author or authors.
+ * Copyright 2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.server.utils;
+package com.elpsykongroo.auth.server.service.custom;
 
-import com.yubico.webauthn.data.ByteArray;
-
-import java.security.SecureRandom;
-
-public class Random {
-	private static final SecureRandom random = new SecureRandom();
-	public static byte[] generateRandomByte(int length) {
-		byte[] bytes = new byte[length];
-		random.nextBytes(bytes);
-		return bytes;
-	}
+public interface AuthorizationService {
+    String getToken(String principalName, String timestamp);
 }

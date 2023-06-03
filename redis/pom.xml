@@ -20,34 +20,22 @@
             <version>3.0.2</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-            <!-- <exclusions>
-                <exclusion>
-                    <groupId>io.lettuce</groupId>
-                    <artifactId>lettuce-core</artifactId>
-                </exclusion>
-            </exclusions> -->
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
         </dependency>
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.lz4/lz4-java -->
         <dependency>
             <groupId>org.lz4</groupId>
             <artifactId>lz4-java</artifactId>
             <version>1.8.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.msgpack/msgpack-core -->
         <dependency>
             <groupId>org.msgpack</groupId>
             <artifactId>msgpack-core</artifactId>
@@ -65,4 +53,37 @@
             <version>0.0.1</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <image>
+                        <buildCache>
+                            <volume>
+                                <name>cache-${project.artifactId}.build</name>
+                            </volume>
+                        </buildCache>
+                        <launchCache>
+                            <volume>
+                                <name>cache-${project.artifactId}.launch</name>
+                            </volume>
+                        </launchCache>
+                        <builder>paketobuildpacks/builder:tiny</builder>
+                        <env>
+                            <BP_JVM_VERSION>17</BP_JVM_VERSION>
+                            <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
+                            <HTTP_PROXY>http://192.168.1.100:1080</HTTP_PROXY>
+                            <HTTPS_PROXY>http://192.168.1.100:1080</HTTPS_PROXY>
+                        </env>
+                        <name>
+                            registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
+                        </name>
+                        <pullPolicy>IF_NOT_PRESENT</pullPolicy>
+                    </image>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

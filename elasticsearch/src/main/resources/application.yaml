@@ -16,9 +16,7 @@ spring:
         enabled: true
 service:
   vault: ${VAULT_ENABLE:true}
-  es:
-    ssl:
-     type: public
+
 logging:
   level:
     web: debug
