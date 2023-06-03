@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.redis.server.service;
+package com.elpsykongroo.services.redis;
 
-import org.springframework.stereotype.Service;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Service
-public interface RedisService {
-    void setCache(String key, String vaule, String minutes);
-
-    String getCache(String key);
-
-    String getToken(String key);
+@SpringBootApplication(proxyBeanMethods = false,scanBasePackages = {"com.elpsykongroo.base", "com.elpsykongroo.services.redis"})
+public class RedisApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(RedisApplication.class, args);
+    }
 }

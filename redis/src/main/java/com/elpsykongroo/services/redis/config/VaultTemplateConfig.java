@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.redis.server.config;
+package com.elpsykongroo.services.redis.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +35,7 @@ import java.net.URI;
     havingValue = "true",
     matchIfMissing = false)
 @VaultPropertySource(value = "${SECRETS_DATA_PATH:database/creds/redis-cluster}", renewal = VaultPropertySource.Renewal.RENEW)
-@VaultPropertySource(value = "${SECRETS_PATH:kv/app/dev/redis}", renewal = VaultPropertySource.Renewal.RENEW)
+@VaultPropertySource(value = "${SECRETS_PATH:kv/app/dev/redis}")
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
     @Override
     public ClientAuthentication clientAuthentication() {

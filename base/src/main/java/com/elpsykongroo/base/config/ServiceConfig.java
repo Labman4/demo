@@ -80,9 +80,9 @@ public class ServiceConfig {
 
         private String type;
 
-        private String host = "127.0.0.1";
+        private String host;
 
-        private int port = 6379;
+        private int port;
 
         private String password;
     }
@@ -97,7 +97,6 @@ public class ServiceConfig {
         private String endpoint;
 
         private String region;
-
 
     }
 

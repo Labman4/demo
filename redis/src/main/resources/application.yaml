@@ -6,5 +6,3 @@ logging:
     root: info
 service:
   vault: ${VAULT_ENABLE:true}
-  redis:
-    type: ${REDIS_TYPE}

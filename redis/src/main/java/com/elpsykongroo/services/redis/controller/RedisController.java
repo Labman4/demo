@@ -15,9 +15,9 @@
  */
 
 
-package com.elpsykongroo.services.redis.server.controller;
+package com.elpsykongroo.services.redis.controller;
 
-import com.elpsykongroo.services.redis.server.service.RedisService;
+import com.elpsykongroo.services.redis.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

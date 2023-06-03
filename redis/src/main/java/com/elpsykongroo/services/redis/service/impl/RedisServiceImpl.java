@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.redis.server.service.impl;
+package com.elpsykongroo.services.redis.service.impl;
 
 import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.services.redis.server.entity.MsgPack;
-import com.elpsykongroo.services.redis.server.utils.convert.TimestampExtensionModule;
-import com.elpsykongroo.services.redis.server.service.RedisService;
+import com.elpsykongroo.services.redis.entity.MsgPack;
+import com.elpsykongroo.services.redis.utils.convert.TimestampExtensionModule;
+import com.elpsykongroo.services.redis.service.RedisService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;

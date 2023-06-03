@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.redis.server.utils.convert;
+package com.elpsykongroo.services.redis.utils.convert;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

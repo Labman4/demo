@@ -15,7 +15,7 @@
  */
 
 
-package com.elpsykongroo.services.redis.server.entity;
+package com.elpsykongroo.services.redis.entity;
 
 import lombok.Data;
 

@@ -14,7 +14,7 @@
   * limitations under the License.
   */
 
-package com.elpsykongroo.services.redis.server.config;
+package com.elpsykongroo.services.redis.config;
 
 import com.elpsykongroo.base.config.ServiceConfig;
 import org.apache.commons.lang3.StringUtils;
@@ -49,35 +49,33 @@ public class RedisConfig {
          String pass = "";
          if (serviceConfig.getRedis() != null) {
              pass = serviceConfig.getRedis().getPassword();
-         }
-         if (StringUtils.isNotBlank(pass)) {
-             password = pass;
-             username = "";
-         }
-         if ("single".equals(serviceConfig.getRedis().getType())) {
-             RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
-             singleConfig.setHostName(serviceConfig.getRedis().getHost());
-             singleConfig.setPort(serviceConfig.getRedis().getPort());
-             if (StringUtils.isNotBlank(username)) {
-                 singleConfig.setUsername(username);
+             if (StringUtils.isNotBlank(pass)) {
+                 password = pass;
+                 username = "";
              }
-             singleConfig.setPassword(password);
-             return new JedisConnectionFactory(singleConfig);
-         } else if ("cluster".equals(serviceConfig.getRedis().getType())) {
-             RedisClusterConfiguration config = new RedisClusterConfiguration();
-             if (StringUtils.isNotBlank(username)) {
-                 config.setUsername(username);
+             if ("single".equals(serviceConfig.getRedis().getType())) {
+                 RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
+                 singleConfig.setHostName(serviceConfig.getRedis().getHost());
+                 singleConfig.setPort(serviceConfig.getRedis().getPort());
+                 if (StringUtils.isNotBlank(username)) {
+                     singleConfig.setUsername(username);
+                 }
+                 singleConfig.setPassword(password);
+                 return new JedisConnectionFactory(singleConfig);
+             } else if ("cluster".equals(serviceConfig.getRedis().getType())) {
+                 RedisClusterConfiguration config = new RedisClusterConfiguration();
+                 if (StringUtils.isNotBlank(username)) {
+                     config.setUsername(username);
+                 }
+                 config.setPassword(password);
+                 RedisNode redisNode = new RedisClusterNode(serviceConfig.getRedis().getHost(), serviceConfig.getRedis().getPort());
+                 config.setClusterNodes(Collections.singletonList(redisNode));
+                 return new JedisConnectionFactory(config);
              }
-             config.setPassword(password);
-             RedisNode redisNode = new RedisClusterNode(serviceConfig.getRedis().getHost(), serviceConfig.getRedis().getPort());
-             config.setClusterNodes(Collections.singletonList(redisNode));
-             return new JedisConnectionFactory(config);
-         } else {
-             RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
-             singleConfig.setHostName(serviceConfig.getRedis().getHost());
-             singleConfig.setPort(serviceConfig.getRedis().getPort());
-             return new JedisConnectionFactory(singleConfig);
+
          }
+         RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
+         return new JedisConnectionFactory(singleConfig);
     }
     //}
      @Bean
