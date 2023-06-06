@@ -9,3 +9,9 @@ spring:
     timeout-per-shutdown-phase: 10s
 service:
   vault: ${VAULT_ENABLE:true}
+logging:
+  level:
+    web: debug
+    com:
+      elpsykongroo:
+        storage: debug
