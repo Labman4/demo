@@ -43,6 +43,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/public/*").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
 						.requestMatchers("/storage/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/token/qrcode").permitAll()
 //								.requestMatchers("/auth/**").permitAll()
 
 

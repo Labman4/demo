@@ -29,7 +29,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -42,8 +44,8 @@ public class StorageController {
     private StorageService storageService;
 
     @PutMapping("/object")
-    public ResponseEntity uploadObject(@ModelAttribute S3 s3) {
-        return storageService.uploadObject(s3);
+    public ResponseEntity uploadObject(@ModelAttribute S3 s3, @RequestParam MultipartFile file) {
+        return storageService.uploadObject(s3, file);
     }
 
     @GetMapping("/object")

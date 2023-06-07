@@ -22,10 +22,10 @@ import com.elpsykongroo.storage.server.service.ObjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +42,7 @@ public class ObjectController {
     private ObjectService objectService;
 
     @CrossOrigin
-    @PutMapping
+    @PostMapping(consumes= { MediaType.MULTIPART_FORM_DATA_VALUE })
     public void multipartUpload(@ModelAttribute S3 s3, @RequestParam("file") MultipartFile data) {
         try {
             objectService.multipartUpload(s3, data);

@@ -53,7 +53,7 @@ public class DefaultSecurityConfig {
 			 	authorize.requestMatchers(
 								 	"/oauth2/**",
 									"/welcome",
-									"/login",
+									"/login/**",
 									"/register",
 								"/actuator/health/**",
 								"/email/tmp",

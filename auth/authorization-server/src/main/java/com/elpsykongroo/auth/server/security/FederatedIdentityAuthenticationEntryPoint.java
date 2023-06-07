@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.DeferredSecurityContext;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
@@ -34,12 +35,18 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 public final class FederatedIdentityAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+	private final SecurityContextRepository securityContextRepository =
+			new HttpSessionSecurityContextRepository();
+
 	private final AuthenticationEntryPoint delegate;
+
 	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
 	private String authorizationRequestUri = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI
@@ -54,24 +61,28 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException, ServletException {
-		String challenge = request.getParameter("code_challenge");
-		String query = request.getQueryString();
-		String redirect = request.getParameter("redirect_uri");
-		String state = request.getParameter("state");
-		if (redirect != null && state != null && StringUtils.isBlank(challenge)) {
-			String parent = DomainUtils.getParentDomain(redirect);
-			String subDomain = DomainUtils.getSubDomain(redirect);
-			if (StringUtils.isNotBlank(subDomain)) {
-				ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(subDomain);
-				if (clientRegistration != null) {
-					log.debug("match idp");
+		DeferredSecurityContext securityContext = securityContextRepository.loadDeferredContext(request);
+		log.debug("securityContext: {}", securityContext.get().getAuthentication());
+		if (securityContext.get().getAuthentication() == null) {
+			String challenge = request.getParameter("code_challenge");
+			String query = request.getQueryString();
+			String redirect = request.getParameter("redirect_uri");
+			String state = request.getParameter("state");
+			if (redirect != null && state != null && StringUtils.isBlank(challenge)) {
+				String parent = DomainUtils.getParentDomain(redirect);
+				String subDomain = DomainUtils.getSubDomain(redirect);
+				if (StringUtils.isNotBlank(subDomain)) {
+					ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(subDomain);
+					if (clientRegistration != null) {
+						log.debug("match idp");
+						this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
+						return;
+					}
+				} else {
+					log.debug("not match idp");
 					this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
 					return;
 				}
-			} else {
-				log.debug("not match idp");
-				this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
-				return;
 			}
 		}
 		String idp = request.getParameter("idp");

@@ -36,6 +36,7 @@ public class StorageServiceConfig {
     public StorageService storageService(RestTemplateBuilderConfigurer configurer) {
         RestTemplateBuilder restTemplateBuilder = configurer.configure(new RestTemplateBuilder())
                 .setConnectTimeout(Duration.ofSeconds(60))
+                .setBufferRequestBody(true)
                 .setReadTimeout(Duration.ofSeconds(60)).detectRequestFactory(true);
         return  new StorageServiceImpl(serviceConfig.getUrl().getStorage(), restTemplateBuilder);
     }

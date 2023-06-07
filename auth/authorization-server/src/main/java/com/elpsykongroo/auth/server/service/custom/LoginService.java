@@ -36,5 +36,5 @@ public interface LoginService {
 
     String setToken(String text);
 
-    String checkQrcode(String code);
+    String loginWithToken(String token, String idToken, HttpServletRequest request, HttpServletResponse response);
 }

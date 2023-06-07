@@ -59,6 +59,12 @@ import org.springframework.security.core.context.DeferredSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -113,6 +119,12 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private AuthorizationService authorizationService;
+
+    @Autowired
+    private JwtDecoder jwtDecoder;
+
+    @Autowired
+    private OpaqueTokenIntrospector tokenIntrospector;
 
     @Override
     public String login(String username, HttpServletRequest servletRequest) {
@@ -178,7 +190,7 @@ public class LoginServiceImpl implements LoginService {
                         WebAuthnAuthenticationToken.authenticated(
                                 result.getUsername(),
                                 result.getCredential(),
-                                userService.loadUserByUsername(username).getAuthorities());
+                                userService.userAuthority(username));
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);
@@ -358,8 +370,30 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public String checkQrcode(String text) {
-        return redisService.get("QR_CODE-token-" + text);
+    public String loginWithToken(String token, String idToken, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            OAuth2AuthenticatedPrincipal result = tokenIntrospector.introspect(token);
+            log.debug("introspect:{}", result.getAttribute("active").toString());
+            if (result.getAttribute("active")) {
+                Jwt id = jwtDecoder.decode(idToken);
+                log.debug("token user:{}", id.getSubject());
+                SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+                Authentication authentication =
+                        WebAuthnAuthenticationToken.authenticated(
+                                id.getSubject(),
+                                null, userService.userAuthority(id.getSubject()));
+                context.setAuthentication(authentication);
+                securityContextHolderStrategy.setContext(context);
+                securityContextRepository.saveContext(context, request, response);
+                return "200";
+            } else {
+                return "401";
+            }
+        } catch (JwtException e) {
+            return "500";
+        } catch (UsernameNotFoundException e) {
+            return "404";
+        }
     }
 
     @Override
