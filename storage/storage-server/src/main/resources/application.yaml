@@ -1,10 +1,15 @@
 server:
+  netty:
+    connection-timeout: 60
+  tomcat:
+    connection-timeout: 60
   port: 9999
 spring:
   servlet:
     multipart:
       max-request-size: -1
       max-file-size: -1
+
   lifecycle:
     timeout-per-shutdown-phase: 10s
 service:

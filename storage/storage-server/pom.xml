@@ -31,19 +31,14 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
-            <version>2.20.24</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/sts -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>sts</artifactId>
-            <version>2.20.24</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/url-connection-client -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>url-connection-client</artifactId>
-            <version>2.20.24</version>
+            <artifactId>apache-client</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>

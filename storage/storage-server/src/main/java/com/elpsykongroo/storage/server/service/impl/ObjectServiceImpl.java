@@ -31,8 +31,8 @@ import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.http.SdkHttpClient;
-import software.amazon.awssdk.http.urlconnection.ProxyConfiguration;
-import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.http.apache.ProxyConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
@@ -45,10 +45,14 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListMultipartUploadsRequest;
+import software.amazon.awssdk.services.s3.model.ListMultipartUploadsResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListPartsRequest;
 import software.amazon.awssdk.services.s3.model.ListPartsResponse;
+import software.amazon.awssdk.services.s3.model.MultipartUpload;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
+import software.amazon.awssdk.services.s3.model.Part;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.UploadPartRequest;
 import software.amazon.awssdk.services.s3.model.UploadPartResponse;
@@ -65,9 +69,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -154,13 +156,6 @@ public class ObjectServiceImpl implements ObjectService {
         if (StringUtils.isBlank(s3.getKey())) {
             s3.setKey(s3.getData()[0].getOriginalFilename());
         }
-        CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
-                .bucket(s3.getBucket())
-                .key(s3.getKey())
-                .build();
-
-        CreateMultipartUploadResponse response = s3Client.createMultipartUpload(createMultipartUploadRequest);
-        String uploadId = response.uploadId();
 
         HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
             .bucket(s3.getBucket())
@@ -170,13 +165,50 @@ public class ObjectServiceImpl implements ObjectService {
         try {
             HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
             Long length = headObjectResponse.getValueForField("ContentLength", Long.class).get();
-            log.debug("exist object length:{}", length);
-            if (length > 0) {
-                continueUpload(s3, uploadId);
+            if (s3.getData()[0].getSize() == length) {
+                log.debug("object exist skip upload");
+                return;
             }
         } catch (NoSuchKeyException e) {
+            log.debug("object not exist");
+        }
+
+        ListMultipartUploadsRequest listMultipartUploadsRequest = ListMultipartUploadsRequest.builder()
+                .bucket(s3.getBucket())
+                .build();
+
+        ListMultipartUploadsResponse resp = s3Client.listMultipartUploads(listMultipartUploadsRequest);
+        List<MultipartUpload> uploads = resp.uploads();
+
+        boolean flag = false;
+
+        log.debug("multipartUpload size:{}", uploads.size());
+        for (MultipartUpload upload: uploads) {
+            if (s3.getKey().equals(upload.key())) {
+                flag = true;
+                continueUpload(s3, upload.uploadId());
+            }
+        }
+        if (!flag) {
+            CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
+                    .bucket(s3.getBucket())
+                    .key(s3.getKey())
+                    .build();
+
+            CreateMultipartUploadResponse response = s3Client.createMultipartUpload(createMultipartUploadRequest);
+            String uploadId = response.uploadId();
             uploadPart(s3, uploadId);
         }
+//            AbortMultipartUploadRequest abortMultipartUploadRequest;
+//            for (MultipartUpload upload: uploads) {
+//                abortMultipartUploadRequest = AbortMultipartUploadRequest.builder()
+//                        .bucket(s3.getBucket())
+//                        .key(upload.key())
+//                        .uploadId(upload.uploadId())
+//                        .build();
+//
+//                s3Client.abortMultipartUpload(abortMultipartUploadRequest);
+//            }
     }
 
     private void uploadPart(S3 s3, String uploadId) throws IOException {
@@ -189,39 +221,39 @@ public class ObjectServiceImpl implements ObjectService {
         log.debug("uploadPart");
         int num = (int) Math.ceil((double) s3.getData()[0].getSize() / partSize);
         List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
-            for(int i = 0; i< num ; i++) {
-                int percent = (int) Math.ceil((double) (i + 1) / num * 100);
-                log.debug("uploadPart complete:{} ", percent + "%");
-                long startOffset = i * partSize;
-                long endOffset = Math.min(partSize, fileSize - startOffset);
-                UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+        for(int i = 0; i< num ; i++) {
+            int percent = (int) Math.ceil((double) i / num * 100);
+            log.debug("uploadPart complete:{} ", percent + "%");
+            long startOffset = i * partSize;
+            long endOffset = Math.min(partSize, fileSize - startOffset);
+            UploadPartRequest uploadPartRequest = UploadPartRequest.builder()
+                    .bucket(s3.getBucket())
+                    .key(s3.getKey())
+                    .uploadId(uploadId)
+                    .partNumber(i + 1)
+                    .contentLength(endOffset)
+                    .build();
+            UploadPartResponse uploadPartResponse =
+                    s3Client.uploadPart(uploadPartRequest, RequestBody.fromBytes(s3.getData()[0].getBytes()));
+            completedParts.add(
+                    CompletedPart.builder()
+                            .partNumber(i + 1)
+                            .eTag(uploadPartResponse.eTag())
+                            .build()
+            );
+        }
+        CompleteMultipartUploadRequest completeMultipartUploadRequest =
+                CompleteMultipartUploadRequest.builder()
                         .bucket(s3.getBucket())
                         .key(s3.getKey())
                         .uploadId(uploadId)
-                        .partNumber(i + 1)
-                        .contentLength(endOffset)
+                        .multipartUpload(CompletedMultipartUpload
+                                .builder()
+                                .parts(completedParts)
+                                .build())
                         .build();
-                UploadPartResponse uploadPartResponse =
-                        s3Client.uploadPart(uploadPartRequest, RequestBody.fromBytes(s3.getData()[0].getBytes()));
-                completedParts.add(
-                        CompletedPart.builder()
-                                .partNumber(i + 1)
-                                .eTag(uploadPartResponse.eTag())
-                                .build()
-                );
-            }
-                CompleteMultipartUploadRequest completeMultipartUploadRequest =
-                        CompleteMultipartUploadRequest.builder()
-                                .bucket(s3.getBucket())
-                                .key(s3.getKey())
-                                .uploadId(uploadId)
-                                .multipartUpload(CompletedMultipartUpload
-                                        .builder()
-                                        .parts(completedParts)
-                                        .build())
-                                .build();
-                s3Client.completeMultipartUpload(completeMultipartUploadRequest);
-            log.debug("uploadPart complete");
+        s3Client.completeMultipartUpload(completeMultipartUploadRequest);
+        log.debug("uploadPart complete");
     }
 
     private void continueUpload(S3 s3, String uploadId) throws Exception {
@@ -241,57 +273,63 @@ public class ObjectServiceImpl implements ObjectService {
                     .build();
 
         ListPartsResponse listResponse = s3Client.listParts(listRequest);
-            if (listResponse.parts().size() > 0) {
-                uploadId = listResponse.uploadId();
-                listResponse.parts().stream().map(o ->
-                        completedParts.add(CompletedPart.builder()
-                                .partNumber(o.getValueForField("PartNumber", Integer.class).get())
-                                .eTag(o.getValueForField("ETag", String.class).get())
-                                .build())
-
-                );
+        if (listResponse.parts().size() > 0) {
+            for (Part part: listResponse.parts()) {
+                completedParts.add(CompletedPart.builder()
+                        .partNumber(part.getValueForField("PartNumber", Integer.class).get())
+                        .eTag(part.getValueForField("ETag", String.class).get())
+                        .build());
             }
+        }
 
-            // 计算总分片数
-            int partCount = (int) Math.ceil((double) fileSize / partSize);
+        int partCount = (int) Math.ceil((double) fileSize / partSize);
 
-            for (int i = completedParts.size(); i < partCount; i++) {
-                int percent = (int) Math.ceil((double) (i + 1) / partCount * 100);
-                log.debug("uploadPart complete:{} ", percent + "%");
-                long startPos = i * partSize;
-                long partLength = Math.min(partSize, fileSize - startPos);
-                UploadPartRequest uploadRequest = UploadPartRequest.builder()
-                        .bucket(s3.getBucket())
-                        .key(s3.getKey())
-                        .uploadId(uploadId)
-                        .partNumber(i + 1)
-                        .contentLength(partLength)
-                        .build();
+        for (int i = completedParts.size(); i < partCount; i++) {
+            int percent = (int) Math.ceil((double) i / partCount * 100);
+            log.debug("uploadPart complete:{} ", percent + "%");
+            long startPos = i * partSize;
+            long partLength = Math.min(partSize, fileSize - startPos);
+            UploadPartRequest uploadRequest = UploadPartRequest.builder()
+                    .bucket(s3.getBucket())
+                    .key(s3.getKey())
+                    .uploadId(uploadId)
+                    .partNumber(i + 1)
+                    .contentLength(partLength)
+                    .build();
 
-                // 从文件的指定位置开始上传分片
-                    InputStream in = new ByteArrayInputStream(s3.getData()[0].getBytes());
-                    s3Client.uploadPart(uploadRequest, RequestBody.fromInputStream(in, partLength));
+                InputStream in = new ByteArrayInputStream(s3.getData()[0].getBytes());
+                s3Client.uploadPart(uploadRequest, RequestBody.fromInputStream(in, partLength));
+        }
+        completedParts = new ArrayList<CompletedPart>();
+        ListPartsResponse listParts = s3Client.listParts(listRequest);
+        if (listResponse.parts().size() > 0) {
+            for (Part part: listParts.parts()) {
+                completedParts.add(CompletedPart.builder()
+                        .partNumber(part.getValueForField("PartNumber", Integer.class).get())
+                        .eTag(part.getValueForField("ETag", String.class).get())
+                        .build());
             }
+        }
 
-            // 如果已上传的分片数等于总分片数，表示上传完成，可以合并分片
-            if (completedParts.size() == partCount) {
-                CompleteMultipartUploadRequest completeRequest = CompleteMultipartUploadRequest.builder()
-                        .bucket(s3.getBucket())
-                        .key(s3.getKey())
-                        .uploadId(uploadId)
-                        .multipartUpload(
-                                CompletedMultipartUpload.builder()
-                                        .parts(completedParts)
-                                        .build()
-                        )
-                        .build();
-                log.debug("continue to upload complete");
-            }
-        log.debug("continue to upload complete");
+        if (completedParts.size() == partCount) {
+            CompleteMultipartUploadRequest completeRequest = CompleteMultipartUploadRequest.builder()
+                    .bucket(s3.getBucket())
+                    .key(s3.getKey())
+                    .uploadId(uploadId)
+                    .multipartUpload(
+                            CompletedMultipartUpload.builder()
+                                    .parts(completedParts)
+                                    .build()
+                    )
+                    .build();
+            s3Client.completeMultipartUpload(completeRequest);
+            log.debug("complete MultipartUpload");
+        }
+        log.debug("continue upload not complete");
     }
 
     private void initClient(S3 s3) {
-        System.setProperty("software.amazon.awssdk.http.service.impl", "software.amazon.awssdk.http.urlconnection.UrlConnectionSdkHttpService");
+//        System.setProperty("software.amazon.awssdk.http.service.impl", "software.amazon.awssdk.http.urlconnection.UrlConnectionSdkHttpService");
         AwsCredentials awsCredentials =
                 AwsBasicCredentials.create(
                         serviceconfig.getS3().getAccessKey(),
@@ -303,12 +341,23 @@ public class ObjectServiceImpl implements ObjectService {
         if (StringUtils.isBlank(s3.getEndpoint())) {
             s3.setEndpoint(serviceconfig.getS3().getEndpoint());
         }
-        SdkHttpClient.Builder builder = UrlConnectionHttpClient.builder()
+        Long connect = serviceconfig.getTimeout().getConnect();
+        Duration connectDuration = Duration.ofSeconds(connect);
+        SdkHttpClient.Builder builder = ApacheHttpClient.builder()
+                .connectionTimeout(connectDuration)
+                .socketTimeout(connectDuration)
                 .proxyConfiguration(ProxyConfiguration.builder()
                         .useSystemPropertyValues(true)
                         .build())
-                .connectionTimeout(Duration.ofSeconds(serviceconfig.getTimeout().getConnect()))
-                .socketTimeout(Duration.ofSeconds(serviceconfig.getTimeout().getSocket()));
+                .connectionAcquisitionTimeout(connectDuration)
+                .connectionMaxIdleTime(connectDuration)
+                .connectionTimeToLive(connectDuration);
+//        SdkHttpClient.Builder builder = UrlConnectionHttpClient.builder()
+//                .proxyConfiguration(ProxyConfiguration.builder()
+//                        .useSystemPropertyValues(true)
+//                        .build())
+//                .connectionTimeout(Duration.ofSeconds(serviceconfig.getTimeout().getConnect()))
+//                .socketTimeout(Duration.ofSeconds(serviceconfig.getTimeout().getSocket()));
         if(StringUtils.isNotBlank(s3.getIdToken())) {
             getStsToken(s3, builder);
         } else if (StringUtils.isNotBlank(s3.getEndpoint())) {
@@ -346,55 +395,55 @@ public class ObjectServiceImpl implements ObjectService {
         }
     }
 
-    void getStsToken(S3 s3, SdkHttpClient.Builder builder) {
-            AssumeRoleWithWebIdentityRequest awRequest =
-                    AssumeRoleWithWebIdentityRequest.builder()
-                            .durationSeconds(3600)
-                            // aws need, minio optional
+    private void getStsToken(S3 s3, SdkHttpClient.Builder builder) {
+        AssumeRoleWithWebIdentityRequest awRequest =
+                AssumeRoleWithWebIdentityRequest.builder()
+                        .durationSeconds(3600)
+                        // aws need, minio optional
 //                            .roleSessionName("test")
 //                            .roleArn("arn:minio:bucket:us-east-1:test")
-                            .webIdentityToken(s3.getIdToken())
-                            .build();
-            StsClient stsClient = null;
-            if(StringUtils.isNotBlank(s3.getEndpoint())) {
-                stsClient = StsClient.builder()
-                        .httpClientBuilder(builder)
-                        .region(Region.of(s3.getRegion()))
-                        .credentialsProvider(AnonymousCredentialsProvider.create())
-                        .endpointOverride(URI.create(s3.getEndpoint()))
+                        .webIdentityToken(s3.getIdToken())
                         .build();
-                Credentials credentials = stsClient.assumeRoleWithWebIdentity(awRequest).credentials();
-                AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
-                        credentials.accessKeyId(),
-                        credentials.secretAccessKey(),
-                        credentials.sessionToken());
+        StsClient stsClient = null;
+        if(StringUtils.isNotBlank(s3.getEndpoint())) {
+            stsClient = StsClient.builder()
+                    .httpClientBuilder(builder)
+                    .region(Region.of(s3.getRegion()))
+                    .credentialsProvider(AnonymousCredentialsProvider.create())
+                    .endpointOverride(URI.create(s3.getEndpoint()))
+                    .build();
+            Credentials credentials = stsClient.assumeRoleWithWebIdentity(awRequest).credentials();
+            AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
+                    credentials.accessKeyId(),
+                    credentials.secretAccessKey(),
+                    credentials.sessionToken());
 
-                this.s3Client = S3Client.builder()
-                        .httpClientBuilder(builder)
-                        .region(Region.of(s3.getRegion()))
-                        .credentialsProvider(() ->  awsCredentials)
-                        .endpointOverride(URI.create(s3.getEndpoint()))
-                        .forcePathStyle(true)
-                        .build();
-            } else {
-                stsClient = StsClient.builder()
-                        .httpClientBuilder(builder)
-                        .region(Region.of(s3.getRegion()))
-                        .credentialsProvider(AnonymousCredentialsProvider.create())
-                        .build();
-                Credentials credentials = stsClient.assumeRoleWithWebIdentity(awRequest).credentials();
-                AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
-                        credentials.accessKeyId(),
-                        credentials.secretAccessKey(),
-                        credentials.sessionToken());
+            this.s3Client = S3Client.builder()
+                    .httpClientBuilder(builder)
+                    .region(Region.of(s3.getRegion()))
+                    .credentialsProvider(() ->  awsCredentials)
+                    .endpointOverride(URI.create(s3.getEndpoint()))
+                    .forcePathStyle(true)
+                    .build();
+        } else {
+            stsClient = StsClient.builder()
+                    .httpClientBuilder(builder)
+                    .region(Region.of(s3.getRegion()))
+                    .credentialsProvider(AnonymousCredentialsProvider.create())
+                    .build();
+            Credentials credentials = stsClient.assumeRoleWithWebIdentity(awRequest).credentials();
+            AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
+                    credentials.accessKeyId(),
+                    credentials.secretAccessKey(),
+                    credentials.sessionToken());
 
-                this.s3Client = S3Client.builder()
-                        .httpClientBuilder(builder)
-                        .region(Region.of(s3.getRegion()))
-                        .credentialsProvider(() ->  awsCredentials)
-                        .forcePathStyle(true)
-                        .build();
-            }
+            this.s3Client = S3Client.builder()
+                    .httpClientBuilder(builder)
+                    .region(Region.of(s3.getRegion()))
+                    .credentialsProvider(() ->  awsCredentials)
+                    .forcePathStyle(true)
+                    .build();
+        }
 //            StsAssumeRoleWithWebIdentityCredentialsProvider provider = StsAssumeRoleWithWebIdentityCredentialsProvider.builder()
 //                    .refreshRequest(awRequest)
 //                    .stsClient(stsClient)
