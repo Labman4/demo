@@ -22,6 +22,7 @@ import com.elpsykongroo.storage.server.service.ObjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,6 +39,7 @@ public class ObjectController {
     @Autowired
     private ObjectService objectService;
 
+    @CrossOrigin
     @PutMapping
     public void multipartUpload(@ModelAttribute S3 s3) {
         try {
