@@ -54,7 +54,7 @@ public class StorageServiceImpl implements StorageService {
             form.add("idToken", s3.getIdToken());
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(form, headers);
             restTemplate.exchange(serverUrl + objectPrefix,
-                    HttpMethod.PUT,
+                    HttpMethod.POST,
                     requestEntity,
                     String.class).getBody();
             return new ResponseEntity(HttpStatusCode.valueOf(200));

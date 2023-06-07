@@ -78,3 +78,9 @@ service:
 logging:
   level:
     web: debug
+    org:
+      springframework:
+        security: debug
+    com:
+      elpsykongroo:
+        auth: debug
