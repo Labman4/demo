@@ -17,7 +17,6 @@
 package com.elpsykongroo.base.domain.storage.object;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class S3 {
@@ -32,8 +31,6 @@ public class S3 {
     String bucket;
 
     String key;
-
-    MultipartFile data[];
 
     byte[] byteData;
 
