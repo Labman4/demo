@@ -20,11 +20,9 @@ import com.elpsykongroo.base.domain.storage.object.ListObject;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public interface ObjectService {
@@ -35,5 +33,5 @@ public interface ObjectService {
 
     List<ListObject> list(S3 s3);
 
-    void multipartUpload(S3 s3, MultipartFile data) throws Exception;
+    void multipartUpload(S3 s3) throws Exception;
 }

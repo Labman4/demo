@@ -21,33 +21,32 @@ import com.elpsykongroo.storage.client.StorageService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @CrossOrigin
 @Slf4j
 @RestController
-@RequestMapping("storage")
+@RequestMapping("storage/object")
 public class StorageController {
     @Autowired
     private StorageService storageService;
 
-    @PostMapping("/object")
-    public ResponseEntity uploadObject(@ModelAttribute S3 s3, @RequestParam MultipartFile file) {
-        return storageService.uploadObject(s3, file);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity uploadObject(S3 s3, BindingResult errors) {
+        return storageService.uploadObject(s3);
     }
 
-    @GetMapping("/object")
+    @GetMapping
     public void get(S3 s3, HttpServletResponse response) {
         try {
             storageService.downloadObject(s3, response);
@@ -56,7 +55,7 @@ public class StorageController {
         }
     }
 
-    @PostMapping("/object/download")
+    @PostMapping("download")
     public void download(@RequestBody S3 s3, HttpServletResponse response) {
         try {
             storageService.downloadObject(s3, response);
@@ -65,11 +64,11 @@ public class StorageController {
         }
     }
 
-    @PostMapping("/object/list")
+    @PostMapping("list")
     public String list (@RequestBody S3 s3) {
         return storageService.listObject(s3);
     }
 
-    @PostMapping("/object/delete")
+    @PostMapping("delete")
     public void delete (@RequestBody S3 s3) { storageService.deleteObject(s3); }
 }

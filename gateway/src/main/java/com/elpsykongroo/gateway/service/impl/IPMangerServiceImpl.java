@@ -25,6 +25,7 @@ import com.elpsykongroo.base.utils.IPRegexUtils;
 import com.elpsykongroo.base.utils.PathUtils;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.service.SearchService;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.gateway.config.RequestConfig;
@@ -236,7 +237,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 				updateCache(isBlack);
 			}
 			/**
-			 * 	Todo
+			 * 	solved
 			 *
 			 * 	reserve dns need ptr record and public static ip;
 			 *  cannot get hostname; need to search first;
@@ -269,6 +270,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 			log.debug("flag:{}, black:{}", flag, isBlack);
 		} catch (UnknownHostException e) {
 			log.error("UnknownHostException");
+		} catch (FeignException e) {
+			log.error("feign error :{}", e.getMessage());
 		}
 		return flag;
     }

@@ -1,6 +1,9 @@
 server:
-  http2:
-    enabled: true
+  tomcat:
+    connection-timeout: 60
+    keep-alive-timeout: 60
+#  http2:
+#    enabled: true
   shutdown: graceful
   port: 8443
   ssl:
@@ -68,7 +71,6 @@ spring:
 logging:
   level:
     root: info
-    web: debug
 #  log4j2:
 #    config:
 #      override:

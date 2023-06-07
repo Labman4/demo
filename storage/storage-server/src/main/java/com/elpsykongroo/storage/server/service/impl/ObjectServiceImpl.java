@@ -24,7 +24,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -113,13 +112,13 @@ public class ObjectServiceImpl implements ObjectService {
         }
     }
 
-    private void upload(S3 s3, MultipartFile data) throws IOException {
+    private void upload(S3 s3) throws IOException {
         log.debug("upload");
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(s3.getBucket())
                     .key(s3.getKey())
                     .build();
-        s3Client.putObject(objectRequest, RequestBody.fromBytes(data.getBytes()));
+        s3Client.putObject(objectRequest, RequestBody.fromBytes(s3.getData()[0].getBytes()));
         log.debug("upload complete");
     }
 
@@ -151,10 +150,10 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
-    public void multipartUpload(S3 s3, MultipartFile data) throws Exception {
+    public void multipartUpload(S3 s3) throws Exception {
         initClient(s3);
         if (StringUtils.isBlank(s3.getKey())) {
-            s3.setKey(data.getOriginalFilename());
+            s3.setKey(s3.getData()[0].getOriginalFilename());
         }
 
         HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
@@ -165,7 +164,7 @@ public class ObjectServiceImpl implements ObjectService {
         try {
             HeadObjectResponse headObjectResponse = s3Client.headObject(headObjectRequest);
             Long length = headObjectResponse.getValueForField("ContentLength", Long.class).get();
-            if (data.getSize() == length) {
+            if (s3.getData()[0].getSize() == length) {
                 log.debug("object exist skip upload");
                 return;
             }
@@ -176,7 +175,6 @@ public class ObjectServiceImpl implements ObjectService {
         ListMultipartUploadsRequest listMultipartUploadsRequest = ListMultipartUploadsRequest.builder()
                 .bucket(s3.getBucket())
                 .build();
-
         ListMultipartUploadsResponse resp = s3Client.listMultipartUploads(listMultipartUploadsRequest);
         List<MultipartUpload> uploads = resp.uploads();
 
@@ -186,7 +184,7 @@ public class ObjectServiceImpl implements ObjectService {
         for (MultipartUpload upload: uploads) {
             if (s3.getKey().equals(upload.key())) {
                 flag = true;
-                continueUpload(s3, data, upload.uploadId());
+                continueUpload(s3, upload.uploadId());
             }
         }
         if (!flag) {
@@ -197,7 +195,7 @@ public class ObjectServiceImpl implements ObjectService {
 
             CreateMultipartUploadResponse response = s3Client.createMultipartUpload(createMultipartUploadRequest);
             String uploadId = response.uploadId();
-            uploadPart(s3, data, uploadId);
+            uploadPart(s3, uploadId);
         }
 //            AbortMultipartUploadRequest abortMultipartUploadRequest;
 //            for (MultipartUpload upload: uploads) {
@@ -211,15 +209,15 @@ public class ObjectServiceImpl implements ObjectService {
 //            }
     }
 
-    private void uploadPart(S3 s3, MultipartFile data, String uploadId) throws IOException {
-        long fileSize = data.getSize();
+    private void uploadPart(S3 s3, String uploadId) throws IOException {
+        long fileSize = s3.getData()[0].getSize();
         partSize = Math.max(Long.parseLong(s3.getPartSize()), 5 * 1024 * 1024); // 最小为 5MB
         if (fileSize < partSize) {
-            upload(s3, data);
+            upload(s3);
             return;
         }
         log.debug("uploadPart");
-        int num = (int) Math.ceil((double) data.getSize() / partSize);
+        int num = (int) Math.ceil((double) fileSize / partSize);
         List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
         for(int i = 0; i< num ; i++) {
             int percent = (int) Math.ceil((double) i / num * 100);
@@ -234,7 +232,7 @@ public class ObjectServiceImpl implements ObjectService {
                     .contentLength(endOffset)
                     .build();
             UploadPartResponse uploadPartResponse =
-                    s3Client.uploadPart(uploadPartRequest, RequestBody.fromBytes(data.getBytes()));
+                    s3Client.uploadPart(uploadPartRequest, RequestBody.fromBytes(s3.getData()[0].getBytes()));
             completedParts.add(
                     CompletedPart.builder()
                             .partNumber(i + 1)
@@ -256,11 +254,11 @@ public class ObjectServiceImpl implements ObjectService {
         log.debug("uploadPart complete");
     }
 
-    private void continueUpload(S3 s3, MultipartFile data, String uploadId) throws Exception {
-        long fileSize = data.getSize();
+    private void continueUpload(S3 s3, String uploadId) throws Exception {
+        long fileSize = s3.getData()[0].getSize();
         partSize = Math.max(Long.parseLong(s3.getPartSize()), 5 * 1024 * 1024); // 最小为 5MB
         if (fileSize < partSize) {
-            upload(s3, data);
+            upload(s3);
             return;
         }
         log.debug("continue to upload");
@@ -297,7 +295,7 @@ public class ObjectServiceImpl implements ObjectService {
                     .contentLength(partLength)
                     .build();
 
-                InputStream in = new ByteArrayInputStream(data.getBytes());
+                InputStream in = new ByteArrayInputStream(s3.getData()[0].getBytes());
                 s3Client.uploadPart(uploadRequest, RequestBody.fromInputStream(in, partLength));
         }
         completedParts = new ArrayList<CompletedPart>();
