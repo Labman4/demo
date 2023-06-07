@@ -24,11 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,7 +42,7 @@ public class ObjectController {
 
     @CrossOrigin
     @PostMapping(consumes= { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public void multipartUpload(@ModelAttribute S3 s3, @RequestParam("file") MultipartFile data) {
+    public void multipartUpload(@RequestPart S3 s3, @RequestPart("file") MultipartFile data) {
         try {
             objectService.multipartUpload(s3, data);
         } catch (Exception e) {
