@@ -8,7 +8,7 @@ on:
     branches:
     - native-image
     paths:
-      -  'elasticsearch/elasticsearch-server/**'
+      -  'elasticsearch/**'
 jobs:
   build:
     uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks
