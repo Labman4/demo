@@ -23,7 +23,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,7 +40,7 @@ public class ObjectController {
 
     @CrossOrigin
     @PutMapping
-    public void multipartUpload(@ModelAttribute S3 s3) {
+    public void multipartUpload(S3 s3) {
         try {
             objectService.multipartUpload(s3);
         } catch (Exception e) {
