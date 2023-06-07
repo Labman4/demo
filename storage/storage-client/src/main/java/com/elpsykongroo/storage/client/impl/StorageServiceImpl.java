@@ -15,6 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,13 +38,13 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public ResponseEntity uploadObject (S3 s3) {
+    public ResponseEntity uploadObject (S3 s3, MultipartFile data) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
-            form.add("data", s3.getData()[0].getResource());
+            form.add("file", data.getResource());
             form.add("endpoint", s3.getEndpoint());
             form.add("accessKey", s3.getAccessKey());
             form.add("accessSecret", s3.getAccessSecret());
