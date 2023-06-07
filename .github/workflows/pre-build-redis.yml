@@ -8,14 +8,13 @@ on:
     branches:
     - native-image
     paths:
-      -  'redis/redis-server/**'
+      -  'redis/**'
 jobs:
   build:
     uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks
     secrets: inherit
     with:
       module: redis
-      moduleName: redis-server
       version: 0.0.1
       
   native:
@@ -23,7 +22,6 @@ jobs:
     secrets: inherit
     with:
       module: redis
-      moduleName: redis-server
       version: 0.0.1
       
       
