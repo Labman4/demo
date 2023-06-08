@@ -16,14 +16,13 @@
 
 package com.elpsykongroo.storage.server.controller;
 
-import com.elpsykongroo.base.utils.JsonUtils;
+import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.storage.server.service.ObjectService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,9 +40,8 @@ public class ObjectController {
 
     @CrossOrigin
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void multipartUpload(S3 s3, BindingResult errors) {
+    public void multipartUpload(S3 s3) {
         try {
-            log.error("mvc binding error: {}", errors);
             if (!s3.getData()[0].isEmpty()) {
                 objectService.multipartUpload(s3);
             }
@@ -63,7 +61,7 @@ public class ObjectController {
 
     @PostMapping("list")
     public String list (@RequestBody S3 s3) {
-        return JsonUtils.toJson(objectService.list(s3));
+        return CommonResponse.data(objectService.list(s3));
     }
 
     @PostMapping("delete")

@@ -17,24 +17,41 @@
 package com.elpsykongroo.gateway.controller.external;
 
 import com.elpsykongroo.base.common.CommonResponse;
+import com.elpsykongroo.base.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+@Slf4j
+@CrossOrigin
 @RestController
 @RequestMapping("/public")
-public class IPController {
+public class PublicController {
 	@Autowired
 	private IPManagerService ipManagerService;
 
-	@CrossOrigin(origins = "*")
+	@Autowired
+	private RedisService redisService;
+
+
 	@GetMapping("/ip")
 	public String accessIP(HttpServletRequest request) {
 		return CommonResponse.string(ipManagerService.accessIP(request, ""));
 	}
+
+	@GetMapping("/token/qrcode")
+	public String qrToken(@RequestParam("text") String text) {
+		String token = redisService.get("QR_CODE-token-" + text);
+		redisService.set("QR_CODE-token-" + text, "", "1");
+		return token;
+	}
+
 }

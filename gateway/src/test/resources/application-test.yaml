@@ -24,9 +24,11 @@ spring:
             redirect-uri: ${REDIRECT_URI:http://127.0.0.1}
             scope: openid, profile
             client-name: spring
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${AUTH_URL:https://auth.elpsykongroo.com}/oauth2/jwks
+      resource-server:
+        opaque-token:
+          introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
+          client-id:
+          client-secret:
   main:
     allow-bean-definition-overriding: true
   datasource:
@@ -74,4 +76,8 @@ request:
 
 service:
   env: ${ENV:test}
+  timeout:
+    connect: 10
+    read: 10
+    socket: 10
   vault: false

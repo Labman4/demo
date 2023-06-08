@@ -17,21 +17,22 @@
 package com.elpsykongroo.gateway.controller;
 
 import com.elpsykongroo.base.domain.storage.object.S3;
-import com.elpsykongroo.storage.client.StorageService;
+import com.elpsykongroo.base.service.StorageService;
+import feign.Response;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 @CrossOrigin
 @Slf4j
@@ -42,33 +43,65 @@ public class StorageController {
     private StorageService storageService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity uploadObject(S3 s3, BindingResult errors) {
-        return storageService.uploadObject(s3);
+    public void uploadObject(S3 s3) {
+        try {
+            storageService.uploadObject(s3);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping
-    public void get(S3 s3, HttpServletResponse response) {
+    public void getObject(S3 s3, HttpServletResponse response) {
         try {
-            storageService.downloadObject(s3, response);
+            Response feginResp = storageService.downloadObject(s3);
+            InputStream in = feginResp.body().asInputStream();
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(in);
+            response.setContentType("multipart.form-data");
+            response.setHeader("Content-Disposition", feginResp.headers().get("Content-Disposition").toString().replace("[","").replace("]",""));
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
+            int length = 0;
+            byte[] temp = new byte[1024 * 10];
+            while ((length = bufferedInputStream.read(temp)) != -1) {
+                bufferedOutputStream.write(temp, 0, length);
+            }
+            bufferedOutputStream.flush();
+            bufferedOutputStream.close();
+            bufferedInputStream.close();
+            in.close();
         } catch (IOException e) {
-            log.error("object download error: ", e);
+            log.error("object download error: {}", e);
         }
     }
 
-    @PostMapping("download")
-    public void download(@RequestBody S3 s3, HttpServletResponse response) {
+    @PostMapping(value = "download")
+    public void download(S3 s3, HttpServletResponse response) {
         try {
-            storageService.downloadObject(s3, response);
+            Response feginResp = storageService.downloadObject(s3);
+            InputStream in = feginResp.body().asInputStream();
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(in);
+            response.setContentType("multipart.form-data");
+            response.setHeader("Content-Disposition", feginResp.headers().get("Content-Disposition").toString().replace("[","").replace("]",""));
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
+            int length = 0;
+            byte[] temp = new byte[1024 * 10];
+            while ((length = bufferedInputStream.read(temp)) != -1) {
+                bufferedOutputStream.write(temp, 0, length);
+            }
+            bufferedOutputStream.flush();
+            bufferedOutputStream.close();
+            bufferedInputStream.close();
+            in.close();
         } catch (IOException e) {
-            log.error("object download error: ", e);
+            log.error("object download error: {}", e);
         }
     }
 
-    @PostMapping("list")
-    public String list (@RequestBody S3 s3) {
+    @PostMapping(value = "list")
+    public String list(S3 s3) {
         return storageService.listObject(s3);
     }
 
-    @PostMapping("delete")
-    public void delete (@RequestBody S3 s3) { storageService.deleteObject(s3); }
+    @PostMapping(value = "delete")
+    public void delete(S3 s3) { storageService.deleteObject(s3); }
 }

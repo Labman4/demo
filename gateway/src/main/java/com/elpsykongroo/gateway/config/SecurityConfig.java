@@ -16,7 +16,7 @@
 
 package com.elpsykongroo.gateway.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,28 +27,21 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
-	@Value("${request.path.permit:/**}")
-	private String permit_path;
+	@Autowired
+	private RequestConfig requestConfig;
 
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors().and()
 			.csrf()
 			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-//		      .csrf().disable()
  //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
-						.requestMatchers(permit_path).permitAll()
-						.requestMatchers(HttpMethod.GET, "/public/*").permitAll()
+						.requestMatchers("/public/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
 						.requestMatchers("/storage/**").permitAll()
-						.requestMatchers(HttpMethod.POST, "/token/qrcode").permitAll()
-//								.requestMatchers("/auth/**").permitAll()
-
-
-//						.requestMatchers(HttpMethod.GET, "/record/**").hasAuthority("SCOPE_message:read")
-//						.requestMatchers(HttpMethod.POST, "/ip/manager/*").hasAuthority("SCOPE_message:write")
+						.requestMatchers(requestConfig.getPath().getPermit()).permitAll()
 						.anyRequest().authenticated()
 				)
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);

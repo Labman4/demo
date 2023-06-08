@@ -17,23 +17,35 @@
 package com.elpsykongroo.base.service;
 
 import com.elpsykongroo.base.domain.storage.object.S3;
-import feign.QueryMap;
+import feign.Headers;
 import feign.RequestLine;
-import jakarta.servlet.http.HttpServletResponse;
+import feign.Response;
 
 import java.io.IOException;
 
 public interface StorageService {
 
-    @RequestLine("PUT /storage/object")
-    void uploadObject(S3 s3) throws IOException;
+    @RequestLine("POST /storage/object")
+    @Headers({
+            "Content-Type: multipart/form-data"
+    })
+    void uploadObject(S3 s3);
 
     @RequestLine("POST /storage/object/download")
-    void downloadObject(@QueryMap S3 s3, HttpServletResponse response) throws IOException;
+    @Headers({
+            "Content-Type: application/json"
+    })
+    Response downloadObject(S3 s3) throws IOException;
 
     @RequestLine("POST /storage/object/delete")
-    void deleteObject(@QueryMap S3 s3);
+    @Headers({
+            "Content-Type: application/json"
+    })
+    void deleteObject(S3 s3);
 
     @RequestLine("POST /storage/object/list")
-    String listObject(@QueryMap S3 s3);
+    @Headers({
+            "Content-Type: application/json"
+    })
+    String listObject(S3 s3);
 }

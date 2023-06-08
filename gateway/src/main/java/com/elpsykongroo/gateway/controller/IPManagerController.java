@@ -40,10 +40,10 @@ public class IPManagerController {
 	private IPManagerService ipManagerService;
 
 	@PutMapping
-	public String add(@RequestParam String address, @RequestParam String isBlack) {
-		log.debug("add sourceIP:{}, black:{}", address, isBlack);
+	public String add(@RequestParam String address, @RequestParam String black) {
+		log.debug("add sourceIP:{}, black:{}", address, black);
 			try {
-				return CommonResponse.success(ipManagerService.add(address, isBlack));
+				return CommonResponse.success(ipManagerService.add(address, black));
 			}
 			catch (Exception e) {
 				return CommonResponse.error

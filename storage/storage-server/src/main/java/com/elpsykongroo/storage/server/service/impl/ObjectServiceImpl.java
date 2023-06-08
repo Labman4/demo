@@ -62,10 +62,10 @@ import software.amazon.awssdk.services.sts.model.Credentials;
 import software.amazon.awssdk.utils.StringUtils;
 import software.amazon.awssdk.services.sts.StsClient;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -98,9 +98,8 @@ public class ObjectServiceImpl implements ObjectService {
         response.setHeader("Content-Type", in.response().contentType());
         response.setHeader("Content-Disposition", "attachment; filename=" + s3.getKey());
         BufferedInputStream inputStream = new BufferedInputStream(in);
-        OutputStream out = null;
+        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
         try {
-            out = response.getOutputStream();
             byte[] b = new byte[1024];
             int len ;
             while ((len = inputStream.read(b)) != -1) {

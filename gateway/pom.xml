@@ -23,6 +23,11 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>io.github.openfeign.form</groupId>
+            <artifactId>feign-form-spring</artifactId>
+            <version>3.8.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.vault</groupId>
             <artifactId>spring-vault-core</artifactId>
             <version>3.0.2</version>
@@ -376,9 +381,9 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
+                        <builder>paketobuildpacks/builder:tiny</builder>
                         <env>
-                            <BP_JVM_VERSION>17.0.5</BP_JVM_VERSION>
+                            <BP_JVM_VERSION>17</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
                             <!-- <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
                             <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>
