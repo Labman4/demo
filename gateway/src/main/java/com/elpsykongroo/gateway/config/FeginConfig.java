@@ -25,6 +25,7 @@ import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.StringDecoder;
 import feign.form.spring.SpringFormEncoder;
+import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -51,8 +52,8 @@ public class FeginConfig {
     @Bean
     public SearchService searchService() {
         return Feign.builder()
-                .decoder(new Decoder.Default())
-                .encoder(new Encoder.Default())
+                .decoder(new JacksonDecoder())
+                .encoder(new JacksonEncoder())
                 .target(SearchService.class, serviceConfig.getUrl().getEs());
     }
 

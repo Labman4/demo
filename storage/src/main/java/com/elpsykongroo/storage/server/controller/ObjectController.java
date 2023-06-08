@@ -46,7 +46,7 @@ public class ObjectController {
                 objectService.multipartUpload(s3);
             }
         } catch (Exception e) {
-            log.error("multipart error: ", e);
+            log.error("multipart error: {}", e.getMessage());
         }
     }
 
@@ -55,7 +55,7 @@ public class ObjectController {
         try {
             objectService.download(s3, response);
         } catch (IOException e) {
-            log.error("download error");
+            log.error("download error:{}", e.getMessage());
         }
     }
 

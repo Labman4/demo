@@ -17,13 +17,16 @@
 package com.elpsykongroo.base.service;
 
 import com.elpsykongroo.base.domain.AccessRecord;
+import feign.Headers;
 import feign.Param;
-import feign.QueryMap;
 import feign.RequestLine;
 
 public interface SearchService {
     @RequestLine("PUT /search/record")
-    void save(@QueryMap AccessRecord accessRecord);
+    @Headers({
+            "Content-Type: application/json"
+    })
+    void save(AccessRecord accessRecord);
 
     @RequestLine("GET /search/record?pageNumber={pageNumber}&pageSize={pageSize}&order={order}")
     String recordList(@Param("pageNumber") String pageNumber,

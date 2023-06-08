@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedInputStream;
@@ -52,8 +53,15 @@ public class StorageController {
     }
 
     @GetMapping
-    public void getObject(S3 s3, HttpServletResponse response) {
+    public void getObject(@RequestParam String bucket,
+                          @RequestParam String key,
+                          @RequestParam(required = false) String idToken,
+                          HttpServletResponse response) {
         try {
+            S3 s3 = new S3();
+            s3.setBucket(bucket);
+            s3.setKey(key);
+            s3.setIdToken(idToken);
             Response feginResp = storageService.downloadObject(s3);
             InputStream in = feginResp.body().asInputStream();
             BufferedInputStream bufferedInputStream = new BufferedInputStream(in);
