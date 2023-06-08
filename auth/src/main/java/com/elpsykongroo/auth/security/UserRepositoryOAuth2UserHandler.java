@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.server.security;
+package com.elpsykongroo.auth.security;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
