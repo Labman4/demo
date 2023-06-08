@@ -180,7 +180,7 @@
                             <HTTPS_PROXY>http://192.168.1.100:1080</HTTPS_PROXY>
                         </env>
                         <name>
-                            registry.elpsykongroo.com/library/${project.parent.artifactId}:${project.version}
+                            registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
                         </name>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                     </image>
