@@ -9,7 +9,7 @@ on:
     - native-image
     paths:
       - gateway/**   
-      - '**/*-client/**'	
+      - base/**	
 
 jobs:
   build: 
