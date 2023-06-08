@@ -8,14 +8,13 @@ on:
     branches:
     - native-image
     paths:
-      -  '**/*authorization-server/**'
+      -  'auth/**'
 jobs:
   build:
     uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks
     secrets: inherit
     with:
       module: auth
-      moduleName: authorization-server
       version: dev
       env: dev
   native:
@@ -23,7 +22,6 @@ jobs:
     secrets: inherit
     with:
       module: auth
-      moduleName: authorization-server
       version: 0.0.2
       
       
