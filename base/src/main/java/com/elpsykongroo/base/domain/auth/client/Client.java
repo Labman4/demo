@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.client.dto;
+package com.elpsykongroo.base.domain.auth.client;
 
 import lombok.Data;
 
@@ -22,6 +22,7 @@ import java.time.Instant;
 
 @Data
 public class Client {
+
 	private String id;
 
 	private String clientId;
@@ -47,4 +48,5 @@ public class Client {
 	private String clientSettings;
 
 	private String tokenSettings;
+
 }

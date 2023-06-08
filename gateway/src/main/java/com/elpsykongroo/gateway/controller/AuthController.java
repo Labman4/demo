@@ -16,19 +16,18 @@
 
 package com.elpsykongroo.gateway.controller;
 
-import com.elpsykongroo.auth.client.AuthService;
-import com.elpsykongroo.auth.client.dto.Client;
-import com.elpsykongroo.auth.client.dto.ClientRegistry;
 import com.elpsykongroo.base.common.CommonResponse;
+import com.elpsykongroo.base.domain.auth.client.Client;
+import com.elpsykongroo.base.domain.auth.client.ClientRegistry;
+import com.elpsykongroo.base.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
@@ -38,29 +37,29 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/client/add")
-    public String addClient (@RequestHeader("Authorization") String auth, @RequestBody Client client) {
-        return CommonResponse.string(authService.addClient(auth, client));
+    @PutMapping("/client")
+    public String addClient (@RequestBody Client client) {
+        return CommonResponse.string(authService.addClient(client));
     }
-    @DeleteMapping("/client/delete")
-    public String deleteClient (@RequestHeader("Authorization") String auth, @RequestParam("clientId")String clientId) {
-        return CommonResponse.string(authService.deleteClient(auth, clientId));
+    @DeleteMapping("/client/{clientId}")
+    public String deleteClient (@PathVariable String clientId) {
+        return CommonResponse.string(authService.deleteClient(clientId));
     }
-    @GetMapping("/client/list")
-    public String listClient (@RequestHeader("Authorization") String auth) {
-        return CommonResponse.string(authService.findAllClient(auth));
+    @GetMapping("/client")
+    public String listClient () {
+        return CommonResponse.string(authService.findAllClient());
     }
 
-    @PostMapping("/client/register/add")
-    public String addRegister (@RequestHeader("Authorization") String auth, @RequestBody ClientRegistry client) {
-        return CommonResponse.string(authService.addRegister(auth, client));
+    @PutMapping("/client/register")
+    public String addRegister (@RequestBody ClientRegistry client) {
+        return CommonResponse.string(authService.addRegister(client));
     }
-    @DeleteMapping("/client/register/delete")
-    public String deleteRegister (@RequestHeader("Authorization") String auth, @RequestParam("registerId")String clientId) {
-        return CommonResponse.string(authService.deleteRegister(auth, clientId));
+    @DeleteMapping("/client/register/{clientId}")
+    public String deleteRegister (@PathVariable String clientId) {
+        return CommonResponse.string(authService.deleteRegister(clientId));
     }
-    @GetMapping("/client/register/list")
-    public String listRegister (@RequestHeader("Authorization") String auth) {
-        return CommonResponse.string(authService.findAllRegister(auth));
+    @GetMapping("/client/register")
+    public String listRegister () {
+        return CommonResponse.string(authService.findAllRegister());
     }
 }

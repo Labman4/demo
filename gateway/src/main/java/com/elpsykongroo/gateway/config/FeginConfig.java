@@ -17,10 +17,13 @@
 package com.elpsykongroo.gateway.config;
 
 import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.service.AuthService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.service.SearchService;
 import com.elpsykongroo.base.service.StorageService;
+import com.elpsykongroo.gateway.interceptor.AuthorizationInterceptor;
 import feign.Feign;
+import feign.auth.BasicAuthRequestInterceptor;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.StringDecoder;
@@ -40,6 +43,15 @@ public class FeginConfig {
 
     @Autowired
     private ServiceConfig serviceConfig;
+
+    @Bean
+    public AuthService authService() {
+        return Feign.builder()
+                .decoder(new JacksonDecoder())
+                .encoder(new JacksonEncoder())
+                .requestInterceptor(new AuthorizationInterceptor())
+                .target(AuthService.class, serviceConfig.getUrl().getAuth());
+    }
 
     @Bean
     public RedisService redisService() {

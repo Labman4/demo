@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.client.dto;
+package com.elpsykongroo.base.domain.auth.user;
 
 import lombok.Data;
 
@@ -42,4 +42,5 @@ public class UserInfo {
     public String updated_at;
     public String claims;
     public String username;
+
 }

@@ -14,25 +14,45 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.client.dto;
+package com.elpsykongroo.base.domain.auth.user;
+
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-
 import java.time.Instant;
 import java.util.Map;
 
+
 @Data
 @NoArgsConstructor
-public class User {
+public class User{
     private String id;
     private Map<String, Object> userInfo;
     private String username;
     private String email;
     private String nickName;
+
     private String password;
+
     private boolean locked;
+
     private Instant createTime;
+
     private Instant updateTime;
+
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"").append(id).append("\",");
+        sb.append("\"username\":\"").append(username).append("\",");
+        sb.append("\"email\":\"").append(email).append("\",");
+        sb.append("\"nickName\":\"").append(nickName).append("\",");
+        sb.append("\"password\":\"").append(password).append("\",");
+        sb.append("\"locked\":\"").append(locked).append("\",");
+        sb.append("\"createTime\":\"").append(createTime).append("\",");
+        sb.append("\"updateTime\":\"").append(updateTime).append("\"");
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -43,7 +43,7 @@ public class UserController {
         return CommonResponse.string(userService.loadUserByUsername(username).toString());
     }
 
-    @GetMapping("/list")
+    @GetMapping
     public String userList(
             @RequestParam("pageNumber") String pageNumber,
             @RequestParam("pageSize") String pageSize,
@@ -51,26 +51,26 @@ public class UserController {
         return CommonResponse.string(userService.list(pageNumber, pageSize, order).toString());
     }
 
-    @GetMapping("/info")
+    @GetMapping("/info/{username}")
     public String loadUserInfo(
-            @RequestParam String username) {
+            @PathVariable String username) {
         return CommonResponse.string(userService.loadUserInfo(username));
     }
 
-    @PatchMapping("/patch")
+    @PatchMapping
     public String updateUser(
             @RequestBody User user) {
         return CommonResponse.data(userService.updateUser(user));
     }
 
-    @PatchMapping("/info/patch")
+    @PatchMapping("/info")
     public String updateUserInfo(
             @RequestBody UserInfo userInfo) {
         return CommonResponse.data(userService.updateUserInfo(userInfo));
     }
 
-    @GetMapping("/authority/list")
-    public String authorityList(@RequestParam("username") String username) {
+    @GetMapping("/authority/{username}")
+    public String authorityList(@PathVariable String username) {
         return CommonResponse.data(userService.userAuthority(username));
     }
 }
