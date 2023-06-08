@@ -8,14 +8,13 @@ on:
     branches:
     - native-image
     paths:
-      -  'storage/storage-server/**'
+      -  'storage/**'
 jobs:
   build: 
     uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks
     secrets: inherit
     with:
       module: storage
-      moduleName: storage-server
       version: dev
 
   native:
@@ -23,7 +22,6 @@ jobs:
     secrets: inherit
     with:
       module: storage
-      moduleName: storage-server
       version: 0.0.1
       
       
