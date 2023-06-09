@@ -23,7 +23,7 @@ import com.elpsykongroo.base.common.CommonResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,13 +57,13 @@ public class UserController {
         return CommonResponse.string(userService.loadUserInfo(username));
     }
 
-    @PatchMapping
+    @PostMapping
     public String updateUser(
             @RequestBody User user) {
         return CommonResponse.data(userService.updateUser(user));
     }
 
-    @PatchMapping("/info")
+    @PostMapping("/info")
     public String updateUserInfo(
             @RequestBody UserInfo userInfo) {
         return CommonResponse.data(userService.updateUserInfo(userInfo));

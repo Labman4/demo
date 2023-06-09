@@ -27,9 +27,9 @@ import java.util.List;
 @Repository
 public interface IPRepo extends ElasticsearchRepository<IPManage, String> {
 
-	String findByIsBlackTrue();
+	List<IPManage> findByIsBlackTrue();
 
-	String findByIsBlackFalse();
+	List<IPManage> findByIsBlackFalse();
 
 	List<IPManage> findByIsBlackTrue(Pageable pageable);
 

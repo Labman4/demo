@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,11 +43,11 @@ public class GroupController {
     }
 
     @PutMapping
-    public String addGroup(@RequestParam String group) {
-        return CommonResponse.string(groupService.addGroup(group));
+    public String addGroup(@RequestParam String name) {
+        return CommonResponse.string(groupService.addGroup(name));
     }
 
-    @DeleteMapping("/delete/{name}")
+    @DeleteMapping("/{name}")
     public String deleteGroup(@PathVariable String name) {
        return CommonResponse.data(groupService.deleteGroup(name));
     }
@@ -57,12 +57,12 @@ public class GroupController {
         return CommonResponse.data(groupService.userGroup(id));
     }
 
-    @GetMapping("/authority")
-    public String groupAuthorityList(@RequestParam String name) {
+    @GetMapping("/authority/{name}")
+    public String groupAuthorityList(@PathVariable String name) {
         return CommonResponse.data(groupService.findByAuthority(name));
     }
 
-    @PatchMapping("/user")
+    @PostMapping("/user")
     public String updateGroup(@RequestParam String groups,
                               @RequestParam String ids) {
         return CommonResponse.data(groupService.updateUserGroup(groups, ids));

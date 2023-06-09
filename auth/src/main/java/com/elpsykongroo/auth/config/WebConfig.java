@@ -30,7 +30,7 @@ public class WebConfig {
 
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/auth/**");
+                registry.addMapping("/auth/**").allowedOriginPatterns("*");
                 registry.addMapping("/logout").allowedOriginPatterns("*").allowCredentials(true);
                 registry.addMapping("/connect/logout").allowedOriginPatterns("*").allowCredentials(true);
                 registry.addMapping("/oauth2/**").allowedOriginPatterns("*").allowCredentials(true);

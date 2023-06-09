@@ -22,13 +22,14 @@ import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.service.SearchService;
 import com.elpsykongroo.base.service.StorageService;
 import com.elpsykongroo.gateway.interceptor.AuthorizationInterceptor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.Feign;
-import feign.auth.BasicAuthRequestInterceptor;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.StringDecoder;
 import feign.form.spring.SpringFormEncoder;
-import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -47,8 +48,8 @@ public class FeginConfig {
     @Bean
     public AuthService authService() {
         return Feign.builder()
-                .decoder(new JacksonDecoder())
-                .encoder(new JacksonEncoder())
+                .decoder(new StringDecoder())
+                .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
                 .requestInterceptor(new AuthorizationInterceptor())
                 .target(AuthService.class, serviceConfig.getUrl().getAuth());
     }
@@ -64,7 +65,7 @@ public class FeginConfig {
     @Bean
     public SearchService searchService() {
         return Feign.builder()
-                .decoder(new JacksonDecoder())
+                .decoder(new StringDecoder())
                 .encoder(new JacksonEncoder())
                 .target(SearchService.class, serviceConfig.getUrl().getEs());
     }

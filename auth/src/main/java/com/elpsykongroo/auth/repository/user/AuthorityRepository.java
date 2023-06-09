@@ -27,7 +27,7 @@ public interface AuthorityRepository extends CrudRepository<Authority, String> {
 
     List<Authority> findByGroups_GroupName(String groupName);
 
-    Optional<Authority>  findByAuthority(String authority);
+    Optional<Authority> findByAuthority(String authority);
 
     List<Authority> findByUsers_Id(String id);
 

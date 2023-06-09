@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,13 +37,13 @@ public class AuthorityController {
     @Autowired
     private AuthorityService authorityService;
 
-    @PatchMapping("/group")
+    @PostMapping("/group")
     public String updateGroupAuthority(@RequestParam String authorities,
                                        @RequestParam String ids) {
         return CommonResponse.data(authorityService.updateGroupAuthority(authorities, ids));
     }
 
-    @PatchMapping("/user")
+    @PostMapping("/user")
     public String updateUserAuthority(@RequestParam String authorities,
                                       @RequestParam String ids) {
         return CommonResponse.data(authorityService.updateUserAuthority(authorities, ids));
@@ -54,7 +54,7 @@ public class AuthorityController {
         return CommonResponse.data(authorityService.userAuthority(id));
     }
 
-    @DeleteMapping("/delete/{name}")
+    @DeleteMapping("/{name}")
     public String deleteAuthority(@PathVariable String name) {
         return CommonResponse.data(authorityService.deleteAuthority(name));
     }
@@ -70,9 +70,9 @@ public class AuthorityController {
         return CommonResponse.data(authorityService.findByGroup(name));
     }
 
-    @PutMapping("/{name}")
+    @PutMapping
     public String addAuthority(
-            @PathVariable String name
+            @RequestParam String name
     ) {
         return  CommonResponse.string(authorityService.addAuthority(name));
     }

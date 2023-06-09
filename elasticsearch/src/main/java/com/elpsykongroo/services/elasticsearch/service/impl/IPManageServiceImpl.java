@@ -43,11 +43,13 @@ public class IPManageServiceImpl implements IPManageService {
 
     @Override
     public String ipList(String black) {
+        List<IPManage> ipList = null;
         if ("true".equals(black)) {
-            return ipRepo.findByIsBlackTrue();
+            ipList = ipRepo.findByIsBlackTrue();
         } else {
-            return ipRepo.findByIsBlackFalse();
+            ipList = ipRepo.findByIsBlackFalse();
         }
+        return ipList.toString();
     }
 
     @Override

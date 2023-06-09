@@ -43,13 +43,13 @@ public interface AuthService {
     })
     String addRegister(ClientRegistry client);
 
-    @RequestLine("DELETE /auth/client/register/{clientId}")
-    String deleteRegister(String clientId);
+    @RequestLine("DELETE /auth/client/register/{registerId}")
+    String deleteRegister(@Param String registerId);
 
     @RequestLine("GET /auth/client/register")
     String findAllRegister();
 
-    @RequestLine("PUT /auth/group/name={name}")
+    @RequestLine("PUT /auth/group?name={name}")
     String addGroup(@Param String name);
 
     @RequestLine("GET /auth/group")
@@ -58,7 +58,7 @@ public interface AuthService {
     @RequestLine("DELETE /auth/group/{name}")
     String deleteGroup(@Param String name);
 
-    @RequestLine("PUT /auth/authority/name={name}")
+    @RequestLine("PUT /auth/authority?name={name}")
     String addAuthority(@Param String name);
 
     @RequestLine("GET /auth/authority")
@@ -68,27 +68,27 @@ public interface AuthService {
     String deleteAuthority(@Param String name);
 
     @RequestLine("GET /auth/user/info/{username}")
-    String loadUserInfo(String username);
+    String loadUserInfo(@Param String username);
 
-    @RequestLine("PATCH /auth/user/info")
+    @RequestLine("POST /auth/user/info")
     @Headers({
             "Content-Type: application/json"
     })
     String updateUserInfo(UserInfo userinfo);
 
-    @RequestLine("PATCH /auth/user")
+    @RequestLine("POST /auth/user")
     @Headers({
             "Content-Type: application/json"
     })
     String updateUser(User user);
 
-    @RequestLine("PATCH /auth/group/user?groups={groups}&ids={ids}")
+    @RequestLine("POST /auth/group/user?groups={groups}&ids={ids}")
     String updateUserGroup(@Param String groups, @Param String ids);
 
-    @RequestLine("PATCH /auth/authority/user?authorities={authorities}&ids={ids}")
-    String updateUserAuthority(@Param String authorities, @Param String id);
+    @RequestLine("POST /auth/authority/user?authorities={authorities}&ids={ids}")
+    String updateUserAuthority(@Param String authorities, @Param String ids);
 
-    @RequestLine("PATCH /auth/authority/group?authorities={authorities}&ids={ids}")
+    @RequestLine("POST /auth/authority/group?authorities={authorities}&ids={ids}")
     String updateGroupAuthority(@Param String authorities, @Param String ids);
 
     @RequestLine("GET /auth/user?pageNumber={pageNumber}&pageSize={pageSize}&order={order}")
@@ -102,7 +102,7 @@ public interface AuthService {
     @RequestLine("GET /auth/group/user/{id}")
     String userGroup(@Param String id);
 
-    @RequestLine("GET /auth/authority/group/{name}")
+    @RequestLine("GET /auth/group/authority/{name}")
     String groupAuthorityList(@Param String name);
 
     @RequestLine("GET /auth/authority/group/{name}")

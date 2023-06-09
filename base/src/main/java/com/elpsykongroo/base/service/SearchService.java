@@ -49,7 +49,7 @@ public interface SearchService {
     String saveIP(@Param String address, @Param String black);
 
     @RequestLine("GET /search/ip/page?pageNumber={pageNumber}&pageSize={pageSize}&order={order}&black={black}")
-    String ipPageList(@Param String pageNumber, @Param String pageSize, @Param("black") String black);
+    String ipPageList(@Param String pageNumber, @Param String pageSize, @Param String black);
 
     @RequestLine("GET /search/ip?black={black}")
     String ipList(@Param("black") String black);

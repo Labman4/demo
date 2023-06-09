@@ -114,20 +114,20 @@ public class IPMangerServiceImpl implements IPManagerService {
 //            if (lock.tryLock(Constant.REDIS_LOCK_WAIT_TIME, Constant.REDIS_LOCK_LEASE_TIME, TimeUnit.SECONDS)) {
 //                log.info("get lock");
 //                try {
-			if (StringUtils.isNotEmpty(addrs)) {
-				String[] address = addrs.split(",");
-				for (String addr: address) {
-					InetAddress[] inetAddresses = InetAddress.getAllByName(addr);
-					for (InetAddress ad: inetAddresses) {
-						if (exist(ad.getHostAddress(), isBlack) == 0) {
-							addresses.add(searchService.saveIP(ad.getHostAddress(), isBlack));
-						}
-						if (exist(ad.getHostName(), isBlack) == 0) {
-							addresses.add(searchService.saveIP(ad.getHostName(), isBlack));
-						}
+		if (StringUtils.isNotEmpty(addrs)) {
+			String[] address = addrs.split(",");
+			for (String addr: address) {
+				InetAddress[] inetAddresses = InetAddress.getAllByName(addr);
+				for (InetAddress ad: inetAddresses) {
+					if (exist(ad.getHostAddress(), isBlack) == 0) {
+						addresses.add(searchService.saveIP(ad.getHostAddress(), isBlack));
+					}
+					if (exist(ad.getHostName(), isBlack) == 0) {
+						addresses.add(searchService.saveIP(ad.getHostName(), isBlack));
 					}
 				}
 			}
+		}
 //                } finally {
 //                    lock.unlock();
 //                }

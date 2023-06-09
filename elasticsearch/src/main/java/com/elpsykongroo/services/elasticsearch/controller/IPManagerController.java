@@ -84,7 +84,7 @@ public class IPManagerController {
 		}
 	}
 
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/{id}")
 	public String delete(@PathVariable String id) {
 		try {
 			log.debug("delete by id");

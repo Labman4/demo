@@ -155,8 +155,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <caches>
-                        </caches>
                         <buildCache>
                             <volume>
                                 <name>cache-${project.artifactId}.build</name>
