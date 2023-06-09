@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,29 +39,29 @@ public class ClientController {
     @Autowired
     private ClientRegistrationService clientRegistrationService;
 
-    @PostMapping("/register/add")
+    @PutMapping("/register")
     public String addClientRegistry (@RequestBody ClientRegistry client) {
         return CommonResponse.string(clientRegistrationService.add(client));
     }
-    @DeleteMapping("/register/delete/{registerId}")
+    @DeleteMapping("/register/{registerId}")
     public String deleteClientRegistry (@PathVariable String registerId) {
         return CommonResponse.string(clientRegistrationService.delete(registerId));
     }
-    @GetMapping("/register/list")
+    @GetMapping("/register")
     public String listClientRegistry () {
         return CommonResponse.data(clientRegistrationService.findAll());
     }
-    @PostMapping("/add")
+    @PutMapping
     public String addClient (@RequestBody Client client) {
         return CommonResponse.string(clientService.add(client));
     }
 
-    @DeleteMapping("/delete/{clientId}")
+    @DeleteMapping("/{clientId}")
     public String deleteClient (@PathVariable String clientId) {
         return CommonResponse.string(clientService.delete(clientId));
     }
 
-    @GetMapping("/list")
+    @GetMapping
     public String listClient () {
         return CommonResponse.data(clientService.findAll());
     }

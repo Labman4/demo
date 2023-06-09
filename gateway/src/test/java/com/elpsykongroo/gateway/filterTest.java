@@ -31,9 +31,8 @@ import feign.codec.Decoder;
 import feign.codec.Encoder;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
@@ -41,6 +40,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.mockserver.model.MediaType;
+import org.springframework.test.context.event.annotation.AfterTestClass;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -56,7 +56,7 @@ public class filterTest {
     private FilterChain filterChain;
     private MockServerClient mockServerClient;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         servletContext = new MockServletContext();
         request = new MockHttpServletRequest(servletContext);
@@ -92,7 +92,7 @@ public class filterTest {
                         .withBody("0", MediaType.APPLICATION_JSON));
     }
 
-    @After
+    @AfterTestClass
     public void tearDown() {
         mockServerClient.stop();
     }

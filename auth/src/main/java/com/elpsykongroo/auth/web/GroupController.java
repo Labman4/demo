@@ -37,45 +37,34 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
-    @GetMapping("/list")
-    public String groupList(
-    ) {
+    @GetMapping
+    public String groupList() {
         return CommonResponse.data(groupService.groupList());
     }
 
-    @PutMapping("/add")
-    public String addGroup(
-            @RequestParam String group
-    ) {
+    @PutMapping
+    public String addGroup(@RequestParam String group) {
         return CommonResponse.string(groupService.addGroup(group));
     }
 
     @DeleteMapping("/delete/{name}")
-    public String deleteGroup(
-            @PathVariable String name
-    ) {
+    public String deleteGroup(@PathVariable String name) {
        return CommonResponse.data(groupService.deleteGroup(name));
     }
 
-    @GetMapping("/user/list")
-    public String userGroupList(
-            @RequestParam String id
-    ) {
+    @GetMapping("/user/{id}")
+    public String userGroupList(@PathVariable String id) {
         return CommonResponse.data(groupService.userGroup(id));
     }
 
-    @GetMapping("/authority/list")
-    public String groupAuthorityList(
-            @RequestParam String name
-    ) {
+    @GetMapping("/authority")
+    public String groupAuthorityList(@RequestParam String name) {
         return CommonResponse.data(groupService.findByAuthority(name));
     }
 
-    @PatchMapping("/user/patch")
-    public String updateGroup(
-            @RequestParam("groups") String groups,
-            @RequestParam("ids") String ids
-    ) {
+    @PatchMapping("/user")
+    public String updateGroup(@RequestParam String groups,
+                              @RequestParam String ids) {
         return CommonResponse.data(groupService.updateUserGroup(groups, ids));
     }
 }

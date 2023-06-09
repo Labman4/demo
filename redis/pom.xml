@@ -41,7 +41,6 @@
             <artifactId>msgpack-core</artifactId>
             <version>0.9.3</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.msgpack/jackson-dataformat-msgpack -->
         <dependency>
             <groupId>org.msgpack</groupId>
             <artifactId>jackson-dataformat-msgpack</artifactId>

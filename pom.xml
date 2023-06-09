@@ -30,8 +30,6 @@
         <maven.compiler.source>${java.specification.version}</maven.compiler.source>
         <maven.compiler.target>${java.specification.version}</maven.compiler.target>
     </properties>
-    <dependencies>
-    </dependencies>
     <profiles>
         <profile>
             <id>native</id> 
@@ -146,8 +144,71 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                    <!-- <compilerArgument>-Xlint:deprecation</compilerArgument> -->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <image>
+                        <caches>
+                        </caches>
+                        <buildCache>
+                            <volume>
+                                <name>cache-${project.artifactId}.build</name>
+                            </volume>
+                        </buildCache>
+                        <launchCache>
+                            <volume>
+                                <name>cache-${project.artifactId}.launch</name>
+                            </volume>
+                        </launchCache>
+                        <builder>paketobuildpacks/builder:0.1.378-tiny</builder>
+                        <env>
+                            <BP_JVM_VERSION>17</BP_JVM_VERSION>
+                            <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
+                            <!-- <BPE_DELIM_JAVA_TOOL_OPTIONS xml:space="preserve"> </BPE_DELIM_JAVA_TOOL_OPTIONS>
+                            <BPE_APPEND_JAVA_TOOL_OPTIONS>-javaagent:/otel-auto-instrumentation/javaagent.jar</BPE_APPEND_JAVA_TOOL_OPTIONS>
+                            <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS> -->
+                        </env>
+                        <name>
+                            registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
+                        </name>
+                        <pullPolicy>IF_NOT_PRESENT</pullPolicy>
+                    </image>
+                    <docker>
+                        <!--                        <host>unix:///run/user/1000/podman/podman.sock</host>-->
+                        <!--                        <bindHostToBuilder>true</bindHostToBuilder>-->
+                        <!-- <publishRegistry>
+                            <username></username>
+                            <password></password>
+                            <url>registry.elpsykongroo.com</url>
+                        </publishRegistry> -->
+                    </docker>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.basepom.maven</groupId>
+                <artifactId>duplicate-finder-maven-plugin</artifactId>
+                <version>2.0.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.2</version>
                 <configuration>
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <testFailureIgnore>true</testFailureIgnore>
@@ -156,6 +217,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.10</version>
             </plugin>     
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -190,20 +252,6 @@
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
             </plugin>
-            <!-- <plugin>
-                <groupId>org.qunix</groupId>
-                <artifactId>structure-maven-plugin</artifactId>
-                <version>0.0.2</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>modules</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin> -->
         </plugins>
     </build>
     <reporting>
@@ -220,21 +268,6 @@
     </reporting>
     <dependencyManagement>
         <dependencies>
-            <!-- https://mvnrepository.com/artifact/com.playtika.testcontainers/testcontainers-spring-boot-bom -->
-            <!-- <dependency>
-                <groupId>com.playtika.testcontainers</groupId>
-                <artifactId>testcontainers-spring-boot-bom</artifactId>
-                <version>2.2.14</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency> -->
-            <!-- <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>2022.0.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency> -->
             <dependency>
                 <groupId>io.micrometer</groupId>
                 <artifactId>micrometer-tracing-bom</artifactId>
@@ -245,16 +278,9 @@
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-bom</artifactId>
-                <version>2022.0.0</version>
+                <version>2023.0.0</version>
                 <scope>import</scope>
                 <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.testcontainers</groupId>
-                <artifactId>testcontainers-bom</artifactId>
-                <version>1.17.6</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
@@ -295,6 +321,10 @@
             <id>spring-release</id>
             <name>Spring release</name>
             <url>https://repo.spring.io/release</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
         </pluginRepository>
     </pluginRepositories>
 </project>

@@ -35,10 +35,6 @@
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.github.hakky54</groupId>
             <artifactId>sslcontext-kickstart-for-pem</artifactId>
             <version>7.4.9</version>
@@ -80,7 +76,6 @@
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -120,7 +115,7 @@
                                 <name>
                                     registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
                                 </name>
-                                <builder>paketobuildpacks/builder:0.1.303-tiny</builder>
+                                <builder>paketobuildpacks/builder:tiny</builder>
                                 <env>
                                     <BP_JVM_VERSION>17</BP_JVM_VERSION>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>

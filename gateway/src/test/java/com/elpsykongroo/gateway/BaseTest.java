@@ -1,6 +1,6 @@
 package com.elpsykongroo.gateway;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class BaseTest {
     protected WebTestClient webTestClient;
 
 
-    @Before
+    @BeforeAll
     void setup() {
         webTestClient = MockMvcWebTestClient.bindToApplicationContext(context)
                 .apply(springSecurity())

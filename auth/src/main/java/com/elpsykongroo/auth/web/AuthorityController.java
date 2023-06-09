@@ -37,53 +37,43 @@ public class AuthorityController {
     @Autowired
     private AuthorityService authorityService;
 
-    @PatchMapping("/group/patch")
-    public String updateGroupAuthority(
-            @RequestParam String authorities,
-            @RequestParam String ids
-    ) {
+    @PatchMapping("/group")
+    public String updateGroupAuthority(@RequestParam String authorities,
+                                       @RequestParam String ids) {
         return CommonResponse.data(authorityService.updateGroupAuthority(authorities, ids));
     }
 
-    @PatchMapping("/user/patch")
-    public String updateUserAuthority(
-            @RequestParam String authorities,
-            @RequestParam String ids
-    ) {
+    @PatchMapping("/user")
+    public String updateUserAuthority(@RequestParam String authorities,
+                                      @RequestParam String ids) {
         return CommonResponse.data(authorityService.updateUserAuthority(authorities, ids));
     }
 
-    @GetMapping("/user/list")
-    public String userAuthorityList(
-            @RequestParam String id
-    ) {
+    @GetMapping("/user/{id}")
+    public String userAuthorityList(@PathVariable String id) {
         return CommonResponse.data(authorityService.userAuthority(id));
     }
 
     @DeleteMapping("/delete/{name}")
-    public String deleteAuthority(
-            @PathVariable String name
-    ) {
+    public String deleteAuthority(@PathVariable String name) {
         return CommonResponse.data(authorityService.deleteAuthority(name));
     }
 
-    @GetMapping("/list")
+    @GetMapping
     public String authorityList(
     ) {
         return CommonResponse.data(authorityService.authorityList());
     }
 
-    @GetMapping("/group/list")
-    public String authorityGroupList(
-            @RequestParam String name
-    ) {
+    @GetMapping("/group/{name}")
+    public String authorityGroupList(@PathVariable String name) {
         return CommonResponse.data(authorityService.findByGroup(name));
     }
 
-    @PutMapping("/add")
+    @PutMapping("/{name}")
     public String addAuthority(
-            @RequestParam("name") String authority
+            @PathVariable String name
     ) {
-        return  CommonResponse.string(authorityService.addAuthority(authority));
+        return  CommonResponse.string(authorityService.addAuthority(name));
     }
 }

@@ -19,7 +19,7 @@ package com.elpsykongroo.auth;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(proxyBeanMethods = false, scanBasePackages = {"com.elpsykongroo.base", "com.elpsykongroo.auth.server"})
+@SpringBootApplication(proxyBeanMethods = false, scanBasePackages = {"com.elpsykongroo.base", "com.elpsykongroo.auth"})
 public class FederatedIdentityAuthorizationServerApplication {
 
 	public static void main(String[] args) {
