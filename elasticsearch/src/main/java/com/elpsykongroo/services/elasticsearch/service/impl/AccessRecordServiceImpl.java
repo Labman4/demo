@@ -20,6 +20,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import com.elpsykongroo.services.elasticsearch.domain.AccessRecord;
 import com.elpsykongroo.services.elasticsearch.repo.AccessRecordRepo;
 import com.elpsykongroo.services.elasticsearch.service.AccessRecordService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,9 +36,12 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class AccessRecordServiceImpl implements AccessRecordService {
 
     @Autowired
@@ -95,8 +99,10 @@ public class AccessRecordServiceImpl implements AccessRecordService {
     }
 
     @Override
-    public void deleteAllById(Iterable<String> ids) {
-        accessRecordRepo.deleteAllById(ids);
+    public void deleteAllById(String ids) {
+        List<String> deleteIds = Arrays.stream(ids.split(",")).collect(Collectors.toList());
+        accessRecordRepo.deleteAllById(deleteIds);
+        log.debug("delete record size:{}", deleteIds.size());
     }
 
     @Override
