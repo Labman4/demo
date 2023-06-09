@@ -69,7 +69,7 @@ public class AccessRecordController {
 	public String deleteAllRecordById(@PathVariable String ids) {
 		try {
 			log.debug("record delete");
-			accessRecordService.deleteAllById(Arrays.stream(ids.split(",")).collect(Collectors.toList()));
+			accessRecordService.deleteAllById(ids);
 			return CommonResponse.success();
 		} catch (Exception e) {
 			return CommonResponse.error(500, e.getMessage());

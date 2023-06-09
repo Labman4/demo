@@ -27,7 +27,7 @@ public interface AccessRecordService {
 
     List<AccessRecord> filter(String param, String pageNo, String pageSize, String order);
 
-    void deleteAllById(Iterable<String> ids);
+    void deleteAllById(String ids);
 
     String save(AccessRecord accessRecord);
 }
