@@ -14,30 +14,10 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.entity;
+package com.elpsykongroo.services.elasticsearch.service;
 
-import lombok.Data;
+import com.elpsykongroo.base.domain.search.QueryParam;
 
-import java.util.Date;
-import java.util.Map;
-
-@Data
-public class AccessRecord {
-
-	private String sourceIP;
-
-	private String accessPath;
-
-	private Map<String, String> requestHeader;
-
-	private String userAgent;
-
-	private Date timestamp;
-
-	private String id;
-
-	@Override
-	public String toString() {
-		return id;
-	}
+public interface SearchService {
+    String query(QueryParam query);
 }

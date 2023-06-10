@@ -16,9 +16,9 @@
 
 package com.elpsykongroo.gateway;
 
+import com.elpsykongroo.base.domain.search.repo.IpManage;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.gateway.config.RequestConfig;
-import com.elpsykongroo.gateway.entity.IPManage;
 import com.elpsykongroo.gateway.filter.ThrottlingFilter;
 import com.elpsykongroo.gateway.service.AccessRecordService;
 import com.elpsykongroo.gateway.service.IPManagerService;
@@ -63,7 +63,7 @@ public class filterTest {
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();
         mockServerClient = startClientAndServer(8880);
-        IPManage ipManage = new IPManage();
+        IpManage ipManage = new IpManage();
         // place in beforeEach not work
         mockServerClient
                 .when(request()

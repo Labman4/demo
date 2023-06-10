@@ -14,15 +14,29 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.elasticsearch.repo;
+package com.elpsykongroo.base.domain.search.repo;
 
-import com.elpsykongroo.services.elasticsearch.domain.AccessRecord;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-import org.springframework.stereotype.Repository;
+import lombok.Data;
 
-import java.util.List;
+import java.util.Map;
 
-@Repository
-public interface AccessRecordRepo extends ElasticsearchRepository<AccessRecord, String> {
-	List<AccessRecord> findBySourceIP(String sourceip);
+@Data
+public class AccessRecord {
+
+	private String sourceIP;
+
+	private String accessPath;
+
+	private Map<String, String> requestHeader;
+
+	private String userAgent;
+
+	private String timestamp;
+
+	private String id;
+
+	@Override
+	public String toString() {
+		return id;
+	}
 }

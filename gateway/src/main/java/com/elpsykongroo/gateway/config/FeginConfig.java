@@ -66,7 +66,7 @@ public class FeginConfig {
     public SearchService searchService() {
         return Feign.builder()
                 .decoder(new StringDecoder())
-                .encoder(new JacksonEncoder())
+                .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
                 .target(SearchService.class, serviceConfig.getUrl().getEs());
     }
 

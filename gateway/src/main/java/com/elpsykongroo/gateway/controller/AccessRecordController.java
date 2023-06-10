@@ -42,7 +42,7 @@ public class AccessRecordController {
 	private AccessRecordService accessRecordService;
 
 	@GetMapping
-	public String recordPageList(@RequestParam("pageNumber") String pageNumber,
+	public String recordPageList (@RequestParam("pageNumber") String pageNumber,
 								  @RequestParam("pageSize") String pageSize,
 								  @RequestParam("order") String order) {
 		return CommonResponse.string(accessRecordService.findAll(pageNumber, pageSize, order));
@@ -51,14 +51,14 @@ public class AccessRecordController {
 	public String deleteRecord(@PathVariable String param) {
 		log.debug("delete accessRecord:{}", param);
 		try {
-			return CommonResponse.success(accessRecordService.deleteRecord(param));
+			return accessRecordService.deleteRecord(param);
 		} catch (UnknownHostException e) {
-			return CommonResponse.error(HttpStatus.SC_CLIENT_ERROR, e.getMessage());
+			return "0";
 		}
 	}
 
 	@PostMapping
-	public String filter( @RequestParam("params") String params,
+	public String filter (@RequestParam("params") String params,
 						  @RequestParam("pageNumber") String pageNumber,
 						  @RequestParam("pageSize") String pageSize,
 						  @RequestParam("order") String order) {

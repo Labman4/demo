@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.UnknownHostException;
+
 
 @CrossOrigin
 @RestController
@@ -40,20 +42,21 @@ public class IPManagerController {
 	private IPManagerService ipManagerService;
 
 	@PutMapping
-	public String add(@RequestParam String address, @RequestParam String black) {
+	public void add(@RequestParam String address, @RequestParam String black) {
 		log.debug("add sourceIP:{}, black:{}", address, black);
-			try {
-				return CommonResponse.success(ipManagerService.add(address, black));
-			}
-			catch (Exception e) {
-				return CommonResponse.error
-						(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+		try {
+			ipManagerService.add(address, black);
+		} catch (UnknownHostException e) {
+			log.error("error host: {}", e.getMessage());
 		}
 	}
 	@GetMapping
-	public String ipPageList(@RequestParam String black, @RequestParam String pageNumber, @RequestParam String pageSize) {
+	public String ipPageList(@RequestParam String black,
+							 @RequestParam String pageNumber,
+							 @RequestParam String pageSize,
+							 @RequestParam String order) {
 		log.debug("black:{}, pageNumber:{}, pageSize:{}", black, pageNumber, pageSize);
-		return CommonResponse.string(ipManagerService.list(black, pageNumber, pageSize));
+		return CommonResponse.string(ipManagerService.list(black, pageNumber, pageSize, order));
 	}
 
 	@PatchMapping

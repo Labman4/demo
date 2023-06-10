@@ -16,53 +16,14 @@
 
 package com.elpsykongroo.base.service;
 
-import com.elpsykongroo.base.domain.AccessRecord;
+import com.elpsykongroo.base.domain.search.QueryParam;
 import feign.Headers;
-import feign.Param;
 import feign.RequestLine;
 
 public interface SearchService {
-    @RequestLine("PUT /search/record")
+    @RequestLine("POST /search")
     @Headers({
             "Content-Type: application/json"
     })
-    void save(AccessRecord accessRecord);
-
-    @RequestLine("GET /search/record?pageNumber={pageNumber}&pageSize={pageSize}&order={order}")
-    String recordList(@Param("pageNumber") String pageNumber,
-                   @Param("pageSize") String pageSize,
-                   @Param("order") String order);
-
-    @RequestLine("POST /search/record")
-    String filter(@Param("params") String params,
-                  @Param("pageNumber") String pageNumber,
-                  @Param("pageSize") String pageSize,
-                  @Param("order") String order);
-
-    @RequestLine("DELETE /search/record/{ids}")
-    void deleteRecord(@Param("ids") String ids);
-
-    @RequestLine("GET /search/record/ip?ip={ip}")
-    String findByIP(@Param("ip") String ip);
-
-    @RequestLine("PUT /search/ip?address={address}&black={black}")
-    String saveIP(@Param String address, @Param String black);
-
-    @RequestLine("GET /search/ip/page?pageNumber={pageNumber}&pageSize={pageSize}&order={order}&black={black}")
-    String ipPageList(@Param String pageNumber, @Param String pageSize, @Param String black);
-
-    @RequestLine("GET /search/ip?black={black}")
-    String ipList(@Param("black") String black);
-
-    @RequestLine("GET /search/ip/count?address={address}&black={black}")
-    String ipCount(@Param("address") String address, @Param("black") String black);
-
-    @RequestLine("DELETE /search/ip/black/{address}")
-    String deleteBlack(@Param String address);
-
-    @RequestLine("DELETE /search/ip/white/{address}")
-    String deleteWhite(@Param String address);
-
-    @RequestLine("DELETE /search/ip/{id}")
-    String deleteIpById(@Param String id);
+    String query(QueryParam queryParam);
 }

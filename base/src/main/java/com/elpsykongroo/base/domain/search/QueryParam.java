@@ -14,28 +14,42 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.entity;
+package com.elpsykongroo.base.domain.search;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
-@NoArgsConstructor
-public class IPManage {
+public class QueryParam {
 
-	private String id;
+    private String pageNumber;
 
-	private String address;
+    private String pageSize;
 
-	private boolean isBlack;
+    private String order;
 
-	public IPManage(String address) {
-		this.address = address;
-		this.isBlack = true;
-	}
+    private String orderBy;
 
-	public IPManage(String address, boolean black) {
-		this.address = address;
-		this.isBlack = black;
-	}
+    private String index;
+
+    private List<String> fields;
+
+    private String field;
+
+    private String param;
+
+    private List<String> queryStringParam;
+
+    private Class type;
+
+    private boolean fuzzy;
+
+    private boolean boolQuery;
+
+    private String operation;
+
+    private String ids;
+
+    private Object entity;
 }

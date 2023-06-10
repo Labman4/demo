@@ -165,7 +165,7 @@
                                 <name>cache-${project.artifactId}.launch</name>
                             </volume>
                         </launchCache>
-                        <builder>paketobuildpacks/builder:0.1.378-tiny</builder>
+                        <builder>paketobuildpacks/builder:tiny</builder>
                         <env>
                             <BP_JVM_VERSION>17</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>

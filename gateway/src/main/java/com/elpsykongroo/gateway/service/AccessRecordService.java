@@ -29,7 +29,7 @@ public interface AccessRecordService {
 
 	String filterByParams(String params, String pageNumber, String pageSize, String order);
 
-	int deleteRecord(String param) throws UnknownHostException;
+	String deleteRecord(String param) throws UnknownHostException;
 
 	void saveAccessRecord(HttpServletRequest request);
 

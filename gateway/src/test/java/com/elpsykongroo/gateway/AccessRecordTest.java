@@ -16,8 +16,8 @@
 
 package com.elpsykongroo.gateway;
 
+import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.gateway.entity.AccessRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

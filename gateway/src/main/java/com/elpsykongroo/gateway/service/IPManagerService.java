@@ -27,9 +27,9 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IPManagerService {
 
-	List<String> add(String address, String isBlack) throws UnknownHostException;
+	void add(String address, String isBlack) throws UnknownHostException;
 
-	String list(String isBlack, String pageNumber, String pageSize);
+	String list(String isBlack, String pageNumber, String pageSize, String order);
 
 	void patch(String addresses, String isBlack, String ids) throws UnknownHostException;
 

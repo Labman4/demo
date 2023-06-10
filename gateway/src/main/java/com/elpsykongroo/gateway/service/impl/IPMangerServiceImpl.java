@@ -21,6 +21,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.elpsykongroo.base.domain.search.repo.IpManage;
+import com.elpsykongroo.base.domain.search.QueryParam;
 import com.elpsykongroo.base.utils.IPRegexUtils;
 import com.elpsykongroo.base.utils.PathUtils;
 import com.elpsykongroo.base.service.RedisService;
@@ -76,54 +78,72 @@ public class IPMangerServiceImpl implements IPManagerService {
 	 * */
 
 	@Override
-	public String list(String isBlack, String pageNumber, String pageSize) {
-		return searchService.ipPageList(pageNumber, pageSize, isBlack);
+	public String list(String isBlack, String pageNumber, String pageSize, String order) {
+		QueryParam queryParam = new QueryParam();
+		queryParam.setPageNumber(pageNumber);
+		queryParam.setPageSize(pageSize);
+		queryParam.setOrder(order);
+		queryParam.setOrderBy("timestamp");
+		queryParam.setType(IpManage.class);
+		queryParam.setIndex("ip");
+		queryParam.setParam(isBlack);
+		queryParam.setField("black");
+		return searchService.query(queryParam);
 	}
 
 	@Override
 	public void patch(String addresses, String isBlack, String id) throws UnknownHostException {
 		String[] addr = addresses.split(",");
 		if (StringUtils.isNotEmpty(id)) {
-			searchService.deleteIpById(id);
+			QueryParam queryParam = new QueryParam();
+			queryParam.setIds(id);
+			queryParam.setIndex("ip");
+			queryParam.setOperation("delete");
+			searchService.query(queryParam);
 			updateCache(isBlack);
 		}
-		for (String ad: addr) {
-			InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
-			for (InetAddress inetAd: inetAddresses) {
-				deleteIPManage(isBlack, inetAd.getHostAddress());
-				deleteIPManage(isBlack, inetAd.getHostName());
-			}
-		}
-		updateCache(isBlack);
+//		for (String ad: addr) {
+//			InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
+//			for (InetAddress inetAd: inetAddresses) {
+//				deleteIPManage(isBlack, inetAd.getHostAddress());
+//				deleteIPManage(isBlack, inetAd.getHostName());
+//			}
+//		}
+//		updateCache(isBlack);
 	}
 
-	private void deleteIPManage(String isBlack, String ad) {
-		if ("true".equals(isBlack)) {
-			searchService.deleteBlack(ad);
-		}
-		else {
-			searchService.deleteWhite(ad);
-		}
-	}
+//	private void deleteIPManage(String isBlack, String ad) {
+//		if ("true".equals(isBlack)) {
+//			searchService.deleteBlack(ad);
+//		}
+//		else {
+//			searchService.deleteWhite(ad);
+//		}
+//	}
 
 	@Override
-	public List<String> add(String addrs, String isBlack) throws UnknownHostException {
-		List<String> addresses = new ArrayList<>();
+	public void add(String addrs, String isBlack) throws UnknownHostException {
 //            RLock lock = redissonClient.getLock("blackList");
 ////            lock.tryLockAsync().get()
 //            if (lock.tryLock(Constant.REDIS_LOCK_WAIT_TIME, Constant.REDIS_LOCK_LEASE_TIME, TimeUnit.SECONDS)) {
 //                log.info("get lock");
 //                try {
 		if (StringUtils.isNotEmpty(addrs)) {
+			QueryParam queryParam = new QueryParam();
+			queryParam.setIndex("ip");
+			queryParam.setOperation("save");
+			queryParam.setEntity(new IpManage());
 			String[] address = addrs.split(",");
 			for (String addr: address) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(addr);
 				for (InetAddress ad: inetAddresses) {
 					if (exist(ad.getHostAddress(), isBlack) == 0) {
-						addresses.add(searchService.saveIP(ad.getHostAddress(), isBlack));
+						queryParam.setEntity(new IpManage(ad.getHostAddress(), Boolean.valueOf(isBlack)));
+						searchService.query(queryParam);
 					}
 					if (exist(ad.getHostName(), isBlack) == 0) {
-						addresses.add(searchService.saveIP(ad.getHostName(), isBlack));
+						queryParam.setEntity(new IpManage(ad.getHostName(), Boolean.valueOf(isBlack)));
+						searchService.query(queryParam);
 					}
 				}
 			}
@@ -137,20 +157,43 @@ public class IPMangerServiceImpl implements IPManagerService {
 //            }
 //        } catch (InterruptedException e) {
 //            return commonResponse.error(Constant.ERROR_CODE, "please retry");
-		log.debug("black result------------:{}", addresses);
 		updateCache(isBlack);
-		return addresses;
 	}
 
 	private int exist(String ad, String isBlack) {
-		String size = searchService.ipCount(ad, isBlack);
-		log.debug("ip: {}, black: {}, size: {}", ad, isBlack, size);
-		return Integer.parseInt(size);
+		QueryParam queryParam = new QueryParam();
+		List<String> fields = new ArrayList<>();
+		fields.add("address");
+		fields.add("black");
+		List<String> params = new ArrayList<>();
+		params.add(ad);
+		params.add(isBlack);
+		queryParam.setQueryStringParam(params);
+		queryParam.setFields(fields);
+		queryParam.setBoolQuery(true);
+		queryParam.setType(IpManage.class);
+		queryParam.setIndex("ip");
+		queryParam.setOperation("count");
+		String count = searchService.query(queryParam);
+		log.debug("ip: {}, black: {}, size: {}", ad, isBlack, count);
+		return Integer.parseInt(count);
 	}
 
 	private void updateCache(String isBlack) {
-		String list = searchService.ipList(isBlack);
-		redisService.set(env + isBlack, list, "");
+		QueryParam queryParam = new QueryParam();
+		queryParam.setIndex("ip");
+		queryParam.setType(IpManage.class);
+		queryParam.setField("black");
+		queryParam.setParam(isBlack);
+		String list = searchService.query(queryParam);
+		List<String> ipList = new ArrayList<>();
+		String[] ips = list.split(",");
+		for (String str: ips) {
+			if(str.contains("address")) {
+				ipList.add(str.split("=")[1]);
+			}
+		}
+		redisService.set(env + isBlack, ipList.toString(), "");
 	}
 
 	@Override
@@ -252,7 +295,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 				// not work address.getHostName() only return ipaddress without ptr
 //					for (InetAddress address: inetAddress) {
 //						if (exist(address.getHostName(), isBlack) == 0) {
-//							String newAddress = ipRepo.save(new IPManage(address.getHostName(), Boolean.valueOf(isBlack)))
+//							String newAddress = ipRepo.save(new IpManage(address.getHostName(), Boolean.valueOf(isBlack)))
 //									.getAddress();
 //							updataCache(isBlack);
 //							log.info("Update list domain when IP domain change, {} -> {}", ip, newAddress);
@@ -319,6 +362,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	private void initWhite(){
 		try {
+			QueryParam queryParam = new QueryParam();
+			IpManage ipManage = new IpManage("localhost",false);
+			queryParam.setIndex("ip");
+			queryParam.setOperation("save");
+			queryParam.setEntity(ipManage);
+			searchService.query(queryParam);
 			for(String d: whiteDomain.split(",")) {
 				add(d, "false");
 			}

@@ -16,14 +16,8 @@
 
 package com.elpsykongroo.services.elasticsearch;
 
-import com.elpsykongroo.services.elasticsearch.domain.AccessRecord;
-import com.elpsykongroo.services.elasticsearch.domain.IPManage;
-import com.elpsykongroo.services.elasticsearch.repo.AccessRecordRepo;
-import com.elpsykongroo.services.elasticsearch.repo.IPRepo;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 //import org.springframework.test.context.DynamicPropertyRegistry;
 //import org.springframework.test.context.DynamicPropertySource;
@@ -58,40 +52,19 @@ public class ElasticsearchTest {
 //        elastic.stop();
 //    }
 
-    @Autowired
-    private IPRepo ipRepo;
-
-    @Autowired
-    private AccessRecordRepo accessRecordRepo;
-
-
-    @Test
-    void elastic() {
-        IPManage ipManage = new IPManage();
-        ipManage.setBlack(false);
-        ipManage.setAddress("127.0.0.1");
-        ipRepo.save(ipManage);
-        ipRepo.save(new IPManage("127.0.0.1", false));
-        ipRepo.save(new IPManage("127.0.0.1", true));
-        ipRepo.searchSimilar(ipManage,new String[]{ipManage.getAddress()}, Pageable.ofSize(1));
-        ipRepo.countByAddressAndIsBlackFalse("127.0.0.1");
-        ipRepo.countByAddressAndIsBlackTrue("127.0.0.1");
-        ipRepo.findByIsBlackTrue();
-        ipRepo.findByIsBlackFalse();
-        ipRepo.deleteByAddressAndIsBlackFalse("127.0.0.1");
-        ipRepo.deleteByAddressAndIsBlackTrue("127.0.0.1");
-        ipRepo.deleteAll();
-
-        AccessRecord accessRecord = new AccessRecord();
-        accessRecord.setSourceIP("1.1.1.1");
-        accessRecord.setAccessPath("/path");
-        accessRecord.setUserAgent("postman");
-        Map<String, String> header = new HashMap<>();
-        header.put("x-real-ip", "127.0.0.1");
-        accessRecord.setRequestHeader(header);
-        accessRecordRepo.save(accessRecord);
-        accessRecordRepo.findBySourceIP("127.0.0.1");
-        accessRecordRepo.searchSimilar(accessRecord, new String[]{accessRecord.getAccessPath()}, Pageable.ofSize(1));
-        accessRecordRepo.deleteAll();
-    }
+//    @Test
+//    void elastic() {
+//        IpManage ipManage = new IpManage();
+//        ipManage.setBlack(false);
+//        ipManage.setAddress("127.0.0.1");
+//
+//
+//        AccessRecord accessRecord = new AccessRecord();
+//        accessRecord.setSourceIP("1.1.1.1");
+//        accessRecord.setAccessPath("/path");
+//        accessRecord.setUserAgent("postman");
+//        Map<String, String> header = new HashMap<>();
+//        header.put("x-real-ip", "127.0.0.1");
+//        accessRecord.setRequestHeader(header);
+//    }
 }

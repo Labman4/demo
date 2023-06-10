@@ -18,19 +18,17 @@ package com.elpsykongroo.gateway.service.impl;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.elpsykongroo.base.domain.search.QueryParam;
 import com.elpsykongroo.base.utils.IPRegexUtils;
-import com.elpsykongroo.base.utils.JsonUtils;
-import com.elpsykongroo.base.domain.AccessRecord;
+import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.SearchService;
-import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.gateway.config.RequestConfig;
@@ -81,9 +79,13 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 					record.setRequestHeader(result);
 					record.setAccessPath(request.getRequestURI());
 					record.setSourceIP(ip);
-					record.setTimestamp(new Date());
+					record.setTimestamp(Instant.now().toString());
 					record.setUserAgent(request.getHeader("user-agent"));
-					searchService.save(record);
+					QueryParam queryParam = new QueryParam();
+					queryParam.setIndex("access_record");
+					queryParam.setOperation("save");
+					queryParam.setEntity(record);
+					searchService.query(queryParam);
 					log.debug("request header------------{} ", result);
 			    }
 		  	}
@@ -94,33 +96,68 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	@Override
 	public String findAll(String pageNo, String pageSize, String order) {
-		return searchService.recordList(pageNo, pageSize ,order);
+		QueryParam queryParam = new QueryParam();
+		queryParam.setOrder(order);
+		queryParam.setOrderBy("timestamp");
+		queryParam.setPageNumber(pageNo);
+		queryParam.setPageSize(pageSize);
+		queryParam.setIndex("access_record");
+		queryParam.setType(AccessRecord.class);
+		return searchService.query(queryParam);
 	}
 
 	@Override
-	public int deleteRecord(String params) throws UnknownHostException {
-		List<String> recordIds = new ArrayList<>();
-		if (StringUtils.isNotEmpty(params)) {
-			if (IPRegexUtils.vaildate(params)) {
+	public String deleteRecord(String params) throws UnknownHostException {
+		if (StringUtils.isBlank(params)) {
+			return "0";
+		}
+		QueryParam deleteParam = new QueryParam();
+		deleteParam.setOperation("delete");
+		deleteParam.setIndex("access_record");
+		if (!params.contains(",")) {
+			if (IPRegexUtils.vaildateHost(params) || IPRegexUtils.vaildate(params)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(params);
+				String records = "";
+				QueryParam queryParam = new QueryParam();
+				queryParam.setIndex("access_record");
+				queryParam.setType(AccessRecord.class);
+				queryParam.setField("sourceIP");
+				queryParam.setFuzzy(false);
 				for (InetAddress addr: inetAddresses) {
-					List<AccessRecord> accessRecord = JsonUtils.toType(searchService.findByIP(addr.getHostAddress()), new TypeReference<List<AccessRecord>>() {});
-					for (AccessRecord record: accessRecord) {
-						recordIds.add(record.getId());
-					}
+					queryParam.setParam(addr.getHostAddress());
+					records += searchService.query(queryParam);
 				}
-			} else {
-				recordIds = new ArrayList<String>(Arrays.asList(params.split(",")));
+				deleteParam.setIds(records);
+				return searchService.query(deleteParam);
 			}
 		}
-		searchService.deleteRecord(recordIds.toString());
-		return recordIds.size();
+		deleteParam.setIds(params);
+		return searchService.query(deleteParam);
 	}
 
 
 	@Override
 	public String filterByParams(String params, String pageNo, String pageSize, String order){
-		return searchService.filter(params, pageNo, pageSize, order);
+		if (StringUtils.isNotBlank(params)) {
+			List<String> fields = new ArrayList<>();
+			fields.add("sourceIP");
+			fields.add("userAgent");
+			fields.add("accessPath");
+			fields.add("requestHeader");
+			QueryParam queryParam = new QueryParam();
+			queryParam.setOrder(order);
+			queryParam.setOrderBy("timestamp");
+			queryParam.setPageNumber(pageNo);
+			queryParam.setPageSize(pageSize);
+			queryParam.setIndex("access_record");
+			queryParam.setType(AccessRecord.class);
+			queryParam.setParam(params);
+			queryParam.setFields(fields);
+			queryParam.setFuzzy(true);
+			return searchService.query(queryParam);
+		} else {
+			return findAll(pageNo, pageSize, order);
+		}
 	}
 
 	private boolean beginWithPath(String paths, String url) {

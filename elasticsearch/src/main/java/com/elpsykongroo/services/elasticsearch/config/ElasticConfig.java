@@ -38,7 +38,7 @@ import java.time.Duration;
         matchIfMissing = false)
 @VaultPropertySource(value = "${SECRETS_PATH:kv/app/dev/es}")
 @Configuration(proxyBeanMethods = false)
-@EnableElasticsearchRepositories("com.elpsykongroo.services.elasticsearch.server.repo")
+@EnableElasticsearchRepositories
 public class ElasticConfig extends ElasticsearchConfiguration {
 
     @Autowired
