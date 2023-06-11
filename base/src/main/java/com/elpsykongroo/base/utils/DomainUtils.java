@@ -23,6 +23,10 @@ import java.util.regex.Pattern;
 
 public class DomainUtils {
 
+    private DomainUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static String getParentDomain(String domain) {
         Pattern pattern = Pattern.compile("^(?:https?://)?(?:[^@\\n]+@)?(?:www\\.)?([^:/\\n]+)");
         Matcher matcher = pattern.matcher(domain);

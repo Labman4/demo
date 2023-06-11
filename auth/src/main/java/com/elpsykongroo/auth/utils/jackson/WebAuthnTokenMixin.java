@@ -36,6 +36,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(
         using = WebAuthnTokenDeserializer.class
 )
-abstract class WebAuthnTokenMixin {
+public abstract class WebAuthnTokenMixin {
 
 }

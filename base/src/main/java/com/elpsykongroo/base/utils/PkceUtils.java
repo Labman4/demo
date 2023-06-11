@@ -22,11 +22,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 public final class PkceUtils {
-    private static final SecureRandom random = new SecureRandom();
-
     private PkceUtils() {
         throw new IllegalStateException("Utility class");
     }
+
+    private static final SecureRandom random = new SecureRandom();
 
     public static byte[] generateRandomByte(int length) {
         byte[] bytes = new byte[length];

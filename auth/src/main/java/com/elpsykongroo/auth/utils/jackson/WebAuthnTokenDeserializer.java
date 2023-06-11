@@ -38,9 +38,6 @@ public class WebAuthnTokenDeserializer  extends JsonDeserializer<WebAuthnAuthent
         private static final TypeReference<Object> OBJECT = new TypeReference<Object>() {
         };
 
-        WebAuthnTokenDeserializer() {
-            }
-
         @Override
         public WebAuthnAuthenticationToken deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             ObjectMapper mapper = (ObjectMapper)jp.getCodec();
