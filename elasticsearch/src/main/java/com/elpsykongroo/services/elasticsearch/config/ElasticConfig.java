@@ -36,7 +36,7 @@ import java.time.Duration;
         name = "vault",
         havingValue = "true",
         matchIfMissing = false)
-@VaultPropertySource(value = "${SECRETS_PATH:kv/app/dev/es}")
+@VaultPropertySource("${SECRETS_PATH:kv/app/dev/es}")
 @Configuration(proxyBeanMethods = false)
 @EnableElasticsearchRepositories
 public class ElasticConfig extends ElasticsearchConfiguration {

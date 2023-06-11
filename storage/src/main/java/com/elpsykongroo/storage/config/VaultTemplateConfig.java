@@ -34,7 +34,7 @@ import java.net.URI;
     name = "vault",
     havingValue = "true",
     matchIfMissing = false)
-@VaultPropertySource(value = "${SECRETS_PATH:kv/app/storage}")
+@VaultPropertySource("${SECRETS_PATH:kv/app/storage}")
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
     @Override
     public ClientAuthentication clientAuthentication() {
