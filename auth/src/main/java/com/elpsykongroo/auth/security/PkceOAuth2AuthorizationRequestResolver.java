@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.auth.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
 import org.springframework.security.crypto.keygen.StringKeyGenerator;
@@ -44,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+@Slf4j
 public class PkceOAuth2AuthorizationRequestResolver implements ServerOAuth2AuthorizationRequestResolver {
     public static final String DEFAULT_REGISTRATION_ID_URI_VARIABLE_NAME = "registrationId";
     public static final String DEFAULT_AUTHORIZATION_REQUEST_PATTERN = "/oauth2/authorization/{registrationId}";
@@ -105,6 +107,7 @@ public class PkceOAuth2AuthorizationRequestResolver implements ServerOAuth2Autho
                 params.put("nonce", nonceHash);
             });
         } catch (NoSuchAlgorithmException var3) {
+            log.error("algorithm no exist");
         }
 
     }

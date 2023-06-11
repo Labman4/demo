@@ -16,11 +16,12 @@
 
 package com.elpsykongroo.base.utils;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
-public class PkceUtils {
+public final class PkceUtils {
     private static final SecureRandom random = new SecureRandom();
 
     private PkceUtils() {
@@ -38,8 +39,7 @@ public class PkceUtils {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(codeVerifier.getBytes());
             byte[] digest = md.digest();
-            String codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
-            return codeChallenge;
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
@@ -47,7 +47,16 @@ public class PkceUtils {
 
     public static String generateVerifier() {
         byte[] bytes = generateRandomByte(128);
-        String codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-        return codeVerifier;
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    public static String verifyChallenge(String codeVerifier) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(codeVerifier.getBytes(StandardCharsets.US_ASCII));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

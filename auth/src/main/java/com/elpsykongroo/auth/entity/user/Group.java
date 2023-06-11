@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -34,7 +35,6 @@ import org.hibernate.annotations.LazyCollectionOption;
 import java.io.Serializable;
 import java.util.List;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Data
 @Entity
@@ -43,7 +43,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class Group implements Serializable {
     @Id
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @GeneratedValue(strategy = IDENTITY, generator = "uuid2")
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
     private String id;
 
     @Column(name = "group_name")

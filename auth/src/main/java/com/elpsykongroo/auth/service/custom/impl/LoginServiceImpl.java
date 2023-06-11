@@ -72,11 +72,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -316,7 +312,7 @@ public class LoginServiceImpl implements LoginService {
 
     private void removeInvalidUser(String username, String id) {
         int result = 0;
-        if (userService.ValidUser(username, id)) {
+        if (userService.validUser(username, id)) {
             log.debug("remove invalid user with no handle");
             result += userService.deleteByUsername(username);
             authenticatorService.deleteByName(username);
@@ -343,7 +339,7 @@ public class LoginServiceImpl implements LoginService {
             String[] texts = text.split("\\.");
             String codeVerifier = texts[0];
             String username = texts[1];
-            String encodedVerifier = verifyChallenge(codeVerifier);
+            String encodedVerifier = PkceUtils.verifyChallenge(codeVerifier);
             String tmp = redisService.get("TmpCert_" + username);
             if (StringUtils.isNotBlank(tmp) && tmp.equals(encodedVerifier)) {
                 SecurityContext context = securityContextHolderStrategy.createEmptyContext();
@@ -402,7 +398,7 @@ public class LoginServiceImpl implements LoginService {
         String[] texts= text.split("\\*");
         String codeVerifier = texts[0];
         String timestamp = texts[1];
-        String encodedVerifier = verifyChallenge(codeVerifier);
+        String encodedVerifier = PkceUtils.verifyChallenge(codeVerifier);
         String challenge = redisService.get("QR_CODE-" + timestamp);
         if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -412,16 +408,6 @@ public class LoginServiceImpl implements LoginService {
             return "200";
         }
         return "400";
-    }
-
-    public static String verifyChallenge(String codeVerifier) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] digest = md.digest(codeVerifier.getBytes(StandardCharsets.US_ASCII));
-            return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private User initAdminUser() {

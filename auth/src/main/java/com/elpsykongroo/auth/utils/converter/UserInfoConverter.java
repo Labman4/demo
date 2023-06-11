@@ -40,7 +40,7 @@ public class UserInfoConverter implements AttributeConverter<Map<String, Object>
     @Override
     public Map<String, Object> convertToEntityAttribute(String userinfo) {
         try {
-            return objectMapper.readValue(userinfo, new TypeReference<HashMap<String, Object>>() {});
+            return objectMapper.readValue(userinfo, new TypeReference<Map<String, Object>>() {});
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

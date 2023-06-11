@@ -26,7 +26,7 @@ import javax.sql.DataSource;
 @Configuration(proxyBeanMethods = false)
 public class LiquibaseConfig {
     @Bean
-    @DependsOn(value = "entityManagerFactory")
+    @DependsOn("entityManagerFactory")
     public LiquibaseBeanConfig liquibase(DataSource dataSource) {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setChangeLog("classpath:liquibase/changelog.xml");

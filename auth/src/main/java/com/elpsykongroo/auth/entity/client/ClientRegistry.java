@@ -64,9 +64,6 @@ public class ClientRegistry {
 
     private String clientName;
 
-    public ClientRegistry() {
-    }
-
     public static class ProviderDetails implements Serializable {
 
         private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
@@ -82,9 +79,6 @@ public class ClientRegistry {
         private String issuerUri;
 
         private Map<String, Object> configurationMetadata = Collections.emptyMap();
-
-        ProviderDetails() {
-        }
 
         /**
          * Returns the uri for the authorization endpoint.

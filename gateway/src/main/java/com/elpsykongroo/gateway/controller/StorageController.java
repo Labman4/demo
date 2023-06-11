@@ -82,7 +82,7 @@ public class StorageController {
         }
     }
 
-    @PostMapping(value = "download")
+    @PostMapping("download")
     public void download(S3 s3, HttpServletResponse response) {
         try {
             Response feginResp = storageService.downloadObject(s3);
@@ -105,11 +105,11 @@ public class StorageController {
         }
     }
 
-    @PostMapping(value = "list")
+    @PostMapping("list")
     public String list(S3 s3) {
         return storageService.listObject(s3);
     }
 
-    @PostMapping(value = "delete")
+    @PostMapping("delete")
     public void delete(S3 s3) { storageService.deleteObject(s3); }
 }

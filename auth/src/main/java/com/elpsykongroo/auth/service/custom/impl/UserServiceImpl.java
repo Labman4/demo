@@ -161,26 +161,8 @@ public class UserServiceImpl implements UserService {
         return userRepository.countByUsername(username);
     }
 
-    @Override
-    public boolean ValidUser(String username, String id) {
-        if (StringUtils.isNotEmpty(id)) {
-           return userRepository.existsByHandleNullOrAuthenticatorsEmptyAndId(username);
-        }
-        return userRepository.existsByHandleNullOrAuthenticatorsEmptyAndUsername(username);
-    }
-
-    private void updateEmail(String email, String username, Boolean verify) {
-        User user = loadUserByUsername(username);
-        if (user != null) {
-            if (!email.equals(user.getEmail())) {
-                updateUserInfoEmail(email, username, user.getUserInfo(), verify);
-                userRepository.updateEmailByUsername(email, username);
-            }
-        }
-    }
-
     private static OidcUserInfo.Builder getBuilder(UserInfo info) {
-        OidcUserInfo.Builder builder = OidcUserInfo.builder()
+        return OidcUserInfo.builder()
                 .subject(info.getSub())
                 .name(info.getName())
                 .givenName(info.getGiven_name())
@@ -200,6 +182,23 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(info.getPhone_number())
                 .phoneNumberVerified(Boolean.parseBoolean(info.getPhone_number_verified()))
                 .updatedAt(Instant.now().toString());
-        return builder;
+    }
+
+    private void updateEmail(String email, String username, Boolean verify) {
+        User user = loadUserByUsername(username);
+        if (user != null) {
+            if (!email.equals(user.getEmail())) {
+                updateUserInfoEmail(email, username, user.getUserInfo(), verify);
+                userRepository.updateEmailByUsername(email, username);
+            }
+        }
+    }
+
+    @Override
+    public boolean validUser(String username, String id) {
+        if (StringUtils.isNotEmpty(id)) {
+           return userRepository.existsByHandleNullOrAuthenticatorsEmptyAndId(username);
+        }
+        return userRepository.existsByHandleNullOrAuthenticatorsEmptyAndUsername(username);
     }
 }

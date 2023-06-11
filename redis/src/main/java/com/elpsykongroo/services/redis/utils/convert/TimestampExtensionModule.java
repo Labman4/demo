@@ -32,7 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 
-public class TimestampExtensionModule
+public final class TimestampExtensionModule
 {
     public static final byte EXT_TYPE = -1;
     public static final SimpleModule INSTANCE = new SimpleModule("msgpack-ext-timestamp");

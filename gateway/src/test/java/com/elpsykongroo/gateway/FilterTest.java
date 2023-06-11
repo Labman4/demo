@@ -38,6 +38,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
+import org.mockserver.integration.ClientAndServer;
+import org.mockserver.model.HttpRequest;
+import org.mockserver.model.HttpResponse;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -46,10 +49,6 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.event.annotation.AfterTestClass;
 
 import java.io.IOException;
-
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 class FilterTest {
     private MockServletContext servletContext;
@@ -64,23 +63,23 @@ class FilterTest {
         request = new MockHttpServletRequest(servletContext);
         response = new MockHttpServletResponse();
         filterChain = new MockFilterChain();
-        mockServerClient = startClientAndServer(8880);
+        mockServerClient = ClientAndServer.startClientAndServer(8880);
         // place in beforeEach not work
         mockServerClient
-                .when(request()
+                .when(HttpRequest.request()
                         .withPath("/redis/key.*")
                         .withMethod("GET"))
-                .respond(response()
+                .respond(HttpResponse.response()
                         .withStatusCode(200)
                         .withBody("localhost"));
         mockServerClient
-                .when(request()
+                .when(HttpRequest.request()
                         .withPath("/redis/key")
                         .withMethod("PUT"))
-                .respond(response()
+                .respond(HttpResponse.response()
                         .withStatusCode(200));
-        mockServerClient.when(request().withPath("/search.*").withMethod("POST"))
-                .respond(response()
+        mockServerClient.when(HttpRequest.request().withPath("/search.*").withMethod("POST"))
+                .respond(HttpResponse.response()
                         .withStatusCode(200));
     }
 

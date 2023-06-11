@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-import static com.elpsykongroo.auth.service.custom.impl.LoginServiceImpl.verifyChallenge;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -62,7 +61,7 @@ public class EmailServiceImpl implements EmailService {
         String[] texts = text.split("\\.", 2);
         String codeVerifier = texts[0];
         String username = texts[1];
-        String encodedVerifier = verifyChallenge(codeVerifier);
+        String encodedVerifier = PkceUtils.verifyChallenge(codeVerifier);
         String tmp = redisService.get("email_verify_" + username);
         if (tmp.equals(encodedVerifier)) {
             User user = userService.loadUserByUsername(username);

@@ -54,7 +54,7 @@ public interface UserService extends UserDetailsService {
 
     long countUser(String name);
 
-    boolean ValidUser(String username, String id);
+    boolean validUser(String username, String id);
 
 }
 

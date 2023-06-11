@@ -35,19 +35,8 @@ public class JpaClientRegistrationRepository implements ClientRegistrationReposi
     @Autowired
     private ClientRegistryRepository clientRegistryRepository;
 
-    @Override
-    public ClientRegistration findByRegistrationId(String registrationId) {
-        Assert.hasText(registrationId, "registrationId cannot be empty");
-        ClientRegistry client = clientRegistryRepository.findByRegistrationId(registrationId);
-        if (client != null ) {
-            ClientRegistration clientRegistration = convertToClientRegistration(client);
-            return clientRegistration;
-        }
-        return null;
-    }
-
     private static ClientRegistration convertToClientRegistration(ClientRegistry client) {
-        ClientRegistration clientRegistration = ClientRegistration
+        return ClientRegistration
                 .withRegistrationId(client.getRegistrationId())
                 .clientId(client.getClientId())
                 .clientSecret(client.getClientSecret())
@@ -65,7 +54,16 @@ public class JpaClientRegistrationRepository implements ClientRegistrationReposi
                 .tokenUri(client.getProviderDetails().getTokenUri())
                 .providerConfigurationMetadata(client.getProviderDetails().getConfigurationMetadata())
                 .build();
-        return clientRegistration;
+    }
+
+    @Override
+    public ClientRegistration findByRegistrationId(String registrationId) {
+        Assert.hasText(registrationId, "registrationId cannot be empty");
+        ClientRegistry client = clientRegistryRepository.findByRegistrationId(registrationId);
+        if (client != null ) {
+            return convertToClientRegistration(client);
+        }
+        return null;
     }
 
     @Override

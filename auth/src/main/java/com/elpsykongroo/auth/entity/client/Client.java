@@ -19,6 +19,7 @@ package com.elpsykongroo.auth.entity.client;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -26,7 +27,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.time.Instant;
 
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Data
 @Entity
@@ -34,7 +34,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class Client {
 	@Id
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@GeneratedValue(strategy = IDENTITY, generator = "uuid2")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
 	private String id;
 
 	private String clientId;

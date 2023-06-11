@@ -91,8 +91,7 @@ public class RedisServiceImpl implements RedisService {
         MsgPack obj;
         try {
             byte[] bytes = redisTemplate.execute((RedisCallback<byte[]>) connection -> {
-                byte[] valueBytes = connection.get(ticket[0].getBytes());
-                return valueBytes;
+                return connection.get(ticket[0].getBytes());
             });
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             byte[] secret = Base64.getUrlDecoder().decode(ticket[1]);

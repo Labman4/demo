@@ -33,6 +33,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
         isGetterVisibility = Visibility.NONE
 )
 abstract class AuthorityMixin {
-    AuthorityMixin() {
-    }
 }

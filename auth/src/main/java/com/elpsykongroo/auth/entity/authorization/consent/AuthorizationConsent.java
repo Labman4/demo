@@ -44,8 +44,12 @@ public class AuthorizationConsent {
 
 		@Override
 		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
+			if (this == o) {
+				return true;
+			}
+			if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
 			AuthorizationConsentId that = (AuthorizationConsentId) o;
 			return registeredClientId.equals(that.registeredClientId) && principalName.equals(that.principalName);
 		}
