@@ -30,6 +30,7 @@ public class WebAuthnTokenJackson2Module extends SimpleModule {
         super(WebAuthnTokenJackson2Module.class.getName(), new Version(1, 0, 0, (String)null, (String)null, (String)null));
     }
 
+    @Override
     public void setupModule(Module.SetupContext context) {
         SecurityJackson2Modules.enableDefaultTyping((ObjectMapper)context.getOwner());
         context.setMixInAnnotations(WebAuthnAuthenticationToken.class, WebAuthnTokenMixin.class);

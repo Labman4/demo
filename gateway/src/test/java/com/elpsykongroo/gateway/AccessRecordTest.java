@@ -16,40 +16,17 @@
 
 package com.elpsykongroo.gateway;
 
-import com.elpsykongroo.base.domain.search.repo.AccessRecord;
-import com.elpsykongroo.base.utils.JsonUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+class AccessRecordTest extends BaseTest {
 
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-
-public class AccessRecordTest extends BaseTest {
     @BeforeEach
-    void setup() {
+    @Override
+    public void setup() {
         super.setup();
-        AccessRecord accessRecord = new AccessRecord();
-        accessRecord.setSourceIP("1.1.1.1");
-        accessRecord.setAccessPath("/path");
-        accessRecord.setUserAgent("postman");
-        accessRecord.setId("1");
-        Map<String, String> header = new HashMap<>();
-        header.put("x-real-ip", "127.0.0.1");
-        accessRecord.setRequestHeader(header);
-        String records = JsonUtils.toJson(Collections.singleton(accessRecord));
-        client.when(request().withPath("/search/record.*").withMethod("GET"))
-                .respond(response()
-                        .withStatusCode(200));
-        client.when(request().withPath("/search/record.*").withMethod("DELETE"))
-                .respond(response().withStatusCode(200));
-        client.when(request().withPath("/search/record").withMethod("POST"))
-                .respond(response()
-                        .withStatusCode(200));
     }
+
     @Test
 //    @Timeout(value = 200, unit = TimeUnit.SECONDS)
     void get() {
@@ -74,6 +51,11 @@ public class AccessRecordTest extends BaseTest {
                 .uri("/record/1")
                 .exchange()
                 .expectStatus().isOk();
+        webTestClient
+                .delete()
+                .uri("/record/ ")
+                .exchange()
+                .expectStatus().isOk();
     }
 
     @Test
@@ -96,6 +78,11 @@ public class AccessRecordTest extends BaseTest {
         webTestClient
                 .post()
                 .uri("/record?params=ip.elpsykongroo.com&pageNumber=0&pageSize=10&order=0")
+                .exchange()
+                .expectStatus().isOk();
+        webTestClient
+                .post()
+                .uri("/record?params=&pageNumber=0&pageSize=10&order=0")
                 .exchange()
                 .expectStatus().isOk();
     }

@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.base.utils;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,9 +44,8 @@ public class DomainUtils {
             URL u = new URL(url);
             String host = u.getHost();
             return host.split("\\.")[0];
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            return "";
         }
-        return null;
     }
 }

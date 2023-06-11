@@ -34,5 +34,6 @@ public interface AuthorityRepository extends CrudRepository<Authority, String> {
     @Transactional
     int deleteByAuthority(String authority);
 
+    @Override
     List<Authority> findAll();
 }

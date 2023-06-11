@@ -46,7 +46,7 @@ public class RedisConfig {
     public LettuceConnectionFactory  redisConnectionFactory() {
          String username = env.getProperty("username");
          String password = env.getProperty("password");
-         String pass = "";
+         String pass;
          if (serviceConfig.getRedis() != null) {
              pass = serviceConfig.getRedis().getPassword();
              if (StringUtils.isNotBlank(pass)) {

@@ -43,6 +43,7 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private RedisService redisService;
 
+    @Override
     public void send(String to, String subject, String text) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();

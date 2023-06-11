@@ -19,8 +19,9 @@ package com.elpsykongroo.gateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class IPmanageTest extends BaseTest{
+class IPmanageTest extends BaseTest{
     @BeforeEach
+    @Override
     public void setup() {
         super.setup();
     }
@@ -29,18 +30,18 @@ public class IPmanageTest extends BaseTest{
     void ipList() {
         webTestClient
                 .get()
-                .uri("/ip?black=false&pageNumber=0&pageSize=10")
+                .uri("/ip?black=false&pageNumber=0&pageSize=10&order=0")
                 .exchange()
                 .expectStatus().isOk();
 //            .expectBody().jsonPath("$.data").isNotEmpty();
         webTestClient
                 .get()
-                .uri("/ip?black=true&pageNumber=0&pageSize=10")
+                .uri("/ip?black=true&pageNumber=0&pageSize=10&order=0")
                 .exchange()
                 .expectStatus().isOk();
         webTestClient
                 .get()
-                .uri("/ip?black=&pageNumber=0&pageSize=10")
+                .uri("/ip?black=&pageNumber=0&pageSize=10&order=0")
                 .exchange()
                 .expectStatus().isOk();
     }

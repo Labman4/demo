@@ -49,24 +49,19 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationContext;
-import org.springframework.security.oauth2.server.authorization.oidc.authentication.OidcUserInfoAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import java.util.function.Function;
 
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
@@ -87,11 +82,11 @@ public class AuthorizationServerConfig {
 		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
 				new OAuth2AuthorizationServerConfigurer();
 		RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
-		Function<OidcUserInfoAuthenticationContext, OidcUserInfo> userInfoMapper = (context) -> {
-			OidcUserInfoAuthenticationToken authentication = context.getAuthentication();
-			JwtAuthenticationToken principal = (JwtAuthenticationToken) authentication.getPrincipal();
-			return new OidcUserInfo(principal.getToken().getClaims());
-		};
+//		Function<OidcUserInfoAuthenticationContext, OidcUserInfo> userInfoMapper = (context) -> {
+//			OidcUserInfoAuthenticationToken authentication = context.getAuthentication();
+//			JwtAuthenticationToken principal = (JwtAuthenticationToken) authentication.getPrincipal();
+//			return new OidcUserInfo(principal.getToken().getClaims());
+//		};
 
 //		OAuth2ClientAuthorizationRequestResolver resolver = new OAuth2ClientAuthorizationRequestResolver(clientRegistrationRepository);
 //		resolver.setAuthorizationRequestCustomizer(OAuth2AuthorizationRequestCustomizers.withPkce());

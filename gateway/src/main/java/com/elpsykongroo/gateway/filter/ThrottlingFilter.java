@@ -126,8 +126,7 @@ public class ThrottlingFilter implements Filter {
 		} else if (ipMangerService.blackOrWhiteList(httpRequest, "false")) {
 			blackFlag = false;
 			publicFlag = isPublic(requestUri, httpRequest, httpResponse);
-		}
-		else {
+		} else {
 			blackFlag = true;
 			errorMsg = "yours IP is our blacklist";
 			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
@@ -137,34 +136,32 @@ public class ThrottlingFilter implements Filter {
 
 	private boolean limitByBucket(String scope, HttpServletResponse httpResponse, HttpSession session) {
 		String appKey = session.getId();
-		Bucket bucket = (Bucket) session.getAttribute("throttler-" + appKey);
+		Bucket bucket = (Bucket) session.getAttribute(scope + "throttler-" + appKey);
 		if (bucket == null) {
 			if ("global".equals(scope)) {
 				bucket = createGlobalNewBucket();
-			}
-			else {
+			} else {
 				bucket = createNewBucket();
 			}
-			session.setAttribute("throttler-" + appKey, bucket);
+			session.setAttribute(scope +"throttler-" + appKey, bucket);
 		}
 		// tryConsume returns false immediately if no tokens available with the bucket
 		if (bucket.tryConsume(1)) {
 			// the limit is not exceeded
 			return true;
 //				filterChain.doFilter(servletRequest, servletResponse);
-		}
-		else {
+		} else {
 			// limit is exceeded
 			ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 			if (probe.isConsumed()) {
 				// the limit is not exceeded
-				httpResponse.setHeader("X-Rate-Limit-Remaining", "" + probe.getRemainingTokens());
+				httpResponse.setHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));
 				return true;
 			}
 			else {
 				// limit is exceeded
 				httpResponse.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-				httpResponse.setHeader("X-Rate-Limit-Retry-After-Seconds", "" + TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill()));
+				httpResponse.setHeader("X-Rate-Limit-Retry-After-Seconds", String.valueOf(TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill())));
 				httpResponse.setContentType("text/plain");
 				errorMsg = "Too many requests";
 				limitFlag = false;
@@ -180,12 +177,10 @@ public class ThrottlingFilter implements Filter {
 				servletResponse.setContentType("text/plain");
 				errorMsg = "no access";
 				return false;
-			}
-			else {
+			} else {
 				return true;
 			}
-		}
-		else {
+		} else {
 			return true;
 		}
 	}

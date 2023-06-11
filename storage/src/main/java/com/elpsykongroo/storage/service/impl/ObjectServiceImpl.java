@@ -98,17 +98,19 @@ public class ObjectServiceImpl implements ObjectService {
         response.setHeader("Content-Type", in.response().contentType());
         response.setHeader("Content-Disposition", "attachment; filename=" + s3.getKey());
         BufferedInputStream inputStream = new BufferedInputStream(in);
-        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+        BufferedOutputStream out = null;
         try {
+            out = new BufferedOutputStream(response.getOutputStream());
             byte[] b = new byte[1024];
             int len ;
             while ((len = inputStream.read(b)) != -1) {
-                out.write(b,0,len);
+                out.write(b, 0, len);
             }
         } finally {
             out.flush();
             out.close();
         }
+
     }
 
     private void upload(S3 s3) throws IOException {
@@ -401,7 +403,7 @@ public class ObjectServiceImpl implements ObjectService {
 //                            .roleArn("arn:minio:bucket:us-east-1:test")
                         .webIdentityToken(s3.getIdToken())
                         .build();
-        StsClient stsClient = null;
+        StsClient stsClient;
         if(StringUtils.isNotBlank(s3.getEndpoint())) {
             stsClient = StsClient.builder()
                     .httpClientBuilder(builder)

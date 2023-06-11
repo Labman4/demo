@@ -16,17 +16,9 @@
 
 package com.elpsykongroo.services.elasticsearch;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.data.elasticsearch.DataElasticsearchTest;
 import org.springframework.test.context.ActiveProfiles;
-//import org.springframework.test.context.DynamicPropertyRegistry;
-//import org.springframework.test.context.DynamicPropertySource;
-//import org.testcontainers.elasticsearch.ElasticsearchContainer;
-//import org.testcontainers.junit.jupiter.Container;
-//import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.HashMap;
-import java.util.Map;
 
 //@Testcontainers
 @DataElasticsearchTest

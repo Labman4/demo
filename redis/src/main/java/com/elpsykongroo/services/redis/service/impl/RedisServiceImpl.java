@@ -71,13 +71,13 @@ public class RedisServiceImpl implements RedisService {
         return result == null ? "" : result.toString();
     }
 
-    private String getType(String key) {
-        String type = redisTemplate.execute((connection) -> {
-            return connection.type(key.getBytes());
-        }, true).toString();
-        log.debug("data type:{}", type);
-        return type;
-    }
+//    private String getType(String key) {
+//        String type = redisTemplate.execute((connection) -> {
+//            return connection.type(key.getBytes());
+//        }, true).toString();
+//        log.debug("data type:{}", type);
+//        return type;
+//    }
 
     @Override
     public String getToken(String key){
@@ -88,7 +88,7 @@ public class RedisServiceImpl implements RedisService {
         if (ticket.length < 2) {
             return "";
         }
-        MsgPack obj = null;
+        MsgPack obj;
         try {
             byte[] bytes = redisTemplate.execute((RedisCallback<byte[]>) connection -> {
                 byte[] valueBytes = connection.get(ticket[0].getBytes());

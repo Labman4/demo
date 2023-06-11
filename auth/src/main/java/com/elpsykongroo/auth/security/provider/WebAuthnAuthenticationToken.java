@@ -58,6 +58,7 @@ public class WebAuthnAuthenticationToken extends AbstractAuthenticationToken {
         return this.principal;
     }
 
+    @Override
     public void eraseCredentials() {
         super.eraseCredentials();
         this.credentials = null;

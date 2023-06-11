@@ -17,20 +17,10 @@
 package com.elpsykongroo.base.domain.auth.client;
 
 import lombok.Data;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.core.log.LogMessage;
-
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+
 import java.util.Map;
 import java.util.Set;
 

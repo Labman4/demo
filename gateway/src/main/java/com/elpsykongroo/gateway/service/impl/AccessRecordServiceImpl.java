@@ -60,6 +60,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		this.requestConfig = requestConfig;
 	}
 
+	@Override
 	public void saveAccessRecord(HttpServletRequest request) {
 		try {
 			String ip = ipMangerService.accessIP(request, "record");

@@ -104,7 +104,7 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 							info.put("group", groups);
 						}
 					}
-					if (authList.size() > 0) {
+					if (authList.isEmpty()) {
 						info.put(scope, authList);
 					}
 					userInfo = new OidcUserInfo(info);

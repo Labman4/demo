@@ -48,8 +48,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 	@Value("${ENV:dev}")
 	private String env;
 
-	@Value("${service.whiteDomain:ip.elpsykongroo.com}")
-	private String whiteDomain;
+	@Value("${service.whiteDomain:ip.elpsykongroo.com,localhost}")
+	private String whiteDomain = "localhost";
 
     @Autowired
 	private SearchService searchService;
@@ -176,7 +176,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		queryParam.setOperation("count");
 		String count = searchService.query(queryParam);
 		log.debug("ip: {}, black: {}, size: {}", ad, isBlack, count);
-		return Integer.parseInt(count);
+		return StringUtils.isNotBlank(count) ? Integer.parseInt(count) : 0;
 	}
 
 	private void updateCache(String isBlack) {
@@ -240,6 +240,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		return ip;
 	}
 
+	@Override
 	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack){
 		boolean flag = false;
 		try {

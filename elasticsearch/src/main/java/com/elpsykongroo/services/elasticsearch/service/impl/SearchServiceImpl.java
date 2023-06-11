@@ -53,7 +53,7 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public String query(QueryParam queryParam) {
-        Query query = null;
+        Query query;
         Pageable pageable = null;
         if (StringUtils.isNotBlank(queryParam.getOrder())) {
             Sort sort = Sort.by(Sort.Direction.DESC, queryParam.getOrderBy());
@@ -115,7 +115,7 @@ public class SearchServiceImpl implements SearchService {
             query = NativeQuery.builder().withQuery(q ->
                     q.matchAll(matchAllQuery)).withPageable(pageable).build();
         }
-        SearchHits searchHits = null;
+        SearchHits searchHits;
         if ("count".equals(queryParam.getOperation())) {
             long count = 0;
             try {

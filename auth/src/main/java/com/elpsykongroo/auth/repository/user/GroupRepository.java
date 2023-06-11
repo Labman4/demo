@@ -33,6 +33,7 @@ public interface GroupRepository extends CrudRepository<Group, String> {
     @Transactional
     int deleteByGroupName(String groupName);
 
+    @Override
     List<Group> findAll();
 
 }

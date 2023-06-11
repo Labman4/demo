@@ -68,7 +68,7 @@ public class StorageController {
             response.setContentType("multipart.form-data");
             response.setHeader("Content-Disposition", feginResp.headers().get("Content-Disposition").toString().replace("[","").replace("]",""));
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
-            int length = 0;
+            int length;
             byte[] temp = new byte[1024 * 10];
             while ((length = bufferedInputStream.read(temp)) != -1) {
                 bufferedOutputStream.write(temp, 0, length);
@@ -91,7 +91,7 @@ public class StorageController {
             response.setContentType("multipart.form-data");
             response.setHeader("Content-Disposition", feginResp.headers().get("Content-Disposition").toString().replace("[","").replace("]",""));
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
-            int length = 0;
+            int length;
             byte[] temp = new byte[1024 * 10];
             while ((length = bufferedInputStream.read(temp)) != -1) {
                 bufferedOutputStream.write(temp, 0, length);

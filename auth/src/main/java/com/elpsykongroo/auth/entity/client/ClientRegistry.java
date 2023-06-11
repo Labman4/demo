@@ -356,17 +356,17 @@ public class ClientRegistry {
             clientRegistry.clientId = this.clientId;
             clientRegistry.clientSecret = StringUtils.hasText(this.clientSecret) ? this.clientSecret : "";
             clientRegistry.clientAuthenticationMethod = (this.clientAuthenticationMethod != null)
-                    ? this.clientAuthenticationMethod.getValue(): deduceClientAuthenticationMethod(clientRegistry).getValue();
+                    ? this.clientAuthenticationMethod.getValue(): deduceClientAuthenticationMethod().getValue();
             clientRegistry.authorizationGrantType = this.authorizationGrantType.getValue();
             clientRegistry.redirectUri = this.redirectUri;
             clientRegistry.scopes = this.scopes;
-            clientRegistry.providerDetails = createProviderDetails(clientRegistry);
+            clientRegistry.providerDetails = createProviderDetails();
             clientRegistry.clientName = StringUtils.hasText(this.clientName) ? this.clientName
                     : this.registrationId;
             return clientRegistry;
         }
 
-        private ClientAuthenticationMethod deduceClientAuthenticationMethod(ClientRegistry clientRegistry) {
+        private ClientAuthenticationMethod deduceClientAuthenticationMethod() {
             if (AuthorizationGrantType.AUTHORIZATION_CODE.equals(this.authorizationGrantType)
                     && !StringUtils.hasText(this.clientSecret)) {
                 return ClientAuthenticationMethod.NONE;
@@ -374,7 +374,7 @@ public class ClientRegistry {
             return ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
         }
 
-        private ProviderDetails createProviderDetails(ClientRegistry clientRegistry) {
+        private ProviderDetails createProviderDetails() {
             ProviderDetails providerDetails = new ProviderDetails();
             providerDetails.authorizationUri = this.authorizationUri;
             providerDetails.tokenUri = this.tokenUri;

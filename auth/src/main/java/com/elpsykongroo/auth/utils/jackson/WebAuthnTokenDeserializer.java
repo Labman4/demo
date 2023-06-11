@@ -41,6 +41,7 @@ public class WebAuthnTokenDeserializer  extends JsonDeserializer<WebAuthnAuthent
         WebAuthnTokenDeserializer() {
             }
 
+        @Override
         public WebAuthnAuthenticationToken deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             ObjectMapper mapper = (ObjectMapper)jp.getCodec();
             JsonNode jsonNode = (JsonNode)mapper.readTree(jp);

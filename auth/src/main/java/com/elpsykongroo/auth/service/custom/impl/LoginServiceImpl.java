@@ -337,6 +337,7 @@ public class LoginServiceImpl implements LoginService {
         log.debug("remove user result:{}", result);
     }
 
+    @Override
     public String tmpLogin(String text, HttpServletRequest request, HttpServletResponse response) {
         try {
             String[] texts = text.split("\\.");
@@ -435,16 +436,16 @@ public class LoginServiceImpl implements LoginService {
     private void initAdminAuth(User user) {
         String[] init = initAdminAuth.split(",");
         List<Authority> existAuth = userService.userAuthority(user.getUsername());
-        for (int i = 0; i < init.length; i++) {
+        for (String auth: init ) {
             boolean exist = false;
             for (Authority authority: existAuth) {
-                if(authority.getAuthority().equals(init[i])){
+                if(authority.getAuthority().equals(auth)){
                     exist = true;
                 }
             }
             if (!exist) {
-                log.debug("init auth with:{}", init[i]);
-                authorityService.updateUserAuthority(init[i], user.getId());
+                log.debug("init auth with:{}", auth);
+                authorityService.updateUserAuthority(auth, user.getId());
             }
         }
     }

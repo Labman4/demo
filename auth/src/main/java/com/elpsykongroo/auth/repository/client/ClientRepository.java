@@ -40,5 +40,6 @@ public interface ClientRepository extends CrudRepository<Client, String> {
 
 	String deleteByClientId(String clientId);
 
+	@Override
 	List<Client> findAll();
 }

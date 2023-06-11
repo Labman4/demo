@@ -1,9 +1,9 @@
 server:
+  http2:
+    enabled: true
   tomcat:
     connection-timeout: 60
     keep-alive-timeout: 60
-#  http2:
-#    enabled: true
   shutdown: graceful
   port: 8443
   ssl:
@@ -132,7 +132,7 @@ request:
       duration: ${REQUEST_DURATION:1}
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
-    permit: ${PERMIT_PATH:/public/**}
+    permit: ${PERMIT_PATH:/**}
     nonPrivate: ${PUBLIC_PATH:/public}
     limit: ${LIMIT_PATH:/}
     exclude: ${EXCLUDE_PATH:/actuator}

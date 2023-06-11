@@ -19,8 +19,9 @@ package com.elpsykongroo.gateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class RedisTest extends BaseTest {
+class RedisTest extends BaseTest {
     @BeforeEach
+    @Override
     public void setup() {
         super.setup();
     }

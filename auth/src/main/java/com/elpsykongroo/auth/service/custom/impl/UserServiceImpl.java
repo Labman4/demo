@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public int updateUserInfo(UserInfo info) {
         Consumer<Map<String, Object>> claims = null;
-        Map<String, Object> userInfo = null;
+        Map<String, Object> userInfo;
         if (info.getClaims() != null) {
             Map<String, Object> claim = JsonUtils.toType(info.getClaims(), new TypeReference<Map<String, Object>>() {});
             if (claim != null && !claim.isEmpty()) {

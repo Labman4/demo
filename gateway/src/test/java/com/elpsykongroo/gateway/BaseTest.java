@@ -57,7 +57,7 @@ public class BaseTest {
                 .respond(response().withStatusCode(200));
         client.when(request().withPath("/redis/key.*").withMethod("PUT"))
                 .respond(response().withStatusCode(200));
-        client.when(request().withPath("/search/ip.*"))
+        client.when(request().withPath("/search"))
                 .respond(response().withStatusCode(200));
     }
 }

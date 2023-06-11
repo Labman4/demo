@@ -29,6 +29,7 @@ import java.util.Map;
 
 @Service
 public interface UserService extends UserDetailsService {
+    @Override
     User loadUserByUsername(String username) throws UsernameNotFoundException;
 
     List<User> findByUsername(String username);

@@ -45,6 +45,7 @@ public class CustomAuthoritiesOpaqueTokenIntrospector implements OpaqueTokenIntr
     private UserService userService;
 
 
+    @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
         OpaqueTokenIntrospector delegate =
                 new NimbusOpaqueTokenIntrospector(introspectionUri, clientId, clientSecret);

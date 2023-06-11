@@ -16,7 +16,6 @@
 
 package com.elpsykongroo.gateway.config;
 
-import org.apache.catalina.connector.Connector;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,20 +30,20 @@ public class TomcatConfig {
         return tomcat;
     }
 
-    private Connector createStandardConnector() {
-        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
-        connector.setScheme("http");
-        connector.setPort(8081);
-        connector.setSecure(false);
-        connector.setRedirectPort(8443);
-        return connector;
-    }
-    private Connector createHeadlessConnector() {
-        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
-        connector.setScheme("http");
-        connector.setPort(8888);
-        connector.setSecure(false);
-        connector.setRedirectPort(8443);
-        return connector;
-    }
+//    private Connector createStandardConnector() {
+//        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
+//        connector.setScheme("http");
+//        connector.setPort(8081);
+//        connector.setSecure(false);
+//        connector.setRedirectPort(8443);
+//        return connector;
+//    }
+//    private Connector createHeadlessConnector() {
+//        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
+//        connector.setScheme("http");
+//        connector.setPort(8888);
+//        connector.setSecure(false);
+//        connector.setRedirectPort(8443);
+//        return connector;
+//    }
 }

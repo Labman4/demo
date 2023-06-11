@@ -42,5 +42,6 @@ public interface ClientRegistryRepository extends CrudRepository<ClientRegistry,
 
     ClientRegistry findByRegistrationId(String registrationId);
 
+    @Override
     List<ClientRegistry> findAll();
 }
