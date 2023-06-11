@@ -129,7 +129,7 @@ public class PkceOAuth2AuthorizationRequestResolver implements ServerOAuth2Autho
     }
 
     public Mono<OAuth2AuthorizationRequest> resolve(ServerWebExchange exchange, String clientRegistrationId) {
-        return this.findByRegistrationId(exchange, clientRegistrationId).map((clientRegistration) -> {
+        return this.findByRegistrationId(clientRegistrationId).map((clientRegistration) -> {
             return this.authorizationRequest(exchange, clientRegistration);
         });
     }
@@ -139,7 +139,7 @@ public class PkceOAuth2AuthorizationRequestResolver implements ServerOAuth2Autho
         this.authorizationRequestCustomizer = authorizationRequestCustomizer;
     }
 
-    private Mono<ClientRegistration> findByRegistrationId(ServerWebExchange exchange, String clientRegistration) {
+    private Mono<ClientRegistration> findByRegistrationId(String clientRegistration) {
         return Mono.just(this.clientRegistrationRepository.findByRegistrationId(clientRegistration));
     }
 

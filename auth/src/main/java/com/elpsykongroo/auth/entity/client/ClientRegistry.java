@@ -151,8 +151,6 @@ public class ClientRegistry {
 
             private String userNameAttributeName;
 
-            UserInfoEndpoint() {
-            }
 
             /**
              * Returns the uri for the user info endpoint.

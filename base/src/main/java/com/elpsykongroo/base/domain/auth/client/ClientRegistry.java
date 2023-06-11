@@ -44,9 +44,6 @@ public class ClientRegistry {
 
     private String clientName;
 
-    public ClientRegistry() {
-    }
-
     public static class ProviderDetails implements Serializable {
 
         private String authorizationUri;
@@ -61,8 +58,6 @@ public class ClientRegistry {
 
         private Map<String, Object> configurationMetadata = Collections.emptyMap();
 
-        ProviderDetails() {
-        }
 
         /**
          * Returns the uri for the authorization endpoint.
@@ -134,8 +129,6 @@ public class ClientRegistry {
 
             private String userNameAttributeName;
 
-            UserInfoEndpoint() {
-            }
 
             /**
              * Returns the uri for the user info endpoint.

@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Converter(autoApply = true)
