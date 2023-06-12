@@ -17,6 +17,8 @@
 package com.elpsykongroo.services.redis.config;
 
 import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.service.GatewayService;
+import com.elpsykongroo.services.redis.service.impl.RedisSubscriber;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +31,7 @@ import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -37,45 +40,48 @@ import java.util.Collections;
 @Configuration(proxyBeanMethods = false)
 public class RedisConfig {
     @Autowired
+    private GatewayService gatewayService;
+
+    @Autowired
     private ServiceConfig serviceConfig;
 
     @Autowired
     Environment env;
 
     @Bean
-    public LettuceConnectionFactory  redisConnectionFactory() {
-         String username = env.getProperty("username");
-         String password = env.getProperty("password");
-         String pass;
-         if (serviceConfig.getRedis() != null) {
-             pass = serviceConfig.getRedis().getPassword();
-             if (StringUtils.isNotBlank(pass)) {
-                 password = pass;
-                 username = "";
-             }
-             if ("single".equals(serviceConfig.getRedis().getType())) {
-                 RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
-                 singleConfig.setHostName(serviceConfig.getRedis().getHost());
-                 singleConfig.setPort(serviceConfig.getRedis().getPort());
-                 if (StringUtils.isNotBlank(username)) {
-                     singleConfig.setUsername(username);
-                 }
-                 singleConfig.setPassword(password);
-                 return new LettuceConnectionFactory (singleConfig);
-             } else if ("cluster".equals(serviceConfig.getRedis().getType())) {
-                 RedisClusterConfiguration config = new RedisClusterConfiguration();
-                 if (StringUtils.isNotBlank(username)) {
-                     config.setUsername(username);
-                 }
-                 config.setPassword(password);
-                 RedisNode redisNode = new RedisClusterNode(serviceConfig.getRedis().getHost(), serviceConfig.getRedis().getPort());
-                 config.setClusterNodes(Collections.singletonList(redisNode));
-                 return new LettuceConnectionFactory(config);
-             }
+    public RedisConnectionFactory  redisConnectionFactory() {
+        String username = env.getProperty("username");
+        String password = env.getProperty("password");
+        String pass;
+        if (serviceConfig.getRedis() != null) {
+            pass = serviceConfig.getRedis().getPassword();
+            if (StringUtils.isNotBlank(pass)) {
+                password = pass;
+                username = "";
+            }
+            if ("single".equals(serviceConfig.getRedis().getType())) {
+                RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
+                singleConfig.setHostName(serviceConfig.getRedis().getHost());
+                singleConfig.setPort(serviceConfig.getRedis().getPort());
+                if (StringUtils.isNotBlank(username)) {
+                    singleConfig.setUsername(username);
+                }
+                singleConfig.setPassword(password);
+                return new LettuceConnectionFactory (singleConfig);
+            } else if ("cluster".equals(serviceConfig.getRedis().getType())) {
+                RedisClusterConfiguration config = new RedisClusterConfiguration();
+                if (StringUtils.isNotBlank(username)) {
+                    config.setUsername(username);
+                }
+                config.setPassword(password);
+                RedisNode redisNode = new RedisClusterNode(serviceConfig.getRedis().getHost(), serviceConfig.getRedis().getPort());
+                config.setClusterNodes(Collections.singletonList(redisNode));
+                return new LettuceConnectionFactory(config);
+            }
 
-         }
-         RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
-         return new LettuceConnectionFactory (singleConfig);
+        }
+        RedisStandaloneConfiguration singleConfig = new RedisStandaloneConfiguration();
+        return new LettuceConnectionFactory (singleConfig);
     }
      @Bean
      public <K, V> RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
@@ -89,4 +95,9 @@ public class RedisConfig {
          redisTemplate.afterPropertiesSet();
          return redisTemplate;
      }
+
+    @Bean
+    MessageListenerAdapter messageListenerAdapter() {
+        return new MessageListenerAdapter(new RedisSubscriber(gatewayService));
+    }
 }

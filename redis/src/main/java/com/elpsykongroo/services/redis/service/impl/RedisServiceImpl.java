@@ -28,8 +28,12 @@ import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -40,12 +44,18 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.time.Duration;
 import java.util.Base64;
 
-
 @Service
 @Slf4j
 public class RedisServiceImpl implements RedisService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private MessageListenerAdapter messageListenerAdapter;
+
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
+
 
     @Override
     public void setCache(String key, String value, String minutes) {
@@ -121,5 +131,16 @@ public class RedisServiceImpl implements RedisService {
             throw new RuntimeException(e);
         }
         return JsonUtils.toJson(obj);
+    }
+
+    @Override
+    public void publish(String topic, String message) {
+        ChannelTopic channelTopic = new ChannelTopic(topic);
+        RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
+        redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
+        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, channelTopic);
+        redisMessageListenerContainer.afterPropertiesSet();
+        redisMessageListenerContainer.start();
+        redisTemplate.convertAndSend(channelTopic.getTopic(), message);
     }
 }

@@ -403,7 +403,7 @@ public class LoginServiceImpl implements LoginService {
         if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String token = authorizationService.getToken(authentication.getPrincipal().toString(), timestamp);
-            redisService.set("QR_CODE-token-" + codeVerifier, token, "");
+            redisService.publish("QR_CODE-token-" + codeVerifier, token);
             redisService.set("QR_CODE-" + timestamp , "", "1");
             return "200";
         }

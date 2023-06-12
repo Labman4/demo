@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -153,7 +154,7 @@ public class UserServiceImpl implements UserService {
         for (Group group : user.getGroups()) {
             authorities.addAll(group.getAuthorities());
         }
-        return authorities;
+        return authorities.stream().distinct().collect(Collectors.toList());
     }
 
     @Override

@@ -18,13 +18,18 @@ package com.elpsykongroo.gateway.controller.external;
 
 import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.base.service.RedisService;
+import com.elpsykongroo.gateway.service.MessageService;
 import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,25 +38,43 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @CrossOrigin
 @RestController
-@RequestMapping("/public")
+@RequestMapping("public")
 public class PublicController {
+
 	@Autowired
 	private IPManagerService ipManagerService;
 
 	@Autowired
 	private RedisService redisService;
 
+	@Autowired
+	private MessageService messageService;
 
-	@GetMapping("/ip")
+	@Autowired
+	private ApplicationContext ac;
+
+	@PutMapping("message")
+	public void receiveMsg(@RequestParam String message) {
+		ac.publishEvent(message);
+	}
+
+	@GetMapping("ip")
 	public String accessIP(HttpServletRequest request) {
 		return CommonResponse.string(ipManagerService.accessIP(request, ""));
 	}
 
-	@GetMapping("/token/qrcode")
-	public String qrToken(@RequestParam("text") String text) {
-		String token = redisService.get("QR_CODE-token-" + text);
-		redisService.set("QR_CODE-token-" + text, "", "1");
-		return token;
+	@GetMapping("token/qrcode")
+	public String qrToken(@RequestParam("text") String text, HttpServletResponse response) throws InterruptedException {
+		String message = messageService.getMessage();
+		int count = 0;
+		while (StringUtils.isEmpty(message)) {
+			message = messageService.getMessage();
+			count++;
+			Thread.sleep(5000);
+			if (count>60) {
+				return "";
+			}
+		}
+		return message;
 	}
-
 }

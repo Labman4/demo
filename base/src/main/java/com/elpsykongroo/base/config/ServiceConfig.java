@@ -113,8 +113,13 @@ public class ServiceConfig {
     @Data
     public static class Url {
         private String es;
+
         private String redis;
+
         private String storage;
+
         private String auth;
+
+        private String gateway;
     }
 }

@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DomainUtils {
+public final class DomainUtils {
 
     private DomainUtils() {
         throw new IllegalStateException("Utility class");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2022 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,7 @@ package com.elpsykongroo.base.service;
 import feign.Param;
 import feign.RequestLine;
 
-public interface RedisService {
-
-    @RequestLine("PUT /redis/key?key={key}&value={value}&duration={duration}")
-    void set(@Param String key , @Param String value, @Param String duration);
-
-    @RequestLine("GET /redis/key/{key}")
-    String get(@Param String key);
-
-    @RequestLine("GET /redis/token/{key}")
-    String getToken(@Param String key);
-
-    @RequestLine("PUT /redis/topic?topic={topic}&message={message}")
-    String publish(@Param String topic, @Param String message);
+public interface GatewayService {
+    @RequestLine("PUT /public/message?message={message}")
+    void receiveMessage (@Param String message);
 }

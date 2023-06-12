@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.redis.service;
+package com.elpsykongroo.gateway.service.impl;
 
+import com.elpsykongroo.gateway.service.MessageService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface RedisService {
-    void setCache(String key, String vaule, String minutes);
+@Slf4j
+public class MessageServiceImpl implements MessageService {
+    private String message;
 
-    String getCache(String key);
+    @Override
+    public String getMessage() {
+        log.info("msg:{}", message);
+        String msg = this.message;
+        message = "";
+        return msg;
+    }
 
-    String getToken(String key);
-
-    void publish(String topic, String message);
+    @Override
+    @EventListener
+    public void receiveMessage(String message) {
+        this.message = message;
+    }
 }

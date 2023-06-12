@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.base.service;
+package com.elpsykongroo.services.redis.service.impl;
 
-import feign.Param;
-import feign.RequestLine;
+import com.elpsykongroo.base.service.GatewayService;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
 
-public interface RedisService {
+public class RedisSubscriber implements MessageListener {
+    private GatewayService gatewayService;
 
-    @RequestLine("PUT /redis/key?key={key}&value={value}&duration={duration}")
-    void set(@Param String key , @Param String value, @Param String duration);
+    public RedisSubscriber(GatewayService gatewayService) {
+        this.gatewayService = gatewayService;
+    }
 
-    @RequestLine("GET /redis/key/{key}")
-    String get(@Param String key);
-
-    @RequestLine("GET /redis/token/{key}")
-    String getToken(@Param String key);
-
-    @RequestLine("PUT /redis/topic?topic={topic}&message={message}")
-    String publish(@Param String topic, @Param String message);
+    @Override
+    public void onMessage(Message message, byte[] pattern) {
+         gatewayService.receiveMessage(message.toString());
+    }
 }

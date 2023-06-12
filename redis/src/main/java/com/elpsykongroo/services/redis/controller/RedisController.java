@@ -48,4 +48,10 @@ public class RedisController {
     public String getToken(@PathVariable("key") String key) {
         return redisService.getToken(key);
     }
+
+    @PutMapping("topic")
+    public void publish (@RequestParam String topic,
+                         @RequestParam String message) {
+        redisService.publish(topic, message);
+    }
 }

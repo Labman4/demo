@@ -42,6 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/auth/**").allowedOriginPatterns("*");
+                registry.addMapping("/public/token/qrcode").allowedOriginPatterns("*").allowCredentials(true);
             }
         };
     }

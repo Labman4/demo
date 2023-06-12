@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.base.service;
+package com.elpsykongroo.gateway.service;
 
-import feign.Param;
-import feign.RequestLine;
+public interface MessageService {
+    String getMessage();
 
-public interface RedisService {
-
-    @RequestLine("PUT /redis/key?key={key}&value={value}&duration={duration}")
-    void set(@Param String key , @Param String value, @Param String duration);
-
-    @RequestLine("GET /redis/key/{key}")
-    String get(@Param String key);
-
-    @RequestLine("GET /redis/token/{key}")
-    String getToken(@Param String key);
-
-    @RequestLine("PUT /redis/topic?topic={topic}&message={message}")
-    String publish(@Param String topic, @Param String message);
+    void receiveMessage(String message);
 }
