@@ -133,7 +133,7 @@ request:
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
     permit: ${PERMIT_PATH:/**}
-    nonPrivate: ${PUBLIC_PATH:/public}
+    nonPrivate: ${PUBLIC_PATH:/public,/message}
     limit: ${LIMIT_PATH:/}
     exclude: ${EXCLUDE_PATH:/actuator}
     filter: ${FILTER_PATH:/}
