@@ -37,7 +37,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests((authorize) -> authorize
 						.requestMatchers("/public/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-						.requestMatchers("/storage/**").permitAll()
+						.requestMatchers(HttpMethod.GET,"/storage/**").permitAll()
 						.requestMatchers(requestConfig.getPath().getPermit()).permitAll()
 						.anyRequest().authenticated()
 				)

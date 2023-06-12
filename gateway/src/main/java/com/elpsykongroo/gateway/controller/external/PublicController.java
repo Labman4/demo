@@ -26,10 +26,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,13 +48,6 @@ public class PublicController {
 	@Autowired
 	private MessageService messageService;
 
-	@Autowired
-	private ApplicationContext ac;
-
-	@PutMapping("message")
-	public void receiveMsg(@RequestParam String message) {
-		ac.publishEvent(message);
-	}
 
 	@GetMapping("ip")
 	public String accessIP(HttpServletRequest request) {
