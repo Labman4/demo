@@ -360,10 +360,10 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String qrcode() {
-        String codeVeifier = PkceUtils.generateVerifier();
+        String codeVerifier = PkceUtils.generateVerifier();
         Instant instant = Instant.now();
-        redisService.set("QR_CODE-" + instant, PkceUtils.generateChallenge(codeVeifier), "5");
-        return codeVeifier + "*" + instant;
+        redisService.set("QR_CODE-" + instant, PkceUtils.generateChallenge(codeVerifier), "5");
+        return codeVerifier + "*" + instant;
     }
 
     @Override
@@ -403,9 +403,13 @@ public class LoginServiceImpl implements LoginService {
         if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String token = authorizationService.getToken(authentication.getPrincipal().toString(), timestamp);
-            redisService.publish("QR_CODE-token-" + codeVerifier, token);
-            redisService.set("QR_CODE-" + timestamp , "", "1");
-            return "200";
+            if (StringUtils.isNotEmpty(token)) {
+                redisService.publish("QR_CODE-token-" + codeVerifier, token);
+                redisService.set("QR_CODE-" + timestamp , "", "1");
+                return "200";
+            } else {
+                return "404";
+            }
         }
         return "400";
     }

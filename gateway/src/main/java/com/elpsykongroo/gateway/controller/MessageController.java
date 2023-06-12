@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.gateway.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @CrossOrigin
 @RestController
 @RequestMapping("message")
@@ -33,6 +35,7 @@ public class MessageController {
 
     @PutMapping
     public void receiveMsg(@RequestParam String message) {
+        log.info("received message:{}", message);
         ac.publishEvent(message);
     }
 }

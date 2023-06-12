@@ -28,7 +28,6 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public String getMessage() {
-        log.info("msg:{}", message);
         String msg = this.message;
         message = "";
         return msg;

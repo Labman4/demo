@@ -36,8 +36,11 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     public String getToken(String principalName, String timestamp) {
         List<Authorization> authorizations = authorizationRepository.findByPrincipalNameAndOidcIdTokenExpiresAtAfterOrderByAccessTokenIssuedAtDesc(principalName, Instant.parse(timestamp));
         log.debug("validated auth size: {}", authorizations.size());
-        String accessToken = authorizations.get(0).getAccessTokenValue();
-        String idToken = authorizations.get(0).getOidcIdTokenValue();
-        return accessToken + "&&" + idToken;
+        if (!authorizations.isEmpty()) {
+            String accessToken = authorizations.get(0).getAccessTokenValue();
+            String idToken = authorizations.get(0).getOidcIdTokenValue();
+            return accessToken + "&&" + idToken;
+        }
+        return "";
     }
 }
