@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.elpsykongroo.auth.entity.user.Authority;
 import com.elpsykongroo.auth.entity.user.Group;
@@ -97,15 +98,15 @@ public final class FederatedIdentityIdTokenCustomizer implements OAuth2TokenCust
 							log.debug("scope:{}, auth:{}", scope, auth);
 							authList.add(auth[1]);
 						}
-						if ("permission".equals(authority.getAuthority())) {
-							info.put("permission", auths);
-						}
 						if ("group".equals(authority.getAuthority())) {
 							info.put("group", groups);
 						}
 					}
-					if (authList.isEmpty()) {
+					if (!authList.isEmpty()) {
 						info.put(scope, authList);
+					}
+					if (customClaims.containsKey("permission")) {
+						info.put("permission", auths.stream().distinct().collect(Collectors.toList()));
 					}
 					userInfo = new OidcUserInfo(info);
 				}
