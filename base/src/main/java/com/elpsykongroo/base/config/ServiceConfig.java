@@ -48,6 +48,8 @@ public class ServiceConfig {
 
     private S3 s3;
 
+    private OAuth2 oAuth2;
+
     @Data
     public static class SSL {
         
@@ -121,5 +123,16 @@ public class ServiceConfig {
         private String auth;
 
         private String gateway;
+    }
+
+    @Data
+    public static class OAuth2 {
+        private String clientId;
+
+        private String clientSecret;
+
+        private String tokenUri;
+
+        private String registerId;
     }
 }

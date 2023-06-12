@@ -132,7 +132,7 @@ public class AuthorizationServerConfig {
 							return filter;
 						}
 					}))
-				.cors();
+				.cors().and().csrf().disable();
 //			.exceptionHandling((exceptions) -> exceptions
 //							.authenticationEntryPoint((req, resp, e) -> {
 //							resp.setContentType("application/json;charset=utf-8");
