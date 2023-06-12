@@ -17,7 +17,7 @@
 package com.elpsykongroo.gateway.service;
 
 public interface MessageService {
-    String getMessage();
+    String getMessage(String text);
 
     void receiveMessage(String message);
 }

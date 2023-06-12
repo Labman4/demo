@@ -1,7 +1,7 @@
 server:
   servlet:
     session:
-      timeout: 60
+      timeout: 3600
   port: 9000
 management:
   endpoint:

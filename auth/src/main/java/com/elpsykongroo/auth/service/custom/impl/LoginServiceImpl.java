@@ -404,7 +404,7 @@ public class LoginServiceImpl implements LoginService {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String token = authorizationService.getToken(authentication.getPrincipal().toString(), timestamp);
             if (StringUtils.isNotEmpty(token)) {
-                redisService.publish("QR_CODE-token-" + codeVerifier, token);
+                redisService.publish("QR_CODE-token-" + codeVerifier,codeVerifier + "*" + token);
                 redisService.set("QR_CODE-" + timestamp , "", "1");
                 return "200";
             } else {

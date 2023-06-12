@@ -22,7 +22,6 @@ import com.elpsykongroo.gateway.service.MessageService;
 import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,18 +53,22 @@ public class PublicController {
 		return CommonResponse.string(ipManagerService.accessIP(request, ""));
 	}
 
-	@GetMapping("token/qrcode")
-	public String qrToken(@RequestParam("text") String text, HttpServletResponse response) throws InterruptedException {
-		String message = messageService.getMessage();
+	@GetMapping(value = "token/qrcode")
+	public String qrToken(@RequestParam("text") String text) throws InterruptedException {
+//		response.setHeader("Content-Type", MediaType.TEXT_EVENT_STREAM_VALUE);
+//		response.setHeader("Cache-Control", "no-cache");
+//		response.setHeader("Connection", "keep-alive");
+		String message = messageService.getMessage(text);
 		int count = 0;
 		while (StringUtils.isEmpty(message)) {
-			message = messageService.getMessage();
+			message = messageService.getMessage(text);
 			count++;
 			Thread.sleep(5000);
-			if (count>60) {
+			if (count > 60) {
 				return "";
 			}
 		}
-		return message;
+		// must end with \n\n
+		return "data: " + message + "\n\n";
 	}
 }

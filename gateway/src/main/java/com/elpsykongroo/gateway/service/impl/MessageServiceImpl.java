@@ -27,10 +27,15 @@ public class MessageServiceImpl implements MessageService {
     private String message;
 
     @Override
-    public String getMessage() {
-        String msg = this.message;
-        message = "";
-        return msg;
+    public String getMessage(String text) {
+        String[] msg = this.message.split("\\*");
+        if (msg.length > 1) {
+            if (text.equals(msg[0])) {
+                message = "";
+                return msg[1];
+            }
+        }
+        return "";
     }
 
     @Override
