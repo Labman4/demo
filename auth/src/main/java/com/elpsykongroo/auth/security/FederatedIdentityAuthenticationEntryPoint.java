@@ -61,28 +61,24 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException, ServletException {
-		DeferredSecurityContext securityContext = securityContextRepository.loadDeferredContext(request);
-		log.debug("securityContext: {}", securityContext.get().getAuthentication());
-		if (securityContext.get().getAuthentication() == null) {
-			String challenge = request.getParameter("code_challenge");
-			String query = request.getQueryString();
-			String redirect = request.getParameter("redirect_uri");
-			String state = request.getParameter("state");
-			if (redirect != null && state != null && StringUtils.isBlank(challenge)) {
-				String parent = DomainUtils.getParentDomain(redirect);
-				String subDomain = DomainUtils.getSubDomain(redirect);
-				if (StringUtils.isNotBlank(subDomain)) {
-					ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(subDomain);
-					if (clientRegistration != null) {
-						log.debug("match idp");
-						this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
-						return;
-					}
-				} else {
-					log.debug("not match idp");
+		String challenge = request.getParameter("code_challenge");
+		String query = request.getQueryString();
+		String redirect = request.getParameter("redirect_uri");
+		String state = request.getParameter("state");
+		if (redirect != null && state != null && StringUtils.isBlank(challenge)) {
+			String parent = DomainUtils.getParentDomain(redirect);
+			String subDomain = DomainUtils.getSubDomain(redirect);
+			if (StringUtils.isNotBlank(subDomain)) {
+				ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(subDomain);
+				if (clientRegistration != null) {
+					log.debug("match idp");
 					this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
 					return;
 				}
+			} else {
+				log.debug("not match idp");
+				this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
+				return;
 			}
 		}
 		String idp = request.getParameter("idp");
