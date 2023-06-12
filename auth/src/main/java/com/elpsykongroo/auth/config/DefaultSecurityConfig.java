@@ -91,7 +91,6 @@ public class DefaultSecurityConfig {
 							}
 						}))
 				.cors().and()
-				.csrf().disable()
 				.requestCache(
 						cache -> cache.requestCache(requestCache)
 				);
