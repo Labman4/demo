@@ -16,12 +16,12 @@
 
 package com.elpsykongroo.gateway.config;
 
-import com.elpsykongroo.gateway.interceptor.CustomOpaqueTokenIntrospector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 
 @Configuration(proxyBeanMethods = false)
@@ -41,11 +41,7 @@ public class SecurityConfig {
 						.requestMatchers(requestConfig.getPath().getPermit()).permitAll()
 						.anyRequest().authenticated()
 				)
-				.oauth2ResourceServer(oauth2 -> oauth2
-				.opaqueToken(opaqueToken -> opaqueToken
-						.introspector(new CustomOpaqueTokenIntrospector())
-				)
-		);
+				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 		return http.build();
 	}
 }
