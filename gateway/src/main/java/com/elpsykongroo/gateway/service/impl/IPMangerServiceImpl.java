@@ -253,8 +253,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if ("false".equals(isBlack)) {
 					log.debug("whiteDomain:{}", whiteDomain);
 					for (String d : whiteDomain.split(",")) {
-						if (!list.contains(d)) {
-							initWhite();
+						InetAddress[] inetAddress = InetAddress.getAllByName(d);
+						for (InetAddress address : inetAddress) {
+							if (!list.contains(address.getHostAddress())) {
+								initWhite();
+							}
 						}
 					}
 				}
