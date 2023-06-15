@@ -24,7 +24,7 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 import org.springframework.stereotype.Component;
 
 @Component
-public class CustomOpaqueTokenIntrospector implements org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector {
+public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     @Value("${spring.security.oauth2.resourceserver.opaque-token.introspection-uri}")
     String introspectionUri;
 
