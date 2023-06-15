@@ -49,13 +49,7 @@ spring:
     timeout-per-shutdown-phase: 10s
   application:
     name: ${APP_NAME:demo}
-  security:
-    oauth2:
-      resource-server:
-        opaque-token:
-          introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
-#          client-id:
-#          client-secret:
+
   kafka:
     bootstrap-servers: ${KAFKA_URL:kafka}
     security:
@@ -133,7 +127,7 @@ request:
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
     permit: ${PERMIT_PATH:/**}
-    nonPrivate: ${PUBLIC_PATH:/public,/message}
+    nonPrivate: ${PUBLIC_PATH:/public}
     limit: ${LIMIT_PATH:/}
     exclude: ${EXCLUDE_PATH:/actuator}
     filter: ${FILTER_PATH:/}

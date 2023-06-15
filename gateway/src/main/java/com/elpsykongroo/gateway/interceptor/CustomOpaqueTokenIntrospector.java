@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,7 +37,7 @@ public class CustomOpaqueTokenIntrospector implements org.springframework.securi
 
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
-        org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector delegate =
+        OpaqueTokenIntrospector delegate =
                 new NimbusOpaqueTokenIntrospector(introspectionUri, clientId, clientSecret);
         OAuth2AuthenticatedPrincipal principal = delegate.introspect(token);
         return new DefaultOAuth2AuthenticatedPrincipal(
