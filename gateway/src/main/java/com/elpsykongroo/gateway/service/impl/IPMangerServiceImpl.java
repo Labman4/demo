@@ -141,9 +141,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 						queryParam.setEntity(new IpManage(ad.getHostAddress(), Boolean.valueOf(isBlack)));
 						searchService.query(queryParam);
 					}
-					if (exist(ad.getHostName(), isBlack) == 0) {
-						queryParam.setEntity(new IpManage(ad.getHostName(), Boolean.valueOf(isBlack)));
-						searchService.query(queryParam);
+					if (!ad.getHostAddress().equals(ad.getHostName())) {
+						if (exist(ad.getHostName(), isBlack) == 0) {
+							queryParam.setEntity(new IpManage(ad.getHostName(), Boolean.valueOf(isBlack)));
+							searchService.query(queryParam);
+						}
 					}
 				}
 			}
