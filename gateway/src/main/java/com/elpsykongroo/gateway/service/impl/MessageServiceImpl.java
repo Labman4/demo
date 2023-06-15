@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class MessageServiceImpl implements MessageService {
-    private String message;
+    private String message = "";
 
     @Override
     public String getMessage(String text) {
