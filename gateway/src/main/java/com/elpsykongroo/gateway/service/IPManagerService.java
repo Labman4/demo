@@ -26,11 +26,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IPManagerService {
 
-	void add(String address, String isBlack) throws UnknownHostException;
+	String add(String address, String isBlack) throws UnknownHostException;
 
 	String list(String isBlack, String pageNumber, String pageSize, String order);
 
-	void patch(String addresses, String isBlack, String ids) throws UnknownHostException;
+	String patch(String addresses, String isBlack, String ids) throws UnknownHostException;
 
 	String accessIP(HttpServletRequest request, String type);
 

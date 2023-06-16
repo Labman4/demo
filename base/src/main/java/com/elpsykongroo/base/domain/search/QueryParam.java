@@ -19,6 +19,7 @@ package com.elpsykongroo.base.domain.search;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class QueryParam {
@@ -41,11 +42,17 @@ public class QueryParam {
 
     private List<String> queryStringParam;
 
+    private Map<String, Object> updateParam;
+
+    private String script;
+
     private Class type;
 
     private boolean fuzzy;
 
     private boolean boolQuery;
+
+    private String boolType;
 
     private String operation;
 

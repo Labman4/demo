@@ -42,12 +42,13 @@ public class IPManagerController {
 	private IPManagerService ipManagerService;
 
 	@PutMapping
-	public void add(@RequestParam String address, @RequestParam String black) {
+	public String add(@RequestParam String address, @RequestParam String black) {
 		log.debug("add sourceIP:{}, black:{}", address, black);
 		try {
-			ipManagerService.add(address, black);
+			return ipManagerService.add(address, black);
 		} catch (UnknownHostException e) {
 			log.error("error host: {}", e.getMessage());
+			return "0";
 		}
 	}
 	@GetMapping
@@ -60,11 +61,10 @@ public class IPManagerController {
 	}
 
 	@PatchMapping
-	public String delete(@RequestParam("address") String addresses, @RequestParam("black") String isBlack, @RequestParam("id") String ids) {
+	public String patch(@RequestParam String address, @RequestParam String black, @RequestParam("id") String ids) {
 		try {
-			log.debug("black:{}, addresses:{}, ids:{}", isBlack, addresses, ids);
-			ipManagerService.patch(addresses, isBlack, ids);
-			return CommonResponse.success();
+			log.debug("black:{}, address:{}, ids:{}", black, address, ids);
+			return ipManagerService.patch(address, black, ids);
 		} catch (Exception e) {
 			return CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 		}

@@ -33,11 +33,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ScriptType;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.ByQueryResponse;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,19 +54,8 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     private ElasticsearchOperations operations;
 
-    @Override
-    public String query(QueryParam queryParam) {
+    private static Query getQuery(QueryParam queryParam, Pageable pageable) {
         Query query;
-        Pageable pageable = null;
-        if (StringUtils.isNotBlank(queryParam.getOrder())) {
-            Sort sort = Sort.by(Sort.Direction.DESC, queryParam.getOrderBy());
-            if ("1".equals(queryParam.getOrder())) {
-                sort = Sort.by(Sort.Direction.ASC, queryParam.getOrderBy());
-            }
-            pageable = PageRequest.of(
-                    Integer.parseInt(queryParam.getPageNumber()),
-                    Integer.parseInt(queryParam.getPageSize()), sort);
-        }
         if (StringUtils.isNotEmpty(queryParam.getParam()) ||
                 (queryParam.getQueryStringParam() != null && !queryParam.getQueryStringParam().isEmpty())) {
             if (queryParam.isFuzzy()) {
@@ -90,13 +82,20 @@ public class SearchServiceImpl implements SearchService {
                 }
                 List<co.elastic.clients.elasticsearch._types.query_dsl.Query> queries = new ArrayList<>();
                 queryStringQueries.forEach(queryStringQuery -> queries.add(queryStringQuery._toQuery()));
-                BoolQuery boolQuery = new BoolQuery.Builder().must(queries).build();
-                if (pageable != null) {
-                   query = NativeQuery.builder().withQuery(q ->
-                          q.bool(boolQuery)).withPageable(pageable).build();
+                BoolQuery boolQuery = null;
+                if ("filter".equals(queryParam.getBoolType())) {
+                    boolQuery = new BoolQuery.Builder().filter(queries).build();
+                } else if ("should".equals(queryParam.getBoolType())) {
+                    boolQuery = new BoolQuery.Builder().should(queries).build();
+                } else if ("must_not".equals(queryParam.getBoolType())) {
+                    boolQuery = new BoolQuery.Builder().mustNot(queries).build();
                 } else {
-                    query = NativeQuery.builder().withQuery(q ->
-                          q.bool(boolQuery)).build();
+                    boolQuery = new BoolQuery.Builder().must(queries).build();
+                }
+                if (pageable != null) {
+                    query = NativeQuery.builder().withQuery(boolQuery._toQuery()).withPageable(pageable).build();
+                } else {
+                    query = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
                 }
             } else {
                 TermQuery termQuery = new TermQuery.Builder()
@@ -115,6 +114,23 @@ public class SearchServiceImpl implements SearchService {
             query = NativeQuery.builder().withQuery(q ->
                     q.matchAll(matchAllQuery)).withPageable(pageable).build();
         }
+        return query;
+    }
+
+    @Override
+    public String query(QueryParam queryParam) {
+        Query query;
+        Pageable pageable = null;
+        if (StringUtils.isNotBlank(queryParam.getOrder())) {
+            Sort sort = Sort.by(Sort.Direction.DESC, queryParam.getOrderBy());
+            if ("1".equals(queryParam.getOrder())) {
+                sort = Sort.by(Sort.Direction.ASC, queryParam.getOrderBy());
+            }
+            pageable = PageRequest.of(
+                    Integer.parseInt(queryParam.getPageNumber()),
+                    Integer.parseInt(queryParam.getPageSize()), sort);
+        }
+        query = getQuery(queryParam, pageable);
         SearchHits searchHits;
         if ("count".equals(queryParam.getOperation())) {
             long count = 0;
@@ -128,9 +144,25 @@ public class SearchServiceImpl implements SearchService {
             List<String> deleteIds = Arrays.stream(queryParam.getIds().split(",")).collect(Collectors.toList());
             deleteIds.forEach(id -> operations.delete(id, IndexCoordinates.of(queryParam.getIndex())));
             return String.valueOf(deleteIds.size());
-        } else if ("save".equals(queryParam.getOperation())) {
-            operations.save(queryParam.getEntity(), IndexCoordinates.of(queryParam.getIndex()));
-            return "";
+        } else if ("deleteQuery".equals(queryParam.getOperation())) {
+            ByQueryResponse response = operations.delete(getQuery(queryParam, pageable), queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+            return String.valueOf(response.getDeleted());
+        }
+        else if ("save".equals(queryParam.getOperation())) {
+            return operations.save(queryParam.getEntity(), IndexCoordinates.of(queryParam.getIndex())).toString();
+        } else if ("update".equals(queryParam.getOperation())) {
+            return operations.update(UpdateQuery.builder(queryParam.getIds())
+                    .withParams(queryParam.getUpdateParam())
+                    .build()).getResult().toString();
+        } else if ("updateQuery".equals(queryParam.getOperation())) {
+            UpdateQuery updateQuery = UpdateQuery.builder(getQuery(queryParam, pageable))
+                    .withIndex(queryParam.getIndex())
+                    .withParams(queryParam.getUpdateParam())
+                    .withScriptType(ScriptType.INLINE)
+                    .withScript(queryParam.getScript())
+                    .build();
+            ByQueryResponse byQueryResponse = operations.updateByQuery(updateQuery, IndexCoordinates.of(queryParam.getIndex()));
+            return String.valueOf(byQueryResponse.getTotal());
         } else {
             searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
         }
