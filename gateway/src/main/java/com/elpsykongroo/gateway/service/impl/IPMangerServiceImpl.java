@@ -97,6 +97,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 	@Override
 	public String patch(String address, String isBlack, String id) throws UnknownHostException {
 		long updated = 0;
+		String script = "ctx._source.black=params.black;";
 		String[] addr = address.split(",");
 		QueryParam queryParam = new QueryParam();
 		Map<String, Object> update = new HashMap<>();
@@ -107,6 +108,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 		if (StringUtils.isNotEmpty(id)) {
 			queryParam.setOperation("update");
 			queryParam.setIds(id);
+			queryParam.setUpdateParam(update);
+			queryParam.setScript(script);
 			return searchService.query(queryParam);
 		}
 		for (String ad: addr) {
@@ -132,7 +135,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 				} else {
 					queryParam.setOperation("updateQuery");
 					queryParam.setUpdateParam(update);
-					String script = "ctx._source.black=params.black;";
 					queryParam.setBoolType("should");
 					queryParam.setType(IpManage.class);
 					queryParam.setScript(script);

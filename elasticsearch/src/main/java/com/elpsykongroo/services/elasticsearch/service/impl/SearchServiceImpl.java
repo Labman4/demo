@@ -151,9 +151,12 @@ public class SearchServiceImpl implements SearchService {
         else if ("save".equals(queryParam.getOperation())) {
             return operations.save(queryParam.getEntity(), IndexCoordinates.of(queryParam.getIndex())).toString();
         } else if ("update".equals(queryParam.getOperation())) {
-            return operations.update(UpdateQuery.builder(queryParam.getIds())
+            UpdateQuery updateQuery = UpdateQuery.builder(queryParam.getIds())
                     .withParams(queryParam.getUpdateParam())
-                    .build()).getResult().toString();
+                    .withScript(queryParam.getScript())
+                    .withScriptType(ScriptType.INLINE)
+                    .build();
+            return operations.update(updateQuery, IndexCoordinates.of(queryParam.getIndex())).getResult().toString();
         } else if ("updateQuery".equals(queryParam.getOperation())) {
             UpdateQuery updateQuery = UpdateQuery.builder(getQuery(queryParam, pageable))
                     .withIndex(queryParam.getIndex())
