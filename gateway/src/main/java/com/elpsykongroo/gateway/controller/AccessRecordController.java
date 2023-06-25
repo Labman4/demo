@@ -35,7 +35,7 @@ import java.net.UnknownHostException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/record")
+@RequestMapping("record")
 @Slf4j
 public class AccessRecordController {
 	@Autowired
@@ -47,7 +47,7 @@ public class AccessRecordController {
 								  @RequestParam("order") String order) {
 		return CommonResponse.string(accessRecordService.findAll(pageNumber, pageSize, order));
 	}
-	@DeleteMapping("/{param}")
+	@DeleteMapping("{param}")
 	public String deleteRecord(@PathVariable String param) {
 		log.debug("delete accessRecord:{}", param);
 		try {
@@ -58,10 +58,10 @@ public class AccessRecordController {
 	}
 
 	@PostMapping
-	public String filter (@RequestParam("params") String params,
-						  @RequestParam("pageNumber") String pageNumber,
-						  @RequestParam("pageSize") String pageSize,
-						  @RequestParam("order") String order) {
+	public String filter (@RequestParam String params,
+						  @RequestParam String pageNumber,
+						  @RequestParam String pageSize,
+						  @RequestParam String order) {
 		try {
 			return CommonResponse.string(accessRecordService.filterByParams(params, pageNumber, pageSize, order));
 		} catch (Exception e) {

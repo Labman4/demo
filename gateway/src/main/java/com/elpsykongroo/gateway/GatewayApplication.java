@@ -16,7 +16,6 @@
 
 package com.elpsykongroo.gateway;
 
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -25,24 +24,4 @@ public class GatewayApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GatewayApplication.class, args);
 	}
-
-//    @Bean
-//    public NewTopic topic() {
-//        return TopicBuilder.name("demo")
-//                .partitions(1)
-//                .replicas(1)
-//                .build();
-//    }
-//
-//    @Bean
-//    public ApplicationRunner runner(KafkaTemplate<String, String> template) {
-//        return args -> {
-//            template.send("demo", "test");
-//        };
-//    }
-//
-//    @KafkaListener(id = "0", topics = "demo")
-//    public void listen(String in) {
-//        System.out.println(in);
-//    }
 }

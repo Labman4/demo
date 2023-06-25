@@ -32,33 +32,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-@RequestMapping("auth/")
+@RequestMapping("auth")
 public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PutMapping("/client")
+    @PutMapping("client")
     public String addClient (@RequestBody Client client) {
         return CommonResponse.string(authService.addClient(client));
     }
-    @DeleteMapping("/client/{clientId}")
+    @DeleteMapping("client/{clientId}")
     public String deleteClient (@PathVariable String clientId) {
         return CommonResponse.string(authService.deleteClient(clientId));
     }
-    @GetMapping("/client")
+    @GetMapping("client")
     public String listClient () {
         return CommonResponse.string(authService.findAllClient());
     }
 
-    @PutMapping("/client/register")
+    @PutMapping("client/register")
     public String addRegister (@RequestBody ClientRegistry client) {
         return CommonResponse.string(authService.addRegister(client));
     }
-    @DeleteMapping("/client/register/{clientId}")
+    @DeleteMapping("client/register/{clientId}")
     public String deleteRegister (@PathVariable String clientId) {
         return CommonResponse.string(authService.deleteRegister(clientId));
     }
-    @GetMapping("/client/register")
+    @GetMapping("client/register")
     public String listRegister () {
         return CommonResponse.string(authService.findAllRegister());
     }

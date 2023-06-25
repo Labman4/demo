@@ -34,107 +34,107 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("auth")
 public class UserController {
     @Autowired
     private AuthService authService;
 
-    @GetMapping("/user")
+    @GetMapping("user")
     public String userList (@RequestParam String pageNumber,
                             @RequestParam String pageSize,
                             @RequestParam String order) {
         return CommonResponse.string(authService.userList(pageNumber, pageSize, order));
     }
 
-    @GetMapping("/user/info/{username}")
+    @GetMapping("user/info/{username}")
     public String userinfo (@PathVariable String username) {
         return CommonResponse.string(authService.loadUserInfo(username));
     }
 
-    @PostMapping("/user")
+    @PostMapping("user")
     public String userPatch (@RequestBody User user) {
         return CommonResponse.string(authService.updateUser(user));
     }
 
-    @PostMapping("/user/info")
+    @PostMapping("user/info")
     public String userInfoPatch (@RequestBody UserInfo userinfo) {
         return CommonResponse.string(authService.updateUserInfo(userinfo));
     }
 
-    @GetMapping("/group/authority/{name}")
+    @GetMapping("group/authority/{name}")
     public String groupAuthorityList (@PathVariable String name) {
         return CommonResponse.string(authService.groupAuthorityList(name));
     }
 
-    @GetMapping("/authority/group/{name}")
+    @GetMapping("authority/group/{name}")
     public String authorityGroupList (@PathVariable String name) {
         return CommonResponse.string(authService.authorityGroupList(name));
     }
 
-    @GetMapping("/group")
+    @GetMapping("group")
     public String groupList () {
         return CommonResponse.string(authService.groupList());
     }
 
-    @GetMapping("/authority")
+    @GetMapping("authority")
     public String authorityList () {
         return CommonResponse.string(authService.authorityList());
     }
 
-    @PutMapping("/group")
+    @PutMapping("group")
     public String addGroup (@RequestParam String name) {
         return CommonResponse.string(authService.addGroup(name));
     }
 
-    @PutMapping("/authority")
+    @PutMapping("authority")
     public String addAuthority (@RequestParam String name) {
         return CommonResponse.string(authService.addAuthority(name));
     }
 
-    @DeleteMapping("/group/{name}")
+    @DeleteMapping("group/{name}")
     public String deleteGroup (@PathVariable String name) {
         return CommonResponse.string(authService.deleteGroup(name));
     }
 
-    @DeleteMapping("/authority/{name}")
+    @DeleteMapping("authority/{name}")
     public String deleteAuthority (@PathVariable String name) {
         return CommonResponse.string(authService.deleteAuthority(name));
     }
 
-    @PostMapping("/group/user")
+    @PostMapping("group/user")
     public String updateGroup (@RequestParam String groups,
                                @RequestParam String ids) {
         return CommonResponse.string(authService.updateUserGroup(groups, ids));
     }
 
-    @PostMapping("/authority/user")
+    @PostMapping("authority/user")
     public String updateAuthority (@RequestParam String authorities,
                                    @RequestParam String ids) {
         return CommonResponse.string(authService.updateUserAuthority(authorities, ids));
     }
 
-    @PostMapping("/authority/group")
+    @PostMapping("authority/group")
     public String updateGroupAuthority (@RequestParam String authorities,
                                         @RequestParam String ids) {
         return CommonResponse.string(authService.updateGroupAuthority(authorities, ids));
     }
 
-    @GetMapping("/authority/user/{id}")
+    @GetMapping("authority/user/{id}")
     public String userAuthorityList(@PathVariable String id) {
         return CommonResponse.string(authService.userAuthority(id));
     }
 
-    @GetMapping("/user/authority/{username}")
+    @GetMapping("user/authority/{username}")
     public String allAuthorityList(@PathVariable String username) {
         return CommonResponse.string(authService.userAllAuthority(username));
     }
 
-    @GetMapping("/group/user/{id}")
+    @GetMapping("group/user/{id}")
     public String userGroupList(@PathVariable String id) {
         return CommonResponse.string(authService.userGroup(id));
     }
 
-    @GetMapping("/user/{username}")
+    @GetMapping("user/{username}")
     public String user(@PathVariable String username) {
         return CommonResponse.string(authService.loadUser(username));
     }

@@ -35,7 +35,7 @@ import java.net.UnknownHostException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/ip")
+@RequestMapping("ip")
 @Slf4j
 public class IPManagerController {
 	@Autowired

@@ -54,18 +54,6 @@ spring:
       resource-server:
         opaque-token:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
-  kafka:
-    bootstrap-servers: ${KAFKA_URL:kafka}
-    security:
-      protocol: ssl
-    ssl:
-      trust-store-location: ${JKS:jks}
-      trust-store-password: ${JKS_PASS:pass}
-    consumer:
-      #      security:
-      #        protocol: ssl
-      auto-offset-reset: earliest
-
 logging:
   level:
     root: info
