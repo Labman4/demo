@@ -35,7 +35,7 @@ spring:
         protocol: SSL
       ssl:
         trust-store-type: PEM
-        trust-store-location: classpath:/ssl.pem
+        trust-store-location: ${SSL_PEM:classpath:/ssl.pem}
     producer:
       value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
     properties:
