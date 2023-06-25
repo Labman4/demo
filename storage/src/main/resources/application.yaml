@@ -6,18 +6,47 @@ server:
     keep-alive-timeout: 60
   port: 9999
 spring:
+  main:
+    allow-bean-definition-overriding: true
   servlet:
     multipart:
       max-request-size: -1
       max-file-size: -1
       resolve-lazily: true
-
   lifecycle:
     timeout-per-shutdown-phase: 10s
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:broker.elpsykongroo.com:443}
+    security:
+      protocol: SSL
+    ssl:
+      trust-store-type: PEM
+      trust-store-location: ${SSL_PEM:classpath:/ssl.pem}
+    admin:
+      security:
+        protocol: SSL
+      ssl:
+        trust-store-type: PEM
+        trust-store-location: ${SSL_PEM:classpath:/ssl.pem}
+    consumer:
+      auto-offset-reset: earliest
+    #      value-deserializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      security:
+        protocol: SSL
+      ssl:
+        trust-store-type: PEM
+        trust-store-location: classpath:/ssl.pem
+    producer:
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    properties:
+      max:
+        request:
+          size: 10000000
 service:
   vault: ${VAULT_ENABLE:true}
 logging:
   level:
+    root: info
     web: debug
     com:
       elpsykongroo:

@@ -17,9 +17,11 @@
 package com.elpsykongroo.base.domain.storage.object;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
+@NoArgsConstructor
 public class S3 {
     String accessKey;
 
@@ -45,5 +47,18 @@ public class S3 {
     use for sts
      */
     String idToken;
+
+    String mode;
+
+    String partCount;
+
+    String partNum;
+
+    String uploadId;
+    String consumerId;
+
+    public S3(String bucket) {
+        this.bucket = bucket;
+    }
 }
 
