@@ -41,7 +41,6 @@ import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -183,18 +182,23 @@ public class ObjectServiceImpl implements ObjectService {
         List<ListObject> objects = new ArrayList<>();
         ListObjectsV2Iterable listRes = null;
         try {
-            listRes = s3Client.listObjectsV2Paginator(listReq);
+            listObject(listReq, objects);
         } catch (NoSuchBucketException e) {
+            log.info("bucket not exist");
             if(createBucket(s3)) {
-                listRes = s3Client.listObjectsV2Paginator(listReq);
-            };
+                listObject(listReq, objects);
+            }
         }
+        return objects;
+    }
+
+    private void listObject(ListObjectsV2Request listReq, List<ListObject> objects) {
+        ListObjectsV2Iterable listRes;
+        listRes = s3Client.listObjectsV2Paginator(listReq);
         listRes.contents().stream()
                 .forEach(content -> objects.add(new ListObject(content.key(),
-                                    content.lastModified(),
-                                    content.size())));
-
-        return objects;
+                        content.lastModified(),
+                        content.size())));
     }
 
     @Override
