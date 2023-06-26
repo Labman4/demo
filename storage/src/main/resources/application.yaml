@@ -1,9 +1,9 @@
 server:
   netty:
-    connection-timeout: 60
+    connection-timeout: -1
   tomcat:
-    connection-timeout: 60
-    keep-alive-timeout: 60
+    connection-timeout: -1
+    keep-alive-timeout: -1
   port: 9999
 spring:
   main:
