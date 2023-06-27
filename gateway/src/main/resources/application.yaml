@@ -1,11 +1,11 @@
 server:
   http2:
     enabled: true
-  netty:
-    connection-timeout: -1
+  #  netty:
+  #    connection-timeout: -1
   tomcat:
-    connection-timeout: -1
-    keep-alive-timeout: -1
+    connection-timeout: 12000
+    keep-alive-timeout: 12000
   shutdown: graceful
   port: 8443
   ssl:
