@@ -152,13 +152,17 @@ public class ObjectServiceImpl implements ObjectService {
 
     }
 
-    private void upload(S3 s3) throws IOException {
+    private void upload(S3 s3) {
         log.debug("upload");
-        PutObjectRequest objectRequest = PutObjectRequest.builder()
-                    .bucket(s3.getBucket())
-                    .key(s3.getKey())
-                    .build();
-        s3Client.putObject(objectRequest, RequestBody.fromBytes(s3.getData()[0].getBytes())).eTag();
+        try {
+            PutObjectRequest objectRequest = PutObjectRequest.builder()
+                        .bucket(s3.getBucket())
+                        .key(s3.getKey())
+                        .build();
+            s3Client.putObject(objectRequest, RequestBody.fromBytes(s3.getData()[0].getBytes())).eTag();
+        } catch (IOException e) {
+            log.error("upload io error:{}", e.getMessage());
+        }
         log.debug("upload complete");
     }
 
@@ -202,7 +206,7 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
-    public void multipartUpload(S3 s3) throws Exception {
+    public void multipartUpload(S3 s3) {
         initClient(s3);
         if (StringUtils.isBlank(s3.getKey())) {
             s3.setKey(StringUtils.trim(s3.getData()[0].getOriginalFilename()));
@@ -267,12 +271,12 @@ public class ObjectServiceImpl implements ObjectService {
 
     private void uploadStream(S3 s3, Integer num, String uploadId) {
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
-        adminClient.createTopics(Collections.singleton(TopicBuilder.name(s3.getKey()).build()));
+        adminClient.createTopics(Collections.singleton(TopicBuilder.name(s3.getBucket() + "-" + s3.getKey()).build()));
         Consumer<String, String> consumer = consumerFactory.createConsumer(s3.getBucket());
         TopicDescription topicDescription = null;
         try {
-            topicDescription = adminClient.describeTopics(Collections.singleton(s3.getKey()))
-                    .topicNameValues().get(s3.getKey()).get();
+            topicDescription = adminClient.describeTopics(Collections.singleton(s3.getBucket() + "-" + s3.getKey()))
+                    .topicNameValues().get(s3.getBucket() + "-" + s3.getKey()).get();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
@@ -281,7 +285,7 @@ public class ObjectServiceImpl implements ObjectService {
 
         long topicSize = 0;
         for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
-            TopicPartition topicPartition = new TopicPartition(s3.getKey(), partitionInfo.partition());
+            TopicPartition topicPartition = new TopicPartition(s3.getBucket() + "-" + s3.getKey(), partitionInfo.partition());
             long partitionSize = (long) consumer.endOffsets(Collections.singleton(topicPartition)).get(topicPartition);
             topicSize += partitionSize;
         }
@@ -298,14 +302,14 @@ public class ObjectServiceImpl implements ObjectService {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                kafkaTemplate.send(s3.getKey(),
+                kafkaTemplate.send(s3.getBucket() + "-" + s3.getKey(),
                         s3.getBucket() + "-" + timestamp + "*" + s3.getKey() + "*" + num + "*" + i + "*" + uploadId, output[i]);
             }
         }
-        ac.getBean(ObjectListener.class, s3.getBucket() + "-" + timestamp, s3.getKey(), this);
+        ac.getBean(ObjectListener.class, s3.getBucket() + "-" + timestamp, s3.getBucket() + "-" + s3.getKey(), this);
     }
 
-    private void uploadPart(S3 s3, Boolean resume) throws IOException {
+    private void uploadPart(S3 s3, Boolean resume) {
         partSize = Math.max(Long.parseLong(s3.getPartSize()), 5 * 1024 * 1024);
         RequestBody requestBody = null;
         long fileSize = 0;
@@ -315,7 +319,11 @@ public class ObjectServiceImpl implements ObjectService {
             fileSize = s3.getByteData().length;
             num = (int) Math.ceil((double) fileSize / partSize);
         } else {
-            requestBody = RequestBody.fromBytes(s3.getData()[0].getBytes());
+            try {
+                requestBody = RequestBody.fromBytes(s3.getData()[0].getBytes());
+            } catch (IOException e) {
+                log.error("upload io error:{}", e.getMessage());
+            }
             fileSize = s3.getData()[0].getSize();
             num = (int) Math.ceil((double) fileSize / partSize);
             if ("stream".equals(s3.getMode()) && fileSize >= partSize) {
@@ -369,11 +377,13 @@ public class ObjectServiceImpl implements ObjectService {
     private void completeTopic(S3 s3) {
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
         MessageListenerContainer container = endpointRegistry.getListenerContainer(s3.getConsumerId());
-        if (container != null && container.isRunning()) {
-           container.stop();
-        }
-        while (!container.isRunning()) {
-            adminClient.deleteTopics(Collections.singleton(s3.getKey()));
+        if (container != null) {
+            if (container.isRunning()) {
+                container.stop();
+            }
+            while (!container.isRunning()) {
+                adminClient.deleteTopics(Collections.singleton(s3.getBucket() + "-" + s3.getKey()));
+            }
         }
     }
 
@@ -481,19 +491,8 @@ public class ObjectServiceImpl implements ObjectService {
 
 
     private void initClient(S3 s3) {
-        if (s3Client != null) {
+        if (s3Client != null && s3.isInit()) {
             return;
-        }
-        AwsCredentials awsCredentials =
-                AwsBasicCredentials.create(
-                        serviceconfig.getS3().getAccessKey(),
-                        serviceconfig.getS3().getAccessSecret());
-        if (StringUtils.isBlank(s3.getRegion())) {
-            s3.setRegion(serviceconfig.getS3().getRegion());
-        }
-
-        if (StringUtils.isBlank(s3.getEndpoint())) {
-            s3.setEndpoint(serviceconfig.getS3().getEndpoint());
         }
         Long connect = serviceconfig.getTimeout().getConnect();
         Duration connectDuration = Duration.ofSeconds(connect);
@@ -506,6 +505,17 @@ public class ObjectServiceImpl implements ObjectService {
                 .connectionAcquisitionTimeout(connectDuration)
                 .connectionMaxIdleTime(connectDuration)
                 .connectionTimeToLive(connectDuration);
+        AwsCredentials awsCredentials =
+                AwsBasicCredentials.create(
+                        serviceconfig.getS3().getAccessKey(),
+                        serviceconfig.getS3().getAccessSecret());
+        if (StringUtils.isBlank(s3.getRegion())) {
+            s3.setRegion(serviceconfig.getS3().getRegion());
+        }
+
+        if (StringUtils.isBlank(s3.getEndpoint())) {
+            s3.setEndpoint(serviceconfig.getS3().getEndpoint());
+        }
 //        SdkHttpClient.Builder builder = UrlConnectionHttpClient.builder()
 //                .proxyConfiguration(ProxyConfiguration.builder()
 //                        .useSystemPropertyValues(true)

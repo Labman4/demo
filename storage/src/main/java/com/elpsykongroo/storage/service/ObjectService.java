@@ -33,5 +33,5 @@ public interface ObjectService {
 
     List<ListObject> list(S3 s3);
 
-    void multipartUpload(S3 s3) throws Exception;
+    void multipartUpload(S3 s3);
 }

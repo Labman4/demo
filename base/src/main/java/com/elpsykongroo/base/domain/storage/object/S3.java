@@ -55,7 +55,10 @@ public class S3 {
     String partNum;
 
     String uploadId;
+
     String consumerId;
+
+    boolean init;
 
     public S3(String bucket) {
         this.bucket = bucket;
