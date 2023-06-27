@@ -8,7 +8,7 @@ server:
 spring:
   profiles:
     active:
-      - {ENV:prod}
+      - ${ENV:dev}
   main:
     allow-bean-definition-overriding: true
   servlet:
