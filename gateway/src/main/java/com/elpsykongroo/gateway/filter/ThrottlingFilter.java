@@ -47,7 +47,7 @@ import org.springframework.stereotype.Component;
 @Component("ThrottlingFilter")
 @Slf4j
 public class ThrottlingFilter implements Filter {
-	private String errorMsg;
+	private ThreadLocal<String> errorMsg = new ThreadLocal<>();
 	private boolean limitFlag = false;
 	private boolean publicFlag = true;
 	private boolean blackFlag = false;
@@ -89,7 +89,7 @@ public class ThrottlingFilter implements Filter {
 		HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 		HttpSession session = httpRequest.getSession(true);
 		String requestUri = httpRequest.getRequestURI();
-		errorMsg = "";
+		errorMsg.set("");
 		String limitPath = requestConfig.getPath().getLimit();
 		if (StringUtils.isNotEmpty(limitPath) && PathUtils.beginWithPath(limitPath, requestUri)) {
 			limitFlag = limitByBucket("global", httpResponse, session);
@@ -106,7 +106,7 @@ public class ThrottlingFilter implements Filter {
 			}
 		}
 		if (!limitFlag || !publicFlag || blackFlag) {
-			httpResponse.getWriter().append(errorMsg);
+			httpResponse.getWriter().append(errorMsg.get());
 		}
 		else {
 			filterChain.doFilter(servletRequest, servletResponse);
@@ -128,7 +128,7 @@ public class ThrottlingFilter implements Filter {
 			publicFlag = isPublic(requestUri, httpRequest, httpResponse);
 		} else {
 			blackFlag = true;
-			errorMsg = "yours IP is our blacklist";
+			errorMsg.set("yours IP is our blacklist");
 			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
 			httpResponse.setContentType("text/plain");
 		}
@@ -163,7 +163,7 @@ public class ThrottlingFilter implements Filter {
 				httpResponse.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
 				httpResponse.setHeader("X-Rate-Limit-Retry-After-Seconds", String.valueOf(TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill())));
 				httpResponse.setContentType("text/plain");
-				errorMsg = "Too many requests";
+				errorMsg.set("Too many requests");
 				limitFlag = false;
 				return false;
 			}
@@ -175,7 +175,7 @@ public class ThrottlingFilter implements Filter {
 			if (!ipMangerService.blackOrWhiteList((HttpServletRequest) request, "false")) {
 				servletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 				servletResponse.setContentType("text/plain");
-				errorMsg = "no access";
+				errorMsg.set("no access");
 				return false;
 			} else {
 				return true;
