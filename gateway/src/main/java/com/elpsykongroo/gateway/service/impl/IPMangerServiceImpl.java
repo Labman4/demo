@@ -110,7 +110,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 			queryParam.setIds(id);
 			queryParam.setUpdateParam(update);
 			queryParam.setScript(script);
-			return searchService.query(queryParam);
+			String result = searchService.query(queryParam);
+			updateCache(isBlack);
+			return String.valueOf(result);
 		}
 		for (String ad: addr) {
 			InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
