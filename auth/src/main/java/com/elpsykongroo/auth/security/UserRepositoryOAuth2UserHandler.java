@@ -32,7 +32,9 @@ public final class UserRepositoryOAuth2UserHandler implements Consumer<OAuth2Use
 	public void accept(OAuth2User user) {
 		// Capture user in a local data store on first authentication
 		if (this.userRepository.findByName(user.getName()) == null) {
-			log.info("Saving first-time user: name=" + user.getName() + ", claims=" + user.getAttributes() + ", authorities=" + user.getAuthorities());
+			if (log.isInfoEnabled()) {
+				log.info("Saving first-time user: name=" + user.getName() + ", claims=" + user.getAttributes() + ", authorities=" + user.getAuthorities());
+			}
 			this.userRepository.save(user);
 		}
 	}

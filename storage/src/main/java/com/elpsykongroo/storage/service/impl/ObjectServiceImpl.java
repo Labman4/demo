@@ -300,10 +300,15 @@ public class ObjectServiceImpl implements ObjectService {
         }
         byte[][] output = new byte[num][];
         if (topicSize != num) {
-            log.debug("uploadStream");
-            for(int i = 0; i< num ; i++) {
+            int start = 0;
+            if (topicSize > 0) {
+                start = (int) topicSize - 1;
+            }
+            for(int i = start; i< num ; i++) {
                 int percent = (int) Math.ceil((double) i / num * 100);
-                log.debug("uploadStream complete:{} ", percent + "%");
+                if (log.isInfoEnabled()) {
+                    log.info("uploadStream complete:{} ", percent + "%");
+                }
                 long startOffset = i * partSize;
                 try {
                     output[i] = Arrays.copyOfRange(s3.getData()[0].getBytes(), (int) startOffset, (int) (startOffset + partSize));
@@ -329,7 +334,9 @@ public class ObjectServiceImpl implements ObjectService {
             try {
                 requestBody = RequestBody.fromBytes(s3.getData()[0].getBytes());
             } catch (IOException e) {
-                log.error("upload io error:{}", e.getMessage());
+                if (log.isErrorEnabled()) {
+                    log.error("upload io error:{}", e.getMessage());
+                }
             }
             fileSize = s3.getData()[0].getSize();
             num = (int) Math.ceil((double) fileSize / partSize);
@@ -342,7 +349,9 @@ public class ObjectServiceImpl implements ObjectService {
             return;
         }
         if(!"stream".equals(s3.getMode())) {
-            log.debug("uploadPart, continue:{}", resume);
+            if (log.isDebugEnabled()) {
+                log.debug("uploadPart, continue:{}", resume);
+            }
             List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
             int startPart = 0;
             if (resume) {
@@ -351,7 +360,9 @@ public class ObjectServiceImpl implements ObjectService {
             }
             for(int i = startPart; i < num ; i++) {
                 int percent = (int) Math.ceil((double) i / num * 100);
-                log.debug("uploadPart complete:{} ", percent + "%");
+                if (log.isInfoEnabled()) {
+                    log.info("uploadPart complete:{} ", percent + "%");
+                }
                 long startOffset = i * partSize;
                 long endOffset = Math.min(partSize, fileSize - startOffset);
                 int partNum = i + 1;
