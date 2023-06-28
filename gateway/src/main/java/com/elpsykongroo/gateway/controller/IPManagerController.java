@@ -43,11 +43,15 @@ public class IPManagerController {
 
 	@PutMapping
 	public String add(@RequestParam String address, @RequestParam String black) {
-		log.debug("add sourceIP:{}, black:{}", address, black);
+		if (log.isDebugEnabled()) {
+			log.debug("add sourceIP:{}, black:{}", address, black);
+		}
 		try {
 			return ipManagerService.add(address, black);
 		} catch (UnknownHostException e) {
-			log.error("error host: {}", e.getMessage());
+			if (log.isErrorEnabled()) {
+				log.error("error host: {}", e.getMessage());
+			}
 			return "0";
 		}
 	}
@@ -56,14 +60,18 @@ public class IPManagerController {
 							 @RequestParam String pageNumber,
 							 @RequestParam String pageSize,
 							 @RequestParam String order) {
-		log.debug("black:{}, pageNumber:{}, pageSize:{}", black, pageNumber, pageSize);
+		if (log.isDebugEnabled()) {
+			log.debug("black:{}, pageNumber:{}, pageSize:{}", black, pageNumber, pageSize);
+		}
 		return CommonResponse.string(ipManagerService.list(black, pageNumber, pageSize, order));
 	}
 
 	@PatchMapping
 	public String patch(@RequestParam String address, @RequestParam String black, @RequestParam("id") String ids) {
 		try {
-			log.debug("black:{}, address:{}, ids:{}", black, address, ids);
+			if (log.isDebugEnabled()) {
+				log.debug("black:{}, address:{}, ids:{}", black, address, ids);
+			}
 			return ipManagerService.patch(address, black, ids);
 		} catch (Exception e) {
 			return CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());

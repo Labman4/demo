@@ -62,7 +62,9 @@ public class RedisServiceImpl implements RedisService {
         if (StringUtils.isBlank(key)) {
             return;
         }
-        log.debug("set cache with k-v: {} -> {}", key, value);
+        if (log.isDebugEnabled()) {
+            log.debug("set cache with k-v: {} -> {}", key, value);
+        }
         if (StringUtils.isNotBlank(minutes)) {
             redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(Integer.parseInt(minutes)));
         } else {
@@ -75,9 +77,13 @@ public class RedisServiceImpl implements RedisService {
         if (StringUtils.isBlank(key)) {
             return "";
         }
-        log.debug("get cache with k: {}", key);
+        if (log.isDebugEnabled()) {
+            log.debug("get cache with k: {}", key);
+        }
         Object result = redisTemplate.opsForValue().get(key);
-        log.debug("get cache result: {} --> {}", key, result == null ? "" : result.toString());
+        if (log.isDebugEnabled()) {
+            log.debug("get cache result: {} --> {}", key, result == null ? "" : result.toString());
+        }
         return result == null ? "" : result.toString();
     }
 

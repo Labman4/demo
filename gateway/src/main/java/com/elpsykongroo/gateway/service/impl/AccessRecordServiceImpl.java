@@ -91,7 +91,9 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			    }
 		  	}
 		} catch (Exception e) {
-			log.error("save record error: {}", e.getMessage());
+			if (log.isErrorEnabled()) {
+				log.error("save record error: {}", e.getMessage());
+			}
 		}
 	}
 

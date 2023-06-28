@@ -143,7 +143,9 @@ public class SearchServiceImpl implements SearchService {
             try {
                 count = operations.count(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
             } catch (Exception e) {
-                log.error("count error:{}", e.getMessage());
+                if (log.isErrorEnabled()) {
+                    log.error("count error:{}", e.getMessage());
+                }
             }
             return String.valueOf(count);
         } else if ("delete".equals(queryParam.getOperation())) {

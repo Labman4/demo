@@ -78,7 +78,9 @@ public class StorageController {
             bufferedInputStream.close();
             in.close();
         } catch (IOException e) {
-            log.error("object download error: {}", e);
+            if (log.isErrorEnabled()) {
+                log.error("object download error: {}", e);
+            }
         }
     }
 
@@ -101,7 +103,9 @@ public class StorageController {
             bufferedInputStream.close();
             in.close();
         } catch (IOException e) {
-            log.error("object download error: {}", e);
+            if (log.isErrorEnabled()) {
+                log.error("object download error: {}", e);
+            }
         }
     }
 

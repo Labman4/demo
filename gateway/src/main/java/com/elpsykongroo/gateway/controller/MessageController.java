@@ -35,7 +35,9 @@ public class MessageController {
 
     @PutMapping
     public void receiveMsg(@RequestParam String message) {
-        log.info("received message:{}", message);
+        if (log.isInfoEnabled()) {
+            log.info("received message:{}", message);
+        }
         ac.publishEvent(message);
     }
 }

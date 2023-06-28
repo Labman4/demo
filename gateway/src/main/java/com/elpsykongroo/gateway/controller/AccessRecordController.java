@@ -47,9 +47,12 @@ public class AccessRecordController {
 								  @RequestParam("order") String order) {
 		return CommonResponse.string(accessRecordService.findAll(pageNumber, pageSize, order));
 	}
+
 	@DeleteMapping("{param}")
 	public String deleteRecord(@PathVariable String param) {
-		log.debug("delete accessRecord:{}", param);
+		if (log.isDebugEnabled()) {
+			log.debug("delete accessRecord:{}", param);
+		}
 		try {
 			return accessRecordService.deleteRecord(param);
 		} catch (UnknownHostException e) {

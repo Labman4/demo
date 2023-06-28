@@ -211,7 +211,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 		queryParam.setIndex("ip");
 		queryParam.setOperation("count");
 		String count = searchService.query(queryParam);
-		log.debug("ip: {}, black: {}, size: {}", ad, isBlack, count);
+		if (log.isDebugEnabled()) {
+			log.debug("ip: {}, black: {}, size: {}", ad, isBlack, count);
+		}
 		return StringUtils.isNotBlank(count) ? Integer.parseInt(count) : 0;
 	}
 
@@ -242,7 +244,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 			String recordIp = getIp(request, head);                                                       
 			boolean recordFlag = filterByIpOrList(recordExclude.getIp(), recordIp);
 			if (!recordFlag) {
-				log.info("ip------------{}, type:{}, header:{}", ip, headerType, headers);
+				if (log.isInfoEnabled()) {
+					log.info("ip------------{}, type:{}, header:{}", ip, headerType, headers);
+				}
 			}
 		}
 		return ip;
@@ -282,15 +286,21 @@ public class IPMangerServiceImpl implements IPManagerService {
 		try {
 			String list = redisService.get(env + isBlack);
 			String ip = accessIP(request, isBlack);
-			log.debug("cacheList: {}, black: {}", list, isBlack);
+			if (log.isDebugEnabled()) {
+				log.debug("cacheList: {}, black: {}", list, isBlack);
+			}
 			if (StringUtils.isNotBlank(list)) {
 				if ("false".equals(isBlack)) {
-					log.debug("whiteDomain:{}", whiteDomain);
+					if (log.isDebugEnabled()) {
+						log.debug("whiteDomain:{}", whiteDomain);
+					}
 					for (String d : whiteDomain.split(",")) {
 						InetAddress[] inetAddress = InetAddress.getAllByName(d);
 						for (InetAddress address : inetAddress) {
 							if (!list.contains(address.getHostAddress())) {
-								log.info("out of white:{}", address.getHostAddress());
+								if (log.isWarnEnabled()) {
+									log.warn("out of white:{}", address.getHostAddress());
+								}
 								initWhite();
 							}
 						}
@@ -301,7 +311,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 				} else {
 					for (String s : list.split(",")) {
 						if (IPRegexUtils.vaildateHost(s)) {
-							log.debug("query domain: {}", s);
+							if (log.isDebugEnabled()) {
+								log.debug("query domain: {}", s);
+							}
 							InetAddress[] inetAddress = new InetAddress[0];
 							try {
 								inetAddress = InetAddress.getAllByName(s);
@@ -310,7 +322,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 							}
 							for (InetAddress address : inetAddress) {
 								if (address.getHostAddress().equals(ip)) {
-									log.debug("update domain ip: {}", address.getHostAddress());
+									if (log.isDebugEnabled()) {
+										log.debug("update domain ip: {}", address.getHostAddress());
+									}
 									add(address.getHostAddress(), isBlack);
 									return true;
 								}
@@ -319,7 +333,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 					}
 				}
 			} else {
-				log.info("updateCache");
+				if(log.isWarnEnabled()) {
+					log.warn("updateCache");
+				}
 				if ("false".equals(isBlack)) {
 					initWhite();
 				}
@@ -358,9 +374,13 @@ public class IPMangerServiceImpl implements IPManagerService {
 //				}
 			log.debug("flag:{}, black:{}", flag, isBlack);
 		} catch (UnknownHostException e) {
-			log.error("UnknownHostException");
+			if(log.isErrorEnabled()) {
+				log.error("UnknownHostException");
+			}
 		} catch (FeignException e) {
-			log.error("feign error :{}", e.getMessage());
+			if(log.isErrorEnabled()) {
+				log.error("feign error :{}", e.getMessage());
+			}
 		}
 		return flag;
     }
@@ -383,25 +403,35 @@ public class IPMangerServiceImpl implements IPManagerService {
 		try {
 			InetAddress inetAddress = InetAddress.getByName(accessIP);
 			if (inetAddress.isSiteLocalAddress()) {
-				log.trace("ignore private ip");
+				if(log.isTraceEnabled()) {
+					log.trace("ignore private ip");
+				}
 				return inetAddress.isSiteLocalAddress();
 			}
 			if(IPRegexUtils.vaildateHost(ip)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
 				for (InetAddress addr: inetAddresses) {
 					if (accessIP.equals(addr.getHostAddress())) {
-						log.trace("host: {} match, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
+						if(log.isTraceEnabled()) {
+							log.trace("host: {} match, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
+						}
 						return true;
 					} else {
-						log.trace("host: {} mismatch, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
+						if(log.isTraceEnabled()) {
+							log.trace("host: {} mismatch, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
+						}
 					}
 				}			
 			} else if (accessIP.equals(ip)) {
+				if(log.isTraceEnabled()) {
 					log.trace("ip match, ip:{}, accessIp:{}", ip, accessIP);
-					return true;
+				}
+				return true;
 			}
 		} catch (UnknownHostException e) {
-			log.error("UnknownHostException");
+			if (log.isErrorEnabled()) {
+				log.error("UnknownHostException");
+			}
 		}
 		return false;
 	}
