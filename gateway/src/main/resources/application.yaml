@@ -120,7 +120,7 @@ request:
       duration: ${REQUEST_DURATION:1}
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
-    permit: ${PERMIT_PATH:/**}
+    permit: ${PERMIT_PATH:/public/**}
     nonPrivate: ${PUBLIC_PATH:/public}
     limit: ${LIMIT_PATH:/}
     exclude: ${EXCLUDE_PATH:/actuator}
