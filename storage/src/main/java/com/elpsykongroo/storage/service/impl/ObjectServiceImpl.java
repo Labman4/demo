@@ -287,10 +287,10 @@ public class ObjectServiceImpl implements ObjectService {
         try {
             topicDescription = adminClient.describeTopics(Collections.singleton(s3.getBucket() + "-" + s3.getKey()))
                     .topicNameValues().get(s3.getBucket() + "-" + s3.getKey()).get();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("describe topic error:{}", e.getMessage());
+            }
         }
         long topicSize = 0;
         for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
