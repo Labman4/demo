@@ -56,56 +56,58 @@ public class StorageController {
     public void getObject(@RequestParam String bucket,
                           @RequestParam String key,
                           @RequestParam(required = false) String idToken,
-                          HttpServletResponse response) {
-        try {
+                          HttpServletResponse response) throws IOException {
             S3 s3 = new S3();
             s3.setBucket(bucket);
             s3.setKey(key);
             s3.setIdToken(idToken);
-            Response feginResp = storageService.downloadObject(s3);
-            InputStream in = feginResp.body().asInputStream();
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(in);
-            response.setContentType("multipart.form-data");
-            response.setHeader("Content-Disposition", feginResp.headers().get("Content-Disposition").toString().replace("[","").replace("]",""));
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
-            int length;
-            byte[] temp = new byte[1024 * 10];
-            while ((length = bufferedInputStream.read(temp)) != -1) {
-                bufferedOutputStream.write(temp, 0, length);
+            Response feginResp = null;
+            InputStream in = null;
+            BufferedInputStream bufferedInputStream = null;
+            BufferedOutputStream bufferedOutputStream = null;
+            try {
+                feginResp = storageService.downloadObject(s3);
+                in = feginResp.body().asInputStream();
+                bufferedInputStream = new BufferedInputStream(in);
+                response.setContentType("multipart.form-data");
+                response.setHeader("Content-Disposition", feginResp.headers().get("Content-Disposition").toString().replace("[","").replace("]",""));
+                bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
+                int length;
+                byte[] temp = new byte[1024 * 10];
+                while ((length = bufferedInputStream.read(temp)) != -1) {
+                    bufferedOutputStream.write(temp, 0, length);
+                }
+            } finally {
+                bufferedOutputStream.flush();
+                bufferedOutputStream.close();
+                bufferedInputStream.close();
+                in.close();
             }
-            bufferedOutputStream.flush();
-            bufferedOutputStream.close();
-            bufferedInputStream.close();
-            in.close();
-        } catch (IOException e) {
-            if (log.isErrorEnabled()) {
-                log.error("object download error: {}", e);
-            }
-        }
     }
 
     @PostMapping("download")
-    public void download(S3 s3, HttpServletResponse response) {
+    public void download(S3 s3, HttpServletResponse response) throws IOException {
+        Response feginResp = null;
+        InputStream in = null;
+        BufferedInputStream bufferedInputStream = null;
+        BufferedOutputStream bufferedOutputStream = null;
         try {
-            Response feginResp = storageService.downloadObject(s3);
-            InputStream in = feginResp.body().asInputStream();
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(in);
+            feginResp = storageService.downloadObject(s3);
+            in = feginResp.body().asInputStream();
+            bufferedInputStream = new BufferedInputStream(in);
             response.setContentType("multipart.form-data");
             response.setHeader("Content-Disposition", feginResp.headers().get("Content-Disposition").toString().replace("[","").replace("]",""));
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
+            bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
             int length;
             byte[] temp = new byte[1024 * 10];
             while ((length = bufferedInputStream.read(temp)) != -1) {
                 bufferedOutputStream.write(temp, 0, length);
             }
+        } finally {
             bufferedOutputStream.flush();
             bufferedOutputStream.close();
             bufferedInputStream.close();
             in.close();
-        } catch (IOException e) {
-            if (log.isErrorEnabled()) {
-                log.error("object download error: {}", e);
-            }
         }
     }
 

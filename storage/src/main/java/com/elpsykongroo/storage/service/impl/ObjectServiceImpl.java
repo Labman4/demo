@@ -148,6 +148,7 @@ public class ObjectServiceImpl implements ObjectService {
         } finally {
             out.flush();
             out.close();
+            inputStream.close();
         }
 
     }
