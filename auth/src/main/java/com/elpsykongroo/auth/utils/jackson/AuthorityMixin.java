@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import lombok.NoArgsConstructor;
 
 @JsonTypeInfo(
         use = Id.CLASS,
@@ -32,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
         getterVisibility = Visibility.NONE,
         isGetterVisibility = Visibility.NONE
 )
+@NoArgsConstructor
 public abstract class AuthorityMixin {
-    protected AuthorityMixin() {
-    }
+
 }

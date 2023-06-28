@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.NoArgsConstructor;
 
 @JsonTypeInfo(
         use = Id.CLASS,
@@ -36,7 +37,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonDeserialize(
         using = WebAuthnTokenDeserializer.class
 )
+@NoArgsConstructor
 public abstract class WebAuthnTokenMixin {
-    protected WebAuthnTokenMixin() {
-    }
+
 }
