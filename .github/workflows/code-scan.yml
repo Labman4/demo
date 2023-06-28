@@ -4,6 +4,8 @@ on:
   push:
     branches:
     - develop
+    - native-image
+    - main
     
   pull_request:
     branches:
