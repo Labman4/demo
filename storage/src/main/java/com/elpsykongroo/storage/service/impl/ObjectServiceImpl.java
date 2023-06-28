@@ -153,7 +153,6 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void upload(S3 s3) {
-        log.debug("upload");
         try {
             PutObjectRequest objectRequest = PutObjectRequest.builder()
                         .bucket(s3.getBucket())
@@ -161,9 +160,10 @@ public class ObjectServiceImpl implements ObjectService {
                         .build();
             s3Client.putObject(objectRequest, RequestBody.fromBytes(s3.getData()[0].getBytes())).eTag();
         } catch (IOException e) {
-            log.error("upload io error:{}", e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error("upload io error: {}", e.getMessage());
+            }
         }
-        log.debug("upload complete");
     }
 
     @Override
@@ -188,7 +188,9 @@ public class ObjectServiceImpl implements ObjectService {
         try {
             listObject(listReq, objects);
         } catch (NoSuchBucketException e) {
-            log.info("bucket not exist");
+            if (log.isWarnEnabled()) {
+                log.warn("bucket not exist");
+            }
             if(createBucket(s3)) {
                 listObject(listReq, objects);
             }
@@ -213,7 +215,9 @@ public class ObjectServiceImpl implements ObjectService {
         }
         HeadObjectResponse headObjectResponse = headObject(s3);
         if (headObjectResponse != null) {
-            log.debug("object exist skip upload");
+            if (log.isWarnEnabled()) {
+                log.warn("object exist skip upload");
+            }
             return;
         }
         if (StringUtils.isNotBlank(s3.getUploadId())) {
@@ -221,7 +225,9 @@ public class ObjectServiceImpl implements ObjectService {
         } else {
             boolean flag = false;
             List<MultipartUpload> uploads = listMultipartUploads(s3).uploads();
-            log.debug("multipartUpload size:{}", uploads.size());
+            if (log.isInfoEnabled()) {
+                log.info("multipartUpload size:{}", uploads.size());
+            }
             for (MultipartUpload upload: uploads) {
                 if (s3.getKey().equals(upload.key())) {
                     flag = true;
@@ -263,7 +269,9 @@ public class ObjectServiceImpl implements ObjectService {
             WaiterResponse<HeadBucketResponse> waiterResponse = s3Waiter.waitUntilBucketExists(bucketRequestWait);
             return waiterResponse.matched().response().isPresent();
         } catch (S3Exception e) {
-            log.error("create bucket error: {}", e.awsErrorDetails().errorMessage());
+            if (log.isErrorEnabled()) {
+                log.error("create bucket error: {}", e.awsErrorDetails().errorMessage());
+            }
         }
         return false;
     }
@@ -374,6 +382,9 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void completeTopic(S3 s3) {
+        if (log.isDebugEnabled()) {
+            log.debug("completeTopic");
+        }
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
         MessageListenerContainer container = endpointRegistry.getListenerContainer(s3.getConsumerId());
         if (container != null) {
@@ -382,12 +393,17 @@ public class ObjectServiceImpl implements ObjectService {
             }
             while (!container.isRunning()) {
                 adminClient.deleteTopics(Collections.singleton(s3.getBucket() + "-" + s3.getKey()));
+                if (log.isDebugEnabled()) {
+                    log.debug("deleteTopic");
+                }
             }
         }
     }
 
     private HeadObjectResponse headObject(S3 s3) {
-        log.debug("headObject");
+        if (log.isDebugEnabled()) {
+            log.debug("headObject");
+        }
         try {
             HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
                     .bucket(s3.getBucket())
@@ -395,27 +411,34 @@ public class ObjectServiceImpl implements ObjectService {
                     .build();
             return s3Client.headObject(headObjectRequest);
         } catch (NoSuchKeyException e) {
-            log.info("object not exist");
+            if (log.isWarnEnabled()) {
+                log.warn("object not exist");
+            }
             return null;
         } catch (S3Exception e) {
-            log.error("headObject error:{}", e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error("headObject error:{}", e.getMessage());
+            }
             return null;
         }
     }
 
     private CreateMultipartUploadResponse createMultiPart(S3 s3) {
-        log.debug("create multipartUpload");
+        if (log.isDebugEnabled()) {
+            log.debug("create multipartUpload");
+        }
         CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
                 .bucket(s3.getBucket())
                 .key(s3.getKey())
                 .build();
-
         return s3Client.createMultipartUpload(createMultipartUploadRequest);
     }
 
 
     private UploadPartResponse uploadPart(S3 s3, RequestBody requestBody, int partNum, long endOffset) {
-        log.debug("uploadPart");
+        if (log.isDebugEnabled()) {
+            log.debug("uploadPart");
+        }
         UploadPartRequest uploadRequest = null;
         try {
             uploadRequest = UploadPartRequest.builder()
@@ -442,7 +465,9 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private ListMultipartUploadsResponse listMultipartUploads(S3 s3) {
-        log.debug("listMultipartUploads");
+        if (log.isDebugEnabled()) {
+            log.debug("listMultipartUploads");
+        }
         ListMultipartUploadsRequest listMultipartUploadsRequest = ListMultipartUploadsRequest.builder()
                 .bucket(s3.getBucket())
                 .build();
@@ -450,7 +475,9 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void listCompletedPart(S3 s3, List<CompletedPart> completedParts) {
-        log.debug("listCompletedPart");
+        if (log.isDebugEnabled()) {
+            log.debug("listCompletedPart");
+        }
         ListPartsResponse listPartsResponse = listParts(s3);
         if (listPartsResponse.parts().size() > 0) {
             for (Part part: listPartsResponse.parts()) {
@@ -463,7 +490,9 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private ListPartsResponse listParts(S3 s3) {
-        log.debug("listParts");
+        if (log.isDebugEnabled()) {
+            log.debug("listParts");
+        }
         ListPartsRequest listRequest = ListPartsRequest.builder()
                     .bucket(s3.getBucket())
                     .key(s3.getKey())
@@ -473,7 +502,9 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void completePart(S3 s3, List<CompletedPart> completedParts) {
-        log.debug("completePart");
+        if (log.isDebugEnabled()) {
+            log.debug("completePart");
+        }
         CompleteMultipartUploadRequest completeRequest = CompleteMultipartUploadRequest.builder()
                 .bucket(s3.getBucket())
                 .key(s3.getKey())
@@ -485,7 +516,9 @@ public class ObjectServiceImpl implements ObjectService {
                 )
                 .build();
         s3Client.completeMultipartUpload(completeRequest);
-        log.debug("complete MultipartUpload");
+        if (log.isInfoEnabled()) {
+            log.info("complete MultipartUpload");
+        }
     }
 
 
