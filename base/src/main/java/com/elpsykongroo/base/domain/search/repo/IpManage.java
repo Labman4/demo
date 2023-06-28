@@ -29,17 +29,17 @@ public class IpManage {
 
 	private String address;
 
-	private boolean black;
+	private String black;
 
 	private String timestamp;
 
 	public IpManage(String address) {
 		this.address = address;
-		this.black = true;
+		this.black = "true";
 		this.timestamp = Instant.now().toString();
 	}
 
-	public IpManage(String address, boolean black) {
+	public IpManage(String address, String black) {
 		this.address = address;
 		this.black = black;
 		this.timestamp = Instant.now().toString();

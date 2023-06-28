@@ -68,8 +68,10 @@ public class SearchServiceImpl implements SearchService {
                    query = NativeQuery.builder().withQuery(q ->
                           q.multiMatch(multiMatchQuery)).withPageable(pageable).build();
                } else {
-                   query = NativeQuery.builder().withQuery(q ->
-                          q.multiMatch(multiMatchQuery)).build();
+                   NativeQuery nativeQuery = NativeQuery.builder().withQuery(q ->
+                           q.multiMatch(multiMatchQuery)).build();
+                   nativeQuery.setMaxResults(10000);
+                   query = nativeQuery;
                }
             } else if (queryParam.isBoolQuery()) {
                 List<String> fields = queryParam.getFields();
@@ -95,7 +97,9 @@ public class SearchServiceImpl implements SearchService {
                 if (pageable != null) {
                     query = NativeQuery.builder().withQuery(boolQuery._toQuery()).withPageable(pageable).build();
                 } else {
-                    query = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
+                    NativeQuery nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
+                    nativeQuery.setMaxResults(10000);
+                    query = nativeQuery;
                 }
             } else {
                 TermQuery termQuery = new TermQuery.Builder()
@@ -105,8 +109,10 @@ public class SearchServiceImpl implements SearchService {
                   query = NativeQuery.builder().withQuery(q ->
                           q.term(termQuery)).withPageable(pageable).build();
                 } else{
-                  query = NativeQuery.builder().withQuery(q ->
+                  NativeQuery nativeQuery =  NativeQuery.builder().withQuery(q ->
                           q.term(termQuery)).build();
+                  nativeQuery.setMaxResults(10000);
+                  query = nativeQuery;
                 }
             }
         } else {

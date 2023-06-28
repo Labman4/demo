@@ -103,7 +103,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		Map<String, Object> update = new HashMap<>();
 		queryParam.setIndex("ip");
 		if (StringUtils.isNotEmpty(isBlack)) {
-			update.put("black", Boolean.valueOf(isBlack));
+			update.put("black", isBlack);
 		}
 		if (StringUtils.isNotEmpty(id)) {
 			queryParam.setOperation("update");
@@ -167,13 +167,13 @@ public class IPMangerServiceImpl implements IPManagerService {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(addr);
 				for (InetAddress ad: inetAddresses) {
 					if (exist(ad.getHostAddress(), isBlack) == 0) {
-						queryParam.setEntity(new IpManage(ad.getHostAddress(), Boolean.valueOf(isBlack)));
+						queryParam.setEntity(new IpManage(ad.getHostAddress(), isBlack));
 						searchService.query(queryParam);
 						result ++;
 					}
 					if (!ad.getHostAddress().equals(ad.getHostName())) {
 						if (exist(ad.getHostName(), isBlack) == 0) {
-							queryParam.setEntity(new IpManage(ad.getHostName(), Boolean.valueOf(isBlack)));
+							queryParam.setEntity(new IpManage(ad.getHostName(), isBlack));
 							searchService.query(queryParam);
 							result ++;
 						}
@@ -220,11 +220,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 		queryParam.setField("black");
 		queryParam.setParam(isBlack);
 		String list = searchService.query(queryParam);
-		List<String> ipList = new ArrayList<>();
+		StringBuffer ipList = new StringBuffer();
 		String[] ips = list.split(",");
 		for (String str: ips) {
 			if(str.contains("address")) {
-				ipList.add(str.split("=")[1]);
+				ipList.append(str.split("=")[1]).append(",");
 			}
 		}
 		redisService.set(env + isBlack, ipList.toString(), "");
@@ -288,6 +288,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 						InetAddress[] inetAddress = InetAddress.getAllByName(d);
 						for (InetAddress address : inetAddress) {
 							if (!list.contains(address.getHostAddress())) {
+								log.info("out of white:{}", address.getHostAddress());
 								initWhite();
 							}
 						}
@@ -296,7 +297,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if (list.contains(ip)) {
 					return true;
 				} else {
-					for (String s : list.split(", ")) {
+					for (String s : list.split(",")) {
 						if (IPRegexUtils.vaildateHost(s)) {
 							log.debug("query domain: {}", s);
 							InetAddress[] inetAddress = new InetAddress[0];
@@ -406,7 +407,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 	private void initWhite(){
 		try {
 			QueryParam queryParam = new QueryParam();
-			IpManage ipManage = new IpManage("localhost",false);
+			IpManage ipManage = new IpManage("localhost","false");
 			queryParam.setIndex("ip");
 			queryParam.setOperation("save");
 			queryParam.setEntity(ipManage);

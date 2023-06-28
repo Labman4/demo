@@ -270,8 +270,10 @@ public class ObjectServiceImpl implements ObjectService {
 
 
     private void uploadStream(S3 s3, Integer num, String uploadId) {
+        long timestamp = Instant.now().toEpochMilli();
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
         adminClient.createTopics(Collections.singleton(TopicBuilder.name(s3.getBucket() + "-" + s3.getKey()).build()));
+        ac.getBean(ObjectListener.class, s3.getBucket() + "-" + timestamp, s3.getBucket() + "-" + s3.getKey(), this);
         Consumer<String, String> consumer = consumerFactory.createConsumer(s3.getBucket());
         TopicDescription topicDescription = null;
         try {
@@ -282,7 +284,6 @@ public class ObjectServiceImpl implements ObjectService {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
-
         long topicSize = 0;
         for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
             TopicPartition topicPartition = new TopicPartition(s3.getBucket() + "-" + s3.getKey(), partitionInfo.partition());
@@ -290,7 +291,6 @@ public class ObjectServiceImpl implements ObjectService {
             topicSize += partitionSize;
         }
         byte[][] output = new byte[num][];
-        long timestamp = Instant.now().toEpochMilli();
         if (topicSize != num) {
             log.debug("uploadStream");
             for(int i = 0; i< num ; i++) {
@@ -306,7 +306,6 @@ public class ObjectServiceImpl implements ObjectService {
                         s3.getBucket() + "-" + timestamp + "*" + s3.getKey() + "*" + num + "*" + i + "*" + uploadId, output[i]);
             }
         }
-        ac.getBean(ObjectListener.class, s3.getBucket() + "-" + timestamp, s3.getBucket() + "-" + s3.getKey(), this);
     }
 
     private void uploadPart(S3 s3, Boolean resume) {
