@@ -185,7 +185,6 @@ public class ObjectServiceImpl implements ObjectService {
                 .maxKeys(1)
                 .build();
         List<ListObject> objects = new ArrayList<>();
-        ListObjectsV2Iterable listRes = null;
         try {
             listObject(listReq, objects);
         } catch (NoSuchBucketException e) {

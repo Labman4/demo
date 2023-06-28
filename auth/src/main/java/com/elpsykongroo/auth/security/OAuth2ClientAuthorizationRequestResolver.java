@@ -44,7 +44,6 @@ import java.util.function.Consumer;
 
 public class OAuth2ClientAuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
     private static final String REGISTRATION_ID_URI_VARIABLE_NAME = "registrationId";
-    private static final char PATH_DELIMITER = '/';
     private static final StringKeyGenerator DEFAULT_STATE_GENERATOR = new Base64StringKeyGenerator(Base64.getUrlEncoder());
     private static final StringKeyGenerator DEFAULT_SECURE_KEY_GENERATOR = new Base64StringKeyGenerator(Base64.getUrlEncoder().withoutPadding(), 96);
     private static final Consumer<OAuth2AuthorizationRequest.Builder> DEFAULT_PKCE_APPLIER = OAuth2AuthorizationRequestCustomizers.withPkce();
@@ -92,6 +91,7 @@ public class OAuth2ClientAuthorizationRequestResolver implements OAuth2Authoriza
                 params.put("nonce", nonceHash);
             });
         } catch (NoSuchAlgorithmException var3) {
+
         }
 
     }

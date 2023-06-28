@@ -53,7 +53,7 @@ public class PublicController {
 		return CommonResponse.string(ipManagerService.accessIP(request, ""));
 	}
 
-	@GetMapping(value = "token/qrcode")
+	@GetMapping("token/qrcode")
 	public String qrToken(@RequestParam("text") String text) throws InterruptedException {
 //		response.setHeader("Content-Type", MediaType.TEXT_EVENT_STREAM_VALUE);
 //		response.setHeader("Cache-Control", "no-cache");
