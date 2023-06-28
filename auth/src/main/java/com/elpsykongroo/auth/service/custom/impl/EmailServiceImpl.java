@@ -94,7 +94,7 @@ public class EmailServiceImpl implements EmailService {
             String codeVerifier = PkceUtils.generateVerifier();
             String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
             redisService.set("email_verify_" + username, codeChallenge, "");
-            send(user.getEmail(), "verfiy email", "https://auth.elpsykongroo.com/email/verify/" + codeVerifier + "." + username);
+            send(user.getEmail(), "verify email", "https://auth.elpsykongroo.com/email/verify/" + codeVerifier + "." + username);
         }
     }
 }

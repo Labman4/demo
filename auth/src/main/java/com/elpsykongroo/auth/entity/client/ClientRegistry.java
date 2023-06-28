@@ -402,9 +402,11 @@ public class ClientRegistry {
             for (AuthorizationGrantType authorizationGrantType : AUTHORIZATION_GRANT_TYPES) {
                 if (authorizationGrantType.getValue().equalsIgnoreCase(this.authorizationGrantType.getValue())
                         && !authorizationGrantType.equals(this.authorizationGrantType)) {
-                    logger.warn(LogMessage.format(
-                            "AuthorizationGrantType: %s does not match the pre-defined constant %s and won't match a valid OAuth2AuthorizedClientProvider",
-                            this.authorizationGrantType, authorizationGrantType));
+                    if (logger.isWarnEnabled()) {
+                        logger.warn(LogMessage.format(
+                                "AuthorizationGrantType: %s does not match the pre-defined constant %s and won't match a valid OAuth2AuthorizedClientProvider",
+                                this.authorizationGrantType, authorizationGrantType));
+                    }
                 }
             }
         }

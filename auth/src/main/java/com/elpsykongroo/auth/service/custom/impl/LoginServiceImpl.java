@@ -127,7 +127,9 @@ public class LoginServiceImpl implements LoginService {
         try {
             DeferredSecurityContext securityContext = securityContextRepository.loadDeferredContext(servletRequest);
             if (securityContext.get().getAuthentication() != null) {
-                log.debug("already login");
+                if (log.isDebugEnabled()) {
+                    log.debug("already login");
+                }
                 if (username.equals(securityContext.get().getAuthentication().getName())) {
                     return "200";
                 } else {
@@ -168,7 +170,9 @@ public class LoginServiceImpl implements LoginService {
                     pkc = PublicKeyCredential.parseAssertionResponseJson(credential);
             AssertionRequest assertionRequest = (AssertionRequest) servletContext.getAttribute(username);
             servletContext.removeAttribute(username);
-            log.debug("remove pkc success");
+            if (log.isDebugEnabled()) {
+                log.debug("remove pkc success");
+            }
             AssertionResult result = relyingParty.finishAssertion(FinishAssertionOptions.builder()
                     .request(assertionRequest)
                     .response(pkc)
@@ -190,12 +194,16 @@ public class LoginServiceImpl implements LoginService {
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);
-                log.debug("set SecurityContext success");
+                if (log.isDebugEnabled()) {
+                    log.debug("set SecurityContext success");
+                }
                 SavedRequest savedRequest = requestCache.getRequest(request, response);
                 if (savedRequest != null
                         && savedRequest.getRedirectUrl() != null
                         && savedRequest.getRedirectUrl().contains("oauth2/authorize?client_id")) {
-                    log.debug("get saved authorize url");
+                    if (log.isDebugEnabled()) {
+                        log.debug("get saved authorize url");
+                    }
                     return savedRequest.getRedirectUrl();
                 }
                 return "200";
@@ -205,7 +213,9 @@ public class LoginServiceImpl implements LoginService {
         } catch (IOException e) {
             return "400";
         } catch (AssertionFailedException e) {
-            log.error("login error:{}", e);
+            if (log.isErrorEnabled()) {
+                log.error("login error:{}", e);
+            }
             return "500";
         }
     }
@@ -222,7 +232,9 @@ public class LoginServiceImpl implements LoginService {
                 return "409";
             }
         } catch (Exception e) {
-            log.error("register with error:{}", e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error("register with error:{}", e.getMessage());
+            }
         }
         return registerAuth(saveUser);
     }
@@ -281,7 +293,9 @@ public class LoginServiceImpl implements LoginService {
         PublicKeyCredentialCreationOptions requestOptions =
                 (PublicKeyCredentialCreationOptions) servletContext.getAttribute(user.getUsername());
         servletContext.removeAttribute(user.getUsername());
-        log.debug("remove requestOptions success");
+        if (log.isDebugEnabled()) {
+            log.debug("remove requestOptions success");
+        }
         try {
             if (credential != null) {
                 PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc =
@@ -293,7 +307,9 @@ public class LoginServiceImpl implements LoginService {
                 RegistrationResult result = relyingParty.finishRegistration(options);
                 Authenticator savedAuth = new Authenticator(result, pkc.getResponse(), user, credname);
                 authenticatorService.add(savedAuth);
-                log.debug("save authenticator success");
+                if (log.isDebugEnabled()) {
+                    log.debug("save authenticator success");
+                }
                 if(user.getUserInfo() == null || user.getUserInfo().isEmpty()) {
                     userService.updateUserInfoEmail(username + "@tmp.com", username, null, false);
                 }
@@ -303,7 +319,9 @@ public class LoginServiceImpl implements LoginService {
                 return "500";
             }
         } catch (RegistrationFailedException e) {
-            log.error("finishRegistration error:{}", e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error("finishRegistration error:{}", e.getMessage());
+            }
             return "502";
         } catch (IOException e) {
             return "400";
@@ -313,7 +331,9 @@ public class LoginServiceImpl implements LoginService {
     private void removeInvalidUser(String username, String id) {
         int result = 0;
         if (userService.validUser(username, id)) {
-            log.debug("remove invalid user with no handle");
+            if (log.isDebugEnabled()) {
+                log.debug("remove invalid user with no handle");
+            }
             result += userService.deleteByUsername(username);
             authenticatorService.deleteByName(username);
         }
@@ -321,16 +341,22 @@ public class LoginServiceImpl implements LoginService {
         int inValidCount = 0;
         for (Authenticator authenticator : authenticators) {
             if (authenticator.getCredentialId().isEmpty()) {
-                log.debug("remove invalid user with no cred");
+                if (log.isDebugEnabled()) {
+                    log.debug("remove invalid user with no cred");
+                }
                 authenticatorService.deleteById(authenticator.getId());
                 inValidCount++;
             }
         }
         if (inValidCount >= authenticators.size()) {
-            log.debug("remove user with no valid cred");
+            if (log.isDebugEnabled()) {
+                log.debug("remove user with no valid cred");
+            }
             result += userService.deleteByUsername(username);
         }
-        log.debug("remove user result:{}", result);
+        if (log.isDebugEnabled()) {
+            log.debug("remove user result:{}", result);
+        }
     }
 
     @Override
@@ -348,12 +374,16 @@ public class LoginServiceImpl implements LoginService {
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);
-                log.debug("set tmp SecurityContext");
+                if (log.isDebugEnabled()) {
+                    log.debug("set tmp SecurityContext");
+                }
                 redisService.set("TmpCert_" + username, "", "");
                 return "redirect:https://elpsykongroo.com?username=" + username;
             }
         } catch (Exception e) {
-            log.error("set tmp SecurityContext error:{}", e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error("set tmp SecurityContext error:{}", e.getMessage());
+            }
         }
         return "redirect:https://elpsykongroo.com/error";
     }
@@ -370,10 +400,14 @@ public class LoginServiceImpl implements LoginService {
     public String loginWithToken(String token, String idToken, HttpServletRequest request, HttpServletResponse response) {
         try {
             OAuth2AuthenticatedPrincipal result = tokenIntrospector.introspect(token);
-            log.debug("introspect:{}", result.getAttribute("active").toString());
+            if (log.isDebugEnabled()) {
+                log.debug("introspect:{}", result.getAttribute("active").toString());
+            }
             if (result.getAttribute("active")) {
                 Jwt id = jwtDecoder.decode(idToken);
-                log.debug("token user:{}", id.getSubject());
+                if (log.isDebugEnabled()) {
+                    log.debug("token user:{}", id.getSubject());
+                }
                 SecurityContext context = securityContextHolderStrategy.createEmptyContext();
                 Authentication authentication =
                         WebAuthnAuthenticationToken.authenticated(
@@ -415,7 +449,9 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private User initAdminUser() {
-        log.debug("init admin");
+        if (log.isDebugEnabled()) {
+            log.debug("init admin");
+        }
         User user = saveUser("admin", "admin");
         if (StringUtils.isNotBlank(adminEmail)) {
             userService.updateUserInfoEmail(adminEmail, "admin", null, true);
@@ -434,7 +470,9 @@ public class LoginServiceImpl implements LoginService {
                 }
             }
             if (!exist) {
-                log.debug("init auth with:{}", auth);
+                if (log.isDebugEnabled()) {
+                    log.debug("init auth with:{}", auth);
+                }
                 authorityService.updateUserAuthority(auth, user.getId());
             }
         }
