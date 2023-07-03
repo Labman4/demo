@@ -41,6 +41,11 @@ public class ObjectController {
     @Autowired
     private ObjectService objectService;
 
+    @PostMapping
+    public String preUpload(@RequestBody S3 s3) throws IOException {
+        return objectService.getUploadId(s3);
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void multipartUpload(S3 s3) {
         try {

@@ -27,6 +27,12 @@ public interface StorageService {
 
     @RequestLine("POST /storage/object")
     @Headers({
+            "Content-Type: application/json"
+    })
+    String createMultiPart(S3 s3);
+
+    @RequestLine("POST /storage/object")
+    @Headers({
             "Content-Type: multipart/form-data"
     })
     void uploadObject(S3 s3);

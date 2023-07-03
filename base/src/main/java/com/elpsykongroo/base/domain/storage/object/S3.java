@@ -58,6 +58,8 @@ public class S3 {
 
     String consumerId;
 
+    String platform;
+
     boolean init;
 
     public S3(String bucket) {

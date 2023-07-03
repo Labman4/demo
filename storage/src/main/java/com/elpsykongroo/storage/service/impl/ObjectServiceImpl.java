@@ -19,8 +19,10 @@ package com.elpsykongroo.storage.service.impl;
 import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.domain.storage.object.ListObject;
 import com.elpsykongroo.base.domain.storage.object.S3;
+import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.storage.listener.ObjectListener;
 import com.elpsykongroo.storage.service.ObjectService;
+import java.util.Base64;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -51,6 +53,7 @@ import software.amazon.awssdk.http.apache.ProxyConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
@@ -93,6 +96,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -152,18 +156,12 @@ public class ObjectServiceImpl implements ObjectService {
 
     }
 
-    private void upload(S3 s3) {
-        try {
-            PutObjectRequest objectRequest = PutObjectRequest.builder()
-                        .bucket(s3.getBucket())
-                        .key(s3.getKey())
-                        .build();
-            s3Client.putObject(objectRequest, RequestBody.fromBytes(s3.getData()[0].getBytes())).eTag();
-        } catch (IOException e) {
-            if (log.isErrorEnabled()) {
-                log.error("upload io error: {}", e.getMessage());
-            }
-        }
+    private void upload(S3 s3) throws IOException {
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+                    .bucket(s3.getBucket())
+                    .key(s3.getKey())
+                    .build();
+        s3Client.putObject(objectRequest, RequestBody.fromBytes(s3.getData()[0].getBytes())).eTag();
     }
 
     @Override
@@ -207,7 +205,7 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
-    public void multipartUpload(S3 s3) {
+    public void multipartUpload(S3 s3) throws IOException {
         initClient(s3);
         if (StringUtils.isBlank(s3.getKey())) {
             s3.setKey(StringUtils.trim(s3.getData()[0].getOriginalFilename()));
@@ -219,26 +217,10 @@ public class ObjectServiceImpl implements ObjectService {
             }
             return;
         }
-        if (StringUtils.isNotBlank(s3.getUploadId())) {
-            uploadPart(s3, false);
-        } else {
-            boolean flag = false;
-            List<MultipartUpload> uploads = listMultipartUploads(s3).uploads();
-            if (log.isInfoEnabled()) {
-                log.info("multipartUpload size:{}", uploads.size());
-            }
-            for (MultipartUpload upload: uploads) {
-                if (s3.getKey().equals(upload.key())) {
-                    flag = true;
-                    s3.setUploadId(upload.uploadId());
-                    uploadPart(s3, true);
-                }
-            }
-            if (!flag) {
-                CreateMultipartUploadResponse resp = createMultiPart(s3);
-                s3.setUploadId(resp.uploadId());
-                uploadPart(s3,false);
-            }
+        if (StringUtils.isBlank(s3.getUploadId())) {
+            s3.setUploadId(getUploadId(s3));
+        }
+        uploadPart(s3);
 //            AbortMultipartUploadRequest abortMultipartUploadRequest;
 //            for (MultipartUpload upload: uploads) {
 //                abortMultipartUploadRequest = AbortMultipartUploadRequest.builder()
@@ -249,7 +231,35 @@ public class ObjectServiceImpl implements ObjectService {
 //
 //                s3Client.abortMultipartUpload(abortMultipartUploadRequest);
 //            }
+    }
+
+    @Override
+    public String getUploadId(S3 s3) throws IOException {
+        if (!"minio".equals(s3.getPlatform())) {
+            List<MultipartUpload> uploads = listMultipartUploads(s3).uploads();
+            if (log.isInfoEnabled()) {
+                log.info("multipartUpload size:{}", uploads.size());
+            }
+            Boolean flag = false;
+            for (MultipartUpload upload : uploads) {
+                if (s3.getKey().equals(upload.key())) {
+                    return upload.uploadId();
+                }
+            }
         }
+        return createMultiPart(s3).uploadId();
+    }
+
+    private CreateMultipartUploadResponse createMultiPart(S3 s3) {
+        if (log.isDebugEnabled()) {
+            log.debug("create multipartUpload");
+        }
+        initClient(s3);
+        CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
+                .bucket(s3.getBucket())
+                .key(s3.getKey())
+                .build();
+        return s3Client.createMultipartUpload(createMultipartUploadRequest);
     }
 
     public boolean createBucket(S3 s3) {
@@ -275,98 +285,119 @@ public class ObjectServiceImpl implements ObjectService {
         return false;
     }
 
-
-    private void uploadStream(S3 s3, Integer num, String uploadId) {
+    private void uploadStream(S3 s3, Integer num, String uploadId) throws IOException {
         long timestamp = Instant.now().toEpochMilli();
+        long topicSize = 0;
+        int start = 0;
+        int partCount = num;
+        if (StringUtils.isNotBlank(s3.getPartCount())) {
+            partCount = Integer.parseInt(s3.getPartCount());
+        }
+        String topic = s3.getPlatform() + "-" +s3.getBucket() + "-" + s3.getKey();
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
-        adminClient.createTopics(Collections.singleton(TopicBuilder.name(s3.getBucket() + "-" + s3.getKey()).build()));
-        ac.getBean(ObjectListener.class, s3.getBucket() + "-" + timestamp, s3.getBucket() + "-" + s3.getKey(), this);
+        adminClient.createTopics(Collections.singleton(TopicBuilder.name(topic).build()));
+        ac.getBean(ObjectListener.class, s3.getBucket() + "-" + timestamp, topic, this);
         Consumer<String, String> consumer = consumerFactory.createConsumer(s3.getBucket());
         TopicDescription topicDescription = null;
         try {
-            topicDescription = adminClient.describeTopics(Collections.singleton(s3.getBucket() + "-" + s3.getKey()))
-                    .topicNameValues().get(s3.getBucket() + "-" + s3.getKey()).get();
+            topicDescription = adminClient.describeTopics(Collections.singleton(topic))
+                    .topicNameValues().get(topic).get();
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("describe topic error:{}", e.getMessage());
             }
         }
-        long topicSize = 0;
         for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
-            TopicPartition topicPartition = new TopicPartition(s3.getBucket() + "-" + s3.getKey(), partitionInfo.partition());
+            TopicPartition topicPartition = new TopicPartition(topic, partitionInfo.partition());
             long partitionSize = (long) consumer.endOffsets(Collections.singleton(topicPartition)).get(topicPartition);
             topicSize += partitionSize;
         }
         byte[][] output = new byte[num][];
-        if (topicSize != num) {
-            int start = 0;
-            if (topicSize > 0) {
-                start = (int) topicSize - 1;
-            }
-            for(int i = start; i< num ; i++) {
-                int percent = (int) Math.ceil((double) i / num * 100);
-                if (log.isInfoEnabled()) {
-                    log.info("uploadStream complete:{} ", percent + "%");
+        if (uploadId.equals(getUploadId(s3))) {
+            if (topicSize != partCount) {
+                /**
+                 *   because of upload part by asc,
+                 *   continue upload start from last part,
+                 *   and retry the last part
+                 *   need to query uploadId first, so not compatible with minio which not support listMultipartUploads
+                 */
+                if (topicSize < partCount && topicSize > 0) {
+                    start = (int) topicSize - 1;
                 }
-                long startOffset = i * partSize;
-                try {
-                    output[i] = Arrays.copyOfRange(s3.getData()[0].getBytes(), (int) startOffset, (int) (startOffset + partSize));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                // upload with js chunk upload
+                if (topicSize > num) {
+                    start = num - 1;
                 }
-                kafkaTemplate.send(s3.getBucket() + "-" + s3.getKey(),
-                        s3.getBucket() + "-" + timestamp + "*" + s3.getKey() + "*" + num + "*" + i + "*" + uploadId, output[i]);
+                uploadPartByStream(s3, num, uploadId, timestamp, start, partCount, topic, output);
+            } else {
+                if (log.isWarnEnabled()) {
+                    log.warn("all part have been upload complete, skip upload part by stream");
+                }
             }
+        } else {
+            uploadPartByStream(s3, num, uploadId, timestamp, start, partCount, topic, output);
         }
     }
 
-    private void uploadPart(S3 s3, Boolean resume) {
+    private void uploadPartByStream(S3 s3, Integer num, String uploadId, long timestamp, int start, int partCount, String topic, byte[][] output) throws IOException {
+        for(int i = start; i < num; i++) {
+            int percent = (int) Math.ceil((double) i / num * 100);
+            if (log.isInfoEnabled()) {
+                log.info("uploadStream complete:{} ", percent + "%");
+            }
+            int partNum = i;
+            if (StringUtils.isNotBlank(s3.getPartNum())) {
+                partNum = Integer.parseInt(s3.getPartNum());
+            }
+            long startOffset = i * partSize;
+            long endOffset = startOffset + Math.min(partSize, s3.getData()[0].getSize() - startOffset);
+            output[i] = Arrays.copyOfRange(s3.getData()[0].getBytes(), (int) startOffset, (int) endOffset);
+            if (log.isDebugEnabled()) {
+                log.debug("uploadStream part {}-{} ", partCount, partNum);
+            }
+            kafkaTemplate.send(topic,
+                    s3.getPlatform() + "*" + s3.getBucket() + "-" + timestamp + "*" + s3.getKey() + "*" + partCount + "*" + partNum + "*" + uploadId, output[i]);
+        }
+    }
+
+    private void uploadPart(S3 s3) throws IOException {
         partSize = Math.max(Long.parseLong(s3.getPartSize()), 5 * 1024 * 1024);
         RequestBody requestBody = null;
         long fileSize = 0;
-        int num = 0;
+        int num = 1;
         if (s3.getByteData() != null) {
             requestBody = RequestBody.fromBytes(s3.getByteData());
             fileSize = s3.getByteData().length;
             num = (int) Math.ceil((double) fileSize / partSize);
         } else {
-            try {
-                requestBody = RequestBody.fromBytes(s3.getData()[0].getBytes());
-            } catch (IOException e) {
-                if (log.isErrorEnabled()) {
-                    log.error("upload io error:{}", e.getMessage());
-                }
-            }
+            requestBody = RequestBody.fromBytes(s3.getData()[0].getBytes());
             fileSize = s3.getData()[0].getSize();
             num = (int) Math.ceil((double) fileSize / partSize);
-            if ("stream".equals(s3.getMode()) && fileSize >= partSize) {
+            if ("stream".equals(s3.getMode()) && (fileSize >= partSize || StringUtils.isNotBlank(s3.getPartNum()))) {
                 uploadStream(s3, num, s3.getUploadId());
             }
         }
-        if (fileSize < partSize) {
+        if (fileSize < partSize && StringUtils.isEmpty(s3.getPartNum())) {
             upload(s3);
             return;
         }
         if(!"stream".equals(s3.getMode())) {
-            if (log.isDebugEnabled()) {
-                log.debug("uploadPart, continue:{}", resume);
-            }
             List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
             int startPart = 0;
-            if (resume) {
-                listCompletedPart(s3, completedParts);
+            listCompletedPart(s3, completedParts);
+            if (completedParts.size() > 0 && completedParts.size() < num) {
                 startPart = completedParts.size();
             }
             for(int i = startPart; i < num ; i++) {
                 int percent = (int) Math.ceil((double) i / num * 100);
-                if (log.isInfoEnabled()) {
-                    log.info("uploadPart complete:{} ", percent + "%");
-                }
                 long startOffset = i * partSize;
                 long endOffset = Math.min(partSize, fileSize - startOffset);
                 int partNum = i + 1;
                 if (StringUtils.isNotBlank(s3.getPartNum())) {
                     partNum = Integer.parseInt(s3.getPartNum()) + 1;
+                }
+                if (log.isInfoEnabled()) {
+                    log.info("uploadPart part:{}, complete:{}", partNum, percent + "%");
                 }
                 UploadPartResponse uploadPartResponse = uploadPart(s3, requestBody, partNum, endOffset);
                 if (uploadPartResponse != null) {
@@ -383,7 +414,9 @@ public class ObjectServiceImpl implements ObjectService {
                 listCompletedPart(s3, completedParts);
                 if (completedParts.size() == Integer.parseInt(s3.getPartCount())) {
                     completePart(s3, completedParts);
-                    completeTopic(s3);
+                    if (StringUtils.isNotBlank(s3.getConsumerId())) {
+                        completeTopic(s3);
+                    }
                 }
             } else if (completedParts.size() == num) {
                 completePart(s3, completedParts);
@@ -402,9 +435,22 @@ public class ObjectServiceImpl implements ObjectService {
                 container.stop();
             }
             while (!container.isRunning()) {
-                adminClient.deleteTopics(Collections.singleton(s3.getBucket() + "-" + s3.getKey()));
+                String topic = s3.getPlatform() + "-" + s3.getBucket() + "-" + s3.getKey();
                 if (log.isDebugEnabled()) {
-                    log.debug("deleteTopic");
+                    log.debug("deleteTopic :{}", topic);
+                }
+                TopicDescription topicDescription = null;
+                try {
+                    topicDescription = adminClient.describeTopics(Collections.singleton(topic))
+                            .topicNameValues().get(topic).get();
+                } catch (Exception e) {
+                    if (log.isErrorEnabled()) {
+                        log.error("describe topic error:{}", e.getMessage());
+                    }
+                }
+                if (topicDescription != null) {
+                    adminClient.deleteTopics(Collections.singleton(topic));
+                    return;
                 }
             }
         }
@@ -433,22 +479,7 @@ public class ObjectServiceImpl implements ObjectService {
         }
     }
 
-    private CreateMultipartUploadResponse createMultiPart(S3 s3) {
-        if (log.isDebugEnabled()) {
-            log.debug("create multipartUpload");
-        }
-        CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
-                .bucket(s3.getBucket())
-                .key(s3.getKey())
-                .build();
-        return s3Client.createMultipartUpload(createMultipartUploadRequest);
-    }
-
-
     private UploadPartResponse uploadPart(S3 s3, RequestBody requestBody, int partNum, long endOffset) {
-        if (log.isDebugEnabled()) {
-            log.debug("uploadPart");
-        }
         UploadPartRequest uploadRequest = null;
         try {
             uploadRequest = UploadPartRequest.builder()
@@ -470,24 +501,23 @@ public class ObjectServiceImpl implements ObjectService {
                     .build();
             return s3Client.uploadPart(uploadRequest, requestBody);
         } catch (SdkClientException e) {
-            throw new RuntimeException(e);
+            return s3Client.uploadPart(uploadRequest, requestBody);
         }
     }
 
     private ListMultipartUploadsResponse listMultipartUploads(S3 s3) {
-        if (log.isDebugEnabled()) {
-            log.debug("listMultipartUploads");
-        }
+        initClient(s3);
         ListMultipartUploadsRequest listMultipartUploadsRequest = ListMultipartUploadsRequest.builder()
                 .bucket(s3.getBucket())
                 .build();
-        return s3Client.listMultipartUploads(listMultipartUploadsRequest);
+        ListMultipartUploadsResponse resp = s3Client.listMultipartUploads(listMultipartUploadsRequest);
+        if (log.isDebugEnabled()) {
+            log.debug("listMultipartUploads: {}", resp.uploads().size());
+        }
+        return resp;
     }
 
     private void listCompletedPart(S3 s3, List<CompletedPart> completedParts) {
-        if (log.isDebugEnabled()) {
-            log.debug("listCompletedPart");
-        }
         ListPartsResponse listPartsResponse = listParts(s3);
         if (listPartsResponse.parts().size() > 0) {
             for (Part part: listPartsResponse.parts()) {
@@ -497,12 +527,12 @@ public class ObjectServiceImpl implements ObjectService {
                         .build());
             }
         }
+        if (log.isDebugEnabled()) {
+            log.debug("listCompletedPart: {}", completedParts.size());
+        }
     }
 
     private ListPartsResponse listParts(S3 s3) {
-        if (log.isDebugEnabled()) {
-            log.debug("listParts");
-        }
         ListPartsRequest listRequest = ListPartsRequest.builder()
                     .bucket(s3.getBucket())
                     .key(s3.getKey())
@@ -512,9 +542,6 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void completePart(S3 s3, List<CompletedPart> completedParts) {
-        if (log.isDebugEnabled()) {
-            log.debug("completePart");
-        }
         CompleteMultipartUploadRequest completeRequest = CompleteMultipartUploadRequest.builder()
                 .bucket(s3.getBucket())
                 .key(s3.getKey())
@@ -525,7 +552,7 @@ public class ObjectServiceImpl implements ObjectService {
                                 .build()
                 )
                 .build();
-        s3Client.completeMultipartUpload(completeRequest);
+        CompleteMultipartUploadResponse response = s3Client.completeMultipartUpload(completeRequest);
         if (log.isInfoEnabled()) {
             log.info("complete MultipartUpload");
         }
@@ -551,6 +578,10 @@ public class ObjectServiceImpl implements ObjectService {
                 AwsBasicCredentials.create(
                         serviceconfig.getS3().getAccessKey(),
                         serviceconfig.getS3().getAccessSecret());
+        if (StringUtils.isBlank(s3.getPlatform())) {
+            s3.setPlatform(serviceconfig.getS3().getPlatform());
+        }
+
         if (StringUtils.isBlank(s3.getRegion())) {
             s3.setRegion(serviceconfig.getS3().getRegion());
         }
@@ -564,8 +595,13 @@ public class ObjectServiceImpl implements ObjectService {
 //                        .build())
 //                .connectionTimeout(Duration.ofSeconds(serviceconfig.getTimeout().getConnect()))
 //                .socketTimeout(Duration.ofSeconds(serviceconfig.getTimeout().getSocket()));
-        if(StringUtils.isNotBlank(s3.getIdToken())) {
-            getStsToken(s3, builder);
+        if(StringUtils.isNotBlank(s3.getIdToken()) && StringUtils.isBlank(s3.getAccessSecret())) {
+            String[] jwtParts = s3.getIdToken().split("\\.");
+            String payload = new String(Base64.getUrlDecoder().decode(jwtParts[1]));
+            Map<String, Object> idToken = JsonUtils.toObject(payload, Map.class);
+            if (idToken.get("sub").equals(s3.getIdToken())) {
+                getStsToken(s3, builder);
+            }
         } else if (StringUtils.isNotBlank(s3.getEndpoint())) {
             if (StringUtils.isNotBlank(s3.getAccessKey())) {
                 this.s3Client = S3Client.builder()

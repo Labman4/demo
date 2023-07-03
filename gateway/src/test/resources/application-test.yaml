@@ -31,23 +31,10 @@ spring:
           client-secret:
   main:
     allow-bean-definition-overriding: true
-  datasource:
-    url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
   data:
     elasticsearch:
       repositories:
         enabled: true
-  kafka:
-    bootstrap-servers: ${KAFKA_URL:kafka}
-    security:
-      protocol: ssl
-    ssl:
-      trust-store-location: ${JKS:jks}
-      trust-store-password: ${JKS_PASS:pass}
-    consumer:
-      #      security:
-      #        protocol: ssl
-      auto-offset-reset: earliest
 request:
   limit:
     global:

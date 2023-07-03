@@ -53,12 +53,13 @@ public class ObjectListener<K,V> {
         String[] keys = data.key().split("\\*");
         S3 s3 = new S3();
         s3.setByteData(data.value());
-        s3.setBucket(keys[0].split("-")[0]);
-        s3.setConsumerId(keys[0]);
-        s3.setKey(keys[1]);
-        s3.setPartCount(keys[2]);
-        s3.setPartNum(keys[3]);
-        s3.setUploadId(keys[4]);
+        s3.setPlatform(keys[0]);
+        s3.setBucket(keys[1].split("-")[0]);
+        s3.setConsumerId(keys[1]);
+        s3.setKey(keys[2]);
+        s3.setPartCount(keys[3]);
+        s3.setPartNum(keys[4]);
+        s3.setUploadId(keys[5]);
         s3.setInit(true);
         try {
             if (count.get() == null) {

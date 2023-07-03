@@ -26,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,6 +43,11 @@ import java.io.InputStream;
 public class StorageController {
     @Autowired
     private StorageService storageService;
+
+    @PostMapping
+    public String preUpload(@RequestBody S3 s3) {
+        return storageService.createMultiPart(s3);
+    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadObject(S3 s3) {
@@ -86,7 +92,7 @@ public class StorageController {
     }
 
     @PostMapping("download")
-    public void download(S3 s3, HttpServletResponse response) throws IOException {
+    public void download(@RequestBody S3 s3, HttpServletResponse response) throws IOException {
         Response feginResp = null;
         InputStream in = null;
         BufferedInputStream bufferedInputStream = null;
@@ -112,10 +118,10 @@ public class StorageController {
     }
 
     @PostMapping("list")
-    public String list(S3 s3) {
+    public String list(@RequestBody S3 s3) {
         return storageService.listObject(s3);
     }
 
     @PostMapping("delete")
-    public void delete(S3 s3) { storageService.deleteObject(s3); }
+    public void delete(@RequestBody S3 s3) { storageService.deleteObject(s3); }
 }

@@ -100,6 +100,8 @@ public class ServiceConfig {
 
         private String region;
 
+        private String platform;
+
     }
 
     @Data
