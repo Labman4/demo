@@ -321,6 +321,7 @@ public class ObjectServiceImpl implements ObjectService {
                  *   need to query uploadId first, so not compatible with minio which not support listMultipartUploads
                  */
                 if (topicSize < partCount && topicSize > 0) {
+                    // only work when upload without chunk
                     start = (int) topicSize - 1;
                 }
                 // upload with js chunk upload
@@ -385,6 +386,7 @@ public class ObjectServiceImpl implements ObjectService {
             int startPart = 0;
             listCompletedPart(s3, completedParts);
             if (completedParts.size() > 0 && completedParts.size() < num) {
+                // only work when upload without chunk
                 startPart = completedParts.size();
             }
             for(int i = startPart; i < num ; i++) {
@@ -397,6 +399,14 @@ public class ObjectServiceImpl implements ObjectService {
                 }
                 if (log.isInfoEnabled()) {
                     log.info("uploadPart part:{}, complete:{}", partNum, percent + "%");
+                }
+                for (CompletedPart part : completedParts) {
+                    if (part.partNumber() == partNum) {
+                        if (log.isInfoEnabled()) {
+                            log.info("part-{} exist, skip", partNum);
+                        }
+                        return;
+                    }
                 }
                 UploadPartResponse uploadPartResponse = uploadPart(s3, requestBody, partNum, endOffset);
                 if (uploadPartResponse != null) {
