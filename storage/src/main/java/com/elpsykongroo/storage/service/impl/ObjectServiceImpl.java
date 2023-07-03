@@ -240,7 +240,6 @@ public class ObjectServiceImpl implements ObjectService {
             if (log.isInfoEnabled()) {
                 log.info("multipartUpload size:{}", uploads.size());
             }
-            Boolean flag = false;
             for (MultipartUpload upload : uploads) {
                 if (s3.getKey().equals(upload.key())) {
                     return upload.uploadId();
@@ -552,7 +551,7 @@ public class ObjectServiceImpl implements ObjectService {
                                 .build()
                 )
                 .build();
-        CompleteMultipartUploadResponse response = s3Client.completeMultipartUpload(completeRequest);
+        s3Client.completeMultipartUpload(completeRequest);
         if (log.isInfoEnabled()) {
             log.info("complete MultipartUpload");
         }
@@ -599,7 +598,7 @@ public class ObjectServiceImpl implements ObjectService {
             String[] jwtParts = s3.getIdToken().split("\\.");
             String payload = new String(Base64.getUrlDecoder().decode(jwtParts[1]));
             Map<String, Object> idToken = JsonUtils.toObject(payload, Map.class);
-            if (idToken.get("sub").equals(s3.getIdToken())) {
+            if (idToken.get("sub").equals(s3.getBucket())) {
                 getStsToken(s3, builder);
             }
         } else if (StringUtils.isNotBlank(s3.getEndpoint())) {
