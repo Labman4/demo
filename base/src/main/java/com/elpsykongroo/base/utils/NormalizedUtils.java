@@ -16,8 +16,7 @@
 
 package com.elpsykongroo.base.utils;
 
-
-public class NormalizedUtils {
+public final class NormalizedUtils {
     private NormalizedUtils() {
         throw new IllegalStateException("Utility class");
     }

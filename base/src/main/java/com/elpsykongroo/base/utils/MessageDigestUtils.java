@@ -19,7 +19,7 @@ package com.elpsykongroo.base.utils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class MessageDigestUtils {
+public final class MessageDigestUtils {
     private MessageDigestUtils() {
         throw new IllegalStateException("Utility class");
     }

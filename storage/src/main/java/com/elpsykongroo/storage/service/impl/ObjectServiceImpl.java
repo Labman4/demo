@@ -452,7 +452,7 @@ public class ObjectServiceImpl implements ObjectService {
             List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
             int startPart = 0;
             listCompletedPart(s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
-            if (completedParts.size() > 0 && completedParts.size() < num) {
+            if (!completedParts.isEmpty() && completedParts.size() < num) {
                 // only work when upload without chunk
                 startPart = completedParts.size();
             }
@@ -467,30 +467,33 @@ public class ObjectServiceImpl implements ObjectService {
                 if (log.isInfoEnabled()) {
                     log.info("uploadPart part:{}, complete:{}", partNum, percent + "%");
                 }
+                boolean flag = false;
                 for (CompletedPart part : completedParts) {
                     if (part.partNumber() == partNum) {
                         if (log.isInfoEnabled()) {
+                            flag = true;
                             log.info("part-{} exist, skip", partNum);
                         }
-                        return;
                     }
                 }
-                String shaKey = s3.getUploadId() + "*" +s3.getKey() + "*" + s3.getPartCount() + "*" + (partNum - 1);
-                byte[] content = getObject(s3.getBucket(), shaKey).asByteArray();
-                String sha = new String(content);
-                if (sha256.equals(sha)) {
-                    UploadPartResponse uploadPartResponse = uploadPart(s3, requestBody, partNum, endOffset);
-                    if (uploadPartResponse != null) {
-                        completedParts.add(
-                                CompletedPart.builder()
-                                        .partNumber(partNum)
-                                        .eTag(uploadPartResponse.eTag())
-                                        .build()
-                        );
-                    }
-                } else {
-                    if (log.isInfoEnabled()) {
-                        log.info("sha256:{} not match with:{}", sha256, sha);
+                if(!flag) {
+                    String shaKey = s3.getUploadId() + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + (partNum - 1);
+                    byte[] content = getObject(s3.getBucket(), shaKey).asByteArray();
+                    String sha = new String(content);
+                    if (sha256.equals(sha)) {
+                        UploadPartResponse uploadPartResponse = uploadPart(s3, requestBody, partNum, endOffset);
+                        if (uploadPartResponse != null) {
+                            completedParts.add(
+                                    CompletedPart.builder()
+                                            .partNumber(partNum)
+                                            .eTag(uploadPartResponse.eTag())
+                                            .build()
+                            );
+                        }
+                    } else {
+                        if (log.isInfoEnabled()) {
+                            log.info("sha256:{} not match with:{}", sha256, sha);
+                        }
                     }
                 }
             }
@@ -678,7 +681,7 @@ public class ObjectServiceImpl implements ObjectService {
             s3.setEndpoint(serviceconfig.getS3().getEndpoint());
         }
 
-        if (StringUtils.isNotBlank((s3.getKey()))) {
+        if (StringUtils.isNotBlank(s3.getKey())) {
             s3.setKey(NormalizedUtils.topicNormalize(s3.getKey()));
         }
 
