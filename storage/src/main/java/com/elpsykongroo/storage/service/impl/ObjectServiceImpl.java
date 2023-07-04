@@ -343,12 +343,15 @@ public class ObjectServiceImpl implements ObjectService {
             if (log.isErrorEnabled()) {
                 log.error("describe topic error:{}", e.getMessage());
             }
+        } finally {
+            adminClient.close();
         }
         for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
             TopicPartition topicPartition = new TopicPartition(topic, partitionInfo.partition());
             long partitionSize = (long) consumer.endOffsets(Collections.singleton(topicPartition)).get(topicPartition);
             topicSize += partitionSize;
         }
+        consumer.close();
         byte[][] output = new byte[num][];
         if (StringUtils.isBlank(obtainUploadId(s3))) {
             return;
@@ -539,6 +542,7 @@ public class ObjectServiceImpl implements ObjectService {
                 }
                 if (topicDescription != null) {
                     adminClient.deleteTopics(Collections.singleton(topic));
+                    adminClient.close();
                     return;
                 }
             }
