@@ -43,7 +43,7 @@ public class ObjectController {
 
     @PostMapping
     public String preUpload(@RequestBody S3 s3) throws IOException {
-        return objectService.getUploadId(s3);
+        return objectService.obtainUploadId(s3);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

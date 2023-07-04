@@ -35,5 +35,5 @@ public interface ObjectService {
 
     void multipartUpload(S3 s3) throws IOException;
 
-    String getUploadId(S3 s3) throws IOException;
+    String obtainUploadId(S3 s3) throws IOException;
 }
