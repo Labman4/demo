@@ -27,3 +27,14 @@ logging:
     com:
       elpsykongroo:
         storage: debug
+management:
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: storage
+  endpoints:
+    web:
+      exposure:
+        include: ${ENDPOINTS_WEB:prometheus}
