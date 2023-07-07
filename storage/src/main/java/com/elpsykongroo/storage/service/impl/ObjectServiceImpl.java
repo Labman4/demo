@@ -28,23 +28,26 @@ import java.util.Base64;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.TopicDescription;
-import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.admin.ConsumerGroupListing;
+import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
+import org.apache.kafka.clients.admin.ListConsumerGroupsResult;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.TopicPartitionInfo;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.MessageListenerContainer;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -56,6 +59,7 @@ import software.amazon.awssdk.http.apache.ProxyConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
@@ -70,6 +74,7 @@ import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.HeadBucketResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import software.amazon.awssdk.services.s3.model.InvalidObjectStateException;
 import software.amazon.awssdk.services.s3.model.ListMultipartUploadsRequest;
 import software.amazon.awssdk.services.s3.model.ListMultipartUploadsResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
@@ -102,12 +107,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
 public class ObjectServiceImpl implements ObjectService {
 
-    private S3Client s3Client;
+    private final Map<String, S3Client> clientMap = new ConcurrentHashMap<>();
+
+    private final Map<String, List<String>> consumerMap = new ConcurrentHashMap<>();
+
+    private final Map<String, String> uploadMap = new ConcurrentHashMap<>();
 
     private Long partSize = (long) 1024 * 1024 * 5;
 
@@ -129,19 +141,34 @@ public class ObjectServiceImpl implements ObjectService {
     @Autowired
     private KafkaListenerEndpointRegistry endpointRegistry;
 
+    private static List<ConsumerGroupListing> listConsumerGroups(String groupId, AdminClient adminClient) throws InterruptedException, ExecutionException {
+        ListConsumerGroupsResult result = adminClient.listConsumerGroups();
+        List<ConsumerGroupListing> groups = new ArrayList<>();
+        int count = 0;
+        for (ConsumerGroupListing consumerGroup : result.all().get()){
+            if (groupId.equals(consumerGroup.groupId())) {
+                if (log.isDebugEnabled()) {
+                    log.debug("consumerGroup: {}", consumerGroup.toString());
+                }
+                groups.add(consumerGroup);
+//                if (consumerGroup.state().get() == ConsumerGroupState.EMPTY) {
+//                    log.debug("consumerGroup: {}", consumerGroup.toString());
+//                    count ++;
+//                }
+            }
+        }
+//        if (count == groups.size()) {
+//            return false;
+//        }
+        return groups;
+    }
+
     @Override
     public void multipartUpload(S3 s3) throws IOException {
-        initClient(s3);
+        initClient(s3, "");
         if (StringUtils.isBlank(s3.getKey())) {
             String key = NormalizedUtils.topicNormalize(s3.getData()[0].getOriginalFilename());
             s3.setKey(key);
-        }
-        HeadObjectResponse headObjectResponse = headObject(s3.getBucket(), s3.getKey());
-        if (headObjectResponse != null) {
-            if (log.isWarnEnabled()) {
-                log.warn("object exist skip upload");
-            }
-            return;
         }
         if (StringUtils.isBlank(s3.getUploadId())) {
             if (StringUtils.isNotBlank(obtainUploadId(s3))) {
@@ -150,22 +177,12 @@ public class ObjectServiceImpl implements ObjectService {
                 return;
             }
         }
-        uploadPart(s3);
-//            AbortMultipartUploadRequest abortMultipartUploadRequest;
-//            for (MultipartUpload upload: uploads) {
-//                abortMultipartUploadRequest = AbortMultipartUploadRequest.builder()
-//                        .bucket(s3.getBucket())
-//                        .key(upload.key())
-//                        .uploadId(upload.uploadId())
-//                        .build();
-//
-//                s3Client.abortMultipartUpload(abortMultipartUploadRequest);
-//            }
+        uploadPart(s3, s3.getPlatform() + s3.getRegion() + s3.getBucket());
     }
 
     @Override
     public void download(S3 s3, HttpServletResponse response) throws IOException {
-        initClient(s3);
+        initClient(s3, "");
         GetObjectRequest objectRequest = GetObjectRequest
                 .builder()
                 .bucket(s3.getBucket())
@@ -175,7 +192,8 @@ public class ObjectServiceImpl implements ObjectService {
             long startPoint = Long.parseLong(s3.getOffset()); // 断点续传的起始位置
             objectRequest.toBuilder().range("bytes=" + startPoint + "-");
         }
-        ResponseInputStream<GetObjectResponse> in = s3Client.getObject(objectRequest);
+        ResponseInputStream<GetObjectResponse> in =
+                clientMap.get(s3.getPlatform() + s3.getRegion() + s3.getBucket()).getObject(objectRequest);
         response.setHeader("Content-Type", in.response().contentType());
         response.setHeader("Content-Disposition", "attachment; filename=" + s3.getKey());
         BufferedInputStream inputStream = new BufferedInputStream(in);
@@ -197,22 +215,22 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Override
     public void delete(S3 s3) {
-        initClient(s3);
-        deleteObject(s3.getBucket(), s3.getKey());
+        initClient(s3, "");
+        deleteObject(s3.getPlatform() + s3.getRegion() + s3.getBucket(), s3.getBucket(), s3.getKey());
     }
 
     @Override
     public List<ListObject> list(S3 s3) {
-        initClient(s3);
+        initClient(s3, "");
         List<ListObject> objects = new ArrayList<>();
         ListObjectsV2Iterable listResp = null;
         try {
-            listResp = listObject(s3.getBucket(), "");
+            listResp = listObject(s3.getPlatform() + s3.getRegion() + s3.getBucket(), s3.getBucket(), "");
         } catch (NoSuchBucketException e) {
             if (log.isWarnEnabled()) {
                 log.warn("bucket not exist");
             }
-            if(createBucket(s3.getBucket())) {
+            if(createBucket(s3.getPlatform() + s3.getRegion() + s3.getBucket(), s3.getBucket())) {
                 return objects;
             }
         }
@@ -225,209 +243,23 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Override
     public String obtainUploadId(S3 s3) throws IOException {
-        initClient(s3);
-        HeadObjectResponse headObjectResponse = headObject(s3.getBucket(), s3.getKey());
+        initClient(s3, "");
+        HeadObjectResponse headObjectResponse = headObject(s3.getPlatform() + s3.getRegion() + s3.getBucket(), s3.getBucket(), s3.getKey());
         if (headObjectResponse != null) {
             return "";
         }
         if (!"minio".equals(s3.getPlatform())) {
-            List<MultipartUpload> uploads = listMultipartUploads(s3.getBucket()).uploads();
-            if (log.isInfoEnabled()) {
-                log.info("multipartUpload size:{}", uploads.size());
-            }
-
+            List<MultipartUpload> uploads = listMultipartUploads(s3.getPlatform() + s3.getRegion() + s3.getBucket(), s3.getBucket()).uploads();
             for (MultipartUpload upload : uploads) {
                 if (s3.getKey().equals(upload.key())) {
                     return upload.uploadId();
                 }
             }
         }
-        return createMultiPart(s3.getBucket(), s3.getKey()).uploadId();
+        return createMultiPart(s3.getPlatform() + s3.getRegion() + s3.getBucket(), s3.getBucket(), s3.getKey()).uploadId();
     }
 
-    private void uploadObject(String bucket, String key, RequestBody requestBody) throws IOException {
-        PutObjectRequest objectRequest = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
-        s3Client.putObject(objectRequest, requestBody).eTag();
-    }
-
-    private void deleteObject(String bucket, String key) {
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
-        s3Client.deleteObject(deleteObjectRequest);
-    }
-
-    private void deleteObjectByPrefix(String bucket, String prefix) {
-        List<ObjectIdentifier> toDelete = new ArrayList<>();
-        listObject(bucket, prefix).contents().stream().forEach(obj -> toDelete.add(ObjectIdentifier.builder()
-                        .key(obj.key()).build()));
-        DeleteObjectsRequest deleteObjectRequest = DeleteObjectsRequest.builder()
-                .bucket(bucket)
-                .delete(Delete.builder().objects(toDelete).build())
-                .build();
-        s3Client.deleteObjects(deleteObjectRequest);
-    }
-
-    private ResponseBytes<GetObjectResponse> getObject(String bucket, String key) {
-        GetObjectRequest objectRequest = GetObjectRequest
-                .builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
-        return s3Client.getObjectAsBytes(objectRequest);
-    }
-
-    private ListObjectsV2Iterable listObject(String bucket, String prefix) {
-        ListObjectsV2Request listReq = ListObjectsV2Request.builder()
-                .bucket(bucket)
-                .prefix(prefix)
-                .build();
-        return s3Client.listObjectsV2Paginator(listReq);
-    }
-
-    private CreateMultipartUploadResponse createMultiPart(String bucket, String key) {
-        if (log.isDebugEnabled()) {
-            log.debug("create multipartUpload");
-        }
-        CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
-        return s3Client.createMultipartUpload(createMultipartUploadRequest);
-    }
-
-    public boolean createBucket(String bucket) {
-        try {
-            S3Waiter s3Waiter = s3Client.waiter();
-            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                    .bucket(bucket)
-                    .build();
-
-            s3Client.createBucket(bucketRequest);
-            HeadBucketRequest bucketRequestWait = HeadBucketRequest.builder()
-                    .bucket(bucket)
-                    .build();
-
-            WaiterResponse<HeadBucketResponse> waiterResponse = s3Waiter.waitUntilBucketExists(bucketRequestWait);
-            return waiterResponse.matched().response().isPresent();
-        } catch (S3Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("create bucket error: {}", e.awsErrorDetails().errorMessage());
-            }
-        }
-        return false;
-    }
-
-    private void uploadStream(S3 s3, Integer num, String uploadId) throws IOException {
-        long timestamp = Instant.now().toEpochMilli();
-        long topicSize = 0;
-        int start = 0;
-        int partCount = num;
-        if (StringUtils.isNotBlank(s3.getPartCount())) {
-            partCount = Integer.parseInt(s3.getPartCount());
-        }
-        String topic = s3.getPlatform() + "-" +s3.getBucket() + "-" + s3.getKey();
-        AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
-        adminClient.createTopics(Collections.singleton(TopicBuilder.name(topic).build()));
-        ac.getBean(ObjectListener.class, s3.getBucket() + "-" + timestamp, topic, this);
-        Consumer<String, String> consumer = consumerFactory.createConsumer(s3.getBucket());
-        TopicDescription topicDescription = null;
-        try {
-            topicDescription = adminClient.describeTopics(Collections.singleton(topic))
-                    .topicNameValues().get(topic).get();
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("describe topic error:{}", e.getMessage());
-            }
-        } finally {
-            adminClient.close();
-        }
-        for (TopicPartitionInfo partitionInfo : topicDescription.partitions()) {
-            TopicPartition topicPartition = new TopicPartition(topic, partitionInfo.partition());
-            long partitionSize = (long) consumer.endOffsets(Collections.singleton(topicPartition)).get(topicPartition);
-            topicSize += partitionSize;
-        }
-        consumer.close();
-        byte[][] output = new byte[num][];
-        if (StringUtils.isBlank(obtainUploadId(s3))) {
-            return;
-        }
-        if (uploadId.equals(obtainUploadId(s3))) {
-            if (topicSize != partCount) {
-                /**
-                 *   because of upload part by asc,
-                 *   continue upload start from last part,
-                 *   and retry the last part
-                 *   need to query uploadId first, so not compatible with minio which not support listMultipartUploads
-                 */
-                if (topicSize < partCount && topicSize > 0) {
-                    // only work when upload without chunk
-                    start = (int) topicSize - 1;
-                }
-                // upload with js chunk upload
-                if (topicSize > num) {
-                    start = num - 1;
-                }
-                uploadPartByStream(s3, num, uploadId, timestamp, start, partCount, topic, output);
-            } else {
-                if (log.isWarnEnabled()) {
-                    log.warn("all part have been upload complete, skip upload part by stream");
-                }
-            }
-        } else {
-            if (log.isInfoEnabled()) {
-                log.info("uploadId not exist");
-            }
-            uploadPartByStream(s3, num, uploadId, timestamp, start, partCount, topic, output);
-        }
-    }
-
-    private void uploadPartByStream(S3 s3, Integer num, String uploadId, long timestamp, int start, int partCount, String topic, byte[][] output) throws IOException {
-        for(int i = start; i < num; i++) {
-            int percent = (int) Math.ceil((double) i / num * 100);
-            if (log.isInfoEnabled()) {
-                log.info("uploadStream complete:{} ", percent + "%");
-            }
-            int partNum = i;
-            if (StringUtils.isNotBlank(s3.getPartNum())) {
-                partNum = Integer.parseInt(s3.getPartNum());
-            }
-            String key = s3.getPlatform() + "*" + s3.getBucket() + "-" + timestamp + "*" + s3.getKey() + "*" + partCount + "*" + partNum + "*" + uploadId;
-            long startOffset = i * partSize;
-            long endOffset = startOffset + Math.min(partSize, s3.getData()[0].getSize() - startOffset);
-            output[i] = Arrays.copyOfRange(s3.getData()[0].getBytes(), (int) startOffset, (int) endOffset);
-            if (log.isDebugEnabled()) {
-                log.debug("uploadStream part {}-{} ", partCount, partNum);
-            }
-            String shaKey = uploadId + "*" +s3.getKey() + "*" + partCount + "*" + s3.getPartNum();
-            String sha256 = MessageDigestUtils.sha256(output[i]);
-            HeadObjectResponse headObjectResponse = headObject(s3.getBucket(), shaKey);
-            if (headObjectResponse == null) {
-                kafkaTemplate.send(topic, key, output[i]);
-                uploadObject(s3.getBucket(), shaKey, RequestBody.fromString(sha256));
-            } else {
-                byte[] content = getObject(s3.getBucket(), shaKey).asByteArray();
-                String sha = new String(content);
-                if (sha256.equals(sha)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("part:{} is completed", s3.getPartNum());
-                    }
-                } else {
-                    if (log.isWarnEnabled()) {
-                        log.warn("part:{} sha256 is not match, re-upload ", s3.getPartNum());
-                        kafkaTemplate.send(topic, key, output[i]);
-                    }
-                }
-            }
-
-        }
-    }
-
-    private void uploadPart(S3 s3) throws IOException {
+    private void uploadPart(S3 s3, String clientId) throws IOException {
         partSize = Math.max(Long.parseLong(s3.getPartSize()), 5 * 1024 * 1024);
         RequestBody requestBody = null;
         long fileSize = 0;
@@ -444,17 +276,26 @@ public class ObjectServiceImpl implements ObjectService {
             fileSize = s3.getData()[0].getSize();
             num = (int) Math.ceil((double) fileSize / partSize);
             if ("stream".equals(s3.getMode()) && (fileSize >= partSize || StringUtils.isNotBlank(s3.getPartNum()))) {
-                uploadStream(s3, num, s3.getUploadId());
+                uploadStream(clientId, s3, num, s3.getUploadId());
             }
         }
         if (fileSize < partSize && StringUtils.isEmpty(s3.getPartNum())) {
-            uploadObject(s3.getBucket(), s3.getKey(), requestBody);
+            uploadObject(clientId, s3.getBucket(), s3.getKey(), requestBody);
             return;
         }
         if(!"stream".equals(s3.getMode())) {
             List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
             int startPart = 0;
-            listCompletedPart(s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
+            if ("minio".equals(s3.getPlatform())) {
+                String uploadId = getObject(clientId, s3.getBucket(), s3.getConsumerId() + "-uploadId");
+                if (log.isInfoEnabled()) {
+                    log.info("uploadPart consumerId:{}, uploadId:{}", s3.getConsumerId(), uploadId);
+                }
+                if (StringUtils.isNotBlank(uploadId)) {
+                    s3.setUploadId(uploadId);
+                }
+            }
+            listCompletedPart(clientId, s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
             if (!completedParts.isEmpty() && completedParts.size() < num) {
                 // only work when upload without chunk
                 startPart = completedParts.size();
@@ -473,18 +314,14 @@ public class ObjectServiceImpl implements ObjectService {
                 boolean flag = false;
                 for (CompletedPart part : completedParts) {
                     if (part.partNumber() == partNum) {
-                        if (log.isInfoEnabled()) {
-                            flag = true;
-                            log.info("part-{} exist, skip", partNum);
-                        }
+                        flag = true;
                     }
                 }
                 if(!flag) {
-                    String shaKey = s3.getUploadId() + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + (partNum - 1);
-                    byte[] content = getObject(s3.getBucket(), shaKey).asByteArray();
-                    String sha = new String(content);
+                    String shaKey = s3.getConsumerId() + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + (partNum - 1);
+                    String sha = getObject(clientId, s3.getBucket(), shaKey);
                     if (sha256.equals(sha)) {
-                        UploadPartResponse uploadPartResponse = uploadPart(s3, requestBody, partNum, endOffset);
+                        UploadPartResponse uploadPartResponse = uploadPart(clientId, s3, requestBody, partNum, endOffset);
                         if (uploadPartResponse != null) {
                             completedParts.add(
                                     CompletedPart.builder()
@@ -495,70 +332,350 @@ public class ObjectServiceImpl implements ObjectService {
                         }
                     } else {
                         if (log.isInfoEnabled()) {
-                            log.info("sha256:{} not match with:{}", sha256, sha);
+                            log.info("sha256:{} not match with: {}", sha256, shaKey);
                         }
+                    }
+                } else {
+                    if (log.isInfoEnabled()) {
+                        log.info("part:{} is complete, skip", partNum);
                     }
                 }
             }
             if (StringUtils.isNotBlank(s3.getPartCount())) {
                 completedParts = new ArrayList<CompletedPart>();
-                listCompletedPart(s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
+                listCompletedPart(clientId, s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
                 if (completedParts.size() == Integer.parseInt(s3.getPartCount())) {
-                    completePart(s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
+                    completePart(clientId, s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
                     if (StringUtils.isNotBlank(s3.getConsumerId())) {
-                        completeTopic(s3);
-                        deleteObjectByPrefix(s3.getBucket(), s3.getUploadId());
+                        completeTopic(s3, clientId);
+                        deleteObjectByPrefix(clientId, s3.getBucket(), s3.getConsumerId());
+                        clientMap.remove(clientId);
                     }
                 }
             } else if (completedParts.size() == num) {
-                completePart(s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
+                completePart(clientId, s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
             }
         }
     }
 
-    private void completeTopic(S3 s3) {
-        if (log.isDebugEnabled()) {
-            log.debug("completeTopic");
+    private void uploadStream(String clientId, S3 s3, Integer num, String uploadId) throws IOException {
+        long timestamp = Instant.now().toEpochMilli();
+        int start = 0;
+        int partCount = num;
+        if (StringUtils.isNotBlank(s3.getPartCount())) {
+            partCount = Integer.parseInt(s3.getPartCount());
         }
-        AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
-        MessageListenerContainer container = endpointRegistry.getListenerContainer(s3.getConsumerId());
-        if (container != null) {
-            if (container.isRunning()) {
-                container.stop();
-            }
-            while (!container.isRunning()) {
-                String topic = s3.getPlatform() + "-" + s3.getBucket() + "-" + s3.getKey();
-                if (log.isDebugEnabled()) {
-                    log.debug("deleteTopic :{}", topic);
+        String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" +  s3.getBucket() + "-" + s3.getKey();
+        String consumerGroupKey = topic + "-consumerId";
+        if (!consumerMap.containsKey(consumerGroupKey)) {
+            HeadObjectResponse response = headObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+            if (response == null) {
+                List<String> consumerGroupId = new ArrayList<>();
+                consumerGroupId.add(s3.getBucket() + "-" + timestamp);
+                List<String> flag = consumerMap.putIfAbsent(consumerGroupKey, consumerGroupId);
+                if (flag == null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("upload consumerId to s3");
+                    }
+                    uploadObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId",
+                            RequestBody.fromString(s3.getBucket() + "-" + timestamp));
+                    startListener(topic, s3.getBucket() + "-" + timestamp, s3.getBucket() + "-" + timestamp);
+                    List<String> consumerIds = new ArrayList<>();
+                    consumerIds.add(s3.getBucket() + "-" + timestamp);
+                    consumerMap.putIfAbsent(topic + s3.getBucket() + "-" + timestamp, consumerIds);
                 }
-                TopicDescription topicDescription = null;
-                try {
-                    topicDescription = adminClient.describeTopics(Collections.singleton(topic))
-                            .topicNameValues().get(topic).get();
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("describe topic error:{}", e.getMessage());
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("consumerGroupId already store in s3");
+                }
+                while (consumerMap.get(consumerGroupKey) == null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("try to fetch consumerGroupId");
+                    }
+                    String consumerId = getObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+                    if (StringUtils.isNotBlank(consumerId)) {
+                        List<String> consumerIds = new ArrayList<>();
+                        consumerIds.add(consumerId);
+                        consumerMap.putIfAbsent(consumerGroupKey, consumerIds);
+                        startListener(topic, s3.getBucket() + "-" + timestamp + "-" + Thread.currentThread().getId(), consumerId);
+                        AdminClient adminClient =  AdminClient.create(kafkaAdmin.getConfigurationProperties());
+                        ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(consumerId);
+                        try {
+                            if (log.isDebugEnabled()) {
+                                log.debug("manual reset offset");
+                            }
+                            Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
+                            adminClient.alterConsumerGroupOffsets(consumerId, offsets);
+                        } catch (Exception e) {
+                            if (log.isErrorEnabled()) {
+                                log.error("reset offset error: {}", e.getMessage());
+                            }
+                        }  finally {
+                            adminClient.close();
+                        }
                     }
                 }
-                if (topicDescription != null) {
-                    adminClient.deleteTopics(Collections.singleton(topic));
-                    adminClient.close();
-                    return;
+            }
+        }
+        byte[][] output = new byte[num][];
+        String obtainUploadId = obtainUploadId(s3);
+        if (StringUtils.isBlank(obtainUploadId)) {
+            return;
+        }
+        String consumerGroupId = consumerMap.get(consumerGroupKey).get(0);
+        if (!uploadId.equals(obtainUploadId)) {
+            if (log.isWarnEnabled()) {
+                log.warn("uploadId not exist");
+                if (!uploadMap.containsKey(consumerGroupId + "-uploadId")) {
+                    HeadObjectResponse uploadIdHead = headObject(clientId, s3.getBucket(), consumerGroupId + "-uploadId");
+                    if (uploadIdHead == null) {
+                        String flag = uploadMap.putIfAbsent(consumerGroupId + "-uploadId", uploadId);
+                        if(flag == null) {
+                            uploadObject(clientId, s3.getBucket(), consumerGroupId + "-uploadId",
+                                    RequestBody.fromString(uploadId));
+                        }
+                    }
+                }
+            }
+        }
+        uploadPartByStream(clientId, s3, num, uploadId, consumerGroupId, start, partCount, topic, output);
+    }
+
+    private void startListener(String topic, String id, String consumerId) {
+        try {
+            if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(consumerId)) {
+                MessageListenerContainer container = endpointRegistry.getListenerContainer(id);
+                if (container == null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("start listen id:{}, groupId:{}", id , consumerId);
+                    }
+                    List<String> consumerIds = null;
+                    if (consumerMap.containsKey(topic + consumerId)) {
+                        consumerIds = consumerMap.get(topic + consumerId);
+                    } else {
+                        consumerIds = new ArrayList<>();
+                    }
+                    consumerIds.add(id);
+                    consumerMap.putIfAbsent(topic + consumerId, consumerIds);
+                    ac.getBean(ObjectListener.class, id, topic, consumerId, this);
+                }
+            }
+            }catch(BeansException e){
+                if (log.isWarnEnabled()) {
+                    log.warn("already on listen:{}", e.getMessage());
+                }
+            }
+    }
+
+    private void uploadPartByStream(String clientId, S3 s3, Integer num, String uploadId, String consumerId, int start, int partCount, String topic, byte[][] output) throws IOException {
+        for(int i = start; i < num; i++) {
+            int percent = (int) Math.ceil((double) i / num * 100);
+            if (log.isInfoEnabled()) {
+                log.info("uploadStream complete:{} ", percent + "%");
+            }
+            int partNum = i;
+            if (StringUtils.isNotBlank(s3.getPartNum())) {
+                partNum = Integer.parseInt(s3.getPartNum());
+            }
+            String key = s3.getPlatform() + "*" + s3.getRegion() + "*" + consumerId + "*" + s3.getKey() + "*" + partCount + "*" + partNum + "*" + uploadId;
+            long startOffset = i * partSize;
+            long endOffset = startOffset + Math.min(partSize, s3.getData()[0].getSize() - startOffset);
+            output[i] = Arrays.copyOfRange(s3.getData()[0].getBytes(), (int) startOffset, (int) endOffset);
+            if (log.isDebugEnabled()) {
+                log.debug("uploadStream part {}-{} ", partCount, partNum);
+            }
+            String shaKey = consumerId + "*" +s3.getKey() + "*" + partCount + "*" + partNum;
+            String sha256 = MessageDigestUtils.sha256(output[i]);
+            HeadObjectResponse headObjectResponse = headObject(clientId, s3.getBucket(), shaKey);
+            if (headObjectResponse == null) {
+                CompletableFuture<SendResult<String, Object>> result = kafkaTemplate.send(topic, key, output[i]);
+                try {
+                    String recordSha256 = MessageDigestUtils.sha256((byte[])result.get().getProducerRecord().value());
+                    if (log.isDebugEnabled()) {
+                        log.debug("record sha256: {}", recordSha256);
+                    }
+                    if (sha256.equals(recordSha256)) {
+                        uploadObject(clientId, s3.getBucket(), shaKey, RequestBody.fromString(sha256));
+                    }
+                } catch (Exception e) {
+                    if (log.isErrorEnabled()) {
+                        log.error("get send result error:{}", e.getMessage());
+                    }
+                }
+            } else {
+                String sha = getObject(clientId, s3.getBucket(), shaKey);
+                if (sha256.equals(sha)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("part:{} is completed", s3.getPartNum());
+                    }
+                } else {
+                    if (log.isWarnEnabled()) {
+                        log.warn("part:{} sha256 is not match, re-upload ", s3.getPartNum());
+                        kafkaTemplate.send(topic, key, output[i]);
+                    }
                 }
             }
         }
     }
 
-    private HeadObjectResponse headObject(String bucket, String key) {
+    private void completeTopic(S3 s3, String clientId) {
+        deleteObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+        String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + s3.getKey();
+        String consumerGroupKey = topic + "-consumerId";
+        String consumerId = "";
+        if (!consumerMap.containsKey(consumerGroupKey)) {
+            consumerId = getObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+        } else {
+            consumerId = consumerMap.get(consumerGroupKey).get(0);
+        }
+        String consumerKey = topic + consumerId ;
+        if (consumerMap.containsKey(consumerKey)) {
+            List<String> consumerIds = consumerMap.get(consumerKey);
+            log.debug("consumerIds: {}", consumerIds.toString());
+            for (String consumer: consumerIds) {
+                MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
+                if (container != null) {
+                    if (container.isRunning()) {
+                        container.stop();
+                    }
+                }
+            }
+        } else {
+            MessageListenerContainer container = endpointRegistry.getListenerContainer(s3.getConsumerId());
+            if (container != null) {
+                if (container.isRunning()) {
+                    container.stop();
+                }
+            }
+        }
+        AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());;
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("delete topic: {}", topic);
+            }
+            adminClient.deleteTopics(Collections.singleton(topic));
+        } finally {
+            adminClient.close();
+        }
+    }
+
+    private void uploadObject(String clientId, String bucket, String key, RequestBody requestBody) throws IOException {
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+        clientMap.get(clientId).putObject(objectRequest, requestBody).eTag();
+    }
+
+    private void deleteObject(String clientId, String bucket, String key) {
+        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+        clientMap.get(clientId).deleteObject(deleteObjectRequest);
+    }
+
+    private void deleteObjectByPrefix(String clientId, String bucket, String prefix) {
+        List<ObjectIdentifier> toDelete = new ArrayList<>();
+        listObject(clientId, bucket, prefix).contents().stream().forEach(obj -> toDelete.add(ObjectIdentifier.builder()
+                .key(obj.key()).build()));
+        DeleteObjectsRequest deleteObjectRequest = DeleteObjectsRequest.builder()
+                .bucket(bucket)
+                .delete(Delete.builder().objects(toDelete).build())
+                .build();
+        clientMap.get(clientId).deleteObjects(deleteObjectRequest);
+    }
+
+    private String getObject(String clientId, String bucket, String key) {
+        try {
+            GetObjectRequest objectRequest = GetObjectRequest
+                    .builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
+            ResponseBytes<GetObjectResponse> resp = clientMap.get(clientId).getObjectAsBytes(objectRequest);
+            if (resp != null) {
+                String str = new String(resp.asByteArray());
+                if (log.isDebugEnabled()) {
+                    log.debug("getObjectAsBytes value:{}",str);
+                }
+                return str;
+            }
+        } catch (NoSuchKeyException e) {
+            if (log.isErrorEnabled()) {
+                log.error("getObjectAsBytes error:{} key:{}", e.getMessage(), key);
+            }
+            return "";
+        } catch (SdkClientException e) {
+            if (log.isErrorEnabled()) {
+                log.error("getObjectAsBytes client error:{}", e.getMessage());
+            }
+            return "";
+        } catch (InvalidObjectStateException e) {
+            if (log.isErrorEnabled()) {
+                log.error("getObjectAsBytes state error:{}", e.getMessage());
+            }
+            return "";
+        } catch (S3Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("getObjectAsBytes s3 error:{}", e.getMessage());
+            }
+            return "";
+        }
+        return "";
+    }
+
+    private ListObjectsV2Iterable listObject(String clientId, String bucket, String prefix) {
+        ListObjectsV2Request listReq = ListObjectsV2Request.builder()
+                .bucket(bucket)
+                .prefix(prefix)
+                .build();
+        return clientMap.get(clientId).listObjectsV2Paginator(listReq);
+    }
+
+    private CreateMultipartUploadResponse createMultiPart(String clientId, String bucket, String key) {
         if (log.isTraceEnabled()) {
-            log.trace("headObject bucket:{}, key:{}", bucket, key);
+            log.trace("create multipartUpload");
+        }
+        CreateMultipartUploadRequest createMultipartUploadRequest = CreateMultipartUploadRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+        return clientMap.get(clientId).createMultipartUpload(createMultipartUploadRequest);
+    }
+
+    public boolean createBucket(String clientId, String bucket) {
+        try {
+            S3Waiter s3Waiter = clientMap.get(clientId).waiter();
+            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                    .bucket(bucket)
+                    .build();
+
+            clientMap.get(clientId).createBucket(bucketRequest);
+            HeadBucketRequest bucketRequestWait = HeadBucketRequest.builder()
+                    .bucket(bucket)
+                    .build();
+
+            WaiterResponse<HeadBucketResponse> waiterResponse = s3Waiter.waitUntilBucketExists(bucketRequestWait);
+            return waiterResponse.matched().response().isPresent();
+        } catch (S3Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("create bucket error: {}", e.awsErrorDetails().errorMessage());
+            }
+        }
+        return false;
+    }
+
+    private HeadObjectResponse headObject(String clientId, String bucket, String key) {
+        if (log.isTraceEnabled()) {
+            log.trace("headObject clientId:{}, bucket:{}, key:{}", clientId, bucket, key);
         }
         try {
             HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
                     .bucket(bucket)
                     .key(key)
                     .build();
-            return s3Client.headObject(headObjectRequest);
+            return clientMap.get(clientId).headObject(headObjectRequest);
         } catch (NoSuchKeyException e) {
             if (log.isTraceEnabled()) {
                 log.trace("object not exist");
@@ -572,7 +689,7 @@ public class ObjectServiceImpl implements ObjectService {
         }
     }
 
-    private UploadPartResponse uploadPart(S3 s3, RequestBody requestBody, int partNum, long endOffset) throws IOException {
+    private UploadPartResponse uploadPart(String clientId, S3 s3, RequestBody requestBody, int partNum, long endOffset) throws IOException {
         UploadPartRequest uploadRequest = null;
         try {
             uploadRequest = UploadPartRequest.builder()
@@ -582,7 +699,7 @@ public class ObjectServiceImpl implements ObjectService {
                     .partNumber(partNum)
                     .contentLength(endOffset)
                     .build();
-            return s3Client.uploadPart(uploadRequest, requestBody);
+            return clientMap.get(clientId).uploadPart(uploadRequest, requestBody);
         } catch (NoSuchUploadException e) {
             String uploadId = obtainUploadId(s3);
             if (StringUtils.isNotBlank(uploadId)) {
@@ -593,29 +710,38 @@ public class ObjectServiceImpl implements ObjectService {
                         .partNumber(partNum)
                         .contentLength(endOffset)
                         .build();
-                return s3Client.uploadPart(uploadRequest, requestBody);
+                return clientMap.get(clientId).uploadPart(uploadRequest, requestBody);
             } else {
                 return null;
             }
         } catch (SdkClientException e) {
-            return s3Client.uploadPart(uploadRequest, requestBody);
+            return clientMap.get(clientId).uploadPart(uploadRequest, requestBody);
         }
     }
 
-    private ListMultipartUploadsResponse listMultipartUploads(String bucket) {
+    private ListMultipartUploadsResponse listMultipartUploads(String clientId, String bucket) {
         ListMultipartUploadsRequest listMultipartUploadsRequest = ListMultipartUploadsRequest.builder()
                 .bucket(bucket)
                 .build();
-        ListMultipartUploadsResponse resp = s3Client.listMultipartUploads(listMultipartUploadsRequest);
+        ListMultipartUploadsResponse resp = clientMap.get(clientId).listMultipartUploads(listMultipartUploadsRequest);
         if (log.isDebugEnabled()) {
             log.debug("listMultipartUploads: {}", resp.uploads().size());
         }
         return resp;
     }
 
-    private void listCompletedPart(String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
-        ListPartsResponse listPartsResponse = listParts(bucket, key, uploadId);
-        if (listPartsResponse.parts().size() > 0) {
+//    private void abortMultipartUpload (String bucket, String key, String uploadId) {
+//        AbortMultipartUploadRequest abortMultipartUploadRequest = AbortMultipartUploadRequest.builder()
+//                        .bucket(bucket)
+//                        .key(key)
+//                        .uploadId(uploadId)
+//                        .build();
+//        s3Client.abortMultipartUpload(abortMultipartUploadRequest);
+//    }
+
+    private void listCompletedPart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
+        ListPartsResponse listPartsResponse = listParts(clientId, bucket, key, uploadId);
+        if (listPartsResponse != null && listPartsResponse.parts().size() > 0) {
             for (Part part: listPartsResponse.parts()) {
                 completedParts.add(CompletedPart.builder()
                         .partNumber(part.getValueForField("PartNumber", Integer.class).get())
@@ -628,16 +754,33 @@ public class ObjectServiceImpl implements ObjectService {
         }
     }
 
-    private ListPartsResponse listParts(String bucket, String key, String uploadId) {
-        ListPartsRequest listRequest = ListPartsRequest.builder()
-                    .bucket(bucket)
-                    .key(key)
-                    .uploadId(uploadId)
-                    .build();
-        return s3Client.listParts(listRequest);
+    private ListPartsResponse listParts(String clientId, String bucket, String key, String uploadId) {
+        if (log.isDebugEnabled()) {
+            log.debug("list parts uploadId:{}", uploadId);
+        }
+        try {
+            ListPartsRequest listRequest = ListPartsRequest.builder()
+                        .bucket(bucket)
+                        .key(key)
+                        .uploadId(uploadId)
+                        .build();
+            return clientMap.get(clientId).listParts(listRequest);
+        } catch (AwsServiceException e) {
+            if (log.isErrorEnabled()) {
+                log.error("listPart awsService error: {}", e.awsErrorDetails());
+            }
+        } catch (SdkClientException e) {
+            if (log.isErrorEnabled()) {
+                log.error("listPart sdk client error: {}", e.getMessage());
+            }
+        }
+        return null;
     }
 
-    private void completePart(String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
+    private void completePart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
+        if (log.isInfoEnabled()) {
+            log.info("start complete part");
+        }
         CompleteMultipartUploadRequest completeRequest = CompleteMultipartUploadRequest.builder()
                 .bucket(bucket)
                 .key(key)
@@ -648,16 +791,45 @@ public class ObjectServiceImpl implements ObjectService {
                                 .build()
                 )
                 .build();
-        s3Client.completeMultipartUpload(completeRequest);
+        CompleteMultipartUploadResponse response = clientMap.get(clientId).completeMultipartUpload(completeRequest);
         if (log.isInfoEnabled()) {
-            log.info("complete MultipartUpload");
+            log.info("complete MultipartUpload: {}", response.eTag());
         }
     }
 
-    private void initClient(S3 s3) {
-        if (s3Client != null && s3.isInit()) {
-            return;
+    private void initClient(S3 s3, String clientId) {
+
+        if (StringUtils.isBlank(s3.getPlatform())) {
+            s3.setPlatform(serviceconfig.getS3().getPlatform());
         }
+
+        if (StringUtils.isBlank(s3.getRegion())) {
+            s3.setRegion(serviceconfig.getS3().getRegion());
+        }
+
+        if (StringUtils.isNotBlank(s3.getKey())) {
+            s3.setKey(NormalizedUtils.topicNormalize(s3.getKey()));
+        }
+
+        if (StringUtils.isBlank(clientId)) {
+            clientId = s3.getPlatform() + s3.getRegion() + s3.getBucket();
+        }
+
+        if (clientMap.containsKey(clientId)) {
+            if (log.isTraceEnabled()) {
+                log.trace("skip init");
+            }
+            return;
+        } else {
+            if (log.isTraceEnabled()) {
+                log.trace("start init");
+            }
+        }
+
+        if (StringUtils.isBlank(s3.getEndpoint())) {
+            s3.setEndpoint(serviceconfig.getS3().getEndpoint());
+        }
+
         Long connect = serviceconfig.getTimeout().getConnect();
         Duration connectDuration = Duration.ofSeconds(connect);
         SdkHttpClient.Builder builder = ApacheHttpClient.builder()
@@ -673,21 +845,6 @@ public class ObjectServiceImpl implements ObjectService {
                 AwsBasicCredentials.create(
                         serviceconfig.getS3().getAccessKey(),
                         serviceconfig.getS3().getAccessSecret());
-        if (StringUtils.isBlank(s3.getPlatform())) {
-            s3.setPlatform(serviceconfig.getS3().getPlatform());
-        }
-
-        if (StringUtils.isBlank(s3.getRegion())) {
-            s3.setRegion(serviceconfig.getS3().getRegion());
-        }
-
-        if (StringUtils.isBlank(s3.getEndpoint())) {
-            s3.setEndpoint(serviceconfig.getS3().getEndpoint());
-        }
-
-        if (StringUtils.isNotBlank(s3.getKey())) {
-            s3.setKey(NormalizedUtils.topicNormalize(s3.getKey()));
-        }
 
 //        SdkHttpClient.Builder builder = UrlConnectionHttpClient.builder()
 //                .proxyConfiguration(ProxyConfiguration.builder()
@@ -700,44 +857,44 @@ public class ObjectServiceImpl implements ObjectService {
             String payload = new String(Base64.getUrlDecoder().decode(jwtParts[1]));
             Map<String, Object> idToken = JsonUtils.toObject(payload, Map.class);
             if (idToken.get("sub").equals(s3.getBucket())) {
-                getStsToken(s3, builder);
+                getStsToken(s3, clientId, builder);
             }
         } else if (StringUtils.isNotBlank(s3.getEndpoint())) {
             if (StringUtils.isNotBlank(s3.getAccessKey())) {
-                this.s3Client = S3Client.builder()
+                clientMap.putIfAbsent(clientId, S3Client.builder()
                         .httpClientBuilder(builder)
                         .region(Region.of(s3.getRegion()))
                         .credentialsProvider(() -> AwsBasicCredentials.create(s3.getAccessKey(), s3.getAccessSecret()))
                         .endpointOverride(URI.create(s3.getEndpoint()))
                         .forcePathStyle(true)
-                        .build();
+                        .build());
             } else {
-                this.s3Client = S3Client.builder()
+                clientMap.putIfAbsent(clientId, S3Client.builder()
                         .httpClientBuilder(builder)
                         .region(Region.of(s3.getRegion()))
                         .credentialsProvider(() -> awsCredentials)
                         .endpointOverride(URI.create(s3.getEndpoint()))
                         .forcePathStyle(true)
-                        .build();
+                        .build());
             }
         } else if (StringUtils.isNotBlank(s3.getAccessKey())) {
-                this.s3Client = S3Client.builder()
+            clientMap.putIfAbsent(clientId, S3Client.builder()
                         .httpClientBuilder(builder)
                         .region(Region.of(s3.getRegion()))
                         .credentialsProvider(() -> AwsBasicCredentials.create(s3.getAccessKey(), s3.getAccessSecret()))
                         .forcePathStyle(true)
-                        .build();
+                        .build());
         } else {
-            this.s3Client = S3Client.builder()
+            clientMap.putIfAbsent(clientId, S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
                     .credentialsProvider(() -> awsCredentials)
                     .forcePathStyle(true)
-                    .build();
+                    .build());
         }
     }
 
-    private void getStsToken(S3 s3, SdkHttpClient.Builder builder) {
+    private void getStsToken(S3 s3, String clientId, SdkHttpClient.Builder builder) {
         AssumeRoleWithWebIdentityRequest awRequest =
                 AssumeRoleWithWebIdentityRequest.builder()
                         .durationSeconds(3600)
@@ -760,13 +917,13 @@ public class ObjectServiceImpl implements ObjectService {
                     credentials.secretAccessKey(),
                     credentials.sessionToken());
 
-            this.s3Client = S3Client.builder()
+            clientMap.putIfAbsent(clientId, S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
                     .credentialsProvider(() ->  awsCredentials)
                     .endpointOverride(URI.create(s3.getEndpoint()))
                     .forcePathStyle(true)
-                    .build();
+                    .build());
         } else {
             stsClient = StsClient.builder()
                     .httpClientBuilder(builder)
@@ -779,12 +936,12 @@ public class ObjectServiceImpl implements ObjectService {
                     credentials.secretAccessKey(),
                     credentials.sessionToken());
 
-            this.s3Client = S3Client.builder()
+            clientMap.putIfAbsent(clientId, S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
                     .credentialsProvider(() ->  awsCredentials)
                     .forcePathStyle(true)
-                    .build();
+                    .build());
         }
 //            StsAssumeRoleWithWebIdentityCredentialsProvider provider = StsAssumeRoleWithWebIdentityCredentialsProvider.builder()
 //                    .refreshRequest(awRequest)

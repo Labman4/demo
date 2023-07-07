@@ -60,8 +60,6 @@ public class S3 {
 
     String platform;
 
-    boolean init;
-
     public S3(String bucket) {
         this.bucket = bucket;
     }

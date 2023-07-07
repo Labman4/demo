@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Scope;
 public class ListenerConfig {
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public ObjectListener<?, ?> objectListener(String id, String topics, ObjectService objectService) {
-        return new ObjectListener<>(id, topics, objectService);
+    public ObjectListener<?, ?> objectListener(String id, String topics, String groupId, ObjectService objectService) {
+        return new ObjectListener<>(id, topics, groupId, objectService);
     }
 }
