@@ -144,7 +144,7 @@ public class ObjectServiceImpl implements ObjectService {
     private static List<ConsumerGroupListing> listConsumerGroups(String groupId, AdminClient adminClient) throws InterruptedException, ExecutionException {
         ListConsumerGroupsResult result = adminClient.listConsumerGroups();
         List<ConsumerGroupListing> groups = new ArrayList<>();
-        int count = 0;
+//        int count = 0;
         for (ConsumerGroupListing consumerGroup : result.all().get()){
             if (groupId.equals(consumerGroup.groupId())) {
                 if (log.isDebugEnabled()) {
@@ -531,7 +531,9 @@ public class ObjectServiceImpl implements ObjectService {
         String consumerKey = topic + consumerId ;
         if (consumerMap.containsKey(consumerKey)) {
             List<String> consumerIds = consumerMap.get(consumerKey);
-            log.debug("consumerIds: {}", consumerIds.toString());
+            if (log.isDebugEnabled()) {
+                log.debug("consumerIds: {}", consumerIds.toString());
+            }
             for (String consumer: consumerIds) {
                 MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
                 if (container != null) {
@@ -548,7 +550,7 @@ public class ObjectServiceImpl implements ObjectService {
                 }
             }
         }
-        AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());;
+        AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
         try {
             if (log.isDebugEnabled()) {
                 log.debug("delete topic: {}", topic);
@@ -815,11 +817,23 @@ public class ObjectServiceImpl implements ObjectService {
             clientId = s3.getPlatform() + s3.getRegion() + s3.getBucket();
         }
 
+
         if (clientMap.containsKey(clientId)) {
-            if (log.isTraceEnabled()) {
-                log.trace("skip init");
+            if (!uploadMap.containsKey(clientId + "-timestamp")) {
+                if (log.isTraceEnabled()) {
+                    log.trace("skip init");
+                }
+                return;
+            } else {
+                String timestamp = uploadMap.get(clientId + "-timestamp");
+                if (Instant.now().toEpochMilli() - Long.parseLong(timestamp) < 3600) {
+                    return;
+                } else {
+                    if (log.isTraceEnabled()) {
+                        log.trace("client expired, continue init");
+                    }
+                }
             }
-            return;
         } else {
             if (log.isTraceEnabled()) {
                 log.trace("start init");
@@ -943,6 +957,8 @@ public class ObjectServiceImpl implements ObjectService {
                     .forcePathStyle(true)
                     .build());
         }
+        uploadMap.putIfAbsent(clientId + "-timestamp", String.valueOf(Instant.now().toEpochMilli()));
+
 //            StsAssumeRoleWithWebIdentityCredentialsProvider provider = StsAssumeRoleWithWebIdentityCredentialsProvider.builder()
 //                    .refreshRequest(awRequest)
 //                    .stsClient(stsClient)
