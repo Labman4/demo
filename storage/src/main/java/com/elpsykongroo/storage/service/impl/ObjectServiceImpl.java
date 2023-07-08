@@ -828,7 +828,7 @@ public class ObjectServiceImpl implements ObjectService {
                 if (log.isDebugEnabled()) {
                     log.debug("client expired time :{}", timestamp);
                 }
-                if (Instant.now().compareTo(Instant.ofEpochMilli(Long.parseLong(timestamp))) < 0) {
+                if (Instant.now().compareTo(Instant.ofEpochMilli(Long.parseLong(timestamp)*1000)) < 0) {
                     return;
                 } else {
                     if (log.isTraceEnabled()) {
