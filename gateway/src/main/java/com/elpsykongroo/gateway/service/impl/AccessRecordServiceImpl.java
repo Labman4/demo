@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.elpsykongroo.base.domain.search.QueryParam;
-import com.elpsykongroo.base.domain.search.repo.IpManage;
 import com.elpsykongroo.base.utils.IPRegexUtils;
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.SearchService;
@@ -95,12 +94,6 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			if (log.isErrorEnabled()) {
 				log.error("save record error: {}", e.getMessage());
 			}
-			QueryParam queryParam = new QueryParam();
-			IpManage ipManage = new IpManage("localhost","false");
-			queryParam.setIndex("ip");
-			queryParam.setOperation("save");
-			queryParam.setEntity(ipManage);
-			searchService.query(queryParam);
 		}
 	}
 

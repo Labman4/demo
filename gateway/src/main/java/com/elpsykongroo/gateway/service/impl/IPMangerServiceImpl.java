@@ -82,16 +82,23 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	@Override
 	public String list(String isBlack, String pageNumber, String pageSize, String order) {
-		QueryParam queryParam = new QueryParam();
-		queryParam.setPageNumber(pageNumber);
-		queryParam.setPageSize(pageSize);
-		queryParam.setOrder(order);
-		queryParam.setOrderBy("timestamp");
-		queryParam.setType(IpManage.class);
-		queryParam.setIndex("ip");
-		queryParam.setParam(isBlack);
-		queryParam.setField("black");
-		return searchService.query(queryParam);
+		try {
+			QueryParam queryParam = new QueryParam();
+			queryParam.setPageNumber(pageNumber);
+			queryParam.setPageSize(pageSize);
+			queryParam.setOrder(order);
+			queryParam.setOrderBy("timestamp");
+			queryParam.setType(IpManage.class);
+			queryParam.setIndex("ip");
+			queryParam.setParam(isBlack);
+			queryParam.setField("black");
+			return searchService.query(queryParam);
+		} catch (FeignException e) {
+			if(log.isErrorEnabled()) {
+				log.error("feign error :{}", e.getMessage());
+			}
+			return "";
+		}
 	}
 
 	@Override
@@ -105,44 +112,50 @@ public class IPMangerServiceImpl implements IPManagerService {
 		if (StringUtils.isNotEmpty(isBlack)) {
 			update.put("black", isBlack);
 		}
-		if (StringUtils.isNotEmpty(id)) {
-			queryParam.setOperation("update");
-			queryParam.setIds(id);
-			queryParam.setUpdateParam(update);
-			queryParam.setScript(script);
-			String result = searchService.query(queryParam);
-			updateCache(isBlack);
-			return String.valueOf(result);
-		}
-		for (String ad: addr) {
-			InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
-			for (InetAddress inetAd: inetAddresses) {
-				List<String> params = new ArrayList<>();
-				List<String> fields = new ArrayList<>();
-				params.add(inetAd.getHostAddress());
-				params.add(inetAd.getHostName());
-				fields.add("address");
-				queryParam.setBoolQuery(true);
-				queryParam.setQueryStringParam(params.stream().distinct().collect(Collectors.toList()));
-				if (queryParam.getQueryStringParam().size() > 1) {
+		try {
+			if (StringUtils.isNotEmpty(id)) {
+				queryParam.setOperation("update");
+				queryParam.setIds(id);
+				queryParam.setUpdateParam(update);
+				queryParam.setScript(script);
+				String result = searchService.query(queryParam);
+				updateCache(isBlack);
+				return String.valueOf(result);
+			}
+			for (String ad : addr) {
+				InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
+				for (InetAddress inetAd : inetAddresses) {
+					List<String> params = new ArrayList<>();
+					List<String> fields = new ArrayList<>();
+					params.add(inetAd.getHostAddress());
+					params.add(inetAd.getHostName());
 					fields.add("address");
+					queryParam.setBoolQuery(true);
+					queryParam.setQueryStringParam(params.stream().distinct().collect(Collectors.toList()));
+					if (queryParam.getQueryStringParam().size() > 1) {
+						fields.add("address");
+					}
+					queryParam.setFields(fields);
+					if (StringUtils.isEmpty(isBlack)) {
+						queryParam.setOperation("deleteQuery");
+						queryParam.setType(IpManage.class);
+						queryParam.setBoolType("should");
+						String deleted = searchService.query(queryParam);
+						updated += Integer.parseInt(deleted);
+					} else {
+						queryParam.setOperation("updateQuery");
+						queryParam.setUpdateParam(update);
+						queryParam.setBoolType("should");
+						queryParam.setType(IpManage.class);
+						queryParam.setScript(script);
+						String u = searchService.query(queryParam);
+						updated += Integer.parseInt(u);
+					}
 				}
-				queryParam.setFields(fields);
-				if (StringUtils.isEmpty(isBlack)) {
-					queryParam.setOperation("deleteQuery");
-					queryParam.setType(IpManage.class);
-					queryParam.setBoolType("should");
-					String deleted = searchService.query(queryParam);
-					updated += Integer.parseInt(deleted);
-				} else {
-					queryParam.setOperation("updateQuery");
-					queryParam.setUpdateParam(update);
-					queryParam.setBoolType("should");
-					queryParam.setType(IpManage.class);
-					queryParam.setScript(script);
-					String u = searchService.query(queryParam);
-					updated += Integer.parseInt(u);
-				}
+			}
+		} catch (FeignException e) {
+			if(log.isErrorEnabled()) {
+				log.error("feign error :{}", e.getMessage());
 			}
 		}
 		updateCache(isBlack);
@@ -168,17 +181,13 @@ public class IPMangerServiceImpl implements IPManagerService {
 			for (String addr: address) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(addr);
 				for (InetAddress ad: inetAddresses) {
-					if (exist(ad.getHostAddress(), isBlack) == 0) {
-						queryParam.setEntity(new IpManage(ad.getHostAddress(), isBlack));
-						searchService.query(queryParam);
-						result ++;
-					}
+					if(addNoExist(isBlack, queryParam, ad.getHostAddress())) {
+						result++;
+					};
 					if (!ad.getHostAddress().equals(ad.getHostName())) {
-						if (exist(ad.getHostName(), isBlack) == 0) {
-							queryParam.setEntity(new IpManage(ad.getHostName(), isBlack));
-							searchService.query(queryParam);
-							result ++;
-						}
+						if(addNoExist(isBlack, queryParam, ad.getHostName())) {
+							result++;
+						};
 					}
 				}
 			}
@@ -196,42 +205,74 @@ public class IPMangerServiceImpl implements IPManagerService {
 		return String.valueOf(result);
 	}
 
+	private boolean addNoExist(String isBlack, QueryParam queryParam, String ad) {
+		int size = exist(ad, isBlack);
+		if(log.isDebugEnabled()) {
+			log.debug("exist size :{}", size);
+		}
+		try {
+			if ( size == 0) {
+				queryParam.setEntity(new IpManage(ad, isBlack));
+				searchService.query(queryParam);
+				return true;
+			}
+		} catch (FeignException e) {
+			if(log.isErrorEnabled()) {
+				log.error("feign error :{}", e.getMessage());
+			}
+		}
+		return false;
+	}
+
 	private int exist(String ad, String isBlack) {
-		QueryParam queryParam = new QueryParam();
-		List<String> fields = new ArrayList<>();
-		fields.add("address");
-		fields.add("black");
-		List<String> params = new ArrayList<>();
-		params.add(ad);
-		params.add(isBlack);
-		queryParam.setQueryStringParam(params);
-		queryParam.setFields(fields);
-		queryParam.setBoolQuery(true);
-		queryParam.setType(IpManage.class);
-		queryParam.setIndex("ip");
-		queryParam.setOperation("count");
-		String count = searchService.query(queryParam);
-		if (log.isDebugEnabled()) {
-			log.debug("ip: {}, black: {}, size: {}", ad, isBlack, count);
+		String count = null;
+		try {
+			QueryParam queryParam = new QueryParam();
+			List<String> fields = new ArrayList<>();
+			fields.add("address");
+			fields.add("black");
+			List<String> params = new ArrayList<>();
+			params.add(ad);
+			params.add(isBlack);
+			queryParam.setQueryStringParam(params);
+			queryParam.setFields(fields);
+			queryParam.setBoolQuery(true);
+			queryParam.setType(IpManage.class);
+			queryParam.setIndex("ip");
+			queryParam.setOperation("count");
+			count = searchService.query(queryParam);
+			if (log.isDebugEnabled()) {
+				log.debug("ip: {}, black: {}, size: {}", ad, isBlack, count);
+			}
+		} catch (FeignException e) {
+			if(log.isErrorEnabled()) {
+				log.error("feign error :{}", e.getMessage());
+			}
 		}
 		return StringUtils.isNotBlank(count) ? Integer.parseInt(count) : 0;
 	}
 
 	private void updateCache(String isBlack) {
-		QueryParam queryParam = new QueryParam();
-		queryParam.setIndex("ip");
-		queryParam.setType(IpManage.class);
-		queryParam.setField("black");
-		queryParam.setParam(isBlack);
-		String list = searchService.query(queryParam);
-		StringBuffer ipList = new StringBuffer();
-		String[] ips = list.split(",");
-		for (String str: ips) {
-			if(str.contains("address")) {
-				ipList.append(str.split("=")[1]).append(",");
+		try {
+			QueryParam queryParam = new QueryParam();
+			queryParam.setIndex("ip");
+			queryParam.setType(IpManage.class);
+			queryParam.setField("black");
+			queryParam.setParam(isBlack);
+			String list = searchService.query(queryParam);
+			StringBuffer ipList = new StringBuffer();
+			String[] ips = list.split(",");
+			for (String str: ips) {
+				if(str.contains("address")) {
+					ipList.append(str.split("=")[1]).append(",");
+				}
+			}
+			redisService.set(env + isBlack, ipList.toString(), "");
+		} catch (FeignException e) {
+			if(log.isErrorEnabled()) {
+				log.error("feign error :{}", e.getMessage());
 			}
 		}
-		redisService.set(env + isBlack, ipList.toString(), "");
 	}
 
 	@Override
@@ -284,7 +325,14 @@ public class IPMangerServiceImpl implements IPManagerService {
 	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack){
 		boolean flag = false;
 		try {
-			String list = redisService.get(env + isBlack);
+			String list = "";
+			try {
+				list = redisService.get(env + isBlack);
+			} catch (FeignException e) {
+				if(log.isErrorEnabled()) {
+					log.error("feign error :{}", e.getMessage());
+				}
+			}
 			String ip = accessIP(request, isBlack);
 			if (log.isDebugEnabled()) {
 				log.debug("cacheList: {}, black: {}", list, isBlack);
@@ -373,13 +421,16 @@ public class IPMangerServiceImpl implements IPManagerService {
 //					}
 //				}
 			log.debug("flag:{}, black:{}", flag, isBlack);
-		} catch (UnknownHostException e) {
-			if(log.isErrorEnabled()) {
-				log.error("UnknownHostException");
+			if ("0:0:0:0:0:0:0:1".equals(request.getRemoteAddr()) ||
+					"127.0.0.1".equals(request.getRemoteAddr())) {
+				if(log.isTraceEnabled()) {
+					log.trace("ignore private ip");
+				}
+				return true;
 			}
-		} catch (FeignException e) {
-			if(log.isErrorEnabled()) {
-				log.error("feign error :{}", e.getMessage());
+		} catch (UnknownHostException e) {
+			if (log.isErrorEnabled()) {
+				log.error("UnknownHostException");
 			}
 		}
 		return flag;
