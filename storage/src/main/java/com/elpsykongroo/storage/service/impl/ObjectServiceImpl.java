@@ -817,7 +817,6 @@ public class ObjectServiceImpl implements ObjectService {
             clientId = s3.getPlatform() + s3.getRegion() + s3.getBucket();
         }
 
-
         if (clientMap.containsKey(clientId)) {
             if (!uploadMap.containsKey(clientId + "-timestamp")) {
                 if (log.isTraceEnabled()) {
@@ -826,7 +825,7 @@ public class ObjectServiceImpl implements ObjectService {
                 return;
             } else {
                 String timestamp = uploadMap.get(clientId + "-timestamp");
-                if (Instant.now().toEpochMilli() - Long.parseLong(timestamp) < 3600) {
+                if (Instant.now().toEpochMilli() < Long.parseLong(timestamp)) {
                     return;
                 } else {
                     if (log.isTraceEnabled()) {
@@ -871,7 +870,7 @@ public class ObjectServiceImpl implements ObjectService {
             String payload = new String(Base64.getUrlDecoder().decode(jwtParts[1]));
             Map<String, Object> idToken = JsonUtils.toObject(payload, Map.class);
             if (idToken.get("sub").equals(s3.getBucket())) {
-                getStsToken(s3, clientId, builder);
+                getStsToken(s3, clientId, builder, (Long) idToken.get("exp"));
             }
         } else if (StringUtils.isNotBlank(s3.getEndpoint())) {
             if (StringUtils.isNotBlank(s3.getAccessKey())) {
@@ -908,7 +907,7 @@ public class ObjectServiceImpl implements ObjectService {
         }
     }
 
-    private void getStsToken(S3 s3, String clientId, SdkHttpClient.Builder builder) {
+    private void getStsToken(S3 s3, String clientId, SdkHttpClient.Builder builder, long exp) {
         AssumeRoleWithWebIdentityRequest awRequest =
                 AssumeRoleWithWebIdentityRequest.builder()
                         .durationSeconds(3600)
@@ -957,7 +956,7 @@ public class ObjectServiceImpl implements ObjectService {
                     .forcePathStyle(true)
                     .build());
         }
-        uploadMap.putIfAbsent(clientId + "-timestamp", String.valueOf(Instant.now().toEpochMilli()));
+        uploadMap.putIfAbsent(clientId + "-timestamp", String.valueOf(exp));
 
 //            StsAssumeRoleWithWebIdentityCredentialsProvider provider = StsAssumeRoleWithWebIdentityCredentialsProvider.builder()
 //                    .refreshRequest(awRequest)
