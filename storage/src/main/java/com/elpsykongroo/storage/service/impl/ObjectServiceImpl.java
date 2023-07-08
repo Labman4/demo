@@ -828,7 +828,7 @@ public class ObjectServiceImpl implements ObjectService {
                 if (log.isDebugEnabled()) {
                     log.debug("client expired time :{}", timestamp);
                 }
-                if (Instant.now().toEpochMilli() < Long.parseLong(timestamp)) {
+                if (Instant.now().toEpochMilli() < Integer.parseInt(timestamp)) {
                     return;
                 } else {
                     if (log.isTraceEnabled()) {
@@ -873,7 +873,7 @@ public class ObjectServiceImpl implements ObjectService {
             String payload = new String(Base64.getUrlDecoder().decode(jwtParts[1]));
             Map<String, Object> idToken = JsonUtils.toObject(payload, Map.class);
             if (idToken.get("sub").equals(s3.getBucket())) {
-                getStsToken(s3, clientId, builder, (Long) idToken.get("exp"));
+                getStsToken(s3, clientId, builder, (int) idToken.get("exp"));
             }
         } else if (StringUtils.isNotBlank(s3.getEndpoint())) {
             if (StringUtils.isNotBlank(s3.getAccessKey())) {
@@ -910,7 +910,7 @@ public class ObjectServiceImpl implements ObjectService {
         }
     }
 
-    private void getStsToken(S3 s3, String clientId, SdkHttpClient.Builder builder, long exp) {
+    private void getStsToken(S3 s3, String clientId, SdkHttpClient.Builder builder, int exp) {
         AssumeRoleWithWebIdentityRequest awRequest =
                 AssumeRoleWithWebIdentityRequest.builder()
                         .durationSeconds(3600)
