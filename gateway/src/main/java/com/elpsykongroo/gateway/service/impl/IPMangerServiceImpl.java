@@ -438,12 +438,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	private void initWhite(){
 		try {
-			QueryParam queryParam = new QueryParam();
-			IpManage ipManage = new IpManage("localhost","false");
-			queryParam.setIndex("ip");
-			queryParam.setOperation("save");
-			queryParam.setEntity(ipManage);
-			searchService.query(queryParam);
 			for(String d: whiteDomain.split(",")) {
 				add(d, "false");
 			}
