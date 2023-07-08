@@ -28,9 +28,7 @@ import java.util.Base64;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
-import org.apache.kafka.clients.admin.ListConsumerGroupsResult;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.BeansException;
@@ -109,7 +107,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
@@ -141,27 +138,27 @@ public class ObjectServiceImpl implements ObjectService {
     @Autowired
     private KafkaListenerEndpointRegistry endpointRegistry;
 
-    private static List<ConsumerGroupListing> listConsumerGroups(String groupId, AdminClient adminClient) throws InterruptedException, ExecutionException {
-        ListConsumerGroupsResult result = adminClient.listConsumerGroups();
-        List<ConsumerGroupListing> groups = new ArrayList<>();
-//        int count = 0;
-        for (ConsumerGroupListing consumerGroup : result.all().get()){
-            if (groupId.equals(consumerGroup.groupId())) {
-                if (log.isDebugEnabled()) {
-                    log.debug("consumerGroup: {}", consumerGroup.toString());
-                }
-                groups.add(consumerGroup);
-//                if (consumerGroup.state().get() == ConsumerGroupState.EMPTY) {
+//    private static List<ConsumerGroupListing> listConsumerGroups(String groupId, AdminClient adminClient) throws InterruptedException, ExecutionException {
+//        ListConsumerGroupsResult result = adminClient.listConsumerGroups();
+//        List<ConsumerGroupListing> groups = new ArrayList<>();
+////        int count = 0;
+//        for (ConsumerGroupListing consumerGroup : result.all().get()){
+//            if (groupId.equals(consumerGroup.groupId())) {
+//                if (log.isDebugEnabled()) {
 //                    log.debug("consumerGroup: {}", consumerGroup.toString());
-//                    count ++;
 //                }
-            }
-        }
-//        if (count == groups.size()) {
-//            return false;
+//                groups.add(consumerGroup);
+////                if (consumerGroup.state().get() == ConsumerGroupState.EMPTY) {
+////                    log.debug("consumerGroup: {}", consumerGroup.toString());
+////                    count ++;
+////                }
+//            }
 //        }
-        return groups;
-    }
+////        if (count == groups.size()) {
+////            return false;
+////        }
+//        return groups;
+//    }
 
     @Override
     public void multipartUpload(S3 s3) throws IOException {
@@ -289,7 +286,7 @@ public class ObjectServiceImpl implements ObjectService {
             if ("minio".equals(s3.getPlatform())) {
                 String uploadId = getObject(clientId, s3.getBucket(), s3.getConsumerId() + "-uploadId");
                 if (log.isInfoEnabled()) {
-                    log.info("uploadPart consumerId:{}, uploadId:{}", s3.getConsumerId(), uploadId);
+                    log.info("uploadPart consumerGroupId:{}, uploadId:{}", s3.getConsumerId(), uploadId);
                 }
                 if (StringUtils.isNotBlank(uploadId)) {
                     s3.setUploadId(uploadId);
@@ -349,7 +346,7 @@ public class ObjectServiceImpl implements ObjectService {
                     if (StringUtils.isNotBlank(s3.getConsumerId())) {
                         completeTopic(s3, clientId);
                         deleteObjectByPrefix(clientId, s3.getBucket(), s3.getConsumerId());
-                        clientMap.remove(clientId);
+                        deleteObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
                     }
                 }
             } else if (completedParts.size() == num) {
@@ -392,20 +389,20 @@ public class ObjectServiceImpl implements ObjectService {
                     if (log.isDebugEnabled()) {
                         log.debug("try to fetch consumerGroupId");
                     }
-                    String consumerId = getObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
-                    if (StringUtils.isNotBlank(consumerId)) {
+                    String consumerGroupId = getObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+                    if (StringUtils.isNotBlank(consumerGroupId)) {
                         List<String> consumerIds = new ArrayList<>();
-                        consumerIds.add(consumerId);
+                        consumerIds.add(consumerGroupId);
                         consumerMap.putIfAbsent(consumerGroupKey, consumerIds);
-                        startListener(topic, s3.getBucket() + "-" + timestamp + "-" + Thread.currentThread().getId(), consumerId);
+                        startListener(topic, s3.getBucket() + "-" + timestamp + "-" + Thread.currentThread().getId(), consumerGroupId);
                         AdminClient adminClient =  AdminClient.create(kafkaAdmin.getConfigurationProperties());
-                        ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(consumerId);
+                        ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(consumerGroupId);
                         try {
                             if (log.isDebugEnabled()) {
                                 log.debug("manual reset offset");
                             }
                             Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
-                            adminClient.alterConsumerGroupOffsets(consumerId, offsets);
+                            adminClient.alterConsumerGroupOffsets(consumerGroupId, offsets);
                         } catch (Exception e) {
                             if (log.isErrorEnabled()) {
                                 log.error("reset offset error: {}", e.getMessage());
@@ -441,23 +438,23 @@ public class ObjectServiceImpl implements ObjectService {
         uploadPartByStream(clientId, s3, num, uploadId, consumerGroupId, start, partCount, topic, output);
     }
 
-    private void startListener(String topic, String id, String consumerId) {
+    private void startListener(String topic, String id, String consumerGroupId) {
         try {
-            if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(consumerId)) {
+            if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(consumerGroupId)) {
                 MessageListenerContainer container = endpointRegistry.getListenerContainer(id);
                 if (container == null) {
                     if (log.isDebugEnabled()) {
-                        log.debug("start listen id:{}, groupId:{}", id , consumerId);
+                        log.debug("start listen id:{}, groupId:{}", id , consumerGroupId);
                     }
                     List<String> consumerIds = null;
-                    if (consumerMap.containsKey(topic + consumerId)) {
-                        consumerIds = consumerMap.get(topic + consumerId);
+                    if (consumerMap.containsKey(topic + consumerGroupId)) {
+                        consumerIds = consumerMap.get(topic + consumerGroupId);
                     } else {
                         consumerIds = new ArrayList<>();
                     }
                     consumerIds.add(id);
-                    consumerMap.putIfAbsent(topic + consumerId, consumerIds);
-                    ac.getBean(ObjectListener.class, id, topic, consumerId, this);
+                    consumerMap.putIfAbsent(topic + consumerGroupId, consumerIds);
+                    ac.getBean(ObjectListener.class, id, topic, consumerGroupId, this);
                 }
             }
             }catch(BeansException e){
@@ -467,7 +464,7 @@ public class ObjectServiceImpl implements ObjectService {
             }
     }
 
-    private void uploadPartByStream(String clientId, S3 s3, Integer num, String uploadId, String consumerId, int start, int partCount, String topic, byte[][] output) throws IOException {
+    private void uploadPartByStream(String clientId, S3 s3, Integer num, String uploadId, String consumerGroupId, int start, int partCount, String topic, byte[][] output) throws IOException {
         for(int i = start; i < num; i++) {
             int percent = (int) Math.ceil((double) i / num * 100);
             if (log.isInfoEnabled()) {
@@ -477,14 +474,14 @@ public class ObjectServiceImpl implements ObjectService {
             if (StringUtils.isNotBlank(s3.getPartNum())) {
                 partNum = Integer.parseInt(s3.getPartNum());
             }
-            String key = s3.getPlatform() + "*" + s3.getRegion() + "*" + consumerId + "*" + s3.getKey() + "*" + partCount + "*" + partNum + "*" + uploadId;
+            String key = s3.getPlatform() + "*" + s3.getRegion() + "*" + consumerGroupId + "*" + s3.getKey() + "*" + partCount + "*" + partNum + "*" + uploadId;
             long startOffset = i * partSize;
             long endOffset = startOffset + Math.min(partSize, s3.getData()[0].getSize() - startOffset);
             output[i] = Arrays.copyOfRange(s3.getData()[0].getBytes(), (int) startOffset, (int) endOffset);
             if (log.isDebugEnabled()) {
                 log.debug("uploadStream part {}-{} ", partCount, partNum);
             }
-            String shaKey = consumerId + "*" +s3.getKey() + "*" + partCount + "*" + partNum;
+            String shaKey = consumerGroupId + "*" +s3.getKey() + "*" + partCount + "*" + partNum;
             String sha256 = MessageDigestUtils.sha256(output[i]);
             HeadObjectResponse headObjectResponse = headObject(clientId, s3.getBucket(), shaKey);
             if (headObjectResponse == null) {
@@ -519,16 +516,15 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void completeTopic(S3 s3, String clientId) {
-        deleteObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
         String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + s3.getKey();
         String consumerGroupKey = topic + "-consumerId";
-        String consumerId = "";
+        String consumerGroupId = "";
         if (!consumerMap.containsKey(consumerGroupKey)) {
-            consumerId = getObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+            consumerGroupId = getObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
         } else {
-            consumerId = consumerMap.get(consumerGroupKey).get(0);
+            consumerGroupId = consumerMap.get(consumerGroupKey).get(0);
         }
-        String consumerKey = topic + consumerId ;
+        String consumerKey = topic + consumerGroupId ;
         if (consumerMap.containsKey(consumerKey)) {
             List<String> consumerIds = consumerMap.get(consumerKey);
             if (log.isDebugEnabled()) {
@@ -539,6 +535,7 @@ public class ObjectServiceImpl implements ObjectService {
                 if (container != null) {
                     if (container.isRunning()) {
                         container.stop();
+                        clearMap(s3.getPlatform(), consumerGroupKey, consumerGroupId, consumerKey);
                     }
                 }
             }
@@ -547,6 +544,7 @@ public class ObjectServiceImpl implements ObjectService {
             if (container != null) {
                 if (container.isRunning()) {
                     container.stop();
+                    clearMap(s3.getPlatform(), consumerGroupKey, consumerGroupId, consumerKey);
                 }
             }
         }
@@ -558,6 +556,14 @@ public class ObjectServiceImpl implements ObjectService {
             adminClient.deleteTopics(Collections.singleton(topic));
         } finally {
             adminClient.close();
+        }
+    }
+
+    private void clearMap(String platform, String consumerGroupKey, String consumerGroupId, String consumerKey) {
+        consumerMap.remove(consumerGroupKey);
+        consumerMap.remove(consumerKey);
+        if ("minio".equals(platform) && consumerMap.containsKey(consumerGroupId + "-uploadId")) {
+            consumerMap.remove(consumerGroupId + "-uploadId");
         }
     }
 
@@ -933,7 +939,7 @@ public class ObjectServiceImpl implements ObjectService {
                     credentials.secretAccessKey(),
                     credentials.sessionToken());
 
-            clientMap.putIfAbsent(clientId, S3Client.builder()
+            clientMap.put(clientId, S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
                     .credentialsProvider(() ->  awsCredentials)
@@ -952,14 +958,14 @@ public class ObjectServiceImpl implements ObjectService {
                     credentials.secretAccessKey(),
                     credentials.sessionToken());
 
-            clientMap.putIfAbsent(clientId, S3Client.builder()
+            clientMap.put(clientId, S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
                     .credentialsProvider(() ->  awsCredentials)
                     .forcePathStyle(true)
                     .build());
         }
-        uploadMap.putIfAbsent(clientId + "-timestamp", String.valueOf(exp));
+        uploadMap.put(clientId + "-timestamp", String.valueOf(exp));
 
 //            StsAssumeRoleWithWebIdentityCredentialsProvider provider = StsAssumeRoleWithWebIdentityCredentialsProvider.builder()
 //                    .refreshRequest(awRequest)
