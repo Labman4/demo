@@ -26,7 +26,7 @@ logging:
     web: debug
     com:
       elpsykongroo:
-        storage: debug
+        storage: ${STORAGE_LOG:DEBUG}
 management:
   endpoint:
     prometheus:

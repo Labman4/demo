@@ -825,6 +825,9 @@ public class ObjectServiceImpl implements ObjectService {
                 return;
             } else {
                 String timestamp = uploadMap.get(clientId + "-timestamp");
+                if (log.isDebugEnabled()) {
+                    log.debug("client expired time :{}", timestamp);
+                }
                 if (Instant.now().toEpochMilli() < Long.parseLong(timestamp)) {
                     return;
                 } else {
