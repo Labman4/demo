@@ -395,21 +395,7 @@ public class ObjectServiceImpl implements ObjectService {
                         consumerIds.add(consumerGroupId);
                         consumerMap.putIfAbsent(consumerGroupKey, consumerIds);
                         startListener(topic, s3.getBucket() + "-" + timestamp + "-" + Thread.currentThread().getId(), consumerGroupId);
-                        AdminClient adminClient =  AdminClient.create(kafkaAdmin.getConfigurationProperties());
-                        ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(consumerGroupId);
-                        try {
-                            if (log.isDebugEnabled()) {
-                                log.debug("manual reset offset");
-                            }
-                            Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
-                            adminClient.alterConsumerGroupOffsets(consumerGroupId, offsets);
-                        } catch (Exception e) {
-                            if (log.isErrorEnabled()) {
-                                log.error("reset offset error: {}", e.getMessage());
-                            }
-                        }  finally {
-                            adminClient.close();
-                        }
+                        resetOffset(consumerGroupId);
                     }
                 }
             }
@@ -436,6 +422,27 @@ public class ObjectServiceImpl implements ObjectService {
             }
         }
         uploadPartByStream(clientId, s3, num, uploadId, consumerGroupId, start, partCount, topic, output);
+    }
+
+    private void resetOffset(String consumerGroupId) {
+        AdminClient adminClient =  AdminClient.create(kafkaAdmin.getConfigurationProperties());
+        ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(consumerGroupId);
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("manual reset offset");
+            }
+            Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
+            for (TopicPartition partition: offsets.keySet()) {
+                offsets.put(partition, new OffsetAndMetadata(0));
+            }
+            adminClient.alterConsumerGroupOffsets(consumerGroupId, offsets);
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("reset offset error: {}", e.getMessage());
+            }
+        }  finally {
+            adminClient.close();
+        }
     }
 
     private void startListener(String topic, String id, String consumerGroupId) {
@@ -576,6 +583,9 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     private void deleteObject(String clientId, String bucket, String key) {
+        if (log.isDebugEnabled()) {
+            log.debug("deleteObject key:{}", key);
+        }
         DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
