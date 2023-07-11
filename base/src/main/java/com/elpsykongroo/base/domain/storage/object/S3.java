@@ -56,9 +56,13 @@ public class S3 {
 
     String uploadId;
 
-    String consumerId;
+    String consumerGroupId;
 
     String platform;
+
+    String sha256;
+
+    String clientId;
 
     public S3(String bucket) {
         this.bucket = bucket;

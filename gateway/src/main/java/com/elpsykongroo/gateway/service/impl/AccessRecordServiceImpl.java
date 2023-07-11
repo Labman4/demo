@@ -65,8 +65,12 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		try {
 			String ip = ipMangerService.accessIP(request, "record");
 			Exclude recordExclude = requestConfig.getRecord().getExclude();
+			if (log.isDebugEnabled()) {
+				log.debug("record exclude ip:{}", recordExclude.getIp());
+			}
 			boolean recordFlag = ipMangerService.filterByIpOrList(recordExclude.getIp(), ip);
-			if (!(StringUtils.isNotEmpty(recordExclude.getPath()) && beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
+			if (!(StringUtils.isNotEmpty(recordExclude.getPath())
+					&& beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
 				if (!recordFlag) {
 					Map<String, String> result = new HashMap<>();
 					Enumeration<String> headerNames = request.getHeaderNames();

@@ -16,7 +16,7 @@
 
 package com.elpsykongroo.storage.service;
 
-import com.elpsykongroo.base.domain.storage.object.ListObject;
+import com.elpsykongroo.base.domain.storage.object.ListObjectResult;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public interface ObjectService {
 
     void delete(S3 s3);
 
-    List<ListObject> list(S3 s3);
+    List<ListObjectResult> list(S3 s3);
 
     void multipartUpload(S3 s3) throws IOException;
 

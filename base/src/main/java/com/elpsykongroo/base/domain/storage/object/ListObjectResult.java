@@ -23,12 +23,12 @@ import java.time.Instant;
 
 @Data
 @NoArgsConstructor
-public class ListObject {
+public class ListObjectResult {
     private String key;
     private Instant timestamp;
     private Long size;
 
-    public ListObject(String key, Instant lastModified, Long size) {
+    public ListObjectResult(String key, Instant lastModified, Long size) {
         this.key = key;
         this.timestamp = lastModified;
         this.size = size;

@@ -183,11 +183,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 				for (InetAddress ad: inetAddresses) {
 					if(addNoExist(isBlack, queryParam, ad.getHostAddress())) {
 						result++;
-					};
+					}
 					if (!ad.getHostAddress().equals(ad.getHostName())) {
 						if(addNoExist(isBlack, queryParam, ad.getHostName())) {
 							result++;
-						};
+						}
 					}
 				}
 			}
@@ -254,25 +254,30 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	private void updateCache(String isBlack) {
 		try {
-			QueryParam queryParam = new QueryParam();
-			queryParam.setIndex("ip");
-			queryParam.setType(IpManage.class);
-			queryParam.setField("black");
-			queryParam.setParam(isBlack);
-			String list = searchService.query(queryParam);
-			StringBuffer ipList = new StringBuffer();
-			String[] ips = list.split(",");
-			for (String str: ips) {
-				if(str.contains("address")) {
-					ipList.append(str.split("=")[1]).append(",");
-				}
-			}
-			redisService.set(env + isBlack, ipList.toString(), "");
+			String ipList = getIpList(isBlack);
+			redisService.set(env + isBlack, ipList, "");
 		} catch (FeignException e) {
 			if(log.isErrorEnabled()) {
 				log.error("feign error :{}", e.getMessage());
 			}
 		}
+	}
+
+	private String getIpList(String isBlack) {
+		QueryParam queryParam = new QueryParam();
+		queryParam.setIndex("ip");
+		queryParam.setType(IpManage.class);
+		queryParam.setField("black");
+		queryParam.setParam(isBlack);
+		String list = searchService.query(queryParam);
+		StringBuffer ipList = new StringBuffer();
+		String[] ips = list.split(",");
+		for (String str: ips) {
+			if(str.contains("address")) {
+				ipList.append(str.split("=")[1]).append(",");
+			}
+		}
+		return ipList.toString();
 	}
 
 	@Override
@@ -293,7 +298,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		return ip;
 	}
 
-	private String[] splitHeader (String headerType) {
+	private String[] splitHeader(String headerType) {
 		Header header = requestConfig.getHeader();
 		switch(headerType){
 			case "true":
@@ -325,9 +330,19 @@ public class IPMangerServiceImpl implements IPManagerService {
 	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack){
 		boolean flag = false;
 		try {
+			if ("0:0:0:0:0:0:0:1".equals(request.getRemoteAddr()) ||
+					"127.0.0.1".equals(request.getRemoteAddr())) {
+				if(log.isTraceEnabled()) {
+					log.trace("ignore private ip");
+				}
+				return true;
+			}
 			String list = "";
 			try {
 				list = redisService.get(env + isBlack);
+				if (StringUtils.isBlank(list)) {
+					list = getIpList(isBlack);
+				}
 			} catch (FeignException e) {
 				if(log.isErrorEnabled()) {
 					log.error("feign error :{}", e.getMessage());
@@ -421,13 +436,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 //					}
 //				}
 			log.debug("flag:{}, black:{}", flag, isBlack);
-			if ("0:0:0:0:0:0:0:1".equals(request.getRemoteAddr()) ||
-					"127.0.0.1".equals(request.getRemoteAddr())) {
-				if(log.isTraceEnabled()) {
-					log.trace("ignore private ip");
-				}
-				return true;
-			}
 		} catch (UnknownHostException e) {
 			if (log.isErrorEnabled()) {
 				log.error("UnknownHostException");

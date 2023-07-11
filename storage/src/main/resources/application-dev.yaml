@@ -14,8 +14,8 @@ spring:
         trust-store-location: ${SSL_PEM:classpath:/ssl.pem}
     consumer:
       enable-auto-commit: true
-#      auto-commit-interval: 500
       auto-offset-reset: earliest
+    #      auto-commit-interval: 500
     #      value-deserializer: org.apache.kafka.common.serialization.ByteArraySerializer
       security:
         protocol: SSL
