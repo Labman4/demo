@@ -16,20 +16,26 @@
 
 package com.elpsykongroo.base.utils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
-public final class MessageDigestUtils {
-    private MessageDigestUtils() {
+public class BytesUtils {
+    private static final SecureRandom random = new SecureRandom();
+
+    private BytesUtils() {
         throw new IllegalStateException("Utility class");
     }
 
-    public static String sha256(byte[] bytes) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            return BytesUtils.bytesToHex(md.digest(bytes));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+    public static byte[] generateRandomByte(int length) {
+        byte[] bytes = new byte[length];
+        random.nextBytes(bytes);
+        return bytes;
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
+        for (byte b : bytes) {
+            result.append(String.format("%02X", b));
         }
+        return result.toString();
     }
 }

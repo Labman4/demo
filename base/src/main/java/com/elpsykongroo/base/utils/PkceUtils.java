@@ -26,14 +26,6 @@ public final class PkceUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    private static final SecureRandom random = new SecureRandom();
-
-    public static byte[] generateRandomByte(int length) {
-        byte[] bytes = new byte[length];
-        random.nextBytes(bytes);
-        return bytes;
-    }
-
     public static String generateChallenge(String codeVerifier) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -46,7 +38,7 @@ public final class PkceUtils {
     }
 
     public static String generateVerifier() {
-        byte[] bytes = generateRandomByte(128);
+        byte[] bytes = BytesUtils.generateRandomByte(128);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 

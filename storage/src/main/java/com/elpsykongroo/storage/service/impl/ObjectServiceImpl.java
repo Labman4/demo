@@ -19,14 +19,20 @@ package com.elpsykongroo.storage.service.impl;
 import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.domain.storage.object.ListObjectResult;
 import com.elpsykongroo.base.domain.storage.object.S3;
+import com.elpsykongroo.base.service.RedisService;
+import com.elpsykongroo.base.utils.BytesUtils;
+import com.elpsykongroo.base.utils.EncryptUtils;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.MessageDigestUtils;
 import com.elpsykongroo.base.utils.NormalizedUtils;
+import com.elpsykongroo.base.utils.PkceUtils;
 import com.elpsykongroo.storage.listener.ObjectListener;
 import com.elpsykongroo.storage.service.ObjectService;
 import java.util.Base64;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
@@ -92,7 +98,6 @@ import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 import software.amazon.awssdk.services.s3.waiters.S3Waiter;
 import software.amazon.awssdk.services.sts.model.AssumeRoleWithWebIdentityRequest;
 import software.amazon.awssdk.services.sts.model.Credentials;
-import software.amazon.awssdk.utils.StringUtils;
 import software.amazon.awssdk.services.sts.StsClient;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -138,6 +143,9 @@ public class ObjectServiceImpl implements ObjectService {
     @Autowired
     private KafkaListenerEndpointRegistry endpointRegistry;
 
+    @Autowired
+    private RedisService redisService;
+
     @Override
     public void multipartUpload(S3 s3) throws IOException {
         initClient(s3, "");
@@ -155,13 +163,30 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
-    public void download(S3 s3, HttpServletResponse response) throws IOException {
+    public void download(S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException {
         initClient(s3, "");
+        downloadStream(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getOffset(), request, response);
+    }
+
+    private void downloadStream(String clientId, String bucket, String key, String offset, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String range = request.getHeader("Range");
+        if (StringUtils.isNotBlank(range)) {
+            String[] ranges = range.replace("bytes=", "").split("-");
+            offset = ranges[0];
+        }
         ResponseInputStream<GetObjectResponse> in =
-                getObjectStream(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getOffset());
+                getObjectStream(clientId, bucket, key, offset);
         if (in != null) {
-            response.setHeader("Content-Type", in.response().contentType());
-            response.setHeader("Content-Disposition", "attachment; filename=" + s3.getKey());
+            String filename = NormalizedUtils.topicNormalize(key);
+            response.setHeader("Accept-Ranges", in.response().acceptRanges());
+            response.setContentLengthLong(in.response().contentLength());
+            response.setContentType(in.response().contentType());
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+            response.setHeader("ETag", in.response().eTag());
+            if (StringUtils.isNotBlank(offset) || StringUtils.isNotBlank(range)) {
+                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+                response.setHeader("Content-Range", in.response().contentRange());
+            }
             BufferedInputStream inputStream = new BufferedInputStream(in);
             BufferedOutputStream out = null;
             try {
@@ -172,9 +197,16 @@ public class ObjectServiceImpl implements ObjectService {
                     out.write(b, 0, len);
                 }
             } finally {
-                out.flush();
-                out.close();
-                inputStream.close();
+                if (out != null) {
+                    out.flush();
+                    out.close();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
             }
         }
     }
@@ -205,6 +237,35 @@ public class ObjectServiceImpl implements ObjectService {
                         content.lastModified(),
                         content.size())));
         return objects;
+    }
+
+    @Override
+    public String getObjectUrl(S3 s3) throws IOException {
+        initClient(s3, "");
+        String plainText = s3.getPlatform() + "*" + s3.getRegion() + "*" + s3.getBucket();
+        byte[] iv = BytesUtils.generateRandomByte(16);
+        byte[] ciphertext = EncryptUtils.encrypt(plainText, iv);
+        String cipherBase64 = Base64.getUrlEncoder().encodeToString(ciphertext);
+        String ivBase64 = Base64.getUrlEncoder().encodeToString(iv);
+        String codeVerifier = PkceUtils.generateVerifier();
+        String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
+        redisService.set(s3.getKey() + "-challenge", codeChallenge, "30");
+        redisService.set(s3.getKey() + "-secret", ivBase64, "30");
+        String url = "http://localhost:8443/storage/object/url?key="+ s3.getKey() + "&code=" + cipherBase64 + "&state=" + codeVerifier;
+        return url;
+    }
+
+    @Override
+    public void getObjectByCode(String code, String state, String key, String offset, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String codeChallenge = redisService.get(key + "-challenge");
+        if(StringUtils.isNotBlank(codeChallenge) && codeChallenge.equals(PkceUtils.verifyChallenge(state))) {
+            String ivBase64 = redisService.get(key + "-secret");
+            byte[] ciphertext = Base64.getUrlDecoder().decode(code);
+            byte[] iv = Base64.getUrlDecoder().decode(ivBase64);
+            String plainText = EncryptUtils.decrypt(ciphertext, iv);
+            String[] keys = plainText.split("\\*");
+            downloadStream(plainText, keys[2], key, offset, request, response);
+        }
     }
 
     @Override
@@ -694,14 +755,16 @@ public class ObjectServiceImpl implements ObjectService {
 
     private ResponseInputStream<GetObjectResponse> getObjectStream(String clientId, String bucket, String key, String offset) {
         try {
-            GetObjectRequest objectRequest = GetObjectRequest
+            GetObjectRequest objectRequest = null;
+            GetObjectRequest.Builder builder = GetObjectRequest
                     .builder()
                     .bucket(bucket)
-                    .key(key)
-                    .build();
+                    .key(key);
             if (StringUtils.isNotBlank(offset)) {
-                long startPoint = Long.parseLong(offset); // 断点续传的起始位置
-                objectRequest.toBuilder().range("bytes=" + startPoint + "-");
+                long startPoint = Long.parseLong(offset);
+                objectRequest = builder.range("bytes=" + startPoint + "-").build();
+            } else {
+                objectRequest = builder.build();
             }
             ResponseInputStream<GetObjectResponse> streamResp = clientMap.get(clientId).getObject(objectRequest);
             if (streamResp != null) {
@@ -913,11 +976,11 @@ public class ObjectServiceImpl implements ObjectService {
         }
 
         if (StringUtils.isBlank(clientId)) {
-            clientId = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket();
+            clientId = s3.getPlatform() + "*" + s3.getRegion() + "*" + s3.getBucket();
             s3.setClientId(clientId);
         }
         if (log.isDebugEnabled()) {
-            log.debug("clientMap:{}", clientMap.keySet());
+            log.debug("clientMap before:{}", clientMap.keySet());
         }
         if (clientMap.containsKey(clientId)) {
             if (!uploadMap.containsKey(clientId + "-timestamp")) {

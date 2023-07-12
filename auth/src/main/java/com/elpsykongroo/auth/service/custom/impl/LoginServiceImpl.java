@@ -27,6 +27,7 @@ import com.elpsykongroo.auth.service.custom.EmailService;
 import com.elpsykongroo.auth.service.custom.LoginService;
 import com.elpsykongroo.auth.service.custom.UserService;
 import com.elpsykongroo.base.service.RedisService;
+import com.elpsykongroo.base.utils.BytesUtils;
 import com.elpsykongroo.base.utils.PkceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yubico.webauthn.AssertionRequest;
@@ -253,7 +254,7 @@ public class LoginServiceImpl implements LoginService {
         UserIdentity userIdentity = UserIdentity.builder()
                 .name(username)
                 .displayName(display)
-                .id(new ByteArray(PkceUtils.generateRandomByte(32)))
+                .id(new ByteArray(BytesUtils.generateRandomByte(32)))
                 .build();
         User saveUser = new User(userIdentity);
         saveUser.setCreateTime(Instant.now());

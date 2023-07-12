@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.services.redis.service.impl;
 
+import com.elpsykongroo.base.utils.EncryptUtils;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.services.redis.entity.MsgPack;
 import com.elpsykongroo.services.redis.utils.convert.TimestampExtensionModule;
@@ -35,12 +36,6 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.stereotype.Service;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.spec.AlgorithmParameterSpec;
 import java.time.Duration;
 import java.util.Base64;
 
@@ -109,12 +104,8 @@ public class RedisServiceImpl implements RedisService {
             byte[] bytes = redisTemplate.execute((RedisCallback<byte[]>) connection -> {
                 return connection.get(ticket[0].getBytes());
             });
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             byte[] secret = Base64.getUrlDecoder().decode(ticket[1]);
-            SecretKey secretKey = new SecretKeySpec(secret, "AES");
-            AlgorithmParameterSpec gcmIv = new GCMParameterSpec(128, bytes, 0, 12);
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmIv);
-            byte[] plainText = cipher.doFinal(bytes, 12, bytes.length - 12);
+            String plainText = EncryptUtils.decrypt(bytes, secret);
 //        LZ4Factory factory = LZ4Factory.fastestInstance();
 //        LZ4FastDecompressor decompressor = factory.fastDecompressor();
 //        LZ4DecompressorWithLength decompressorWithLength = new LZ4DecompressorWithLength(decompressor);
@@ -127,7 +118,7 @@ public class RedisServiceImpl implements RedisService {
 //        inStream.read(restored);
 //        inStream.close();
 //        System.out.println(restored.length);
-            MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(plainText);
+            MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(plainText.getBytes());
             ObjectMapper mapper = new ObjectMapper(new MessagePackFactory())
                     .registerModule(new JavaTimeModule())
                     .registerModule(TimestampExtensionModule.INSTANCE);

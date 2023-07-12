@@ -19,8 +19,10 @@ package com.elpsykongroo.gateway.controller;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.base.service.StorageService;
 import feign.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,6 +37,9 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 @CrossOrigin
 @Slf4j
@@ -51,70 +56,54 @@ public class StorageController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadObject(S3 s3) {
-        try {
-            storageService.uploadObject(s3);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        storageService.uploadObject(s3);
+    }
+
+    @PostMapping("url")
+    public String getObjectUrl(@RequestBody S3 s3) throws IOException {
+        return storageService.getObjectUrl(s3);
+    }
+
+    @GetMapping("url")
+    public void getObjectByCode(@RequestParam String code,
+                                @RequestParam String key,
+                                @RequestParam String state,
+                                HttpServletRequest request,
+                                HttpServletResponse response) throws IOException {
+        Response feignResp = storageService.getObjectByCode(code, state, key, getRange(request, response));
+        write(response, feignResp);
+        Map<String, String> result = new HashMap<>();
+        Iterator iterator = response.getHeaderNames().iterator();
+        while (iterator.hasNext()) {
+            String header = (String) iterator.next();
+            String value = response.getHeader(header);
+            result.put(header, value);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("getObjectByCode resp header:{}", result);
         }
     }
 
     @GetMapping
-    public void getObject(@RequestParam String bucket,
-                          @RequestParam String key,
-                          @RequestParam(required = false) String idToken,
-                          HttpServletResponse response) throws IOException {
-            S3 s3 = new S3();
-            s3.setBucket(bucket);
-            s3.setKey(key);
-            s3.setIdToken(idToken);
-            Response feginResp = null;
-            InputStream in = null;
-            BufferedInputStream bufferedInputStream = null;
-            BufferedOutputStream bufferedOutputStream = null;
-            try {
-                feginResp = storageService.downloadObject(s3);
-                in = feginResp.body().asInputStream();
-                bufferedInputStream = new BufferedInputStream(in);
-                response.setContentType("multipart.form-data");
-                response.setHeader("Content-Disposition", feginResp.headers().get("Content-Disposition").toString().replace("[","").replace("]",""));
-                bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
-                int length;
-                byte[] temp = new byte[1024 * 10];
-                while ((length = bufferedInputStream.read(temp)) != -1) {
-                    bufferedOutputStream.write(temp, 0, length);
-                }
-            } finally {
-                bufferedOutputStream.flush();
-                bufferedOutputStream.close();
-                bufferedInputStream.close();
-                in.close();
-            }
+    public void getObjectByDefault(@RequestParam String bucket,
+                                   @RequestParam String key,
+                                   @RequestParam(required = false) String idToken,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) throws IOException {
+        S3 s3 = new S3();
+        s3.setBucket(bucket);
+        s3.setKey(key);
+        s3.setIdToken(idToken);
+        s3.setOffset(getRange(request, response));
+        Response feignResp = storageService.downloadObject(s3);
+        write(response, feignResp);
     }
 
     @PostMapping("download")
-    public void download(@RequestBody S3 s3, HttpServletResponse response) throws IOException {
-        Response feginResp = null;
-        InputStream in = null;
-        BufferedInputStream bufferedInputStream = null;
-        BufferedOutputStream bufferedOutputStream = null;
-        try {
-            feginResp = storageService.downloadObject(s3);
-            in = feginResp.body().asInputStream();
-            bufferedInputStream = new BufferedInputStream(in);
-            response.setContentType("multipart.form-data");
-            response.setHeader("Content-Disposition", feginResp.headers().get("Content-Disposition").toString().replace("[","").replace("]",""));
-            bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
-            int length;
-            byte[] temp = new byte[1024 * 10];
-            while ((length = bufferedInputStream.read(temp)) != -1) {
-                bufferedOutputStream.write(temp, 0, length);
-            }
-        } finally {
-            bufferedOutputStream.flush();
-            bufferedOutputStream.close();
-            bufferedInputStream.close();
-            in.close();
-        }
+    public void download(@RequestBody S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        s3.setOffset(getRange(request, response));
+        Response feignResp = storageService.downloadObject(s3);
+        write(response, feignResp);
     }
 
     @PostMapping("list")
@@ -123,5 +112,51 @@ public class StorageController {
     }
 
     @PostMapping("delete")
-    public void delete(@RequestBody S3 s3) { storageService.deleteObject(s3); }
+    public void delete(@RequestBody S3 s3) {
+        storageService.deleteObject(s3);
+    }
+
+    private String getRange(HttpServletRequest request, HttpServletResponse response) {
+        String range = request.getHeader("Range");
+        if (StringUtils.isNotBlank(range)) {
+            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+            String[] ranges = range.replace("bytes=", "").split("-");
+            return ranges[0];
+        }
+        return "";
+    }
+
+    private void write(HttpServletResponse response, Response feignResp) throws IOException {
+        InputStream in = null;
+        BufferedInputStream bufferedInputStream = null;
+        BufferedOutputStream bufferedOutputStream = null;
+        try {
+            in = feignResp.body().asInputStream();
+            if (in != null) {
+                bufferedInputStream = new BufferedInputStream(in);
+                for (Map.Entry entry: feignResp.headers().entrySet()) {
+                    String header = (String) entry.getKey();
+                    String value = entry.getValue().toString().replace("[", "").replace("]", "");
+                    response.addHeader(header, value);
+                }
+                bufferedOutputStream = new BufferedOutputStream(response.getOutputStream());
+                int length;
+                byte[] temp = new byte[1024 * 10];
+                while ((length = bufferedInputStream.read(temp)) != -1) {
+                    bufferedOutputStream.write(temp, 0, length);
+                }
+            }
+        } finally {
+            if (bufferedOutputStream != null) {
+                bufferedOutputStream.flush();
+                bufferedOutputStream.close();
+            }
+            if (bufferedInputStream != null) {
+                bufferedInputStream.close();
+            }
+            if (in != null) {
+                in.close();
+            }
+        }
+    }
 }

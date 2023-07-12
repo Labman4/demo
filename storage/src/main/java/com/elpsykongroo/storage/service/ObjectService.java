@@ -18,6 +18,7 @@ package com.elpsykongroo.storage.service;
 
 import com.elpsykongroo.base.domain.storage.object.ListObjectResult;
 import com.elpsykongroo.base.domain.storage.object.S3;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ import java.util.List;
 @Service
 public interface ObjectService {
 
-    void download(S3 s3, HttpServletResponse response) throws IOException;
+    void download(S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException;
 
     void delete(S3 s3);
 
@@ -36,4 +37,9 @@ public interface ObjectService {
     void multipartUpload(S3 s3) throws IOException;
 
     String obtainUploadId(S3 s3) throws IOException;
+
+    String getObjectUrl(S3 s3) throws IOException;
+
+    void getObjectByCode(String code, String state, String key, String offset, HttpServletRequest request, HttpServletResponse response) throws IOException;
+
 }

@@ -62,38 +62,42 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	@Override
 	public void saveAccessRecord(HttpServletRequest request) {
-		try {
-			String ip = ipMangerService.accessIP(request, "record");
-			Exclude recordExclude = requestConfig.getRecord().getExclude();
-			if (log.isDebugEnabled()) {
-				log.debug("record exclude ip:{}", recordExclude.getIp());
+		String ip = ipMangerService.accessIP(request, "record");
+		Exclude recordExclude = requestConfig.getRecord().getExclude();
+		if (log.isDebugEnabled()) {
+			log.debug("record exclude ip:{}", recordExclude.getIp());
+		}
+		boolean recordFlag = ipMangerService.filterByIpOrList(recordExclude.getIp(), ip);
+		if (!(StringUtils.isNotEmpty(recordExclude.getPath())
+				&& beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
+			if (!recordFlag) {
+				Map<String, String> result = new HashMap<>();
+				Enumeration<String> headerNames = request.getHeaderNames();
+				while (headerNames.hasMoreElements()) {
+					String key = headerNames.nextElement();
+					String value = request.getHeader(key);
+					result.put(key, value);
+				}
+				ip = ipMangerService.accessIP(request, "ip");
+				saveRecord(request, ip, result);
+				log.debug("request header------------{} ", result);
 			}
-			boolean recordFlag = ipMangerService.filterByIpOrList(recordExclude.getIp(), ip);
-			if (!(StringUtils.isNotEmpty(recordExclude.getPath())
-					&& beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
-				if (!recordFlag) {
-					Map<String, String> result = new HashMap<>();
-					Enumeration<String> headerNames = request.getHeaderNames();
-					while (headerNames.hasMoreElements()) {
-						String key = (String) headerNames.nextElement();
-						String value = request.getHeader(key);
-						result.put(key, value);
-					}
-					ip = ipMangerService.accessIP(request, "ip");
-					AccessRecord record = new AccessRecord();
-					record.setRequestHeader(result);
-					record.setAccessPath(request.getRequestURI());
-					record.setSourceIP(ip);
-					record.setTimestamp(Instant.now().toString());
-					record.setUserAgent(request.getHeader("user-agent"));
-					QueryParam queryParam = new QueryParam();
-					queryParam.setIndex("access_record");
-					queryParam.setOperation("save");
-					queryParam.setEntity(record);
-					searchService.query(queryParam);
-					log.debug("request header------------{} ", result);
-			    }
-		  	}
+		}
+	}
+
+	private void saveRecord(HttpServletRequest request, String ip, Map<String, String> result) {
+		try {
+			AccessRecord record = new AccessRecord();
+			record.setRequestHeader(result);
+			record.setAccessPath(request.getRequestURI());
+			record.setSourceIP(ip);
+			record.setTimestamp(Instant.now().toString());
+			record.setUserAgent(request.getHeader("user-agent"));
+			QueryParam queryParam = new QueryParam();
+			queryParam.setIndex("access_record");
+			queryParam.setOperation("save");
+			queryParam.setEntity(record);
+			searchService.query(queryParam);
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
 				log.error("save record error: {}", e.getMessage());

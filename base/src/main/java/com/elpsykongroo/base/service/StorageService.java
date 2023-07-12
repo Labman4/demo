@@ -18,6 +18,7 @@ package com.elpsykongroo.base.service;
 
 import com.elpsykongroo.base.domain.storage.object.S3;
 import feign.Headers;
+import feign.Param;
 import feign.RequestLine;
 import feign.Response;
 
@@ -54,4 +55,17 @@ public interface StorageService {
             "Content-Type: application/json"
     })
     String listObject(S3 s3);
+
+    @RequestLine("POST /storage/object/url")
+    @Headers({
+            "Content-Type: application/json"
+    })
+    String getObjectUrl(S3 s3);
+
+    @RequestLine("GET /storage/object/url?key={key}&code={code}&state={state}&offset={offset}")
+    @Headers({
+            "Content-Type: application/json"
+    })
+    Response getObjectByCode(@Param String code, @Param String state, @Param String key, @Param String offset) throws IOException;
+
 }

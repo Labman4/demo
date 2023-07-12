@@ -19,6 +19,7 @@ package com.elpsykongroo.storage.controller;
 import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.storage.service.ObjectService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +61,9 @@ public class ObjectController {
     }
 
     @PostMapping("download")
-    public void download(@RequestBody S3 s3, HttpServletResponse response) {
+    public void download(@RequestBody S3 s3, HttpServletRequest request, HttpServletResponse response) {
         try {
-            objectService.download(s3, response);
+            objectService.download(s3, request, response);
         } catch (IOException e) {
             if (log.isErrorEnabled()) {
                 log.error("download error: {}", e.getMessage());
@@ -71,21 +72,42 @@ public class ObjectController {
     }
 
     @GetMapping
-    public void getObject(@RequestParam String bucket,
-                          @RequestParam String key,
-                          @RequestParam(required = false) String idToken,
-                          HttpServletResponse response) {
+    public void getObjectByIdToken(@RequestParam String bucket,
+                                   @RequestParam String key,
+                                   @RequestParam(required = false) String idToken,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response) {
         try {
             S3 s3 = new S3();
             s3.setBucket(bucket);
             s3.setKey(key);
             s3.setIdToken(idToken);
-            objectService.download(s3, response);
+            objectService.download(s3, request, response);
         } catch (IOException e) {
             if (log.isErrorEnabled()) {
                 log.error("download error: {}", e.getMessage());
             }
         }
+    }
+
+    @GetMapping("/url")
+    public void getObjectByCode(@RequestParam String code,
+                                @RequestParam String state,
+                                @RequestParam String key,
+                                @RequestParam(required = false) String offset,
+                                HttpServletRequest request, HttpServletResponse response) {
+        try {
+            objectService.getObjectByCode(code, state, key, offset, request, response);
+        } catch (IOException e) {
+            if (log.isErrorEnabled()) {
+                log.error("getObjectByCode error: {}", e.getMessage());
+            }
+        }
+    }
+
+    @PostMapping("url")
+    public String getObjectUrl(@RequestBody S3 s3) throws IOException {
+        return objectService.getObjectUrl(s3);
     }
 
     @PostMapping("list")
