@@ -58,4 +58,17 @@ public final class EncryptUtils {
         }
     }
 
+    public static byte[] decryptAsByte(byte[] ciphertext, byte[] key) {
+        try {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            SecretKey secretKey = new SecretKeySpec(key, "AES");
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(128, ciphertext, 0, 12);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
+            byte[] plaintextBytes = cipher.doFinal(ciphertext, 12, ciphertext.length - 12);
+            return plaintextBytes;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

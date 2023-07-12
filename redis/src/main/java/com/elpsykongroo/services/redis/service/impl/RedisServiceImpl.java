@@ -106,7 +106,7 @@ public class RedisServiceImpl implements RedisService {
                 return connection.get(ticket[0].getBytes());
             });
             byte[] secret = Base64.getUrlDecoder().decode(ticket[1]);
-            String plainText = EncryptUtils.decrypt(bytes, secret);
+            byte[] plainText = EncryptUtils.decryptAsByte(bytes, secret);
 //        LZ4Factory factory = LZ4Factory.fastestInstance();
 //        LZ4FastDecompressor decompressor = factory.fastDecompressor();
 //        LZ4DecompressorWithLength decompressorWithLength = new LZ4DecompressorWithLength(decompressor);
@@ -119,7 +119,7 @@ public class RedisServiceImpl implements RedisService {
 //        inStream.read(restored);
 //        inStream.close();
 //        System.out.println(restored.length);
-            MessageUnpacker unPacker = MessagePack.newDefaultUnpacker(plainText.getBytes(StandardCharsets.UTF_8));
+            MessageUnpacker unPacker = MessagePack.newDefaultUnpacker(plainText);
             ObjectMapper mapper = new ObjectMapper(new MessagePackFactory())
                     .registerModule(new JavaTimeModule())
                     .registerModule(TimestampExtensionModule.INSTANCE);
