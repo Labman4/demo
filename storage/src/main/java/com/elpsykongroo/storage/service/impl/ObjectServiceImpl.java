@@ -251,7 +251,7 @@ public class ObjectServiceImpl implements ObjectService {
         String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
         redisService.set(s3.getKey() + "-challenge", codeChallenge, "30");
         redisService.set(s3.getKey() + "-secret", ivBase64, "30");
-        String url = "http://localhost:8443/storage/object/url?key="+ s3.getKey() + "&code=" + cipherBase64 + "&state=" + codeVerifier;
+        String url = serviceconfig.getUrl().getObject() +"?key="+ s3.getKey() + "&code=" + cipherBase64 + "&state=" + codeVerifier;
         return url;
     }
 

@@ -125,6 +125,8 @@ public class ServiceConfig {
         private String auth;
 
         private String gateway;
+
+        private String object;
     }
 
     @Data
