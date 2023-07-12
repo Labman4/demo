@@ -36,6 +36,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.stereotype.Service;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
 
@@ -118,12 +119,12 @@ public class RedisServiceImpl implements RedisService {
 //        inStream.read(restored);
 //        inStream.close();
 //        System.out.println(restored.length);
-            MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(plainText.getBytes());
+            MessageUnpacker unPacker = MessagePack.newDefaultUnpacker(plainText.getBytes(StandardCharsets.UTF_8));
             ObjectMapper mapper = new ObjectMapper(new MessagePackFactory())
                     .registerModule(new JavaTimeModule())
                     .registerModule(TimestampExtensionModule.INSTANCE);
             obj = mapper.readValue(plainText, MsgPack.class);
-            unpacker.close();
+            unPacker.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
