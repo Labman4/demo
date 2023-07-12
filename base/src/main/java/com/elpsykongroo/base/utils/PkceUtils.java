@@ -19,8 +19,8 @@ package com.elpsykongroo.base.utils;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Base64;
+
 public final class PkceUtils {
     private PkceUtils() {
         throw new IllegalStateException("Utility class");

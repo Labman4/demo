@@ -109,6 +109,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -251,8 +252,7 @@ public class ObjectServiceImpl implements ObjectService {
         String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
         redisService.set(s3.getKey() + "-challenge", codeChallenge, "30");
         redisService.set(s3.getKey() + "-secret", ivBase64, "30");
-        String url = serviceconfig.getUrl().getObject() +"?key="+ s3.getKey() + "&code=" + cipherBase64 + "&state=" + codeVerifier;
-        return url;
+        return serviceconfig.getUrl().getObject() +"?key="+ s3.getKey() + "&code=" + cipherBase64 + "&state=" + codeVerifier;
     }
 
     @Override
@@ -275,7 +275,9 @@ public class ObjectServiceImpl implements ObjectService {
         if (log.isDebugEnabled()) {
             log.debug("sha256 match result:{}", match);
         }
-        if (match != null) return match;
+        if (match != null) {
+            return match;
+        }
         if (!"minio".equals(s3.getPlatform())) {
             List<MultipartUpload> uploads = listMultipartUploads(s3.getClientId(), s3.getBucket()).uploads();
             for (MultipartUpload upload : uploads) {
@@ -307,11 +309,11 @@ public class ObjectServiceImpl implements ObjectService {
             if (StringUtils.isNotBlank(consumerId)) {
                 String shaKey = consumerId + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + s3.getPartNum();
                 String sha256 = getObject(s3.getClientId(), s3.getBucket(), shaKey);
-                if (sha256.toLowerCase().equals(s3.getSha256())) {
+                if (sha256.toLowerCase(Locale.US).equals(s3.getSha256())) {
                     return "";
                 } else {
                     if (log.isWarnEnabled()) {
-                        log.warn("sha256:{} not match with s3:{}", s3.getSha256(), sha256.toLowerCase());
+                        log.warn("sha256:{} not match with s3:{}", s3.getSha256(), sha256.toLowerCase(Locale.US));
                     }
                 }
             }
@@ -528,7 +530,11 @@ public class ObjectServiceImpl implements ObjectService {
                             offsets.get(partition).leaderEpoch().get(),
                             offsets.get(partition).offset());
                 }
-                offsets.put(partition, new OffsetAndMetadata(offsets.get(partition).offset()-1));
+                if (offset > 0 ) {
+                    offsets.put(partition, new OffsetAndMetadata(offset));
+                } else {
+                    offsets.put(partition, new OffsetAndMetadata(offsets.get(partition).offset() - 1));
+                }
             }
             adminClient.alterConsumerGroupOffsets(consumerGroupId, offsets);
         } catch (Exception e) {

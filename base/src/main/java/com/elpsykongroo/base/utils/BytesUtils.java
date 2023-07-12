@@ -18,7 +18,7 @@ package com.elpsykongroo.base.utils;
 
 import java.security.SecureRandom;
 
-public class BytesUtils {
+public final class BytesUtils {
     private static final SecureRandom random = new SecureRandom();
 
     private BytesUtils() {

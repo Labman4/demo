@@ -22,7 +22,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
-public class EncryptUtils {
+public final class EncryptUtils {
 
     private EncryptUtils() {
         throw new IllegalStateException("Utility class");
@@ -32,10 +32,14 @@ public class EncryptUtils {
         try {
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             SecretKey secretKey = new SecretKeySpec(key, "AES");
-            byte[] iv = new byte[12];
+            byte[] iv = BytesUtils.generateRandomByte(12);
             GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
-            return cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
+            byte[] encryptedData = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
+            byte[] ivAndEncryptedData = new byte[iv.length + encryptedData.length];
+            System.arraycopy(iv, 0, ivAndEncryptedData, 0, iv.length);
+            System.arraycopy(encryptedData, 0, ivAndEncryptedData, iv.length, encryptedData.length);
+            return ivAndEncryptedData;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -45,13 +49,13 @@ public class EncryptUtils {
         try {
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             SecretKey secretKey = new SecretKeySpec(key, "AES");
-            byte[] iv = new byte[12];
-            GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv);
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(128, ciphertext, 0, 12);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
-            byte[] plaintextBytes = cipher.doFinal(ciphertext);
+            byte[] plaintextBytes = cipher.doFinal(ciphertext, 12, ciphertext.length - 12);
             return new String(plaintextBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
 }
