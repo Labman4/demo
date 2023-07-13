@@ -294,7 +294,7 @@ public class ObjectServiceImpl implements ObjectService {
             String consumerGroupKey = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + s3.getKey() + "-consumerId";
             String consumerId = "";
             if (!consumerMap.containsKey(consumerGroupKey)) {
-                String consumerGroupId = getObject(s3.getClientId(), s3.getBucket(), s3.getKey() + "-consumerId");
+                String consumerGroupId = getObject(s3.getClientId(), s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId");
                 if (StringUtils.isNotBlank(consumerGroupId)) {
                     List<String> consumerIds = new ArrayList<>();
                     consumerIds.add(consumerGroupId);
@@ -411,7 +411,7 @@ public class ObjectServiceImpl implements ObjectService {
                     if (StringUtils.isNotBlank(s3.getConsumerGroupId())) {
                         completeTopic(s3.getClientId(), s3);
                         deleteObjectByPrefix(s3.getClientId(), s3.getBucket(), s3.getConsumerGroupId());
-                        deleteObject(s3.getClientId(), s3.getBucket(), s3.getKey() + "-consumerId");
+                        deleteObject(s3.getClientId(), s3.getBucket(), s3.getBucket() + "-" +s3.getKey() + "-consumerId");
                     }
                 }
             } else if (completedParts.size() == num) {
@@ -431,7 +431,7 @@ public class ObjectServiceImpl implements ObjectService {
         String consumerGroupKey = topic + "-consumerId";
         String consumerGroupId = "";
         if (!consumerMap.containsKey(consumerGroupKey)) {
-            HeadObjectResponse response = headObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+            HeadObjectResponse response = headObject(clientId, s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId");
             if (response == null) {
                 List<String> consumerId = new ArrayList<>();
                 consumerId.add(s3.getBucket() + "-" + timestamp);
@@ -440,7 +440,7 @@ public class ObjectServiceImpl implements ObjectService {
                     if (log.isDebugEnabled()) {
                         log.debug("upload consumerId to s3");
                     }
-                    uploadObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId",
+                    uploadObject(clientId, s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId",
                             RequestBody.fromString(s3.getBucket() + "-" + timestamp));
                     List<String> consumerIds = new ArrayList<>();
                     consumerIds.add(s3.getBucket() + "-" + timestamp);
@@ -456,7 +456,7 @@ public class ObjectServiceImpl implements ObjectService {
                     if (log.isDebugEnabled()) {
                         log.debug("try to fetch consumerGroupId");
                     }
-                    String id = getObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+                    String id = getObject(clientId, s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId");
                     if (StringUtils.isNotBlank(id)) {
                         List<String> consumerId = new ArrayList<>();
                         consumerId.add(id);
@@ -471,7 +471,7 @@ public class ObjectServiceImpl implements ObjectService {
             if (StringUtils.isNotBlank(consumerMap.get(consumerGroupKey).get(0))) {
                 consumerGroupId = consumerMap.get(consumerGroupKey).get(0);
             } else {
-                consumerGroupId= getObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+                consumerGroupId= getObject(clientId, s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId");
             }
         }
         if (log.isDebugEnabled()) {
@@ -629,7 +629,7 @@ public class ObjectServiceImpl implements ObjectService {
         String consumerGroupKey = topic + "-consumerId";
         String consumerGroupId = "";
         if (!consumerMap.containsKey(consumerGroupKey)) {
-            consumerGroupId = getObject(clientId, s3.getBucket(), s3.getKey() + "-consumerId");
+            consumerGroupId = getObject(clientId, s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId");
         } else {
             consumerGroupId = consumerMap.get(consumerGroupKey).get(0);
         }
