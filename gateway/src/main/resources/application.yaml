@@ -112,12 +112,12 @@ service:
 request:
   limit:
     global:
-      tokens: ${GLOBAL_REQUEST_LIMIT:10000}
+      tokens: ${GLOBAL_REQUEST_LIMIT:5000}
       duration: ${GLOBAL_REQUEST_DURATION:100}
       speed: ${GLOBAL_REQUEST_DURATION_SPEED:1000}
     scope:
       tokens: ${REQUEST_LIMIT:1000}
-      duration: ${REQUEST_DURATION:10}
+      duration: ${REQUEST_DURATION:1}
       speed: ${REQUEST_DURATION_SPEED:100}
   path:
     permit: ${PERMIT_PATH:/public/**}

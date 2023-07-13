@@ -103,7 +103,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	@Override
 	public String patch(String address, String isBlack, String id) throws UnknownHostException {
-		long updated = 0;
+		int updated = 0;
 		String script = "ctx._source.black=params.black;";
 		String[] addr = address.split(",");
 		QueryParam queryParam = new QueryParam();
@@ -142,6 +142,10 @@ public class IPMangerServiceImpl implements IPManagerService {
 						queryParam.setBoolType("should");
 						String deleted = searchService.query(queryParam);
 						updated += Integer.parseInt(deleted);
+					} else if (exist(inetAd.getHostAddress(), isBlack) == 0){
+						updated += add(inetAd.getHostAddress(), isBlack);
+					} else if (exist(inetAd.getHostName(), isBlack) == 0) {
+						updated += add(inetAd.getHostName(), isBlack);
 					} else {
 						queryParam.setOperation("updateQuery");
 						queryParam.setUpdateParam(update);
@@ -163,23 +167,23 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	@Override
-	public String add(String addrs, String isBlack) throws UnknownHostException {
-		long result = 0;
+	public int add(String addresses, String isBlack) throws UnknownHostException {
+		int result = 0;
 //            RLock lock = redissonClient.getLock("blackList");
 ////            lock.tryLockAsync().get()
 //            if (lock.tryLock(Constant.REDIS_LOCK_WAIT_TIME, Constant.REDIS_LOCK_LEASE_TIME, TimeUnit.SECONDS)) {
 //                log.info("get lock");
 //                try {
 		if (log.isDebugEnabled()) {
-			log.debug("add ip:{}, black:{}", addrs, isBlack);
+			log.debug("add ip:{}, black:{}", addresses, isBlack);
 		}
-		if (StringUtils.isNotEmpty(addrs)) {
+		if (StringUtils.isNotEmpty(addresses)) {
 			QueryParam queryParam = new QueryParam();
 			queryParam.setIndex("ip");
 			queryParam.setOperation("save");
-			String[] address = addrs.split(",");
-			for (String addr: address) {
-				InetAddress[] inetAddresses = InetAddress.getAllByName(addr);
+			String[] ads = addresses.split(",");
+			for (String address: ads) {
+				InetAddress[] inetAddresses = InetAddress.getAllByName(address);
 				for (InetAddress ad: inetAddresses) {
 					if(addNoExist(isBlack, queryParam, ad.getHostAddress())) {
 						result++;
@@ -202,7 +206,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 //        } catch (InterruptedException e) {
 //            return commonResponse.error(Constant.ERROR_CODE, "please retry");
 		updateCache(isBlack);
-		return String.valueOf(result);
+		return result;
 	}
 
 	private boolean addNoExist(String isBlack, QueryParam queryParam, String ad) {

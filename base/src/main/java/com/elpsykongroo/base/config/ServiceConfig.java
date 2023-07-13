@@ -112,6 +112,8 @@ public class ServiceConfig {
         private Long socket;
 
         private Long read;
+
+        private String storage;
     }
 
     @Data

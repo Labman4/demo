@@ -1,4 +1,6 @@
 server:
+  http2:
+    enabled: true
 #  netty:
 #    connection-timeout: -1
   tomcat:

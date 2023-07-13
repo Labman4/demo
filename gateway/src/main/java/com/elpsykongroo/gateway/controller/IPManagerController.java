@@ -47,7 +47,7 @@ public class IPManagerController {
 			log.debug("add sourceIP:{}, black:{}", address, black);
 		}
 		try {
-			return ipManagerService.add(address, black);
+			return CommonResponse.data(ipManagerService.add(address, black));
 		} catch (UnknownHostException e) {
 			if (log.isErrorEnabled()) {
 				log.error("error host: {}", e.getMessage());

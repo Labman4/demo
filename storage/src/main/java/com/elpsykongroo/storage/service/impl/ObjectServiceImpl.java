@@ -250,8 +250,8 @@ public class ObjectServiceImpl implements ObjectService {
         String ivBase64 = Base64.getUrlEncoder().encodeToString(iv);
         String codeVerifier = PkceUtils.generateVerifier();
         String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
-        redisService.set(s3.getKey() + "-challenge", codeChallenge, "30");
-        redisService.set(s3.getKey() + "-secret", ivBase64, "30");
+        redisService.set(s3.getKey() + "-challenge", codeChallenge, serviceconfig.getTimeout().getStorage());
+        redisService.set(s3.getKey() + "-secret", ivBase64, serviceconfig.getTimeout().getStorage());
         return serviceconfig.getUrl().getObject() +"?key="+ s3.getKey() + "&code=" + cipherBase64 + "&state=" + codeVerifier;
     }
 
