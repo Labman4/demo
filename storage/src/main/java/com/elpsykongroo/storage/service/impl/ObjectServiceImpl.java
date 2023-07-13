@@ -445,6 +445,7 @@ public class ObjectServiceImpl implements ObjectService {
                     List<String> consumerIds = new ArrayList<>();
                     consumerIds.add(s3.getBucket() + "-" + timestamp);
                     consumerMap.putIfAbsent(topic + "-" + s3.getBucket() + "-" + timestamp, consumerIds);
+                    consumerGroupId = s3.getBucket() + "-" + timestamp;
                     startListener(topic, s3.getBucket() + "-" + timestamp, s3.getBucket() + "-" + timestamp);
                 }
             } else {
