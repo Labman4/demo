@@ -22,6 +22,7 @@ import com.elpsykongroo.storage.service.ObjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 
 @Slf4j
 public class ObjectListener<K,V> {
@@ -58,7 +59,7 @@ public class ObjectListener<K,V> {
 
     @KafkaListener(id = "#{__listener.id}", topics = "#{__listener.topic}", groupId = "#{__listener.groupId}", idIsGroup = false,
             properties = "value.deserializer:org.apache.kafka.common.serialization.ByteArrayDeserializer")
-    public void onMessage(ConsumerRecord<String, byte[]> data) {
+    public void onMessage(ConsumerRecord<String, byte[]> data, Acknowledgment acknowledgment) {
         if (log.isDebugEnabled()) {
             log.debug("start accept message");
         }
@@ -78,7 +79,7 @@ public class ObjectListener<K,V> {
                 count.set(0);
             }
             if (count.get() <= 3) {
-                objectService.multipartUpload(s3);
+                objectService.multipartUpload(s3, acknowledgment);
             }
         } catch (Exception e) {
             count.set(count.get() + 1);

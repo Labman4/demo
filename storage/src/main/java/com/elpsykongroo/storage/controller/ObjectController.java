@@ -51,7 +51,7 @@ public class ObjectController {
     public void multipartUpload(S3 s3) {
         try {
             if (!s3.getData()[0].isEmpty()) {
-                objectService.multipartUpload(s3);
+                objectService.multipartUpload(s3, null);
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {

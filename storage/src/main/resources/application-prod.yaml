@@ -15,7 +15,7 @@ spring:
         trust-store-location: ${JKS:file:/var/secret/truststore.jks}
         trust-store-password: ${JKS_PASS:pass}
     consumer:
-      enable-auto-commit: true
+      enable-auto-commit: false
       auto-offset-reset: earliest
     #      value-deserializer: org.apache.kafka.common.serialization.ByteArraySerializer
       security:
@@ -26,6 +26,10 @@ spring:
         trust-store-password: ${JKS_PASS:pass}
     producer:
       value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    listener:
+      immediate-stop: true
+      ack-mode: MANUAL_IMMEDIATE
+      async-acks: true
     properties:
       max:
         request:

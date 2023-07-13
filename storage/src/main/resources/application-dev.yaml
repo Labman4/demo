@@ -13,7 +13,7 @@ spring:
         trust-store-type: PEM
         trust-store-location: ${SSL_PEM:classpath:/ssl.pem}
     consumer:
-      enable-auto-commit: true
+      enable-auto-commit: false
       auto-offset-reset: earliest
     #      auto-commit-interval: 500
     #      value-deserializer: org.apache.kafka.common.serialization.ByteArraySerializer
@@ -24,6 +24,10 @@ spring:
         trust-store-location: ${SSL_PEM:classpath:/ssl.pem}
     producer:
       value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    listener:
+      immediate-stop: true
+      ack-mode: MANUAL_IMMEDIATE
+      async-acks: true
     properties:
       max:
         request:

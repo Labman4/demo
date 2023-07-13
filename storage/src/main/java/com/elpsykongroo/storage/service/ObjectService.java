@@ -20,6 +20,7 @@ import com.elpsykongroo.base.domain.storage.object.ListObjectResult;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public interface ObjectService {
 
     List<ListObjectResult> list(S3 s3);
 
-    void multipartUpload(S3 s3) throws IOException;
+    void multipartUpload(S3 s3, Acknowledgment acknowledgment) throws IOException;
 
     String obtainUploadId(S3 s3) throws IOException;
 

@@ -45,6 +45,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.MessageListenerContainer;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
@@ -148,7 +149,7 @@ public class ObjectServiceImpl implements ObjectService {
     private RedisService redisService;
 
     @Override
-    public void multipartUpload(S3 s3) throws IOException {
+    public void multipartUpload(S3 s3, Acknowledgment acknowledgment) throws IOException {
         initClient(s3, "");
         if (StringUtils.isBlank(s3.getKey())) {
             s3.setKey(s3.getData()[0].getOriginalFilename());
@@ -160,56 +161,13 @@ public class ObjectServiceImpl implements ObjectService {
                 return;
             }
         }
-        uploadPart(s3);
+        uploadPart(s3, acknowledgment);
     }
 
     @Override
     public void download(S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException {
         initClient(s3, "");
         downloadStream(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getOffset(), request, response);
-    }
-
-    private void downloadStream(String clientId, String bucket, String key, String offset, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String range = request.getHeader("Range");
-        if (StringUtils.isNotBlank(range)) {
-            String[] ranges = range.replace("bytes=", "").split("-");
-            offset = ranges[0];
-        }
-        ResponseInputStream<GetObjectResponse> in =
-                getObjectStream(clientId, bucket, key, offset);
-        if (in != null) {
-            String filename = NormalizedUtils.topicNormalize(key);
-            response.setHeader("Accept-Ranges", in.response().acceptRanges());
-            response.setContentLengthLong(in.response().contentLength());
-            response.setContentType(in.response().contentType());
-            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-            response.setHeader("ETag", in.response().eTag());
-            if (StringUtils.isNotBlank(offset) || StringUtils.isNotBlank(range)) {
-                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-                response.setHeader("Content-Range", in.response().contentRange());
-            }
-            BufferedInputStream inputStream = new BufferedInputStream(in);
-            BufferedOutputStream out = null;
-            try {
-                out = new BufferedOutputStream(response.getOutputStream());
-                byte[] b = new byte[1024];
-                int len;
-                while ((len = inputStream.read(b)) != -1) {
-                    out.write(b, 0, len);
-                }
-            } finally {
-                if (out != null) {
-                    out.flush();
-                    out.close();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            }
-        }
     }
 
     @Override
@@ -321,7 +279,7 @@ public class ObjectServiceImpl implements ObjectService {
         return null;
     }
 
-    private void uploadPart(S3 s3) throws IOException {
+    private void uploadPart(S3 s3, Acknowledgment acknowledgment) throws IOException {
         partSize = Math.max(Long.parseLong(s3.getPartSize()), 5 * 1024 * 1024);
         RequestBody requestBody = null;
         long fileSize = 0;
@@ -384,6 +342,12 @@ public class ObjectServiceImpl implements ObjectService {
                     String sha = getObject(s3.getClientId(), s3.getBucket(), shaKey);
                     if (sha256.equals(sha)) {
                         UploadPartResponse uploadPartResponse = uploadPart(s3.getClientId(), s3, requestBody, partNum, endOffset);
+                        if (acknowledgment != null && StringUtils.isNotBlank(uploadPartResponse.eTag())) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("manual commit offset, partNum:{}", partNum);
+                            }
+                            acknowledgment.acknowledge();
+                        }
                         if (uploadPartResponse != null) {
                             completedParts.add(
                                     CompletedPart.builder()
@@ -416,6 +380,49 @@ public class ObjectServiceImpl implements ObjectService {
                 }
             } else if (completedParts.size() == num) {
                 completePart(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
+            }
+        }
+    }
+
+    private void downloadStream(String clientId, String bucket, String key, String offset, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String range = request.getHeader("Range");
+        if (StringUtils.isNotBlank(range)) {
+            String[] ranges = range.replace("bytes=", "").split("-");
+            offset = ranges[0];
+        }
+        ResponseInputStream<GetObjectResponse> in =
+                getObjectStream(clientId, bucket, key, offset);
+        if (in != null) {
+            String filename = NormalizedUtils.topicNormalize(key);
+            response.setHeader("Accept-Ranges", in.response().acceptRanges());
+            response.setContentLengthLong(in.response().contentLength());
+            response.setContentType(in.response().contentType());
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+            response.setHeader("ETag", in.response().eTag());
+            if (StringUtils.isNotBlank(offset) || StringUtils.isNotBlank(range)) {
+                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+                response.setHeader("Content-Range", in.response().contentRange());
+            }
+            BufferedInputStream inputStream = new BufferedInputStream(in);
+            BufferedOutputStream out = null;
+            try {
+                out = new BufferedOutputStream(response.getOutputStream());
+                byte[] b = new byte[1024];
+                int len;
+                while ((len = inputStream.read(b)) != -1) {
+                    out.write(b, 0, len);
+                }
+            } finally {
+                if (out != null) {
+                    out.flush();
+                    out.close();
+                }
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
             }
         }
     }
@@ -462,8 +469,8 @@ public class ObjectServiceImpl implements ObjectService {
                         consumerId.add(id);
                         consumerMap.putIfAbsent(topic + "-consumerId", consumerId);
                         consumerGroupId = id;
-                        startListener(topic, s3.getBucket() + "-" + timestamp + "-" + Thread.currentThread().getId(), consumerGroupId);
                         resetOffset(consumerGroupId, 0);
+                        startListener(topic, s3.getBucket() + "-" + timestamp + "-" + Thread.currentThread().getId(), consumerGroupId);
                     }
                 }
             }
@@ -471,7 +478,7 @@ public class ObjectServiceImpl implements ObjectService {
             if (StringUtils.isNotBlank(consumerMap.get(consumerGroupKey).get(0))) {
                 consumerGroupId = consumerMap.get(consumerGroupKey).get(0);
             } else {
-                consumerGroupId= getObject(clientId, s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId");
+                consumerGroupId = getObject(clientId, s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId");
             }
         }
         if (log.isDebugEnabled()) {
@@ -502,7 +509,33 @@ public class ObjectServiceImpl implements ObjectService {
                 return;
             }
         }
-        uploadPartByStream(clientId, s3, num, uploadId, consumerGroupId, start, partCount, topic, output);
+        uploadPartByStream(clientId, s3, num, uploadId, consumerMap.get(consumerGroupKey).get(0), start, partCount, topic, output);
+    }
+
+    private void startListener(String topic, String id, String consumerGroupId) {
+        try {
+            if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(consumerGroupId)) {
+                MessageListenerContainer container = endpointRegistry.getListenerContainer(id);
+                if (container == null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("start listen id:{}, groupId:{}", id , consumerGroupId);
+                    }
+                    List<String> consumerIds = null;
+                    if (consumerMap.containsKey(topic + "-" + consumerGroupId)) {
+                        consumerIds = consumerMap.get(topic + "-" + consumerGroupId);
+                    } else {
+                        consumerIds = new ArrayList<>();
+                    }
+                    consumerIds.add(id);
+                    consumerMap.put(topic + "-" + consumerGroupId, consumerIds);
+                    ac.getBean(ObjectListener.class, id, topic, consumerGroupId, this);
+                }
+            }
+        }catch(BeansException e){
+            if (log.isWarnEnabled()) {
+                log.warn("already on listen:{}", e.getMessage());
+            }
+        }
     }
 
     private void rejoinListener(String bucket, String topic, long timestamp, String consumerGroupId) {
@@ -510,8 +543,22 @@ public class ObjectServiceImpl implements ObjectService {
             log.debug("add listener");
         }
         if (StringUtils.isNotBlank(consumerGroupId)) {
-            startListener(topic, bucket + "-" + timestamp + "-" + Thread.currentThread().getId(), consumerGroupId);
             resetOffset(consumerGroupId, 0);
+            startListener(topic, bucket + "-" + timestamp + "-" + Thread.currentThread().getId(), consumerGroupId);
+        }
+    }
+
+    private void stopListener(List<String> consumerIds) {
+        for (String consumer: consumerIds) {
+            MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
+            if (container != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("stop consumerId: {}", container.getListenerId());
+                }
+                if (container.isRunning()) {
+                    container.stop();
+                }
+            }
         }
     }
 
@@ -519,7 +566,7 @@ public class ObjectServiceImpl implements ObjectService {
         AdminClient adminClient =  AdminClient.create(kafkaAdmin.getConfigurationProperties());
         try {
             if (log.isDebugEnabled()) {
-                log.debug("manual reset offset");
+                log.debug("manual reset offset:{}", offset);
             }
             ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(consumerGroupId);
             Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
@@ -547,32 +594,6 @@ public class ObjectServiceImpl implements ObjectService {
         }
     }
 
-    private void startListener(String topic, String id, String consumerGroupId) {
-        try {
-            if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(consumerGroupId)) {
-                MessageListenerContainer container = endpointRegistry.getListenerContainer(id);
-                if (container == null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("start listen id:{}, groupId:{}", id , consumerGroupId);
-                    }
-                    List<String> consumerIds = null;
-                    if (consumerMap.containsKey(topic + consumerGroupId)) {
-                        consumerIds = consumerMap.get(topic + consumerGroupId);
-                    } else {
-                        consumerIds = new ArrayList<>();
-                    }
-                    consumerIds.add(id);
-                    consumerMap.putIfAbsent(topic + "-" + consumerGroupId, consumerIds);
-                    ac.getBean(ObjectListener.class, id, topic, consumerGroupId, this);
-                }
-            }
-            }catch(BeansException e){
-                if (log.isWarnEnabled()) {
-                    log.warn("already on listen:{}", e.getMessage());
-                }
-            }
-    }
-
     private void uploadPartByStream(String clientId, S3 s3, Integer num, String uploadId, String consumerGroupId, int start, int partCount, String topic, byte[][] output) throws IOException {
         for(int i = start; i < num; i++) {
             int percent = (int) Math.ceil((double) i / num * 100);
@@ -588,7 +609,7 @@ public class ObjectServiceImpl implements ObjectService {
             long endOffset = startOffset + Math.min(partSize, s3.getData()[0].getSize() - startOffset);
             output[i] = Arrays.copyOfRange(s3.getData()[0].getBytes(), (int) startOffset, (int) endOffset);
             if (log.isDebugEnabled()) {
-                log.debug("uploadStream part {}-{} ", partCount, partNum);
+                log.debug("uploadStream consumerGroupId:{}, part {}-{} ", consumerGroupId, partCount, partNum);
             }
             String shaKey = consumerGroupId + "*" +s3.getKey() + "*" + partCount + "*" + partNum;
             String sha256 = MessageDigestUtils.sha256(output[i]);
@@ -638,13 +659,10 @@ public class ObjectServiceImpl implements ObjectService {
         }
         String consumerKey = topic + "-" + consumerGroupId ;
         List<String> consumerIds = new ArrayList<>();
-        consumerIds.add(s3.getConsumerGroupId());
         if (consumerMap.containsKey(consumerKey)) {
             consumerIds = consumerMap.get(consumerKey);
-            if (log.isDebugEnabled()) {
-                log.debug("consumerIds: {}", consumerIds.toString());
-            }
         }
+        consumerIds.add(s3.getConsumerGroupId());
         stopListener(consumerIds);
         clearMap(s3.getPlatform(), consumerGroupKey, consumerGroupId, consumerKey);
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
@@ -654,21 +672,10 @@ public class ObjectServiceImpl implements ObjectService {
             }
             adminClient.deleteTopics(Collections.singleton(topic));
         } finally {
-            adminClient.close();
-        }
-    }
-
-    private void stopListener(List<String> consumerIds) {
-        for (String consumer: consumerIds) {
-            MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
-            if (container != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("consumerIds: {}", container.getGroupId());
-                }
-                if (container.isRunning()) {
-                    container.stop();
-                }
+            if (log.isDebugEnabled()) {
+                log.debug("listener exist: {}", endpointRegistry.getAllListenerContainers().size());
             }
+            adminClient.close();
         }
     }
 
@@ -731,8 +738,8 @@ public class ObjectServiceImpl implements ObjectService {
             ResponseBytes<GetObjectResponse> bytesResp = clientMap.get(clientId).getObjectAsBytes(objectRequest);
             if (bytesResp != null) {
                 String str = new String(bytesResp.asByteArray());
-                if (log.isDebugEnabled()) {
-                    log.debug("getObjectAsBytes value:{}",str);
+                if (log.isTraceEnabled()) {
+                    log.trace("getObjectAsBytes value:{}",str);
                 }
                 return str;
             }
@@ -926,7 +933,7 @@ public class ObjectServiceImpl implements ObjectService {
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug("listCompletedPart: {}", completedParts.size());
+            log.debug("listCompletedPart: {}, part: {}", completedParts.size(), completedParts);
         }
     }
 
@@ -1034,12 +1041,6 @@ public class ObjectServiceImpl implements ObjectService {
                         serviceconfig.getS3().getAccessKey(),
                         serviceconfig.getS3().getAccessSecret());
 
-//        SdkHttpClient.Builder builder = UrlConnectionHttpClient.builder()
-//                .proxyConfiguration(ProxyConfiguration.builder()
-//                        .useSystemPropertyValues(true)
-//                        .build())
-//                .connectionTimeout(Duration.ofSeconds(serviceconfig.getTimeout().getConnect()))
-//                .socketTimeout(Duration.ofSeconds(serviceconfig.getTimeout().getSocket()));
         if(StringUtils.isNotBlank(s3.getIdToken()) && StringUtils.isBlank(s3.getAccessSecret())) {
             String[] jwtParts = s3.getIdToken().split("\\.");
             String payload = new String(Base64.getUrlDecoder().decode(jwtParts[1]));
