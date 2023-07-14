@@ -43,7 +43,7 @@ public class VaultTemplateConfig extends AbstractVaultConfiguration  {
                  .role(getEnvironment().getProperty("VAULT_ROLE")).build();
              return  new KubernetesAuthentication(options, restOperations());
          } else {
-             return new TokenAuthentication(getEnvironment().getProperty("vaultToken"));
+             return new TokenAuthentication(getEnvironment().getProperty("VAULT_TOKEN"));
          }
 //        AppRoleAuthenticationOptions options = AppRoleAuthenticationOptions.builder()
 //                .roleId(AppRoleAuthenticationOptions.RoleId.provided("c84b8b5a-6646-3295-b9b2-d8343335addb"))
@@ -55,7 +55,7 @@ public class VaultTemplateConfig extends AbstractVaultConfiguration  {
     @Override
     public VaultEndpoint vaultEndpoint() {
         VaultEndpoint endpoint = new VaultEndpoint();
-        URI uri = URI.create(getEnvironment().getProperty("vaultUri"));
+        URI uri = URI.create(getEnvironment().getProperty("VAULT_URI"));
         endpoint.setHost(uri.getHost());
         endpoint.setPort(uri.getPort());
         endpoint.setScheme(uri.getScheme());
