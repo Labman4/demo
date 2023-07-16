@@ -15,7 +15,7 @@ jobs:
     secrets: inherit
     with:
       module: elasticsearch
-      version: 0.0.1
+      version: 1.0.0
       env: dev
   pre-build:
     uses: Labman4/workflow/.github/workflows/buildpacks-native.yml@buildpacks
@@ -28,4 +28,4 @@ jobs:
     secrets: inherit
     with:
       module: elasticsearch
-      version: 0.0.1
+      version: 1.0.0
