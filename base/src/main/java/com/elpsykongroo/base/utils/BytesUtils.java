@@ -16,6 +16,13 @@
 
 package com.elpsykongroo.base.utils;
 
+import net.jpountz.lz4.LZ4Compressor;
+import net.jpountz.lz4.LZ4DecompressorWithLength;
+import net.jpountz.lz4.LZ4Factory;
+import net.jpountz.lz4.LZ4FastDecompressor;
+
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.security.SecureRandom;
 
 public final class BytesUtils {
@@ -37,5 +44,58 @@ public final class BytesUtils {
             result.append(String.format("%02X", b));
         }
         return result.toString();
+    }
+
+    public static byte[] hexToBytes(String hexString) {
+        int len = hexString.length();
+        byte[] byteArray = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            byteArray[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                    + Character.digit(hexString.charAt(i + 1), 16));
+        }
+        return byteArray;
+    }
+
+    public static byte[] compress(byte[] data) {
+        try {
+            LZ4Compressor compressor = LZ4Factory.fastestInstance().fastCompressor();
+            int maxCompressedLength = compressor.maxCompressedLength(data.length);
+            byte[] compressedData = new byte[maxCompressedLength];
+            int compressedLength = compressor.compress(data, 0, data.length, compressedData, 0, maxCompressedLength);
+            return java.util.Arrays.copyOf(compressedData, compressedLength);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static byte[] decompress(byte[] compressedData) {
+        try {
+            LZ4Factory factory = LZ4Factory.fastestInstance();
+            LZ4FastDecompressor decompressor = factory.fastDecompressor();
+            LZ4DecompressorWithLength decompressorWithLength = new LZ4DecompressorWithLength(decompressor);
+            byte[] restored = decompressorWithLength.decompress(compressedData);
+            return restored;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static byte[] convertToByteArray(Object object) {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+
+            objectOutputStream.writeObject(object);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            byteArrayOutputStream.close();
+
+            return byteArray;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

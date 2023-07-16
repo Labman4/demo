@@ -8,9 +8,6 @@ server:
     keep-alive-timeout: 12000
   port: 9999
 spring:
-  profiles:
-    active:
-      - ${ENV:dev}
   main:
     allow-bean-definition-overriding: true
   servlet:
@@ -25,7 +22,7 @@ service:
 logging:
   level:
     root: info
-    web: debug
+    web: info
     com:
       elpsykongroo:
         storage: ${STORAGE_LOG:DEBUG}

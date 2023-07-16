@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.storage;
+package com.elpsykongroo.base.domain.message;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableAsync;
+import lombok.Data;
 
-@EnableAsync
-@SpringBootApplication(proxyBeanMethods = false, scanBasePackages = {"com.elpsykongroo.base", "com.elpsykongroo.storage"})
-public class StorageApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(StorageApplication.class, args);
-    }
+@Data
+public class Send {
+    private String id;
+
+    private String groupId;
+
+    private String topic;
+
+    private String callback;
+
+    private String key;
+
+    private String message;
+
+    private byte[] data;
+
+    private String sha256;
+
+    private boolean manualStop;
 }

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.storage;
+package com.elpsykongroo.storage.service;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableAsync;
+import com.elpsykongroo.base.domain.storage.object.S3;
 
-@EnableAsync
-@SpringBootApplication(proxyBeanMethods = false, scanBasePackages = {"com.elpsykongroo.base", "com.elpsykongroo.storage"})
-public class StorageApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(StorageApplication.class, args);
-    }
+import java.io.IOException;
+
+public interface StreamService {
+    String checkSha256(S3 s3);
+
+    void uploadStream(String clientId, S3 s3, Integer num, String uploadId) throws IOException;
+
+    void autoComplete(S3 s3);
 }

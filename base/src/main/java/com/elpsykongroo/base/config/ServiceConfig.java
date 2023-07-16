@@ -129,6 +129,10 @@ public class ServiceConfig {
         private String gateway;
 
         private String object;
+
+        private String storageCallback;
+
+        private String kafka;
     }
 
     @Data

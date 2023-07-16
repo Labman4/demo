@@ -17,10 +17,14 @@
 package com.elpsykongroo.storage.config;
 
 import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.service.KafkaService;
 import com.elpsykongroo.base.service.RedisService;
 import feign.Feign;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import feign.codec.StringDecoder;
+import feign.form.spring.SpringFormEncoder;
+import feign.jackson.JacksonEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,11 +34,20 @@ public class FeignConfig {
 
     @Autowired
     private ServiceConfig serviceConfig;
+
     @Bean
     public RedisService redisService() {
         return Feign.builder()
                 .decoder(new Decoder.Default())
                 .encoder(new Encoder.Default())
                 .target(RedisService.class, serviceConfig.getUrl().getRedis());
+    }
+
+    @Bean
+    public KafkaService messageService() {
+        return Feign.builder()
+                .decoder(new StringDecoder())
+                .encoder(new SpringFormEncoder(new JacksonEncoder()))
+                .target(KafkaService.class, serviceConfig.getUrl().getKafka());
     }
 }

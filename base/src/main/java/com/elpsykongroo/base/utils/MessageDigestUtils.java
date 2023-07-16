@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.base.utils;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -28,6 +29,16 @@ public final class MessageDigestUtils {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             return BytesUtils.bytesToHex(md.digest(bytes));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String sha256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            return BytesUtils.bytesToHex(hashBytes);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
