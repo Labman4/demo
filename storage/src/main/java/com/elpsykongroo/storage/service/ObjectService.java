@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.storage.service;
 
+import com.elpsykongroo.base.domain.message.Message;
 import com.elpsykongroo.base.domain.storage.object.ListObjectResult;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,4 +42,5 @@ public interface ObjectService {
 
     void getObjectByCode(String code, String state, String key, String offset, HttpServletRequest request, HttpServletResponse response) throws IOException;
 
+    String receiveMessage(Message message) throws IOException;
 }

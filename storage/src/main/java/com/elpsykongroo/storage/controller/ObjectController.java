@@ -17,6 +17,7 @@
 package com.elpsykongroo.storage.controller;
 
 import com.elpsykongroo.base.common.CommonResponse;
+import com.elpsykongroo.base.domain.message.Message;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.storage.service.ObjectService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,6 +40,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("storage/object")
 public class ObjectController {
+
     @Autowired
     private ObjectService objectService;
 
@@ -47,11 +49,23 @@ public class ObjectController {
         return objectService.obtainUploadId(s3);
     }
 
+    @PostMapping("receive")
+    public String receiveData(@RequestBody Message message) {
+        try {
+            return objectService.receiveMessage(message);
+        } catch (IOException e) {
+            if (log.isErrorEnabled()) {
+                log.error("receive message error: {}", e.getMessage());
+            }
+            return "0";
+        }
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void multipartUpload(S3 s3) {
         try {
             if (!s3.getData()[0].isEmpty()) {
-                objectService.multipartUpload(s3, null);
+                objectService.multipartUpload(s3);
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {

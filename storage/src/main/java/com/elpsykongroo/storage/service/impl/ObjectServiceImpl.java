@@ -17,6 +17,7 @@
 package com.elpsykongroo.storage.service.impl;
 
 import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.domain.message.Message;
 import com.elpsykongroo.base.domain.storage.object.ListObjectResult;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.base.service.RedisService;
@@ -53,6 +54,7 @@ import java.util.List;
 @Slf4j
 @Service
 public class ObjectServiceImpl implements ObjectService {
+    private final ThreadLocal<Integer> count = new ThreadLocal<>();
 
     @Autowired
     private ServiceConfig serviceconfig;
@@ -148,6 +150,37 @@ public class ObjectServiceImpl implements ObjectService {
             downloadStream(plainText, keys[2], key, offset, request, response);
         }
     }
+
+    @Override
+    public String receiveMessage(Message message) throws IOException {
+        if (software.amazon.awssdk.utils.StringUtils.isNotBlank(message.getKey())) {
+            if (log.isDebugEnabled()) {
+                log.debug("start receive message, key:{}, data:{}", message.getKey(), message.getData().length);
+            }
+            String[] keys = message.getKey().split("\\*");
+            S3 s3 = new S3();
+            s3.setByteData(message.getData());
+            s3.setPlatform(keys[0]);
+            s3.setRegion(keys[1]);
+            s3.setBucket(keys[2].split("-")[0]);
+            s3.setConsumerGroupId(keys[2]);
+            s3.setKey(keys[3]);
+            s3.setPartCount(keys[4]);
+            s3.setPartNum(keys[5]);
+            s3.setUploadId(keys[6]);
+            try {
+                if (count.get() == null) {
+                    count.set(0);
+                }
+                if (count.get() <= 3) {
+                    return multipartUpload(s3);
+                }
+            } catch (Exception e) {
+                count.set(count.get() + 1);
+                multipartUpload(s3);
+            }
+        }
+        return "0";    }
 
     @Override
     public String obtainUploadId(S3 s3) throws IOException {
