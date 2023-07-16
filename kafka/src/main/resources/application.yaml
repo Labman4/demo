@@ -1,0 +1,26 @@
+server:
+  netty:
+    connection-timeout: 60
+  tomcat:
+    connection-timeout: 60
+    keep-alive-timeout: 60
+  port: 9092
+spring:
+  profiles:
+    active:
+      - ${ENV:dev}
+  main:
+    allow-bean-definition-overriding: true
+  lifecycle:
+    timeout-per-shutdown-phase: 10s
+
+service:
+  vault: ${VAULT_ENABLE:true}
+logging:
+  level:
+    root: info
+    web: info
+    com:
+      elpsykongroo:
+        services:
+          kafka: debug
