@@ -18,7 +18,6 @@ package com.elpsykongroo.services.elasticsearch.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.vault.annotation.VaultPropertySource;
 import org.springframework.vault.authentication.ClientAuthentication;
 import org.springframework.vault.authentication.KubernetesAuthentication;
 import org.springframework.vault.authentication.KubernetesAuthenticationOptions;
@@ -34,7 +33,6 @@ import java.net.URI;
     name = "vault",
     havingValue = "true",
     matchIfMissing = false)
-@VaultPropertySource("${SECRETS_APP_ES_PATH:kv/app/dev/es}")
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
 
     @Override
@@ -46,12 +44,6 @@ public class VaultTemplateConfig extends AbstractVaultConfiguration  {
          } else {
              return new TokenAuthentication(getEnvironment().getProperty("VAULT_TOKEN"));
          }
-//        AppRoleAuthenticationOptions options = AppRoleAuthenticationOptions.builder()
-//                .roleId(AppRoleAuthenticationOptions.RoleId.provided("c84b8b5a-6646-3295-b9b2-d8343335addb"))
-//                .secretId(AppRoleAuthenticationOptions.SecretId.wrapped(VaultToken.of("5cccc491-90d2-f297-5507-f6df543d803d")))
-//                .build();
-//
-//        return new AppRoleAuthentication(options, restOperations());
     }
     @Override
     public VaultEndpoint vaultEndpoint() {

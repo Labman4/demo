@@ -73,8 +73,7 @@ public final class BytesUtils {
             LZ4Factory factory = LZ4Factory.fastestInstance();
             LZ4FastDecompressor decompressor = factory.fastDecompressor();
             LZ4DecompressorWithLength decompressorWithLength = new LZ4DecompressorWithLength(decompressor);
-            byte[] restored = decompressorWithLength.decompress(compressedData);
-            return restored;
+            return decompressorWithLength.decompress(compressedData);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -95,7 +94,7 @@ public final class BytesUtils {
             return byteArray;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new byte[0];
         }
     }
 }

@@ -18,7 +18,6 @@ package com.elpsykongroo.services.kafka.listener;
 
 import com.elpsykongroo.base.domain.message.Message;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;

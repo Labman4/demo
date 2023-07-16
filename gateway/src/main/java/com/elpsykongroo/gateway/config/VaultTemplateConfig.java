@@ -45,12 +45,6 @@ public class VaultTemplateConfig extends AbstractVaultConfiguration  {
          } else {
              return new TokenAuthentication(getEnvironment().getProperty("VAULT_TOKEN"));
          }
-//        AppRoleAuthenticationOptions options = AppRoleAuthenticationOptions.builder()
-//                .roleId(AppRoleAuthenticationOptions.RoleId.provided("c84b8b5a-6646-3295-b9b2-d8343335addb"))
-//                .secretId(AppRoleAuthenticationOptions.SecretId.wrapped(VaultToken.of("5cccc491-90d2-f297-5507-f6df543d803d")))
-//                .build();
-//
-//        return new AppRoleAuthentication(options, restOperations());
     }
     @Override
     public VaultEndpoint vaultEndpoint() {

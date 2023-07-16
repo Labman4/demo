@@ -261,13 +261,13 @@ public class StreamServiceImpl implements StreamService {
     @Async
     @EventListener
     public void autoComplete(S3 s3) {
-        if (log.isDebugEnabled()) {
-            log.debug("autoCompletePart");
-        }
         if (StringUtils.isNotBlank(s3.getPartCount())) {
             List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
             s3Service.listCompletedPart(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
             if (completedParts.size() == Integer.parseInt(s3.getPartCount())) {
+                if (log.isDebugEnabled()) {
+                    log.debug("autoCompletePart");
+                }
                 s3Service.completePart(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
                 if (StringUtils.isNotBlank(s3.getConsumerGroupId())) {
                     completeTopic(s3.getClientId(), s3);
