@@ -86,7 +86,6 @@ public class StreamServiceImpl implements StreamService {
 
     @Override
     public void uploadStream(String clientId, S3 s3, Integer num, String uploadId) throws IOException {
-        long timestamp = Instant.now().toEpochMilli();
         int start = 0;
         int partCount = num;
         if (StringUtils.isNotBlank(s3.getPartCount())) {
