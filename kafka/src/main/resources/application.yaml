@@ -31,7 +31,7 @@ management:
       enabled: true
   metrics:
     tags:
-      application: storage
+      application: kafka
   endpoints:
     web:
       exposure:
