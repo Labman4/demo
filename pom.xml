@@ -86,8 +86,12 @@
                                 <builder>paketobuildpacks/builder:tiny</builder>
                                 <env>
                                     <BP_JVM_VERSION>17</BP_JVM_VERSION>
-                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>                                
+                                    <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
+                                    <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>--initialize-at-build-time=ch.qos.logback.core,ch.qos.logback.classic,org.springframework.data.domain.Page,org.springframework.data.domain.Pageable</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                                 </env>
+                                <name>
+                                    registry.elpsykongroo.com/library/${project.artifactId}:native
+                                </name>
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                             </image>
                         </configuration>
@@ -156,6 +160,19 @@
                                 </name>
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                             </image>
+                            <!--<configurationFileDirectories>
+                              <dir>/src/main/resources/META-INF/native-image/com/elpsykongroo</dir>
+                            </configurationFileDirectories> -->
+                            <!-- <agent>
+                                <enabled>true</enabled>
+                                <options name="main">
+                                <option>-agentlib:native-image-agent=config-merge-dir=${agentConfig}</option>
+                                <option>experimental-class-define-support</option>
+                                </options>
+                                <options name="test">
+                                    <option>access-filter-file=${basedir}/access-filter.json</option>
+                                </options>
+                            </agent> -->
                         </configuration>
                     </plugin>
                 </plugins>
@@ -258,8 +275,8 @@
                         <env>
                             <BP_JVM_VERSION>17</BP_JVM_VERSION>
                             <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
-                            <HTTP_PROXY>http://192.168.1.100:1080</HTTP_PROXY>
-                            <HTTPS_PROXY>http://192.168.1.100:1080</HTTPS_PROXY>
+<!--                            <HTTP_PROXY>http://192.168.1.100:1080</HTTP_PROXY>-->
+<!--                            <HTTPS_PROXY>http://192.168.1.100:1080</HTTPS_PROXY>-->
                         </env>
                         <name>
                             registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
