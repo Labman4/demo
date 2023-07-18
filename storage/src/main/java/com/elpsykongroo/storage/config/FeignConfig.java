@@ -44,7 +44,7 @@ public class FeignConfig {
     }
 
     @Bean
-    public KafkaService messageService() {
+    public KafkaService kafkaService() {
         return Feign.builder()
                 .decoder(new StringDecoder())
                 .encoder(new SpringFormEncoder(new JacksonEncoder()))
