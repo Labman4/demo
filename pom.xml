@@ -90,7 +90,7 @@
                                     <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>--initialize-at-build-time=ch.qos.logback.core,ch.qos.logback.classic,org.springframework.data.domain.Page,org.springframework.data.domain.Pageable</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                                 </env>
                                 <name>
-                                    registry.elpsykongroo.com/library/${project.artifactId}:native
+                                    ${project.artifactId}:native
                                 </name>
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                             </image>
@@ -156,7 +156,7 @@
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>     
                                 </env>
                                 <name>
-                                    registry.elpsykongroo.com/library/${project.artifactId}:native
+                                    ${project.artifactId}:native
                                 </name>
                                 <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                             </image>
