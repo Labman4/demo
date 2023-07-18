@@ -50,7 +50,7 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 10s
   application:
-    name: ${APP_NAME:demo}
+    name: ${APP_NAME:gateway}
   security:
     oauth2:
       resource-server:
@@ -96,7 +96,7 @@ management:
       enabled: true
   metrics:
     tags:
-      application: demo
+      application: ${METRICS_TAG:gateway}
   endpoints:
     web:
       exposure:
@@ -107,36 +107,3 @@ management:
 
 service:
   vault: ${VAULT_ENABLE:true}
-
-
-request:
-  limit:
-    global:
-      tokens: ${GLOBAL_REQUEST_LIMIT:5000}
-      duration: ${GLOBAL_REQUEST_DURATION:100}
-      speed: ${GLOBAL_REQUEST_DURATION_SPEED:1000}
-    scope:
-      tokens: ${REQUEST_LIMIT:1000}
-      duration: ${REQUEST_DURATION:1}
-      speed: ${REQUEST_DURATION_SPEED:100}
-  path:
-    permit: ${PERMIT_PATH:/public/**}
-    nonPrivate: ${PUBLIC_PATH:/public}
-    limit: ${LIMIT_PATH:/}
-    exclude: ${EXCLUDE_PATH:/actuator}
-    filter: ${FILTER_PATH:/}
-#  path:
-#    permit: ${PERMIT_PATH:/**}
-#    nonPrivate: ${PUBLIC_PATH:/}
-#    limit: ${LIMIT_PATH:/}
-#    exclude: ${EXCLUDE_PATH:/}
-#    filter: ${FILTER_PATH:/}
-  record:
-    exclude:
-      path:  ${RECORD_EXCLUDE_PATH:/actuator}
-      ip:  ${RECORD_EXCLUDE_IP:ip.elpsykongroo.com,localhost,127.0.0.1}
-  header:
-    ip: ${IP_HEADER:x-real-ip}
-    black: ${BLACK_HEADER:x-real-ip}
-    white: ${WHITE_HEADER:x-real-ip}
-    record: ${RECORD_HEADER:x-real-ip}

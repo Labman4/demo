@@ -70,6 +70,9 @@ public class ThrottlingFilter implements Filter {
 	}
 
 	private Bucket createNewBucket() {
+		if (log.isTraceEnabled()) {
+			log.trace("request scope limit:{}", requestConfig.getLimit().getScope());
+		}
 		Refill refill = Refill.greedy(requestConfig.getLimit().getScope().getSpeed(),
 					    Duration.ofSeconds(requestConfig.getLimit().getScope().getDuration()));
 		Bandwidth limit = Bandwidth.classic(requestConfig.getLimit().getScope().getTokens(), refill);
@@ -77,6 +80,9 @@ public class ThrottlingFilter implements Filter {
 	}
 
 	private Bucket createGlobalNewBucket() {
+		if (log.isTraceEnabled()) {
+			log.trace("request global limit:{}", requestConfig.getLimit().getGlobal());
+		}
 		Refill refill = Refill.greedy(requestConfig.getLimit().getGlobal().getSpeed(), 
 						Duration.ofSeconds(requestConfig.getLimit().getGlobal().getDuration()));
 		Bandwidth limit = Bandwidth.classic(requestConfig.getLimit().getGlobal().getTokens(), refill);
@@ -85,6 +91,9 @@ public class ThrottlingFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+		if (log.isTraceEnabled()) {
+			log.trace("request filter path:{}", requestConfig.getPath());
+		}
 		HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 		HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 		HttpSession session = httpRequest.getSession(true);

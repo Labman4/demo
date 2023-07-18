@@ -42,36 +42,36 @@ public class RequestConfig {
 
     @Data
     public static class Header {
-        private String ip = "x-real-ip";
+        private String ip;
 
-        private String black = "x-real-ip";
+        private String black;
 
-        private String white = "x-real-ip";
+        private String white;
 
-        private String record = "x-real-ip";
+        private String record;
 
     }
 
     @Data
     public static class Token {
-        private Long tokens = 1000L;
+        private Long tokens;
 
-        private Long duration = 1L;
+        private Long duration;
 
-        private Long speed = 100L;
+        private Long speed;
     }
    
     @Data
     public static class Path {
-        private String permit = "/**";
+        private String permit;
 
-        private String nonPrivate = "/public";
+        private String nonPrivate;
     
-        private String limit = "/";
+        private String limit;
         
-        private String exclude = "/actuator";
+        private String exclude;
     
-        private String filter = "/";  
+        private String filter;
     }
 
     @Data
