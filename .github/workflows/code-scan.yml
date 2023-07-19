@@ -6,6 +6,8 @@ on:
     - develop
     - native-image
     - main
+    paths-ignore:
+    -  '.github/**'
     
   pull_request:
     branches:
