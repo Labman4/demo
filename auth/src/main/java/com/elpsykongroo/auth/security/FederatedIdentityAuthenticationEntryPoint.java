@@ -33,18 +33,10 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 public final class FederatedIdentityAuthenticationEntryPoint implements AuthenticationEntryPoint {
-
-	private final SecurityContextRepository securityContextRepository =
-			new HttpSessionSecurityContextRepository();
-
-	private final AuthenticationEntryPoint delegate;
 
 	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
@@ -53,8 +45,7 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 
 	private final ClientRegistrationRepository clientRegistrationRepository;
 
-	public FederatedIdentityAuthenticationEntryPoint(String loginPageUrl, ClientRegistrationRepository clientRegistrationRepository) {
-		this.delegate = new LoginUrlAuthenticationEntryPoint(loginPageUrl);
+	public FederatedIdentityAuthenticationEntryPoint(ClientRegistrationRepository clientRegistrationRepository) {
 		this.clientRegistrationRepository = clientRegistrationRepository;
 	}
 
@@ -90,15 +81,11 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 						.buildAndExpand(clientRegistration.getRegistrationId())
 						.toUriString();
 				this.redirectStrategy.sendRedirect(request, response, redirectUri);
-				return;
 			}
 		}
-
-		this.delegate.commence(request, response, authenticationException);
 	}
 
 	public void setAuthorizationRequestUri(String authorizationRequestUri) {
 		this.authorizationRequestUri = authorizationRequestUri;
 	}
-
 }

@@ -28,23 +28,12 @@ import org.springframework.util.Assert;
 
 public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<FederatedIdentityConfigurer, HttpSecurity> {
 
-	private String loginPageUrl = "https://elpsykongroo.com";
-
 	private String authorizationRequestUri;
 
 	private Consumer<OAuth2User> oauth2UserHandler;
 
 	private Consumer<OidcUser> oidcUserHandler;
 
-	/**
-	 * @param loginPageUrl The URL of the login page, defaults to {@code "/login"}
-	 * @return This configurer for additional configuration
-	 */
-	public FederatedIdentityConfigurer loginPageUrl(String loginPageUrl) {
-		Assert.hasText(loginPageUrl, "loginPageUrl cannot be empty");
-		this.loginPageUrl = loginPageUrl;
-		return this;
-	}
 
 	/**
 	 * @param authorizationRequestUri The authorization request URI for initiating
@@ -87,7 +76,7 @@ public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<Fe
 		ClientRegistrationRepository clientRegistrationRepository =
 			applicationContext.getBean(ClientRegistrationRepository.class);
 		FederatedIdentityAuthenticationEntryPoint authenticationEntryPoint =
-			new FederatedIdentityAuthenticationEntryPoint(this.loginPageUrl,clientRegistrationRepository);
+			new FederatedIdentityAuthenticationEntryPoint(clientRegistrationRepository);
 		if (this.authorizationRequestUri != null) {
 			authenticationEntryPoint.setAuthorizationRequestUri(this.authorizationRequestUri);
 		}

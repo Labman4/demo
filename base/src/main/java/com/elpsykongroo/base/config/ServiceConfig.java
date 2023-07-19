@@ -133,6 +133,8 @@ public class ServiceConfig {
         private String storageCallback;
 
         private String kafka;
+
+        private String loginPage;
     }
 
     @Data

@@ -19,6 +19,7 @@ package com.elpsykongroo.auth.service.custom.impl;
 import com.elpsykongroo.auth.entity.user.User;
 import com.elpsykongroo.auth.service.custom.EmailService;
 import com.elpsykongroo.auth.service.custom.UserService;
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.PkceUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +42,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private ServiceConfig serviceConfig;
 
     @Override
     public void send(String to, String subject, String text) {
@@ -82,7 +86,8 @@ public class EmailServiceImpl implements EmailService {
                 String codeVerifier = PkceUtils.generateVerifier();
                 String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
                 redisService.set("TmpCert_" + username, codeChallenge, "");
-                send(userInfo.get("email").toString(), "once login", "https://auth.elpsykongroo.com/tmp/" + codeVerifier + "." + username);
+                send(userInfo.get("email").toString(), "once login",
+                        serviceConfig.getUrl().getLoginPage() + "/tmp/" + codeVerifier + "." + username);
             }
         }
     }
@@ -94,7 +99,8 @@ public class EmailServiceImpl implements EmailService {
             String codeVerifier = PkceUtils.generateVerifier();
             String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
             redisService.set("email_verify_" + username, codeChallenge, "");
-            send(user.getEmail(), "verify email", "https://auth.elpsykongroo.com/email/verify/" + codeVerifier + "." + username);
+            send(user.getEmail(), "verify email",
+                    serviceConfig.getUrl().getLoginPage() + "/email/verify/" + codeVerifier + "." + username);
         }
     }
 }

@@ -26,6 +26,7 @@ import com.elpsykongroo.auth.service.custom.AuthorizationService;
 import com.elpsykongroo.auth.service.custom.EmailService;
 import com.elpsykongroo.auth.service.custom.LoginService;
 import com.elpsykongroo.auth.service.custom.UserService;
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.BytesUtils;
 import com.elpsykongroo.base.utils.PkceUtils;
@@ -122,6 +123,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private OpaqueTokenIntrospector tokenIntrospector;
+
+    @Autowired
+    private ServiceConfig serviceConfig;
 
     @Override
     public String login(String username, HttpServletRequest servletRequest) {
@@ -379,14 +383,14 @@ public class LoginServiceImpl implements LoginService {
                     log.debug("set tmp SecurityContext");
                 }
                 redisService.set("TmpCert_" + username, "", "");
-                return "redirect:https://elpsykongroo.com?username=" + username;
+                return "redirect:" + serviceConfig.getUrl().getLoginPage() + "?username=" + username;
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("set tmp SecurityContext error:{}", e.getMessage());
             }
         }
-        return "redirect:https://elpsykongroo.com/error";
+        return "redirect:" + serviceConfig.getUrl().getLoginPage() + "/error";
     }
 
     @Override
