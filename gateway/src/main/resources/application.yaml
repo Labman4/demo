@@ -27,12 +27,6 @@ spring:
 #        config:
 #          storage:
 #            url:
-#          auth:
-#            url:
-#          es:
-#            url: http://localhost:9201
-#          redis:
-#            url: http://localhost:8379
   #  cloud:
   #    kubernetes:
   #      discovery:
@@ -59,7 +53,7 @@ spring:
 logging:
   level:
     root: ${ROOT_LOG_LEVEL:info}
-    web: ${WEB_LOG_LEVEL:info}
+    web: ${WEB_LOG_LEVEL:debug}
     com:
       elpsykongroo:
         gateway: ${GATEWAY_LOG_LEVEL:debug}
@@ -84,8 +78,6 @@ management:
     recording:
       enabled: ${HTTP_RECORD:true}
   endpoint:
-    shutdown:
-      enabled: true
     health:
       probes:
         enabled: true
@@ -99,7 +91,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: ${ENDPOINTS_WEB:health,prometheus,httpexchanges,shutdown}
+        include: ${ENDPOINTS_WEB:health,prometheus,httpexchanges}
   zipkin:
     tracing:
       endpoint: ${ZIPKIN_HOST:http://localhost:9411/api/v2/spans}

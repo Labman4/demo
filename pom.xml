@@ -213,7 +213,7 @@
                             <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>&#45;&#45;enable-https</BP_NATIVE_IMAGE_BUILD_ARGUMENTS> -->
                         </env>
                         <name>
-                            registry.elpsykongroo.com/library/${project.artifactId}:${project.version}
+                            ${project.artifactId}:${project.version}
                         </name>
                         <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                     </image>
@@ -274,9 +274,6 @@
                         <builder>paketobuildpacks/builder:tiny</builder>
                         <env>
                             <BP_JVM_VERSION>17</BP_JVM_VERSION>
-                            <BP_NATIVE_IMAGE>false</BP_NATIVE_IMAGE>
-<!--                            <HTTP_PROXY>http://192.168.1.100:1080</HTTP_PROXY>-->
-<!--                            <HTTPS_PROXY>http://192.168.1.100:1080</HTTPS_PROXY>-->
                         </env>
                         <name>
                             registry.elpsykongroo.com/library/${project.artifactId}:${project.version}

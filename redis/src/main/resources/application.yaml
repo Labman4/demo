@@ -2,8 +2,12 @@ server:
   port: 8379
 logging:
   level:
-    web: debug
-    root: info
+    root: ${ROOT_LOG_LEVEL:info}
+    web: ${WEB_LOG_LEVEL:debug}
+    com:
+      elpsykongroo:
+        services:
+          redis: ${REDIS_LOG_LEVEL:debug}
 #spring:
 #  data:
 #    redis:

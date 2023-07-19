@@ -5,15 +5,13 @@ server:
   port: 9000
 management:
   endpoint:
-    shutdown:
-      enabled: true
     health:
       probes:
         enabled: true
   endpoints:
     web:
       exposure:
-        include: ${ENDPOINTS_WEB:shutdown,health}
+        include: ${ENDPOINTS_WEB:health}
 spring:
   mail:
     host: smtp.gmail.com
@@ -65,7 +63,7 @@ service:
 logging:
   level:
     root: ${ROOT_LOG_LEVEL:info}
-    web: ${WEB_LOG_LEVEL:info}
+    web: ${WEB_LOG_LEVEL:debug}
     org:
       springframework:
         security: ${SECURITY_LOG_LEVEL:debug}
