@@ -21,16 +21,24 @@ service:
   vault: ${VAULT_ENABLE:true}
 logging:
   level:
-    root: info
-    web: info
+    root: ${ROOT_LOG_LEVEL:info}
+    web: ${WEB_LOG_LEVEL:info}
+    org:
+      springframework:
+        security: ${SECURITY_LOG_LEVEL:debug}
     com:
       elpsykongroo:
-        storage: ${STORAGE_LOG:DEBUG}
+        storage: ${STORAGE_LOG_LEVEL:debug}
 management:
   endpoint:
+    shutdown:
+      enabled: true
     prometheus:
       enabled: true
   endpoints:
     web:
       exposure:
-        include: ${ENDPOINTS_WEB:prometheus}
+        include: ${ENDPOINTS_WEB:prometheus,shutdown}
+  metrics:
+    tags:
+      application: ${METRICS_TAG:storage}

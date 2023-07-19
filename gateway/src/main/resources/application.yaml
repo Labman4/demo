@@ -58,16 +58,14 @@ spring:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
 logging:
   level:
-    root: info
-    web: info
+    root: ${ROOT_LOG_LEVEL:info}
+    web: ${WEB_LOG_LEVEL:info}
     com:
       elpsykongroo:
-        gateway: debug
+        gateway: ${GATEWAY_LOG_LEVEL:debug}
     org:
       springframework:
-        security:
-          web:
-            csrf: debug
+        security: ${SECURITY_LOG_LEVEL:debug}
 #  log4j2:
 #    config:
 #      override:
@@ -86,7 +84,8 @@ management:
     recording:
       enabled: ${HTTP_RECORD:true}
   endpoint:
-    shutdown.enabled: true
+    shutdown:
+      enabled: true
     health:
       probes:
         enabled: true
