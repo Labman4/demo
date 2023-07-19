@@ -11,7 +11,7 @@ on:
       -  'redis/**'
 jobs:   
   build:
-    uses: Labman4/workflow/.github/workflows/native-image-base.yml@native-image
+    uses: Labman4/workflow/.github/workflows/native-image-redis.yml@native-image
     secrets: inherit
     with:
       module: redis
