@@ -12,14 +12,7 @@ on:
       - base/**	
 
 jobs:
-  build: 
-    uses: Labman4/workflow/.github/workflows/buildpacks.yml@buildpacks
-    secrets: inherit
-    with:
-      module: gateway
-      version: 0.0.2
-      env: dev
-  native:
+  build:
     uses: Labman4/workflow/.github/workflows/native-image-gateway.yml@native-image
     secrets: inherit
     with: 
