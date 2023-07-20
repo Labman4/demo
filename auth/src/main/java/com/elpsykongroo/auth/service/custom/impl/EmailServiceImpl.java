@@ -87,7 +87,7 @@ public class EmailServiceImpl implements EmailService {
                 String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
                 redisService.set("TmpCert_" + username, codeChallenge, "");
                 send(userInfo.get("email").toString(), "once login",
-                        serviceConfig.getUrl().getLoginPage() + "/tmp/" + codeVerifier + "." + username);
+                        serviceConfig.getUrl().getAuth() + "/tmp/" + codeVerifier + "." + username);
             }
         }
     }
@@ -100,7 +100,7 @@ public class EmailServiceImpl implements EmailService {
             String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
             redisService.set("email_verify_" + username, codeChallenge, "");
             send(user.getEmail(), "verify email",
-                    serviceConfig.getUrl().getLoginPage() + "/email/verify/" + codeVerifier + "." + username);
+                    serviceConfig.getUrl().getAuth() + "/email/verify/" + codeVerifier + "." + username);
         }
     }
 }
