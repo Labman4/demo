@@ -299,7 +299,6 @@ public class StreamServiceImpl implements StreamService {
                             return id;
                         }
                     }
-
                 }
             } else if (init) {
                 String consumerGroupId = s3.getBucket() + "-" + Instant.now().toEpochMilli();
@@ -320,7 +319,7 @@ public class StreamServiceImpl implements StreamService {
                 }
             }
         }
-        if (StringUtils.isNotBlank(consumerMap.get(consumerGroupKey).get(0))) {
+        if (consumerMap.get(consumerGroupKey) != null && StringUtils.isNotBlank(consumerMap.get(consumerGroupKey).get(0))) {
             return consumerMap.get(consumerGroupKey).get(0);
         } else {
             return s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
