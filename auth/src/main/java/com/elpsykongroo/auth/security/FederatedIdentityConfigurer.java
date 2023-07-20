@@ -18,10 +18,9 @@ package com.elpsykongroo.auth.security;
 
 import java.util.function.Consumer;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.util.Assert;
@@ -34,6 +33,8 @@ public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<Fe
 
 	private Consumer<OidcUser> oidcUserHandler;
 
+    @Autowired
+	private FederatedIdentityAuthenticationEntryPoint authenticationEntryPoint;
 
 	/**
 	 * @param authorizationRequestUri The authorization request URI for initiating
@@ -72,11 +73,6 @@ public final class FederatedIdentityConfigurer extends AbstractHttpConfigurer<Fe
 	// @formatter:off
 	@Override
 	public void init(HttpSecurity http) throws Exception {
-		ApplicationContext applicationContext = http.getSharedObject(ApplicationContext.class);
-		ClientRegistrationRepository clientRegistrationRepository =
-			applicationContext.getBean(ClientRegistrationRepository.class);
-		FederatedIdentityAuthenticationEntryPoint authenticationEntryPoint =
-			new FederatedIdentityAuthenticationEntryPoint(clientRegistrationRepository);
 		if (this.authorizationRequestUri != null) {
 			authenticationEntryPoint.setAuthorizationRequestUri(this.authorizationRequestUri);
 		}

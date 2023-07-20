@@ -18,6 +18,7 @@ package com.elpsykongroo.auth.security;
 
 import java.io.IOException;
 
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.utils.DomainUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -33,8 +35,10 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Component
 @Slf4j
 public final class FederatedIdentityAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -43,11 +47,11 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 	private String authorizationRequestUri = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI
 			+ "/{registrationId}";
 
-	private final ClientRegistrationRepository clientRegistrationRepository;
+	@Autowired
+	private ClientRegistrationRepository clientRegistrationRepository;
 
-	public FederatedIdentityAuthenticationEntryPoint(ClientRegistrationRepository clientRegistrationRepository) {
-		this.clientRegistrationRepository = clientRegistrationRepository;
-	}
+	@Autowired
+	private AuthenticationEntryPoint authenticationEntryPoint;
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException, ServletException {
@@ -81,8 +85,10 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 						.buildAndExpand(clientRegistration.getRegistrationId())
 						.toUriString();
 				this.redirectStrategy.sendRedirect(request, response, redirectUri);
+				return;
 			}
 		}
+		authenticationEntryPoint.commence(request, response, authenticationException);
 	}
 
 	public void setAuthorizationRequestUri(String authorizationRequestUri) {

@@ -17,8 +17,7 @@
 package com.elpsykongroo.auth.config;
 
 import com.elpsykongroo.auth.security.CustomLogoutSuccessHandler;
-import com.elpsykongroo.auth.security.FederatedIdentityConfigurer;
-import com.elpsykongroo.auth.security.UserRepositoryOAuth2UserHandler;
+import com.elpsykongroo.auth.security.FederatedIdentityAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,10 +44,12 @@ public class DefaultSecurityConfig {
 	@Autowired
     private UserDetailsService userDetailsService;
 
+	@Autowired
+	private FederatedIdentityAuthenticationEntryPoint authenticationEntryPoint;
+
+
 	@Bean
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-		FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer()
-				.oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
 		http.authorizeHttpRequests(authorize ->
 			 	authorize.requestMatchers(
 								 	"/oauth2/**",
@@ -72,8 +73,7 @@ public class DefaultSecurityConfig {
 					.invalidateHttpSession(true)
 					.addLogoutHandler(new SecurityContextLogoutHandler())
 					.logoutSuccessHandler(new CustomLogoutSuccessHandler())
-					.deleteCookies("JSESSIONID"))
-				.apply(federatedIdentityConfigurer);
+					.deleteCookies("JSESSIONID"));
 		http
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.NEVER)
@@ -93,7 +93,10 @@ public class DefaultSecurityConfig {
 				.cors().and()
 				.requestCache(
 						cache -> cache.requestCache(requestCache)
-				).csrf().disable();
+				).csrf().disable()
+				.exceptionHandling(exceptionHandling ->
+						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint)
+				);
 		return http.build();
 	}
 

@@ -19,8 +19,8 @@ package com.elpsykongroo.auth.config;
 import com.elpsykongroo.auth.security.convert.PublicRevokeAuthenticationConverter;
 import com.elpsykongroo.auth.security.provider.WebAuthnAuthenticationProvider;
 import com.elpsykongroo.auth.utils.jose.Jwks;
-import com.elpsykongroo.auth.security.FederatedIdentityConfigurer;
 import com.elpsykongroo.auth.security.FederatedIdentityIdTokenCustomizer;
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -56,7 +56,9 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -71,12 +73,14 @@ public class AuthorizationServerConfig {
 	@Autowired
 	RegisteredClientRepository registeredClientRepository;
 
+	@Autowired
+	private ServiceConfig serviceConfig;
+
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
-		http.apply(new FederatedIdentityConfigurer());
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 
 		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
@@ -202,5 +206,10 @@ public class AuthorizationServerConfig {
 	@Bean
 	public HttpSessionEventPublisher httpSessionEventPublisher() {
 		return new HttpSessionEventPublisher();
+	}
+
+	@Bean
+	public AuthenticationEntryPoint authenticationEntryPoint() {
+		return new LoginUrlAuthenticationEntryPoint(serviceConfig.getUrl().getLoginPage());
 	}
 }
