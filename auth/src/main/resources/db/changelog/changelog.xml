@@ -8,8 +8,8 @@
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
-    
-    <includeAll path="liquibase/changelog/postgresql/v1/init" />
-<!--	<includeAll path="liquibase/changelog/mysql/v1" />-->
+<!--not use includeAll when native   -->
+    <include file="db/changelog/postgresql/v1/init/initAuthority.sql" />
+	<include file="db/changelog/postgresql/v1/init/initClient.sql" />
 
 </databaseChangeLog>

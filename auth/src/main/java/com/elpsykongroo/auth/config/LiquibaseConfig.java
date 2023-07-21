@@ -29,7 +29,7 @@ public class LiquibaseConfig {
     @DependsOn("entityManagerFactory")
     public LiquibaseBeanConfig liquibase(DataSource dataSource) {
         SpringLiquibase liquibase = new SpringLiquibase();
-        liquibase.setChangeLog("classpath:liquibase/changelog.xml");
+        liquibase.setChangeLog("classpath:db/changelog/changelog.xml");
         liquibase.setDataSource(dataSource);
         liquibase.setShouldRun(true);
         liquibase.setClearCheckSums(true);
