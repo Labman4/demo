@@ -11,8 +11,9 @@ on:
       -  'kafka/**'
 jobs:
   build:
-    uses: Labman4/workflow/.github/workflows/native-image-base.yml@native-image
+    uses: Labman4/workflow/.github/workflows/native-image-kafka.yml@native-image
     secrets: inherit
     with:
       module: kafka
       version: 0.0.1
+      native: true
