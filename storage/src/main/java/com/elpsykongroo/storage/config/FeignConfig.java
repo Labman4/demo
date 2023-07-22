@@ -17,6 +17,7 @@
 package com.elpsykongroo.storage.config;
 
 import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.service.GatewayService;
 import com.elpsykongroo.base.service.KafkaService;
 import com.elpsykongroo.base.service.RedisService;
 import feign.Feign;
@@ -49,5 +50,13 @@ public class FeignConfig {
                 .decoder(new StringDecoder())
                 .encoder(new SpringFormEncoder(new JacksonEncoder()))
                 .target(KafkaService.class, serviceConfig.getUrl().getKafka());
+    }
+
+    @Bean
+    public GatewayService gatewayService() {
+        return Feign.builder()
+                .decoder(new Decoder.Default())
+                .encoder(new Encoder.Default())
+                .target(GatewayService.class, serviceConfig.getUrl().getGateway());
     }
 }

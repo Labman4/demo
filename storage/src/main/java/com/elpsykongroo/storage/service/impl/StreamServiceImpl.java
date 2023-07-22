@@ -19,6 +19,7 @@ package com.elpsykongroo.storage.service.impl;
 import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.domain.message.Send;
 import com.elpsykongroo.base.domain.storage.object.S3;
+import com.elpsykongroo.base.service.GatewayService;
 import com.elpsykongroo.base.service.KafkaService;
 import com.elpsykongroo.base.utils.MessageDigestUtils;
 import com.elpsykongroo.base.utils.NormalizedUtils;
@@ -59,6 +60,9 @@ public class StreamServiceImpl implements StreamService {
 
     @Autowired
     private ServiceConfig serviceConfig;
+
+    @Autowired
+    private GatewayService gatewayService;
 
     @Override
     public String checkSha256(S3 s3) {
@@ -192,8 +196,12 @@ public class StreamServiceImpl implements StreamService {
             }
             consumerIds.add(id);
             consumerMap.put(topic + "-" + consumerGroupId, consumerIds);
+            String ip = gatewayService.getIP();
+            if (log.isDebugEnabled()) {
+                log.debug("service ip:{}", ip);
+            }
             Send send = new Send();
-            send.setCallback(serviceConfig.getUrl().getStorageCallback());
+            send.setCallback(ip);
             send.setTopic(topic);
             send.setId(id);
             send.setGroupId(consumerGroupId);

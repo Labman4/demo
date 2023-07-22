@@ -22,4 +22,7 @@ import feign.RequestLine;
 public interface GatewayService {
     @RequestLine("PUT /message?message={message}")
     void receiveMessage (@Param String message);
+
+    @RequestLine("GET /public/ip")
+    String getIP();
 }

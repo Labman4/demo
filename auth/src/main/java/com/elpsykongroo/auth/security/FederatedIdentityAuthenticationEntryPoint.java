@@ -18,7 +18,6 @@ package com.elpsykongroo.auth.security;
 
 import java.io.IOException;
 
-import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.utils.DomainUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

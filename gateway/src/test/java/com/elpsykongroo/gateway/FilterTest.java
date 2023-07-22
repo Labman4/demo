@@ -109,6 +109,10 @@ class FilterTest {
                 .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
                 .target(SearchService.class, "http://localhost:8880");
         record.setExclude(exclude);
+        header.setIp("x-real-ip");
+        header.setRecord("x-real-ip");
+        header.setBlack("x-real-ip");
+        header.setWhite("x-real-ip");
         token.setSpeed(1l);
         token.setDuration(10l);
         token.setTokens(1l);
