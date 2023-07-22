@@ -130,6 +130,10 @@ public class ServiceConfig {
 
         private String object;
 
+        private String storagePort;
+
+        private String storageProtocol;
+
         private String storageCallback;
 
         private String kafka;

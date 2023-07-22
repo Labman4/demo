@@ -201,7 +201,9 @@ public class StreamServiceImpl implements StreamService {
                 log.debug("service ip:{}", ip);
             }
             Send send = new Send();
-            send.setCallback(ip);
+            send.setCallback(serviceConfig.getUrl().getStorageProtocol() + "://" + ip +
+                    serviceConfig.getUrl().getStoragePort() +
+                    serviceConfig.getUrl().getStorageCallback());
             send.setTopic(topic);
             send.setId(id);
             send.setGroupId(consumerGroupId);
