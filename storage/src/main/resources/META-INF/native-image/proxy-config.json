@@ -3,6 +3,9 @@
     "interfaces":["com.elpsykongroo.base.service.KafkaService"]
   },
   {
+    "interfaces":["com.elpsykongroo.base.service.GatewayService"]
+  },
+  {
     "interfaces":["com.elpsykongroo.base.service.RedisService"]
   },
   {
