@@ -60,7 +60,7 @@ public class KafkaServiceImpl implements KafkaService {
     private KafkaListenerEndpointRegistry endpointRegistry;
 
     @Override
-    public void callback(String id, String groupId, String topic, String callback, Boolean manualStop) {
+    public void callback(String id, String groupId, String topic, String offset, String callback, Boolean manualStop) {
         if (log.isDebugEnabled()) {
             log.debug("id:{}, groupId:{}", id, groupId);
         }
@@ -74,12 +74,16 @@ public class KafkaServiceImpl implements KafkaService {
         try {
             MessageListenerContainer container = endpointRegistry.getListenerContainer(id);
             if (container == null) {
-                alterOffset(groupId, "0");
                 if (topic.endsWith("-bytes")) {
                     ac.getBean(ByteArrayListener.class, listenerId, groupId, topic, callback, manualStop);
                 } else {
                     ac.getBean(StringListener.class, listenerId, groupId, topic, callback, manualStop);
                 }
+            }
+            if (StringUtils.isNotBlank(offset)) {
+                alterOffset(groupId, offset);
+            } else {
+                alterOffset(groupId, "0");
             }
         } catch (BeansException e) {
             throw new RuntimeException(e);

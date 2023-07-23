@@ -19,7 +19,7 @@ package com.elpsykongroo.services.kafka.service;
 import com.elpsykongroo.base.domain.message.Send;
 
 public interface KafkaService {
-    void callback(String id, String groupId, String topic, String callback, Boolean autoStop);
+    void callback(String id, String groupId, String topic, String offset, String callback, Boolean autoStop);
 
     void stopListen(String id);
 

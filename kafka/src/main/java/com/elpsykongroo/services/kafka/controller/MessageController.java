@@ -48,10 +48,10 @@ public class MessageController {
     @PostMapping
     public void listen(@RequestBody Send send) {
         if (log.isDebugEnabled()) {
-            log.debug("callback id:{}, groupId:{}, topic:{}, callback:{}",
-                    send.getId(), send.getGroupId(), send.getTopic(), send.getCallback());
+            log.debug("callback id:{}, groupId:{}, topic:{}, callback:{}, offset: {}",
+                    send.getId(), send.getGroupId(), send.getTopic(), send.getCallback(), send.getOffset());
         }
-        kafkaService.callback(send.getId(), send.getGroupId(), send.getTopic(), send.getCallback(), send.isManualStop());
+        kafkaService.callback(send.getId(), send.getGroupId(), send.getTopic(), send.getOffset(), send.getCallback(), send.isManualStop());
     }
 
     @DeleteMapping("{ids}")

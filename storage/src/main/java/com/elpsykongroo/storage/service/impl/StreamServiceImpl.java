@@ -103,7 +103,7 @@ public class StreamServiceImpl implements StreamService {
             log.debug("uploadStream consumerGroupId:{}", consumerMap.get(consumerGroupKey));
         }
         if (StringUtils.isNotBlank(consumerGroupId)) {
-            rejoinListener(s3.getBucket(), topic, Instant.now().toEpochMilli(), consumerGroupId);
+            rejoinListener(s3.getBucket(), topic, s3.getOffset(), Instant.now().toEpochMilli(), consumerGroupId);
         }
         byte[][] output = new byte[num][];
         /**
@@ -183,7 +183,7 @@ public class StreamServiceImpl implements StreamService {
         }
     }
 
-    private void startListener(String topic, String id, String consumerGroupId) {
+    private void startListener(String topic, String id, String offset, String consumerGroupId) {
         if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(consumerGroupId)) {
             if (log.isDebugEnabled()) {
                 log.debug("start listen id:{}, groupId:{}", id , consumerGroupId);
@@ -197,27 +197,30 @@ public class StreamServiceImpl implements StreamService {
             consumerIds.add(id);
             consumerMap.put(topic + "-" + consumerGroupId, consumerIds);
             String ip = gatewayService.getIP();
+            String callbackUrl = serviceConfig.getUrl().getStorageProtocol() + "://" + ip + ":" +
+                    serviceConfig.getUrl().getStoragePort() +
+                    serviceConfig.getUrl().getStorageCallback();
             if (log.isDebugEnabled()) {
-                log.debug("service ip:{}", ip);
+                log.debug("callback: {}, service ip:{}", callbackUrl, ip);
+
             }
             Send send = new Send();
-            send.setCallback(serviceConfig.getUrl().getStorageProtocol() + "://" + ip +
-                    serviceConfig.getUrl().getStoragePort() +
-                    serviceConfig.getUrl().getStorageCallback());
+            send.setCallback(callbackUrl);
             send.setTopic(topic);
             send.setId(id);
             send.setGroupId(consumerGroupId);
             send.setManualStop(true);
+            send.setOffset(offset);
             kafkaService.callback(send);
         }
     }
 
-    private void rejoinListener(String bucket, String topic, long timestamp, String consumerGroupId) {
+    private void rejoinListener(String bucket, String topic, String offset, long timestamp, String consumerGroupId) {
         if (log.isDebugEnabled()) {
             log.debug("add listener");
         }
         if (StringUtils.isNotBlank(consumerGroupId)) {
-            startListener(topic, bucket + "-" + timestamp + "-" + Thread.currentThread().getId(), consumerGroupId);
+            startListener(topic, bucket + "-" + timestamp + "-" + Thread.currentThread().getId(), offset, consumerGroupId);
         }
     }
 
@@ -305,7 +308,7 @@ public class StreamServiceImpl implements StreamService {
                             List<String> consumerId = new ArrayList<>();
                             consumerId.add(id);
                             consumerMap.putIfAbsent(consumerGroupKey, consumerId);
-                            startListener(topic, s3.getBucket() + "-" + Instant.now().toEpochMilli() + "-" + Thread.currentThread().getId(), consumerGroupId);
+                            startListener(topic, s3.getBucket() + "-" + Instant.now().toEpochMilli() + "-" + Thread.currentThread().getId(), "", consumerGroupId);
                             return id;
                         }
                     }
@@ -324,7 +327,7 @@ public class StreamServiceImpl implements StreamService {
                     List<String> consumerIds = new ArrayList<>();
                     consumerIds.add(consumerGroupId);
                     consumerMap.putIfAbsent(topic + "-" + consumerGroupId, consumerIds);
-                    startListener(topic, consumerGroupId, consumerGroupId);
+                    startListener(topic, consumerGroupId, "", consumerGroupId);
                     return consumerGroupId;
                 }
             }

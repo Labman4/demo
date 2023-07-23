@@ -37,4 +37,6 @@ public class Send {
     private String sha256;
 
     private boolean manualStop;
+
+    private String offset;
 }
