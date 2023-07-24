@@ -284,6 +284,16 @@
   ]
 },
 {
+    "name":"com.elpsykongroo.base.domain.message.OffsetResult",
+    "allDeclaredFields":true,
+    "queryAllDeclaredMethods":true,
+    "queryAllDeclaredConstructors":true,
+    "methods":[
+      {"name":"getTopicPartition","parameterTypes":[] },
+      {"name":"getOffset","parameterTypes":[] },
+    ]
+},
+{
   "name":"com.elpsykongroo.base.domain.storage.object.S3",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
