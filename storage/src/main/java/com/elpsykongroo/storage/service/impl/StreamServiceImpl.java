@@ -21,6 +21,7 @@ import com.elpsykongroo.base.domain.message.Send;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.base.service.GatewayService;
 import com.elpsykongroo.base.service.KafkaService;
+import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.MessageDigestUtils;
 import com.elpsykongroo.base.utils.NormalizedUtils;
 import com.elpsykongroo.storage.service.S3Service;
@@ -63,6 +64,9 @@ public class StreamServiceImpl implements StreamService {
 
     @Autowired
     private GatewayService gatewayService;
+
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public String checkSha256(S3 s3) {
@@ -138,7 +142,7 @@ public class StreamServiceImpl implements StreamService {
     private void uploadPartByStream(String clientId, S3 s3, Integer num, String uploadId, String consumerGroupId, int start, int partCount, String topic, byte[][] output) throws IOException {
         int partSize = Integer.parseInt(s3.getPartSize());
         for(int i = start; i < num; i++) {
-            int percent = (int) Math.ceil((double) i+1 / num * 100);
+            int percent = (int) Math.ceil((double) i + 1 / num * 100);
             if (log.isInfoEnabled()) {
                 log.info("uploadPartByStream complete:{} ", percent + "%");
             }
@@ -293,7 +297,13 @@ public class StreamServiceImpl implements StreamService {
         String consumerGroupKey = topic + "-consumerId";
         if (!consumerMap.containsKey(consumerGroupKey)) {
             if (init) {
-                return initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, "");
+                String lock = redisService.lock(consumerGroupKey, "", "1");
+                if (log.isDebugEnabled()) {
+                    log.debug("get lock state:{}", lock);
+                }
+                if ("true".equals(lock)) {
+                    return initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, "");
+                }
             }
             return getConsumerGroupIdFromS3(s3, consumerGroupS3Key, consumerGroupKey);
         } else {

@@ -32,4 +32,7 @@ public interface RedisService {
 
     @RequestLine("PUT /redis/topic?topic={topic}&message={message}")
     String publish(@Param String topic, @Param String message);
+
+    @RequestLine("PUT /redis/lock?key={key}&value={value}&duration={duration}")
+    String lock(@Param String key , @Param String value, @Param String duration);
 }

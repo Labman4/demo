@@ -97,6 +97,9 @@ public class S3ServiceImpl implements S3Service {
 
     @Override
     public String uploadObject(String clientId, String bucket, String key, RequestBody requestBody) {
+        if (log.isDebugEnabled()) {
+            log.debug("uploadObject key:{}", key);
+        }
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)

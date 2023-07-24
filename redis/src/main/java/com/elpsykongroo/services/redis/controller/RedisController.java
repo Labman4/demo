@@ -33,19 +33,19 @@ public class RedisController {
     private RedisService redisService;
 
     @PutMapping("key")
-    public void set(@RequestParam("key") String key,
-                    @RequestParam("value") String value,
-                    @RequestParam("duration") String duration) {
+    public void set(@RequestParam String key,
+                    @RequestParam String value,
+                    @RequestParam String duration) {
         redisService.setCache(key, value, duration);
     }
 
     @GetMapping("key/{key}")
-    public String get(@PathVariable("key") String key) {
+    public String get(@PathVariable String key) {
         return redisService.getCache(key);
     }
 
     @GetMapping("token/{key}")
-    public String getToken(@PathVariable("key") String key) {
+    public String getToken(@PathVariable String key) {
         return redisService.getToken(key);
     }
 
@@ -53,5 +53,12 @@ public class RedisController {
     public void publish (@RequestParam String topic,
                          @RequestParam String message) {
         redisService.publish(topic, message);
+    }
+
+    @PutMapping("lock")
+    public String lock (@RequestParam String key,
+                        @RequestParam String value,
+                        @RequestParam String duration) {
+        return redisService.lock(key, value, duration);
     }
 }

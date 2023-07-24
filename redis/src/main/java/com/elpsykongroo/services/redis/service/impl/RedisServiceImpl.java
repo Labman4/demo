@@ -140,4 +140,13 @@ public class RedisServiceImpl implements RedisService {
         redisMessageListenerContainer.start();
         redisTemplate.convertAndSend(channelTopic.getTopic(), message);
     }
+
+    @Override
+    public String lock(String key, String value, String minutes) {
+        if (StringUtils.isNotBlank(minutes)) {
+            return String.valueOf(redisTemplate.opsForValue().setIfAbsent(key, value, Duration.ofMinutes(Integer.parseInt(minutes))));
+        } else {
+            return String.valueOf(redisTemplate.opsForValue().setIfAbsent(key, value, Duration.ofMinutes(5)));
+        }
+    }
 }
