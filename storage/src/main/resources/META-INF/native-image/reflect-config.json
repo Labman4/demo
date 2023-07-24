@@ -290,7 +290,7 @@
     "queryAllDeclaredConstructors":true,
     "methods":[
       {"name":"getTopicPartition","parameterTypes":[] },
-      {"name":"getOffset","parameterTypes":[] },
+      {"name":"getOffset","parameterTypes":[] }
     ]
 },
 {
