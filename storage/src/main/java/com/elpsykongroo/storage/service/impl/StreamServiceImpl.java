@@ -296,8 +296,11 @@ public class StreamServiceImpl implements StreamService {
     private String getConsumerGroupId(S3 s3, String topic, String consumerGroupS3Key, boolean init) {
         String consumerGroupKey = topic + "-consumerId";
         if (!consumerMap.containsKey(consumerGroupKey)) {
-            if (init) {
-                String lock = redisService.lock(consumerGroupKey, "", "1");
+            String s3Id = getConsumerGroupIdFromS3(s3, consumerGroupS3Key, consumerGroupKey);
+            if (StringUtils.isNotBlank(s3Id)) {
+                return s3Id;
+            } else if (init) {
+                String lock = redisService.lock(consumerGroupKey, "", serviceConfig.getTimeout().getStorage());
                 if (log.isDebugEnabled()) {
                     log.debug("get lock state:{}", lock);
                 }
@@ -305,14 +308,12 @@ public class StreamServiceImpl implements StreamService {
                     return initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, "");
                 }
             }
-            return getConsumerGroupIdFromS3(s3, consumerGroupS3Key, consumerGroupKey);
         } else {
             if (consumerMap.get(consumerGroupKey) != null && StringUtils.isNotBlank(consumerMap.get(consumerGroupKey).get(0))) {
                 return consumerMap.get(consumerGroupKey).get(0);
-            } else {
-                return "";
             }
         }
+        return "";
     }
 
     private String getConsumerGroupIdFromS3(S3 s3, String consumerGroupS3Key, String consumerGroupKey) {
