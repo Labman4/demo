@@ -215,7 +215,7 @@ public class KafkaServiceImpl implements KafkaService {
                 }
                 adminClient.alterConsumerGroupOffsets(consumerGroupId, offsets).all().get();
             }
-            if (log.isTraceEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("alert offset after:{}", getOffset(consumerGroupId));
             }
 

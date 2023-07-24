@@ -293,8 +293,7 @@ public class StreamServiceImpl implements StreamService {
             if (init) {
                 return initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, "");
             }
-            String s3Id = getConsumerGroupIdFromS3(s3, consumerGroupS3Key, consumerGroupKey);
-            return s3Id;
+            return getConsumerGroupIdFromS3(s3, consumerGroupS3Key, consumerGroupKey);
         } else {
             if (consumerMap.get(consumerGroupKey) != null && StringUtils.isNotBlank(consumerMap.get(consumerGroupKey).get(0))) {
                 return consumerMap.get(consumerGroupKey).get(0);

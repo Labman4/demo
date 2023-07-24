@@ -267,7 +267,8 @@
     {"name":"getKey","parameterTypes":[] }, 
     {"name":"getMessage","parameterTypes":[] }, 
     {"name":"getSha256","parameterTypes":[] }, 
-    {"name":"getTopic","parameterTypes":[] }, 
+    {"name":"getTopic","parameterTypes":[] },
+    {"name":"getOffset","parameterTypes":[] },
     {"name":"isManualStop","parameterTypes":[] }
   ]
 },
