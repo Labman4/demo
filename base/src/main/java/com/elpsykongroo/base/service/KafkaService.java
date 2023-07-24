@@ -43,6 +43,9 @@ public interface KafkaService {
     @RequestLine("POST /message/offset?offset={offset}&group={groupId}")
     void alertOffset(@Param String groupId, @Param String offset);
 
+    @RequestLine("GET /message/offset/{groupId}")
+    String getOffset(@Param String groupId);
+
     @RequestLine("GET /message/{ids}")
     String listenerState(@Param String ids);
 }

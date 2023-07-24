@@ -113,7 +113,9 @@ public class ServiceConfig {
 
         private Long read;
 
-        private String storage;
+        private String storageUrl;
+
+        private String storageLock;
     }
 
     @Data

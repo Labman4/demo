@@ -75,6 +75,14 @@ public class MessageController {
         kafkaService.alterOffset(groupId, offset);
     }
 
+    @GetMapping("offset/{groupId}")
+    public String getOffset(@PathVariable String groupId) {
+        if (log.isDebugEnabled()) {
+            log.debug("getOffset groupId:{}", groupId);
+        }
+       return kafkaService.getOffset(groupId);
+    }
+
     @GetMapping("{ids}")
     public String listenersState(@PathVariable String ids) {
         if (log.isDebugEnabled()) {

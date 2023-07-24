@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.services.kafka.service.impl;
 
+import com.elpsykongroo.base.domain.message.OffsetResult;
 import com.elpsykongroo.base.domain.message.Send;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.MessageDigestUtils;
@@ -39,8 +40,10 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -158,12 +161,20 @@ public class KafkaServiceImpl implements KafkaService {
         }
     }
 
+    @Override
     public String getOffset(String consumerGroupId) {
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
         try {
             ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(consumerGroupId);
             Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
-            return JsonUtils.toJson(offsets);
+            List<OffsetResult> offsetResult = new ArrayList<>();
+            for (TopicPartition partition: offsets.keySet()) {
+                OffsetResult offset = new OffsetResult();
+                offset.setOffset(offsets.get(partition).offset());
+                offset.setTopicPartition(partition.partition());
+                offsetResult.add(offset);
+            }
+            return JsonUtils.toJson(offsetResult);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("get offset error: {}", e.getMessage());
@@ -192,14 +203,14 @@ public class KafkaServiceImpl implements KafkaService {
                                 result.get(key).get(partition).leaderEpoch().isPresent(),
                                 result.get(key).get(partition).offset());
                     }
-                    if (Integer.parseInt(offset) > 0) {
-                        offsets.put(partition, new OffsetAndMetadata(Integer.parseInt(offset)));
-                    } else {
+                    if (StringUtils.isBlank(offset)) {
                         if (result.get(key).get(partition) != null && result.get(key).get(partition).offset() > 0) {
                             offsets.put(partition, new OffsetAndMetadata(result.get(key).get(partition).offset()-1));
                         } else {
                             offsets.put(partition, new OffsetAndMetadata(0));
                         }
+                    } else {
+                        offsets.put(partition, new OffsetAndMetadata(Integer.parseInt(offset)));
                     }
                 }
             }

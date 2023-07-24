@@ -29,5 +29,7 @@ public interface KafkaService {
 
     void alterOffset(String id, String offset);
 
+    String getOffset(String groupId);
+
     String send(Send send);
 }
