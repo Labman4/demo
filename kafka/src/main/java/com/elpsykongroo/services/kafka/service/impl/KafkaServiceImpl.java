@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -62,7 +63,8 @@ public class KafkaServiceImpl implements KafkaService {
     @Override
     public void callback(String id, String groupId, String topic, String offset, String callback, Boolean manualStop) {
         if (log.isDebugEnabled()) {
-            log.debug("id:{}, groupId:{}", id, groupId);
+            log.debug("callback id:{}, groupId:{}, topic:{}, offset:{}, callback:{}, manualStop: {}",
+                    id, groupId, topic, offset, callback, manualStop);
         }
         String listenerId = String.valueOf(Instant.now().toEpochMilli());
         if (StringUtils.isNotBlank(id)) {
@@ -80,25 +82,30 @@ public class KafkaServiceImpl implements KafkaService {
                     ac.getBean(StringListener.class, listenerId, groupId, topic, callback, manualStop);
                 }
             }
-            if (StringUtils.isNotBlank(offset)) {
-                alterOffset(groupId, offset);
-            } else {
-                alterOffset(groupId, "0");
-            }
-        } catch (BeansException e) {
-            throw new RuntimeException(e);
+//            MessageListenerContainer listenerContainer = null;
+//            while (listenerContainer == null) {
+//                listenerContainer = endpointRegistry.getListenerContainer(id);
+//                if (StringUtils.isNotBlank(offset)) {
+//                    alterOffset(groupId, offset);
+//                } else {
+//                    alterOffset(groupId, "0");
+//                }
+//           }
         } catch (IllegalStateException e) {
             if (log.isWarnEnabled()) {
                 log.warn("already on listen:{}", e.getMessage());
             }
+        } catch (BeansException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void stopListen(String ids) {
+    public String stopListen(String ids) {
         String[] consumerIds = ids.split(", ");
         for (String consumer : consumerIds) {
             MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
+            endpointRegistry.unregisterListenerContainer(consumer);
             if (container != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("stop consumerId: {}", container.getListenerId());
@@ -108,6 +115,7 @@ public class KafkaServiceImpl implements KafkaService {
                 }
             }
         }
+        return listenersState(ids);
     }
 
     @Override
@@ -118,7 +126,12 @@ public class KafkaServiceImpl implements KafkaService {
             MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
             if (container != null) {
                 if (container.isRunning()) {
-                    flag = true;
+                    if (log.isDebugEnabled()) {
+                        log.debug("listener assign:{}", container.getAssignedPartitions());
+                    }
+                    if (container.getAssignedPartitions().size() > 0) {
+                        flag = true;
+                    }
                 }
             }
         }
@@ -129,10 +142,17 @@ public class KafkaServiceImpl implements KafkaService {
     }
 
     @Override
-    public void deleteTopic(String topic) {
+    public void deleteTopic(String topic, String groupId) {
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
         try {
-            adminClient.deleteTopics(Collections.singleton(topic));
+            try {
+                adminClient.deleteConsumerGroups(Collections.singleton(groupId)).all().get();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            if ("false".equals(listenersState(groupId))) {
+                adminClient.deleteTopics(Collections.singleton(topic));
+            }
         } finally {
             adminClient.close();
         }
@@ -146,7 +166,7 @@ public class KafkaServiceImpl implements KafkaService {
             return JsonUtils.toJson(offsets);
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("alert offset error: {}", e.getMessage());
+                log.error("get offset error: {}", e.getMessage());
             }
             return "";
         } finally {
@@ -161,31 +181,47 @@ public class KafkaServiceImpl implements KafkaService {
             if (log.isDebugEnabled()) {
                 log.debug("manual alert offset:{}", offset);
             }
-            ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(consumerGroupId);
-            Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get();
-            for (TopicPartition partition : offsets.keySet()) {
-                if (log.isDebugEnabled()) {
-                    log.debug("partition: {}, topic:{}, leaderEpoch: {}, offset before:{}",
-                            partition.partition(),
-                            partition.topic(),
-                            offsets.get(partition).leaderEpoch().get(),
-                            offsets.get(partition).offset());
-                }
-
-                if (Integer.parseInt(offset) > 0) {
-                    offsets.put(partition, new OffsetAndMetadata(Integer.parseInt(offset)));
-                } else {
-                    if (offsets.get(partition).offset() > 0) {
-                        offsets.put(partition, new OffsetAndMetadata(offsets.get(partition).offset()-1));
+            Map<String, Map<TopicPartition, OffsetAndMetadata>> result = adminClient.listConsumerGroupOffsets(consumerGroupId).all().get();
+            Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
+            for (String key : result.keySet()) {
+                for (TopicPartition partition : result.get(key).keySet()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("partition: {}, topic:{}, leaderEpoch: {}, offset before:{}",
+                                partition.partition(),
+                                partition.topic(),
+                                result.get(key).get(partition).leaderEpoch().isPresent(),
+                                result.get(key).get(partition).offset());
+                    }
+                    if (Integer.parseInt(offset) > 0) {
+                        offsets.put(partition, new OffsetAndMetadata(Integer.parseInt(offset)));
                     } else {
-                        offsets.put(partition, new OffsetAndMetadata(0));
+                        if (result.get(key).get(partition) != null && result.get(key).get(partition).offset() > 0) {
+                            offsets.put(partition, new OffsetAndMetadata(result.get(key).get(partition).offset()-1));
+                        } else {
+                            offsets.put(partition, new OffsetAndMetadata(0));
+                        }
                     }
                 }
             }
-            adminClient.alterConsumerGroupOffsets(consumerGroupId, offsets);
+            stopListen(consumerGroupId);
+            while("true".equals(listenersState(consumerGroupId))) {
+                if (log.isDebugEnabled()) {
+                    log.debug("wait listener stop");
+                }
+            }
+            if ("false".equals(listenersState(consumerGroupId))) {
+                if (log.isDebugEnabled()) {
+                    log.debug("alert with offset:{}", offsets);
+                }
+                adminClient.alterConsumerGroupOffsets(consumerGroupId, offsets).all().get();
+            }
+            if (log.isTraceEnabled()) {
+                log.debug("alert offset after:{}", getOffset(consumerGroupId));
+            }
+
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("alert offset error: {}", e.getMessage());
+                log.error("alert offset error:{}", e);
             }
         } finally {
             adminClient.close();

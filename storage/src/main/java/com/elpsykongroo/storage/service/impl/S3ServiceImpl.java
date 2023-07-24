@@ -90,6 +90,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class S3ServiceImpl implements S3Service {
 
     public final Map<String, S3Client> clientMap = new ConcurrentHashMap<>();
+
     private final Map<String, String> stsClientMap = new ConcurrentHashMap<>();
     @Autowired
     public ServiceConfig serviceconfig;
@@ -147,7 +148,7 @@ public class S3ServiceImpl implements S3Service {
             if (log.isErrorEnabled()) {
                 log.error("getObjectAsBytes error:{} key:{}", e.getMessage(), key);
             }
-            return "";
+            return null;
         } catch (SdkClientException e) {
             if (log.isErrorEnabled()) {
                 log.error("getObjectAsBytes client error:{}", e.getMessage());
@@ -319,7 +320,17 @@ public class S3ServiceImpl implements S3Service {
 
     @Override
     public void listCompletedPart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
-        ListPartsResponse listPartsResponse = listParts(clientId, bucket, key, uploadId);
+        ListPartsResponse listPartsResponse = null;
+        try {
+            listPartsResponse = listParts(clientId, bucket, key, uploadId);
+        } catch (AwsServiceException e) {
+            if (log.isErrorEnabled()) {
+                log.error("listPart awsService error: {}", e.awsErrorDetails());
+                completedParts.add(CompletedPart.builder()
+                        .partNumber(0)
+                        .build());
+            }
+        }
         if (listPartsResponse != null && listPartsResponse.parts().size() > 0) {
             for (Part part: listPartsResponse.parts()) {
                 completedParts.add(CompletedPart.builder()
@@ -345,10 +356,6 @@ public class S3ServiceImpl implements S3Service {
                     .uploadId(uploadId)
                     .build();
             return clientMap.get(clientId).listParts(listRequest);
-        } catch (AwsServiceException e) {
-            if (log.isErrorEnabled()) {
-                log.error("listPart awsService error: {}", e.awsErrorDetails());
-            }
         } catch (SdkClientException e) {
             if (log.isErrorEnabled()) {
                 log.error("listPart sdk client error: {}", e.getMessage());

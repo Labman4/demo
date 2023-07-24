@@ -76,11 +76,11 @@ public class StreamServiceImpl implements StreamService {
             if (StringUtils.isNotBlank(consumerGroupId)) {
                 String shaKey = consumerGroupId + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + s3.getPartNum();
                 String sha256 = s3Service.getObject(s3.getClientId(), s3.getBucket(), shaKey);
-                if (sha256.toLowerCase(Locale.US).equals(s3.getSha256())) {
+                if (sha256 != null && sha256.toLowerCase(Locale.US).equals(s3.getSha256())) {
                     return "";
                 } else {
                     if (log.isWarnEnabled()) {
-                        log.warn("checkSha256 sha256:{} not match with s3:{}", s3.getSha256(), sha256.toLowerCase(Locale.US));
+                        log.warn("checkSha256 sha256:{} not match with s3:{}", s3.getSha256(), sha256);
                     }
                 }
             }
@@ -100,10 +100,12 @@ public class StreamServiceImpl implements StreamService {
         String consumerGroupS3Key = s3.getBucket() + "-" + s3.getKey() + "-consumerId";
         String consumerGroupId = getConsumerGroupId(s3, topic, consumerGroupS3Key, true);
         if (log.isDebugEnabled()) {
-            log.debug("uploadStream consumerGroupId:{}", consumerMap.get(consumerGroupKey));
+            log.debug("uploadStream consumerGroupId:{}", consumerGroupId);
         }
         if (StringUtils.isNotBlank(consumerGroupId)) {
-            rejoinListener(s3.getBucket(), topic, s3.getOffset(), Instant.now().toEpochMilli(), consumerGroupId);
+            initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, consumerGroupId);
+        } else {
+            return;
         }
         byte[][] output = new byte[num][];
         /**
@@ -128,7 +130,7 @@ public class StreamServiceImpl implements StreamService {
                 return;
             }
         }
-        uploadPartByStream(clientId, s3, num, uploadId, consumerMap.get(consumerGroupKey).get(0), start, partCount, topic, output);
+        uploadPartByStream(clientId, s3, num, uploadId, consumerGroupId, start, partCount, topic, output);
     }
 
     private void uploadPartByStream(String clientId, S3 s3, Integer num, String uploadId, String consumerGroupId, int start, int partCount, String topic, byte[][] output) throws IOException {
@@ -183,26 +185,42 @@ public class StreamServiceImpl implements StreamService {
         }
     }
 
+    private String initListener(S3 s3, String topic, String consumerGroupS3Key, String consumerGroupKey, String consumerGroupId) {
+        if(StringUtils.isBlank(consumerGroupId)) {
+            consumerGroupId = s3.getBucket() + "-" + Instant.now().toEpochMilli();
+            List<String> consumerId = new ArrayList<>();
+            consumerId.add(consumerGroupId);
+            List<String> flag = consumerMap.putIfAbsent(consumerGroupKey, consumerId);
+            if (flag == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("getConsumerId, upload consumerId to s3");
+                }
+                s3Service.uploadObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key,
+                        RequestBody.fromString(consumerGroupId));
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("restart groupId:{}" , consumerGroupId);
+            }
+            kafkaService.alertOffset(consumerGroupId, "0");
+        }
+        if ("false".equals(kafkaService.listenerState(consumerGroupId))) {
+            startListener(topic, consumerGroupId, "", consumerGroupId);
+        }
+        return consumerGroupId;
+    }
+
     private void startListener(String topic, String id, String offset, String consumerGroupId) {
         if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(consumerGroupId)) {
             if (log.isDebugEnabled()) {
                 log.debug("start listen id:{}, groupId:{}", id , consumerGroupId);
             }
-            List<String> consumerIds = null;
-            if (consumerMap.containsKey(topic + "-" + consumerGroupId)) {
-                consumerIds = consumerMap.get(topic + "-" + consumerGroupId);
-            } else {
-                consumerIds = new ArrayList<>();
-            }
-            consumerIds.add(id);
-            consumerMap.put(topic + "-" + consumerGroupId, consumerIds);
             String ip = gatewayService.getIP();
             String callbackUrl = serviceConfig.getUrl().getStorageProtocol() + "://" + ip + ":" +
                     serviceConfig.getUrl().getStoragePort() +
                     serviceConfig.getUrl().getStorageCallback();
             if (log.isDebugEnabled()) {
                 log.debug("callback: {}, service ip:{}", callbackUrl, ip);
-
             }
             Send send = new Send();
             send.setCallback(callbackUrl);
@@ -212,15 +230,6 @@ public class StreamServiceImpl implements StreamService {
             send.setManualStop(true);
             send.setOffset(offset);
             kafkaService.callback(send);
-        }
-    }
-
-    private void rejoinListener(String bucket, String topic, String offset, long timestamp, String consumerGroupId) {
-        if (log.isDebugEnabled()) {
-            log.debug("add listener");
-        }
-        if (StringUtils.isNotBlank(consumerGroupId)) {
-            startListener(topic, bucket + "-" + timestamp + "-" + Thread.currentThread().getId(), offset, consumerGroupId);
         }
     }
 
@@ -252,34 +261,27 @@ public class StreamServiceImpl implements StreamService {
         if (log.isDebugEnabled()) {
             log.debug("start complete topic, consumerGroupId before:{}, after:{}", consumerMap.get(consumerGroupKey), consumerGroupId);
         }
-        String consumerKey = topic + "-" + consumerGroupId ;
-        List<String> consumerIds = new ArrayList<>();
-        if (consumerMap.containsKey(consumerKey)) {
-            consumerIds = consumerMap.get(consumerKey);
-        }
-        consumerIds.add(s3.getConsumerGroupId());
-        kafkaService.stop(consumerIds.toString());
-        clearMap(s3.getPlatform(), consumerGroupKey, consumerGroupId, consumerKey);
-        String listenerState = kafkaService.listenerState(consumerIds.toString());
+        String state = kafkaService.stop(consumerGroupId);
+        clearMap(s3.getPlatform(), consumerGroupKey, consumerGroupId);
         if (log.isDebugEnabled()) {
-            log.debug("listener state:{}", listenerState);
+            log.debug("listener state:{}", state);
         }
-        if ("false".equals(listenerState)) {
+        if ("false".equals(state)) {
             if (log.isDebugEnabled()) {
-                log.debug("delete topic:{}", topic);
+                log.debug("delete topic:{}, consumerGroup:{}", topic, consumerGroupId);
             }
-            kafkaService.deleteTopic(topic);
+            kafkaService.deleteTopic(topic, consumerGroupId);
         } else {
-            while ("true".equals(listenerState)) {
-                listenerState = kafkaService.listenerState(consumerIds.toString());
+            while ("true".equals(state)) {
+                state = kafkaService.listenerState(consumerGroupId);
                 if (log.isDebugEnabled()) {
-                    log.debug("wait all listener stop state:{}", listenerState);
+                    log.debug("wait all listener stop state:{}", state);
                 }
-                if ("false".equals(listenerState)) {
+                if ("false".equals(state)) {
                     if (log.isDebugEnabled()) {
-                        log.debug("delete topic:{}", topic);
+                        log.debug("delete topic:{}, consumerGroup:{}", topic, consumerGroupId);
                     }
-                    kafkaService.deleteTopic(topic);
+                    kafkaService.deleteTopic(topic, consumerGroupId);
                 }
             }
         }
@@ -288,68 +290,50 @@ public class StreamServiceImpl implements StreamService {
     private String getConsumerGroupId(S3 s3, String topic, String consumerGroupS3Key, boolean init) {
         String consumerGroupKey = topic + "-consumerId";
         if (!consumerMap.containsKey(consumerGroupKey)) {
-            HeadObjectResponse response = s3Service.headObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
-            if (response != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("uploadStream consumerGroupId already store in s3");
-                }
-                String consumerGroupId = s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
-                if (StringUtils.isNotBlank(consumerGroupId)) {
-                    List<String> consumerIds = new ArrayList<>();
-                    consumerIds.add(consumerGroupId);
-                    consumerMap.putIfAbsent(consumerGroupKey, consumerIds);
-                } else {
-                    while (StringUtils.isBlank(consumerGroupId)) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("uploadStream try to fetch consumerGroupId");
-                        }
-                        String id = s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
-                        if (StringUtils.isNotBlank(id)) {
-                            List<String> consumerId = new ArrayList<>();
-                            consumerId.add(id);
-                            consumerMap.putIfAbsent(consumerGroupKey, consumerId);
-                            startListener(topic, s3.getBucket() + "-" + Instant.now().toEpochMilli() + "-" + Thread.currentThread().getId(), "", consumerGroupId);
-                            return id;
-                        }
-                    }
-                }
-            } else if (init) {
-                String consumerGroupId = s3.getBucket() + "-" + Instant.now().toEpochMilli();
-                List<String> consumerId = new ArrayList<>();
-                consumerId.add(consumerGroupId);
-                List<String> flag = consumerMap.putIfAbsent(consumerGroupKey, consumerId);
-                if (flag == null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("getConsumerId, upload consumerId to s3");
-                    }
-                    s3Service.uploadObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key,
-                            RequestBody.fromString(consumerGroupId));
-                    List<String> consumerIds = new ArrayList<>();
-                    consumerIds.add(consumerGroupId);
-                    consumerMap.putIfAbsent(topic + "-" + consumerGroupId, consumerIds);
-                    startListener(topic, consumerGroupId, "", consumerGroupId);
-                    return consumerGroupId;
-                }
+            if (init) {
+                return initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, "");
             }
-        }
-        if (consumerMap.get(consumerGroupKey) != null && StringUtils.isNotBlank(consumerMap.get(consumerGroupKey).get(0))) {
-            return consumerMap.get(consumerGroupKey).get(0);
+            String s3Id = getConsumerGroupIdFromS3(s3, consumerGroupS3Key, consumerGroupKey);
+            return s3Id;
         } else {
-            return s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
+            if (consumerMap.get(consumerGroupKey) != null && StringUtils.isNotBlank(consumerMap.get(consumerGroupKey).get(0))) {
+                return consumerMap.get(consumerGroupKey).get(0);
+            } else {
+                return "";
+            }
         }
     }
 
-    private void clearMap(String platform, String consumerGroupKey, String consumerGroupId, String consumerKey) {
+    private String getConsumerGroupIdFromS3(S3 s3, String consumerGroupS3Key, String consumerGroupKey) {
+        HeadObjectResponse response = s3Service.headObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
+        if (response != null) {
+            String s3Id = s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
+            while (s3Id == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("uploadStream try to fetch consumerGroupId from s3");
+                }
+                s3Id = s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
+            }
+            if (StringUtils.isNotBlank(s3Id)) {
+                List<String> consumerId = new ArrayList<>();
+                consumerId.add(s3Id);
+                consumerMap.putIfAbsent(consumerGroupKey, consumerId);
+            }
+            return s3Id;
+        } else {
+            return "";
+        }
+    }
+
+    private void clearMap(String platform, String consumerGroupKey, String consumerGroupId) {
         if (log.isDebugEnabled()) {
-            log.debug("clear consumerMap before platform:{}, consumerGroupKey:{}, consumerGroupId:{}, consumerKey:{}",
+            log.debug("clear consumerMap before platform:{}, consumerGroupKey:{}, consumerGroupId:{}",
                     platform,
                     consumerGroupKey,
-                    consumerGroupId,
-                    consumerKey);
+                    consumerGroupId);
             log.debug("clear consumerMap before:{}", consumerMap);
         }
         consumerMap.remove(consumerGroupKey);
-        consumerMap.remove(consumerKey);
         if ("minio".equals(platform) && consumerMap.containsKey(consumerGroupId + "-uploadId")) {
             consumerMap.remove(consumerGroupId + "-uploadId");
         }

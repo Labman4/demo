@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -47,27 +48,31 @@ public class MessageController {
     }
     @PostMapping
     public void listen(@RequestBody Send send) {
-        if (log.isDebugEnabled()) {
-            log.debug("callback id:{}, groupId:{}, topic:{}, callback:{}, offset: {}",
-                    send.getId(), send.getGroupId(), send.getTopic(), send.getCallback(), send.getOffset());
-        }
         kafkaService.callback(send.getId(), send.getGroupId(), send.getTopic(), send.getOffset(), send.getCallback(), send.isManualStop());
     }
 
     @DeleteMapping("{ids}")
-    public void stop( @PathVariable String ids) {
+    public String stop(@PathVariable String ids) {
         if (log.isDebugEnabled()) {
             log.debug("stopListener ids:{}", ids);
         }
-        kafkaService.stopListen(ids);
+        return kafkaService.stopListen(ids);
     }
 
-    @DeleteMapping("topic/{topic}")
-    public void deleteTopic( @PathVariable String topic) {
+    @DeleteMapping("topic")
+    public void deleteTopic(@RequestParam String topic, @RequestParam("group") String groupId) {
         if (log.isDebugEnabled()) {
-            log.debug("deleteTopic:{}", topic);
+            log.debug("deleteTopic topic:{}, groupId:{}", topic, groupId);
         }
-        kafkaService.deleteTopic(topic);
+        kafkaService.deleteTopic(topic, groupId);
+    }
+
+    @PostMapping("offset")
+    public void alertOffset(@RequestParam String offset, @RequestParam("group") String groupId) {
+        if (log.isDebugEnabled()) {
+            log.debug("alertOffset offset:{}, groupId:{}", offset, groupId);
+        }
+        kafkaService.alterOffset(groupId, offset);
     }
 
     @GetMapping("{ids}")

@@ -35,14 +35,14 @@ public interface KafkaService {
     String send(Send send);
 
     @RequestLine("DELETE /message/{ids}")
-    void stop(@Param String ids);
+    String stop(@Param String ids);
 
+    @RequestLine("DELETE /message/topic?topic={topic}&group={groupId}")
+    void deleteTopic(@Param String topic, @Param String groupId);
 
-    @RequestLine("DELETE /message/topic/{topic}")
-    void deleteTopic(@Param String topic);
+    @RequestLine("POST /message/offset?offset={offset}&group={groupId}")
+    void alertOffset(@Param String groupId, @Param String offset);
 
     @RequestLine("GET /message/{ids}")
     String listenerState(@Param String ids);
-
-
 }

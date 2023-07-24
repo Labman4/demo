@@ -70,7 +70,10 @@ public class ByteArrayListener<K,V> {
     }
 
     @KafkaListener(id = "#{__listener.id}", topics = "#{__listener.topic}", groupId = "#{__listener.groupId}", idIsGroup = false,
-            properties = "value.deserializer:org.apache.kafka.common.serialization.ByteArrayDeserializer")
+                properties = {
+                    "value.deserializer:org.apache.kafka.common.serialization.ByteArrayDeserializer",
+                    "allow.auto.create.topics:false"
+                    })
     public void onMessage(ConsumerRecord<String, byte[]> data, Acknowledgment acknowledgment) {
         RestTemplate restTemplate = new RestTemplate();
         Message message = new Message();

@@ -21,11 +21,11 @@ import com.elpsykongroo.base.domain.message.Send;
 public interface KafkaService {
     void callback(String id, String groupId, String topic, String offset, String callback, Boolean autoStop);
 
-    void stopListen(String id);
+    String stopListen(String id);
 
     String listenersState(String groupId);
 
-    void deleteTopic(String topic);
+    void deleteTopic(String topic, String groupId);
 
     void alterOffset(String id, String offset);
 
