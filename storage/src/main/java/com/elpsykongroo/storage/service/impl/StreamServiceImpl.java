@@ -103,7 +103,9 @@ public class StreamServiceImpl implements StreamService {
             log.debug("uploadStream consumerGroupId:{}", consumerGroupId);
         }
         if (StringUtils.isNotBlank(consumerGroupId)) {
-            initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, consumerGroupId);
+            if ("false".equals(kafkaService.listenerState(consumerGroupId))) {
+                initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, consumerGroupId);
+            }
         } else {
             return;
         }
