@@ -46,8 +46,7 @@ public final class IPUtils {
             return true;
         }
         Pattern host = Pattern.compile(hostnameRegex);
-        boolean result = host.matcher(ip).matches();
-        return result;
+        return host.matcher(ip).matches();
     }
 
     public static boolean isPrivate(String ip) {

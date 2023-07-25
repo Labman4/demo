@@ -117,14 +117,14 @@ public class ThrottlingFilter implements Filter {
 
 	private boolean filterPath(HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri){
 		if (limitByBucket("", httpResponse, session)) {
-			if (blackOrWhite(httpRequest, httpResponse, requestUri)) {
+			if (blackOrWhite(httpRequest, httpResponse)) {
 				return isPublic(requestUri, httpRequest, httpResponse);
 			}
 		}
 		return false;
 	}
 
-	private boolean blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri){
+	private boolean blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
 		if (ipMangerService.blackOrWhiteList(httpRequest, "false")) {
 			return true;
 		} else if (!ipMangerService.blackOrWhiteList(httpRequest, "true")) {

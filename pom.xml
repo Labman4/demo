@@ -277,6 +277,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-coyote</artifactId>
+                <version>10.1.11</version>
+            </dependency>
+            <dependency>
                 <groupId>org.msgpack</groupId>
                 <artifactId>msgpack-core</artifactId>
                 <version>0.9.3</version>
