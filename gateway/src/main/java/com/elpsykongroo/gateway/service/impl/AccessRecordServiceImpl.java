@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.elpsykongroo.base.domain.search.QueryParam;
-import com.elpsykongroo.base.utils.IPRegexUtils;
+import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.SearchService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -80,7 +80,9 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				}
 				ip = ipMangerService.accessIP(request, "ip");
 				saveRecord(request, ip, result);
-				log.debug("request header------------{} ", result);
+				if (log.isDebugEnabled()) {
+					log.debug("request header------------{} ", result);
+				}
 			}
 		}
 	}
@@ -100,7 +102,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			searchService.query(queryParam);
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
-				log.error("save record error: {}", e.getMessage());
+				log.error("saveRecord error: {}", e.getMessage());
 			}
 		}
 	}
@@ -126,7 +128,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		deleteParam.setOperation("delete");
 		deleteParam.setIndex("access_record");
 		if (!params.contains(",")) {
-			if (IPRegexUtils.vaildateHost(params) || IPRegexUtils.vaildate(params)) {
+			if (IPUtils.validateHost(params) || IPUtils.validateHost(params)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(params);
 				String records = "";
 				QueryParam queryParam = new QueryParam();

@@ -16,15 +16,17 @@
 
 package com.elpsykongroo.base.utils;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
-public final class IPRegexUtils {
+public final class IPUtils {
 
-    private IPRegexUtils() {
+    private IPUtils() {
         throw new IllegalStateException("Utility class");
     }
 
-    public static boolean vaildate(String ip) {
+    public static boolean validate(String ip) {
         String ipv4Regex = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
         String ipv6Regex="((([0-9a-fA-F]){1,4})\\:){7}([0-9a-fA-F]){1,4}";
         Pattern p4 = Pattern.compile(ipv4Regex);
@@ -36,11 +38,28 @@ public final class IPRegexUtils {
         }
         return false;
     }
-    public static boolean vaildateHost(String ip) {
+    public static boolean validateHost(String ip) {
         String hostnameRegex = "^((?!-)[A-Za-z0-9-]"
                                 + "{1,63}(?<!-)\\.)"
                                 + "+[A-Za-z]{2,6}";
+        if (isPrivate(ip)) {
+            return true;
+        }
         Pattern host = Pattern.compile(hostnameRegex);
-        return host.matcher(ip).matches();
+        boolean result = host.matcher(ip).matches();
+        return result;
+    }
+
+    public static boolean isPrivate(String ip) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ip);
+            if (inetAddress instanceof java.net.Inet6Address) {
+                return inetAddress.isLoopbackAddress();
+            } else {
+                return inetAddress.isSiteLocalAddress() || inetAddress.isLoopbackAddress();
+            }
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

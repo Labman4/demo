@@ -20,7 +20,7 @@ import feign.Param;
 import feign.RequestLine;
 
 public interface GatewayService {
-    @RequestLine("PUT /message?message={message}")
+    @RequestLine("PUT /message/token?message={message}")
     void receiveMessage (@Param String message);
 
     @RequestLine("GET /public/ip")

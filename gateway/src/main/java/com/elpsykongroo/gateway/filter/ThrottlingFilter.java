@@ -48,10 +48,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ThrottlingFilter implements Filter {
 	private ThreadLocal<String> errorMsg = new ThreadLocal<>();
-	private boolean limitFlag = false;
-	private boolean publicFlag = true;
-	private boolean blackFlag = false;
-
 	@Autowired
 	private RequestConfig requestConfig;
 
@@ -101,45 +97,43 @@ public class ThrottlingFilter implements Filter {
 		errorMsg.set("");
 		String limitPath = requestConfig.getPath().getLimit();
 		if (StringUtils.isNotEmpty(limitPath) && PathUtils.beginWithPath(limitPath, requestUri)) {
-			limitFlag = limitByBucket("global", httpResponse, session);
 			accessRecordService.saveAccessRecord(httpRequest);
 			String filterPath = requestConfig.getPath().getFilter();
 			String excludePath = requestConfig.getPath().getExclude();
-			if (limitFlag) {
+			if (limitByBucket("global", httpResponse, session)) {
 				if (StringUtils.isNotEmpty(filterPath)
 						&& PathUtils.beginWithPath(filterPath, requestUri)
 						&& !PathUtils.beginWithPath(excludePath, requestUri)) {
 					log.debug("start filter:{}", requestUri);
-					filterPath(httpRequest, httpResponse, session, requestUri);
+					if (filterPath(httpRequest, httpResponse, session, requestUri)) {
+						filterChain.doFilter(servletRequest, servletResponse);
+					} else {
+						httpResponse.getWriter().append(errorMsg.get());
+					}
 				}
 			}
 		}
-		if (!limitFlag || !publicFlag || blackFlag) {
-			httpResponse.getWriter().append(errorMsg.get());
-		}
-		else {
-			filterChain.doFilter(servletRequest, servletResponse);
-		}
 	}
 
-	private void filterPath(HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri){
+	private boolean filterPath(HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri){
 		if (limitByBucket("", httpResponse, session)) {
-			blackOrWhite(httpRequest, httpResponse, requestUri);
+			if (blackOrWhite(httpRequest, httpResponse, requestUri)) {
+				return isPublic(requestUri, httpRequest, httpResponse);
+			}
 		}
+		return false;
 	}
 
-	private void blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri){
-		if (!ipMangerService.blackOrWhiteList(httpRequest, "true")) {
-			blackFlag = false;
-			publicFlag = isPublic(requestUri, httpRequest, httpResponse);
-		} else if (ipMangerService.blackOrWhiteList(httpRequest, "false")) {
-			blackFlag = false;
-			publicFlag = isPublic(requestUri, httpRequest, httpResponse);
+	private boolean blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestUri){
+		if (ipMangerService.blackOrWhiteList(httpRequest, "false")) {
+			return true;
+		} else if (!ipMangerService.blackOrWhiteList(httpRequest, "true")) {
+			return true;
 		} else {
-			blackFlag = true;
 			errorMsg.set("yours IP is our blacklist");
 			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
 			httpResponse.setContentType("text/plain");
+			return false;
 		}
 	}
 
@@ -173,7 +167,6 @@ public class ThrottlingFilter implements Filter {
 				httpResponse.setHeader("X-Rate-Limit-Retry-After-Seconds", String.valueOf(TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill())));
 				httpResponse.setContentType("text/plain");
 				errorMsg.set("Too many requests");
-				limitFlag = false;
 				return false;
 			}
 		}
@@ -186,11 +179,8 @@ public class ThrottlingFilter implements Filter {
 				servletResponse.setContentType("text/plain");
 				errorMsg.set("no access");
 				return false;
-			} else {
-				return true;
 			}
-		} else {
-			return true;
 		}
+		return true;
 	}
 }

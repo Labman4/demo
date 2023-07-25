@@ -42,9 +42,9 @@ public class AccessRecordController {
 	private AccessRecordService accessRecordService;
 
 	@GetMapping
-	public String recordPageList (@RequestParam("pageNumber") String pageNumber,
-								  @RequestParam("pageSize") String pageSize,
-								  @RequestParam("order") String order) {
+	public String recordPageList(@RequestParam String pageNumber,
+								 @RequestParam String pageSize,
+								 @RequestParam String order) {
 		return CommonResponse.string(accessRecordService.findAll(pageNumber, pageSize, order));
 	}
 
@@ -61,10 +61,10 @@ public class AccessRecordController {
 	}
 
 	@PostMapping
-	public String filter (@RequestParam String params,
-						  @RequestParam String pageNumber,
-						  @RequestParam String pageSize,
-						  @RequestParam String order) {
+	public String filter(@RequestParam String params,
+					  	 @RequestParam String pageNumber,
+					  	 @RequestParam String pageSize,
+					  	 @RequestParam String order) {
 		try {
 			return CommonResponse.string(accessRecordService.filterByParams(params, pageNumber, pageSize, order));
 		} catch (Exception e) {

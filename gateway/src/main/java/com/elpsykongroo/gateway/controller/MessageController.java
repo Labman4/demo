@@ -33,10 +33,10 @@ public class MessageController {
     @Autowired
     private ApplicationContext ac;
 
-    @PutMapping
-    public void receiveMsg(@RequestParam String message) {
+    @PutMapping("token")
+    public void receiveToken(@RequestParam String message) {
         if (log.isInfoEnabled()) {
-            log.info("received message:{}", message);
+            log.info("receiveToken:{}", message);
         }
         ac.publishEvent(message);
     }

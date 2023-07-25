@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import com.elpsykongroo.base.domain.search.repo.IpManage;
 import com.elpsykongroo.base.domain.search.QueryParam;
-import com.elpsykongroo.base.utils.IPRegexUtils;
+import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.utils.PathUtils;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.service.SearchService;
@@ -169,11 +169,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 	@Override
 	public int add(String addresses, String isBlack) throws UnknownHostException {
 		int result = 0;
-//            RLock lock = redissonClient.getLock("blackList");
-////            lock.tryLockAsync().get()
-//            if (lock.tryLock(Constant.REDIS_LOCK_WAIT_TIME, Constant.REDIS_LOCK_LEASE_TIME, TimeUnit.SECONDS)) {
-//                log.info("get lock");
-//                try {
 		if (log.isDebugEnabled()) {
 			log.debug("add ip:{}, black:{}", addresses, isBlack);
 		}
@@ -196,15 +191,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 				}
 			}
 		}
-//                } finally {
-//                    lock.unlock();
-//                }
-//            }else {
-//                log.info("wait for lock");
-//                addresses.add("failed ");
-//            }
-//        } catch (InterruptedException e) {
-//            return commonResponse.error(Constant.ERROR_CODE, "please retry");
 		updateCache(isBlack);
 		return result;
 	}
@@ -215,7 +201,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 			log.debug("exist size :{}", size);
 		}
 		try {
-			if ( size == 0) {
+			if (size == 0) {
 				queryParam.setEntity(new IpManage(ad, isBlack));
 				searchService.query(queryParam);
 				return true;
@@ -304,6 +290,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	private String[] splitHeader(String headerType) {
 		Header header = requestConfig.getHeader();
+		if(log.isInfoEnabled()) {
+			log.info("headers:{}, headerType:{}", header, headerType);
+		}
 		switch(headerType){
 			case "true":
 				return header.getBlack().split(",");
@@ -317,44 +306,44 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	private String getIp(HttpServletRequest request, String[] headers) {
-		String ip = "";
 		for (String head: headers) {
-			ip = request.getHeader(head);
-			if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-				continue;
+		 	if (StringUtils.isNotBlank(request.getHeader(head))) {
+				return request.getHeader(head);
 			}
 		}
-		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-			ip = request.getRemoteAddr();
-		}
-		return ip;
+		return request.getRemoteAddr();
 	}
 
 	@Override
 	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack){
 		boolean flag = false;
 		try {
-			if ("0:0:0:0:0:0:0:1".equals(request.getRemoteAddr()) ||
-					"127.0.0.1".equals(request.getRemoteAddr())) {
-				if(log.isTraceEnabled()) {
-					log.trace("ignore private ip");
+			String ip = accessIP(request, isBlack);
+			if(log.isWarnEnabled()) {
+				log.warn("blackOrWhiteList ip:{}, black:{}", ip, isBlack);
+			}
+			if (IPUtils.isPrivate(ip)) {
+				if(log.isWarnEnabled()) {
+					log.warn("ignore private ip:{}", ip);
 				}
 				return true;
 			}
 			String list = "";
 			try {
 				list = redisService.get(env + isBlack);
+				if (log.isInfoEnabled()) {
+					log.info("cacheList:{}, black:{}", list, isBlack);
+				}
 				if (StringUtils.isBlank(list)) {
 					list = getIpList(isBlack);
+				}
+				if (log.isInfoEnabled()) {
+					log.info("ipList:{}, black:{}", list, isBlack);
 				}
 			} catch (FeignException e) {
 				if(log.isErrorEnabled()) {
 					log.error("feign error :{}", e.getMessage());
 				}
-			}
-			String ip = accessIP(request, isBlack);
-			if (log.isDebugEnabled()) {
-				log.debug("cacheList: {}, black: {}", list, isBlack);
 			}
 			if (StringUtils.isNotBlank(list)) {
 				if ("false".equals(isBlack)) {
@@ -376,21 +365,27 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if (list.contains(ip)) {
 					return true;
 				} else {
-					for (String s : list.split(",")) {
-						if (IPRegexUtils.vaildateHost(s)) {
-							if (log.isDebugEnabled()) {
-								log.debug("query domain: {}", s);
-							}
-							InetAddress[] inetAddress = new InetAddress[0];
+					if (log.isWarnEnabled()) {
+						log.warn("try to query domain in cacheList");
+					}
+					for (String s: list.split(",")) {
+						if (log.isWarnEnabled()) {
+							log.warn("try to query domain: {}", s);
+						}
+						if (IPUtils.validateHost(s)) {
+							InetAddress[] inetAddress = null;
 							try {
 								inetAddress = InetAddress.getAllByName(s);
 							} catch (UnknownHostException e) {
 								continue;
 							}
 							for (InetAddress address : inetAddress) {
+								if (log.isWarnEnabled()) {
+									log.warn("try to update domain: {}", address);
+								}
 								if (address.getHostAddress().equals(ip)) {
-									if (log.isDebugEnabled()) {
-										log.debug("update domain ip: {}", address.getHostAddress());
+									if (log.isWarnEnabled()) {
+										log.warn("update domain ip: {}", address.getHostAddress());
 									}
 									add(address.getHostAddress(), isBlack);
 									return true;
@@ -418,27 +413,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 			 *  solved
 			 *    query all domain in cache when request don't match cache
 			 */
-//			InetAddress[] inetAddress = InetAddress.getAllByName(ip);
 			if (exist(ip, isBlack) > 0) {
 				flag = true;
-				// not work address.getHostName() only return ipaddress without ptr
-//					for (InetAddress address: inetAddress) {
-//						if (exist(address.getHostName(), isBlack) == 0) {
-//							String newAddress = ipRepo.save(new IpManage(address.getHostName(), Boolean.valueOf(isBlack)))
-//									.getAddress();
-//							updataCache(isBlack);
-//							log.info("Update list domain when IP domain change, {} -> {}", ip, newAddress);
-//						}
-//					}
 			}
-//				else {
-//					for (InetAddress address: inetAddress) {
-//						if (exist(address.getHostName(), isBlack) > 0) {
-//							log.info("hostname in list");
-//							flag = true;
-//						}
-//					}
-//				}
 			log.debug("flag:{}, black:{}", flag, isBlack);
 		} catch (UnknownHostException e) {
 			if (log.isErrorEnabled()) {
@@ -471,7 +448,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 				}
 				return inetAddress.isSiteLocalAddress();
 			}
-			if(IPRegexUtils.vaildateHost(ip)) {
+			if(IPUtils.validateHost(ip)) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
 				for (InetAddress addr: inetAddresses) {
 					if (accessIP.equals(addr.getHostAddress())) {

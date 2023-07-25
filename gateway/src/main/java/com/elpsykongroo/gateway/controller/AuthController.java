@@ -38,28 +38,28 @@ public class AuthController {
     private AuthService authService;
 
     @PutMapping("client")
-    public String addClient (@RequestBody Client client) {
+    public String addClient(@RequestBody Client client) {
         return CommonResponse.string(authService.addClient(client));
     }
     @DeleteMapping("client/{clientId}")
-    public String deleteClient (@PathVariable String clientId) {
+    public String deleteClient(@PathVariable String clientId) {
         return CommonResponse.string(authService.deleteClient(clientId));
     }
     @GetMapping("client")
-    public String listClient () {
+    public String listClient() {
         return CommonResponse.string(authService.findAllClient());
     }
 
     @PutMapping("client/register")
-    public String addRegister (@RequestBody ClientRegistry client) {
+    public String addRegister(@RequestBody ClientRegistry client) {
         return CommonResponse.string(authService.addRegister(client));
     }
     @DeleteMapping("client/register/{clientId}")
-    public String deleteRegister (@PathVariable String clientId) {
+    public String deleteRegister(@PathVariable String clientId) {
         return CommonResponse.string(authService.deleteRegister(clientId));
     }
     @GetMapping("client/register")
-    public String listRegister () {
+    public String listRegister() {
         return CommonResponse.string(authService.findAllRegister());
     }
 }

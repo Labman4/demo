@@ -71,7 +71,7 @@ class FilterTest {
                         .withMethod("GET"))
                 .respond(HttpResponse.response()
                         .withStatusCode(200)
-                        .withBody("localhost"));
+                        .withBody("ip.elpsykongroo.com,localhost"));
         mockServerClient
                 .when(HttpRequest.request()
                         .withPath("/redis/key")
@@ -131,13 +131,20 @@ class FilterTest {
         AccessRecordService accessRecordService = new AccessRecordServiceImpl(ipManagerService, requestConfig);
         ThrottlingFilter filter = new ThrottlingFilter(requestConfig, accessRecordService, ipManagerService);
         filter.init(new MockFilterConfig(servletContext));
-        request.addHeader("1", "1");
+        request.addHeader("x-real-ip", "test.elpsykongroo.com");
         request.setRequestURI("/ip");
         request.setMethod("GET");
         filter.doFilter(request, response, filterChain);
-        request.setRequestURI("/actuator");
+        request.setRequestURI("/ip");
         request.setMethod("GET");
         filter.doFilter(request, response, filterChain);
-        limit.setGlobal(token);
+        request.setRequestURI("/ip");
+        request.setMethod("GET");
+        filter.doFilter(request, response, filterChain);
+        request = new MockHttpServletRequest(servletContext);
+        request.addHeader("x-real-ip", "1.1.1.1");
+        request.setRequestURI("/ip");
+        request.setMethod("GET");
+        filter.doFilter(request, response, filterChain);
     }
 }

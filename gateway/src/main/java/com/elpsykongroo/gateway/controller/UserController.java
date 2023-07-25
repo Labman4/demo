@@ -40,82 +40,82 @@ public class UserController {
     private AuthService authService;
 
     @GetMapping("user")
-    public String userList (@RequestParam String pageNumber,
-                            @RequestParam String pageSize,
-                            @RequestParam String order) {
+    public String userList(@RequestParam String pageNumber,
+                           @RequestParam String pageSize,
+                           @RequestParam String order) {
         return CommonResponse.string(authService.userList(pageNumber, pageSize, order));
     }
 
     @GetMapping("user/info/{username}")
-    public String userinfo (@PathVariable String username) {
+    public String userinfo(@PathVariable String username) {
         return CommonResponse.string(authService.loadUserInfo(username));
     }
 
     @PostMapping("user")
-    public String userPatch (@RequestBody User user) {
+    public String userPatch(@RequestBody User user) {
         return CommonResponse.string(authService.updateUser(user));
     }
 
     @PostMapping("user/info")
-    public String userInfoPatch (@RequestBody UserInfo userinfo) {
+    public String userInfoPatch(@RequestBody UserInfo userinfo) {
         return CommonResponse.string(authService.updateUserInfo(userinfo));
     }
 
     @GetMapping("group/authority/{name}")
-    public String groupAuthorityList (@PathVariable String name) {
+    public String groupAuthorityList(@PathVariable String name) {
         return CommonResponse.string(authService.groupAuthorityList(name));
     }
 
     @GetMapping("authority/group/{name}")
-    public String authorityGroupList (@PathVariable String name) {
+    public String authorityGroupList(@PathVariable String name) {
         return CommonResponse.string(authService.authorityGroupList(name));
     }
 
     @GetMapping("group")
-    public String groupList () {
+    public String groupList() {
         return CommonResponse.string(authService.groupList());
     }
 
     @GetMapping("authority")
-    public String authorityList () {
+    public String authorityList() {
         return CommonResponse.string(authService.authorityList());
     }
 
     @PutMapping("group")
-    public String addGroup (@RequestParam String name) {
+    public String addGroup(@RequestParam String name) {
         return CommonResponse.string(authService.addGroup(name));
     }
 
     @PutMapping("authority")
-    public String addAuthority (@RequestParam String name) {
+    public String addAuthority(@RequestParam String name) {
         return CommonResponse.string(authService.addAuthority(name));
     }
 
     @DeleteMapping("group/{name}")
-    public String deleteGroup (@PathVariable String name) {
+    public String deleteGroup(@PathVariable String name) {
         return CommonResponse.string(authService.deleteGroup(name));
     }
 
     @DeleteMapping("authority/{name}")
-    public String deleteAuthority (@PathVariable String name) {
+    public String deleteAuthority(@PathVariable String name) {
         return CommonResponse.string(authService.deleteAuthority(name));
     }
 
     @PostMapping("group/user")
-    public String updateGroup (@RequestParam String groups,
-                               @RequestParam String ids) {
+    public String updateGroup(@RequestParam String groups,
+                              @RequestParam String ids) {
         return CommonResponse.string(authService.updateUserGroup(groups, ids));
     }
 
     @PostMapping("authority/user")
-    public String updateAuthority (@RequestParam String authorities,
-                                   @RequestParam String ids) {
+    public String updateAuthority(@RequestParam String authorities,
+                                  @RequestParam String ids) {
         return CommonResponse.string(authService.updateUserAuthority(authorities, ids));
     }
 
     @PostMapping("authority/group")
-    public String updateGroupAuthority (@RequestParam String authorities,
-                                        @RequestParam String ids) {
+    public String updateGroupAuthority(@RequestParam String authorities,
+                                       @RequestParam String ids) {
         return CommonResponse.string(authService.updateGroupAuthority(authorities, ids));
     }
 

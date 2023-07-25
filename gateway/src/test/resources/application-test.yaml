@@ -7,11 +7,6 @@ management:
   tracing:
     enabled: ${TRACE_ENABLED:true}
 spring:
-  elasticsearch:
-    socket-timeout: 100s
-    restclient:
-      sniffer:
-        delay-after-failure: 100s
   security:
     oauth2:
       client:
@@ -31,10 +26,7 @@ spring:
           client-secret:
   main:
     allow-bean-definition-overriding: true
-  data:
-    elasticsearch:
-      repositories:
-        enabled: true
+
 request:
   limit:
     global:
@@ -47,19 +39,19 @@ request:
       speed: ${REQUEST_DURATION_SPEED:10}
   path:
     permit: ${PERMIT_PATH:/**}
-    nonPrivate: ${PUBLIC_PATH:/}
-    limit: ${LIMIT_PATH:/none}
+    nonPrivate: ${PUBLIC_PATH:/public}
+    limit: ${LIMIT_PATH:/}
     exclude: ${EXCLUDE_PATH:/}
     filter: ${FILTER_PATH:/}
-  record: 
+  record:
     exclude:
       path:  ${RECORD_EXCLUDE_PATH:/actuator}
-      ip:  ${RECORD_EXCLUDE_IP:ip.elpsykongroo.com, elpsykongroo.com}
+      ip:  ${RECORD_EXCLUDE_IP:ip.elpsykongroo.com}
   header:
-    ip: ${IP_HEADER:x-forward-for}
-    black: ${BLACK_HEADER:x-forward-for}
-    white: ${WHITE_HEADER:x-forward-for}
-    record: ${RECORD_HEADER:x-forward-for}
+    ip: ${IP_HEADER:x-real-ip}
+    black: ${BLACK_HEADER:x-real-ip}
+    white: ${WHITE_HEADER:x-real-ip}
+    record: ${RECORD_HEADER:x-real-ip}
 
 service:
   env: ${ENV:test}
@@ -68,3 +60,14 @@ service:
     read: 10
     socket: 10
   vault: false
+
+logging:
+  level:
+    root: ${ROOT_LOG_LEVEL:info}
+    web: ${WEB_LOG_LEVEL:debug}
+    com:
+      elpsykongroo:
+        gateway: ${GATEWAY_LOG_LEVEL:debug}
+    org:
+      springframework:
+        security: ${SECURITY_LOG_LEVEL:debug}

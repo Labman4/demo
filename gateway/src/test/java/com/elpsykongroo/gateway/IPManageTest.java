@@ -18,12 +18,28 @@ package com.elpsykongroo.gateway;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockserver.model.HttpRequest;
+import org.mockserver.model.HttpResponse;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-class IPmanageTest extends BaseTest{
+class IPManageTest extends BaseTest{
     @BeforeEach
     @Override
     public void setup() {
-        super.setup();
+        webTestClient = MockMvcWebTestClient.bindToApplicationContext(context)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
+                .defaultRequest(MockMvcRequestBuilders.get("/").with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .configureClient()
+                .build();
+        client.when(HttpRequest.request().withPath("/redis/key.*").withMethod("GET"))
+                .respond(HttpResponse.response().withStatusCode(200));
+        client.when(HttpRequest.request().withPath("/redis/key.*").withMethod("PUT"))
+                .respond(HttpResponse.response().withStatusCode(200));
+        client.when(HttpRequest.request().withPath("/search"))
+                .respond(HttpResponse.response().withStatusCode(200));
     }
 
     @Test
@@ -74,9 +90,18 @@ class IPmanageTest extends BaseTest{
                 .uri("/ip?address=ip.elpsykongroo.com&black=false&id=1")
                 .exchange()
                 .expectStatus().isOk();
+        client.when(HttpRequest.request().withPath("/search"))
+                .respond(HttpResponse.response().withStatusCode(200).withBody("1"));
+        client.when(HttpRequest.request().withPath("/redis/key.*").withMethod("GET"))
+                .respond(HttpResponse.response().withStatusCode(200).withBody("ip.elpsykongroo.com"));
         webTestClient
                 .patch()
                 .uri("/ip?address=localhost&black=false&id=")
+                .exchange()
+                .expectStatus().isOk();
+        webTestClient
+                .patch()
+                .uri("/ip?address=localhost&black=&id=")
                 .exchange()
                 .expectStatus().isOk();
     }

@@ -45,9 +45,9 @@ public class UserController {
 
     @GetMapping
     public String userList(
-            @RequestParam("pageNumber") String pageNumber,
-            @RequestParam("pageSize") String pageSize,
-            @RequestParam("order") String order) {
+            @RequestParam String pageNumber,
+            @RequestParam String pageSize,
+            @RequestParam String order) {
         return CommonResponse.string(userService.list(pageNumber, pageSize, order).toString());
     }
 
