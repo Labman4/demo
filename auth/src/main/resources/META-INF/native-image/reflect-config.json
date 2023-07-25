@@ -371,6 +371,16 @@
   ]
 },
 {
+  "name":"com.elpsykongroo.auth.config.TomcatConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"servletContainer","parameterTypes":[] }
+  ]
+},
+{
   "name":"com.elpsykongroo.auth.config.VaultTemplateConfig",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -1157,6 +1167,7 @@
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setAuth","parameterTypes":["java.lang.String"] }, 
     {"name":"setLoginPage","parameterTypes":["java.lang.String"] }, 
     {"name":"setRedis","parameterTypes":["java.lang.String"] }
   ]
@@ -1171,6 +1182,7 @@
     {"name":"close","parameterTypes":[] }, 
     {"name":"get","parameterTypes":["java.lang.String"] }, 
     {"name":"getToken","parameterTypes":["java.lang.String"] }, 
+    {"name":"lock","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
     {"name":"publish","parameterTypes":["java.lang.String","java.lang.String"] }, 
     {"name":"set","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
     {"name":"shutdown","parameterTypes":[] }
@@ -1495,6 +1507,10 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"com.sun.crypto.provider.AESKeyGenerator",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"com.sun.crypto.provider.ARCFOURCipher",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -1524,6 +1540,22 @@
 },
 {
   "name":"com.sun.crypto.provider.HmacCore$HmacSHA384",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.sun.crypto.provider.PBEKeyFactory$PBEWithMD5AndDES",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.sun.crypto.provider.PBES2Core$HmacSHA256AndAES_256",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.sun.crypto.provider.PBES2Parameters$General",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.sun.crypto.provider.PBES2Parameters$HmacSHA256AndAES_256",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -1704,7 +1736,8 @@
   "name":"com.yubico.webauthn.data.AuthenticatorTransport",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"of","parameterTypes":["java.lang.String"] }]
 },
 {
   "name":"com.yubico.webauthn.data.ByteArray",
@@ -3329,10 +3362,22 @@
   "name":"java.net.NetPermission"
 },
 {
+  "name":"java.net.Socket"
+},
+{
+  "name":"java.net.Socket$SocketInputStream"
+},
+{
   "name":"java.net.SocketPermission"
 },
 {
+  "name":"java.net.SocksSocketImpl"
+},
+{
   "name":"java.net.URI"
+},
+{
+  "name":"java.net.URI$Parser"
 },
 {
   "name":"java.net.URL",
@@ -4297,7 +4342,10 @@
 },
 {
   "name":"org.apache.coyote.http11.AbstractHttp11Protocol",
-  "methods":[{"name":"isSSLEnabled","parameterTypes":[] }]
+  "methods":[
+    {"name":"isSSLEnabled","parameterTypes":[] }, 
+    {"name":"setSecure","parameterTypes":["boolean"] }
+  ]
 },
 {
   "name":"org.apache.coyote.http11.Http11NioProtocol",
@@ -4601,6 +4649,9 @@
   "name":"org.hibernate.bytecode.enhance.spi.interceptor.BytecodeInterceptorLogging_$logger_en"
 },
 {
+  "name":"org.hibernate.bytecode.enhance.spi.interceptor.BytecodeInterceptorLogging_$logger_en_US"
+},
+{
   "name":"org.hibernate.bytecode.enhance.spi.interceptor.BytecodeInterceptorLogging_$logger_zh"
 },
 {
@@ -4632,6 +4683,9 @@
 },
 {
   "name":"org.hibernate.dialect.DialectLogging_$logger_en"
+},
+{
+  "name":"org.hibernate.dialect.DialectLogging_$logger_en_US"
 },
 {
   "name":"org.hibernate.dialect.DialectLogging_$logger_zh"
@@ -4677,6 +4731,9 @@
   "name":"org.hibernate.engine.jdbc.batch.JdbcBatchLogging_$logger_en"
 },
 {
+  "name":"org.hibernate.engine.jdbc.batch.JdbcBatchLogging_$logger_en_US"
+},
+{
   "name":"org.hibernate.engine.jdbc.batch.JdbcBatchLogging_$logger_zh"
 },
 {
@@ -4715,6 +4772,9 @@
 },
 {
   "name":"org.hibernate.engine.jdbc.env.internal.LobCreationLogging_$logger_en"
+},
+{
+  "name":"org.hibernate.engine.jdbc.env.internal.LobCreationLogging_$logger_en_US"
 },
 {
   "name":"org.hibernate.engine.jdbc.env.internal.LobCreationLogging_$logger_zh"
@@ -4764,6 +4824,9 @@
   "allDeclaredFields":true
 },
 {
+  "name":"org.hibernate.exception.internal.SQLStateConversionDelegate"
+},
+{
   "name":"org.hibernate.exception.internal.StandardSQLExceptionConverter"
 },
 {
@@ -4786,6 +4849,9 @@
   "name":"org.hibernate.internal.CoreMessageLogger_$logger_en"
 },
 {
+  "name":"org.hibernate.internal.CoreMessageLogger_$logger_en_US"
+},
+{
   "name":"org.hibernate.internal.CoreMessageLogger_$logger_zh"
 },
 {
@@ -4797,6 +4863,9 @@
 },
 {
   "name":"org.hibernate.internal.EntityManagerMessageLogger_$logger_en"
+},
+{
+  "name":"org.hibernate.internal.EntityManagerMessageLogger_$logger_en_US"
 },
 {
   "name":"org.hibernate.internal.EntityManagerMessageLogger_$logger_zh"
@@ -4822,6 +4891,9 @@
 },
 {
   "name":"org.hibernate.metamodel.mapping.MappingModelCreationLogging_$logger_en"
+},
+{
+  "name":"org.hibernate.metamodel.mapping.MappingModelCreationLogging_$logger_en_US"
 },
 {
   "name":"org.hibernate.metamodel.mapping.MappingModelCreationLogging_$logger_zh"
@@ -4886,6 +4958,9 @@
   "name":"org.hibernate.query.QueryLogging_$logger_en"
 },
 {
+  "name":"org.hibernate.query.QueryLogging_$logger_en_US"
+},
+{
   "name":"org.hibernate.query.QueryLogging_$logger_zh"
 },
 {
@@ -4926,6 +5001,9 @@
 },
 {
   "name":"org.hibernate.query.hql.HqlLogging_$logger_en"
+},
+{
+  "name":"org.hibernate.query.hql.HqlLogging_$logger_en_US"
 },
 {
   "name":"org.hibernate.query.hql.HqlLogging_$logger_zh"
@@ -4974,6 +5052,9 @@
   "name":"org.hibernate.sql.ast.tree.SqlAstTreeLogger_$logger_en"
 },
 {
+  "name":"org.hibernate.sql.ast.tree.SqlAstTreeLogger_$logger_en_US"
+},
+{
   "name":"org.hibernate.sql.ast.tree.SqlAstTreeLogger_$logger_zh"
 },
 {
@@ -4987,6 +5068,9 @@
   "name":"org.hibernate.sql.exec.SqlExecLogger_$logger_en"
 },
 {
+  "name":"org.hibernate.sql.exec.SqlExecLogger_$logger_en_US"
+},
+{
   "name":"org.hibernate.sql.exec.SqlExecLogger_$logger_zh"
 },
 {
@@ -4995,6 +5079,12 @@
 {
   "name":"org.hibernate.sql.results.LoadingLogger_$logger",
   "methods":[{"name":"<init>","parameterTypes":["org.jboss.logging.Logger"] }]
+},
+{
+  "name":"org.hibernate.sql.results.LoadingLogger_$logger_en"
+},
+{
+  "name":"org.hibernate.sql.results.LoadingLogger_$logger_en_US"
 },
 {
   "name":"org.hibernate.sql.results.LoadingLogger_$logger_zh"
@@ -5008,6 +5098,9 @@
 },
 {
   "name":"org.hibernate.sql.results.ResultsLogger_$logger_en"
+},
+{
+  "name":"org.hibernate.sql.results.ResultsLogger_$logger_en_US"
 },
 {
   "name":"org.hibernate.sql.results.ResultsLogger_$logger_zh"
@@ -5094,6 +5187,12 @@
 },
 {
   "name":"org.postgresql.core.ConnectionFactory"
+},
+{
+  "name":"org.postgresql.core.PGStream"
+},
+{
+  "name":"org.postgresql.core.VisibleBufferedInputStream"
 },
 {
   "name":"org.postgresql.core.v3.ConnectionFactoryImpl"
@@ -5612,6 +5711,9 @@
   "name":"org.springframework.beans.factory.support.NullBean",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.beans.factory.support.SimpleInstantiationStrategy"
 },
 {
   "name":"org.springframework.beans.factory.xml.XmlBeanDefinitionReader",
@@ -9059,7 +9161,9 @@
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
     {"name":"getServlet","parameterTypes":[] }, 
-    {"name":"setPort","parameterTypes":["java.lang.Integer"] }
+    {"name":"getSsl","parameterTypes":[] }, 
+    {"name":"setPort","parameterTypes":["java.lang.Integer"] }, 
+    {"name":"setSsl","parameterTypes":["org.springframework.boot.web.server.Ssl"] }
   ]
 },
 {
@@ -10683,7 +10787,13 @@
   "name":"org.springframework.boot.web.server.Ssl",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setCertificate","parameterTypes":["java.lang.String"] }, 
+    {"name":"setCertificatePrivateKey","parameterTypes":["java.lang.String"] }, 
+    {"name":"setEnabled","parameterTypes":["boolean"] }
+  ]
 },
 {
   "name":"org.springframework.boot.web.server.Ssl$ClientAuth",
@@ -11273,6 +11383,9 @@
     {"name":"start","parameterTypes":[] }, 
     {"name":"stop","parameterTypes":[] }
   ]
+},
+{
+  "name":"org.springframework.context.support.PostProcessorRegistrationDelegate"
 },
 {
   "name":"org.springframework.context.support.PropertySourcesPlaceholderConfigurer",
@@ -16185,6 +16298,20 @@
   "queryAllPublicConstructors":true
 },
 {
+  "name":"sun.misc.Unsafe",
+  "fields":[{"name":"theUnsafe"}],
+  "methods":[{"name":"invokeCleaner","parameterTypes":["java.nio.ByteBuffer"] }]
+},
+{
+  "name":"sun.nio.ch.Net"
+},
+{
+  "name":"sun.nio.ch.NioSocketImpl"
+},
+{
+  "name":"sun.nio.ch.NioSocketImpl$1"
+},
+{
   "name":"sun.reflect.ReflectionFactory",
   "methods":[
     {"name":"getReflectionFactory","parameterTypes":[] }, 
@@ -16209,6 +16336,10 @@
 },
 {
   "name":"sun.security.provider.DSA$SHA256withDSA",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.provider.JavaKeyStore$DualFormatJKS",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -16280,6 +16411,10 @@
 },
 {
   "name":"sun.security.rsa.RSASignature$SHA256withRSA",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.ssl.KeyManagerFactoryImpl$SunX509",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
