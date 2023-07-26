@@ -257,27 +257,6 @@
   ]
 },
 {
-  "name":"com.elpsykongroo.services.kafka.config.ListenerConfig$$SpringCGLIB$$0",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[
-    {"name":"<init>","parameterTypes":[] }, 
-    {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"byteArrayListener","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.Boolean"] }, 
-    {"name":"callbackListener","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String"] }
-  ]
-},
-{
-  "name":"com.elpsykongroo.services.kafka.config.ListenerConfig$$SpringCGLIB$$1",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
-  "name":"com.elpsykongroo.services.kafka.config.ListenerConfig$$SpringCGLIB$$2",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Class"] }]
-},
-{
   "name":"com.elpsykongroo.services.kafka.config.OAuth2Config",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
