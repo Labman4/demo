@@ -98,7 +98,7 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public void delete(S3 s3) {
         s3Service.initClient(s3, "");
-        s3Service.deleteObject(s3.getClientId(), s3.getBucket(), s3.getKey());
+        s3Service.deleteObjects(s3.getClientId(), s3.getBucket(), s3.getKey());
     }
 
     @Override

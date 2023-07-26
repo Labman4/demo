@@ -23,46 +23,46 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 @NoArgsConstructor
 public class S3 {
-    String accessKey;
+    private String accessKey;
 
-    String accessSecret;
+    private String accessSecret;
 
-    String region;
+    private String region;
 
-    String endpoint;
+    private String endpoint;
 
-    String bucket;
+    private String bucket;
 
-    String key;
+    private String key;
 
-    MultipartFile data[];
+    private MultipartFile data[];
 
-    byte[] byteData;
+    private byte[] byteData;
 
-    String partSize = "5242880";
+    private String partSize = "5242880";
 
-    String offset;
+    private String offset;
 
     /*
     use for sts
      */
-    String idToken;
+    private String idToken;
 
-    String mode;
+    private String mode;
 
-    String partCount;
+    private String partCount;
 
-    String partNum;
+    private String partNum;
 
-    String uploadId;
+    private String uploadId;
 
-    String consumerGroupId;
+    private String consumerGroupId;
 
-    String platform;
+    private String platform;
 
-    String sha256;
+    private String sha256;
 
-    String clientId;
+    private String clientId;
 
     public S3(String bucket) {
         this.bucket = bucket;

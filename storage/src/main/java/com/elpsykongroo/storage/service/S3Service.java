@@ -36,6 +36,8 @@ public interface S3Service {
 
     void deleteObject(String clientId, String bucket, String key);
 
+    void deleteObjects(String clientId, String bucket, String keys);
+
     void deleteObjectByPrefix(String clientId, String bucket, String prefix);
 
     String getObject(String clientId, String bucket, String key);

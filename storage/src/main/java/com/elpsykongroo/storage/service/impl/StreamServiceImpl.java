@@ -112,7 +112,7 @@ public class StreamServiceImpl implements StreamService {
         if (StringUtils.isNotBlank(consumerGroupId)) {
             String lock = redisService.lock(consumerGroupId, "", serviceConfig.getTimeout().getStorageLock());
             if (log.isDebugEnabled()) {
-                log.debug("startListener lock state:{}", lock);
+                log.debug("uploadStream startListener lock state:{}", lock);
             }
             if ("true".equals(lock)) {
                 initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, consumerGroupId);
@@ -206,7 +206,7 @@ public class StreamServiceImpl implements StreamService {
             List<String> flag = consumerMap.putIfAbsent(consumerGroupKey, consumerId);
             if (flag == null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("getConsumerId, upload consumerId to s3");
+                    log.debug("initListener, upload consumerId to s3");
                 }
                 s3Service.uploadObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key,
                         RequestBody.fromString(consumerGroupId));
@@ -214,7 +214,7 @@ public class StreamServiceImpl implements StreamService {
         }
         if ("false".equals(kafkaService.listenerState(consumerGroupId))) {
             if (log.isDebugEnabled()) {
-                log.debug("restart listener groupId:{}" , consumerGroupId);
+                log.debug("initListener restart groupId:{}" , consumerGroupId);
             }
             startListener(topic, consumerGroupId, "", consumerGroupId);
         }
@@ -224,14 +224,14 @@ public class StreamServiceImpl implements StreamService {
     private void startListener(String topic, String id, String offset, String consumerGroupId) {
         if (StringUtils.isNotBlank(id) && StringUtils.isNotBlank(consumerGroupId)) {
             if (log.isDebugEnabled()) {
-                log.debug("start listen id:{}, groupId:{}", id , consumerGroupId);
+                log.debug("startListener id:{}, groupId:{}", id , consumerGroupId);
             }
             String ip = gatewayService.getIP();
             String callbackUrl = serviceConfig.getUrl().getStorageProtocol() + "://" + ip + ":" +
                     serviceConfig.getUrl().getStoragePort() +
                     serviceConfig.getUrl().getStorageCallback();
             if (log.isDebugEnabled()) {
-                log.debug("callback: {}, service ip:{}", callbackUrl, ip);
+                log.debug("startListener callback: {}, service ip:{}", callbackUrl, ip);
             }
             Send send = new Send();
             send.setCallback(callbackUrl);
@@ -252,7 +252,7 @@ public class StreamServiceImpl implements StreamService {
             s3Service.listCompletedPart(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
             if (completedParts.size() == Integer.parseInt(s3.getPartCount())) {
                 if (log.isDebugEnabled()) {
-                    log.debug("autoCompletePart");
+                    log.debug("autoComplete start complete");
                 }
                 s3Service.completePart(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
                 if (StringUtils.isNotBlank(s3.getConsumerGroupId())) {
@@ -264,14 +264,14 @@ public class StreamServiceImpl implements StreamService {
                 if (StringUtils.isNotBlank(s3.getConsumerGroupId())) {
                     String offsets = kafkaService.getOffset(s3.getConsumerGroupId());
                     if (log.isDebugEnabled()) {
-                        log.debug("get offset:{}", offsets);
+                        log.debug("autoComplete get offset:{}", offsets);
                     }
                     List<OffsetResult> offsetResults = JsonUtils.toType(offsets, new TypeReference<List<OffsetResult>>() {
                     });
                     for (OffsetResult offset : offsetResults) {
                         if (offset.getOffset() > completedParts.size()) {
                             if (log.isDebugEnabled()) {
-                                log.debug("reset offset");
+                                log.debug("autoComplete reset offset");
                             }
                             kafkaService.alertOffset(s3.getConsumerGroupId(), "0");
                             String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + NormalizedUtils.topicNormalize(s3.getKey()) + "-bytes" ;
@@ -294,22 +294,22 @@ public class StreamServiceImpl implements StreamService {
         String state = kafkaService.stop(consumerGroupId);
         clearMap(s3.getPlatform(), consumerGroupKey, consumerGroupId);
         if (log.isDebugEnabled()) {
-            log.debug("listener state:{}", state);
+            log.debug("completeTopic listener state:{}", state);
         }
         if ("false".equals(state)) {
             if (log.isDebugEnabled()) {
-                log.debug("delete topic:{}, consumerGroup:{}", topic, consumerGroupId);
+                log.debug("completeTopic deleteTopic:{}, consumerGroup:{}", topic, consumerGroupId);
             }
             kafkaService.deleteTopic(topic, consumerGroupId);
         } else {
             while ("true".equals(state)) {
                 state = kafkaService.listenerState(consumerGroupId);
                 if (log.isDebugEnabled()) {
-                    log.debug("wait all listener stop state:{}", state);
+                    log.debug("completeTopic wait all listener stop state:{}", state);
                 }
                 if ("false".equals(state)) {
                     if (log.isDebugEnabled()) {
-                        log.debug("delete topic:{}, consumerGroup:{}", topic, consumerGroupId);
+                        log.debug("completeTopic deleteTopic:{}, consumerGroup:{}", topic, consumerGroupId);
                     }
                     kafkaService.deleteTopic(topic, consumerGroupId);
                 }
@@ -326,7 +326,7 @@ public class StreamServiceImpl implements StreamService {
             } else if (init) {
                 String lock = redisService.lock(consumerGroupKey, "", serviceConfig.getTimeout().getStorageLock());
                 if (log.isDebugEnabled()) {
-                    log.debug("initListener lock state:{}", lock);
+                    log.debug("getConsumerGroupId lock state:{}", lock);
                 }
                 if ("true".equals(lock)) {
                     return initListener(s3, topic, consumerGroupS3Key, consumerGroupKey, "");
@@ -346,7 +346,7 @@ public class StreamServiceImpl implements StreamService {
             String s3Id = s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
             while (s3Id == null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("uploadStream try to fetch consumerGroupId from s3");
+                    log.debug("getConsumerGroupIdFromS3, try to fetch consumerGroupId from s3");
                 }
                 s3Id = s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
             }

@@ -17,9 +17,11 @@
 package com.elpsykongroo.auth.service.custom;
 
 import com.elpsykongroo.auth.entity.user.Authority;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface AuthorityService {
 
     String addAuthority(String authority);

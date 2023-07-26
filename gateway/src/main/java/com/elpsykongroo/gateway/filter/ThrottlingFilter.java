@@ -110,6 +110,8 @@ public class ThrottlingFilter implements Filter {
 					} else {
 						httpResponse.getWriter().append(errorMsg.get());
 					}
+				} else {
+					filterChain.doFilter(servletRequest, servletResponse);
 				}
 			}
 		}

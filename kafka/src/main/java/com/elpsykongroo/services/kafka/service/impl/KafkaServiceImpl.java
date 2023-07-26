@@ -20,8 +20,7 @@ import com.elpsykongroo.base.domain.message.OffsetResult;
 import com.elpsykongroo.base.domain.message.Send;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.MessageDigestUtils;
-import com.elpsykongroo.services.kafka.listener.ByteArrayListener;
-import com.elpsykongroo.services.kafka.listener.StringListener;
+import com.elpsykongroo.services.kafka.listener.ObjectListener;
 import com.elpsykongroo.services.kafka.service.KafkaService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +31,11 @@ import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
+import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.MessageListenerContainer;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +45,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
@@ -60,8 +62,14 @@ public class KafkaServiceImpl implements KafkaService {
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
 
+//    @Autowired
+//    private KafkaListenerEndpointRegistry endpointRegistry;
+
     @Autowired
-    private KafkaListenerEndpointRegistry endpointRegistry;
+    private KafkaListenerContainerFactory<?> kafkaListenerContainerFactory;
+
+    private ConcurrentHashMap<String, ConcurrentMessageListenerContainer<String, Object>> listenerContainer = new ConcurrentHashMap<>();
+
 
     @Override
     public void callback(String id, String groupId, String topic, String offset, String callback, Boolean manualStop) {
@@ -77,14 +85,15 @@ public class KafkaServiceImpl implements KafkaService {
             groupId = listenerId;
         }
         try {
-            MessageListenerContainer container = endpointRegistry.getListenerContainer(id);
-            if (container == null) {
-                if (topic.endsWith("-bytes")) {
-                    ac.getBean(ByteArrayListener.class, listenerId, groupId, topic, callback, manualStop);
-                } else {
-                    ac.getBean(StringListener.class, listenerId, groupId, topic, callback, manualStop);
-                }
-            }
+            createContainer(kafkaListenerContainerFactory, topic, id, groupId, callback, manualStop);
+//            MessageListenerContainer container = endpointRegistry.getListenerContainer(id);
+//            if (container == null) {
+//                if (topic.endsWith("-bytes")) {
+//                    ac.getBean(ByteArrayPrototypeListener.class, listenerId, groupId, topic, callback, manualStop);
+//                } else {
+//                    ac.getBean(StringPrototypeListener.class, listenerId, groupId, topic, callback, manualStop);
+//                }
+//            }
 //            MessageListenerContainer listenerContainer = null;
 //            while (listenerContainer == null) {
 //                listenerContainer = endpointRegistry.getListenerContainer(id);
@@ -106,17 +115,38 @@ public class KafkaServiceImpl implements KafkaService {
     @Override
     public String stopListen(String ids) {
         String[] consumerIds = ids.split(", ");
+//        Collection<MessageListenerContainer> containers = endpointRegistry.getAllListenerContainers();
         for (String consumer : consumerIds) {
-            MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
-            endpointRegistry.unregisterListenerContainer(consumer);
-            if (container != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("stop consumerId: {}", container.getListenerId());
-                }
-                if (container.isRunning()) {
-                    container.stop();
+            if (log.isDebugEnabled()) {
+                log.debug("current groupId:{}, listener size:{}", consumer, listenerContainer.size());
+            }
+            if (listenerContainer.containsKey(consumer)) {
+                ConcurrentMessageListenerContainer<String, Object> listener = listenerContainer.get(consumer);
+                if (listener != null && listener.isRunning()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("stop consumerId: {}", listener.getListenerId());
+                    }
+                    listener.stop();
+                    while (listener.isRunning()) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("wait listener stop");
+                        }
+                        if (!listener.isRunning()) {
+                            listenerContainer.remove(consumer);
+                        }
+                    }
                 }
             }
+//            MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
+//            endpointRegistry.unregisterListenerContainer(consumer);
+//            if (container != null) {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("stop consumerId: {}", container.getListenerId());
+//                }
+//                if (container.isRunning()) {
+//                    container.stop();
+//                }
+//            }
         }
         return listenersState(ids);
     }
@@ -126,17 +156,29 @@ public class KafkaServiceImpl implements KafkaService {
         boolean flag = false;
         String[] consumerIds = ids.split(", ");
         for (String consumer : consumerIds) {
-            MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
-            if (container != null) {
-                if (container.isRunning()) {
+            if (listenerContainer.containsKey(consumer)) {
+                ConcurrentMessageListenerContainer<String, Object> listener = listenerContainer.get(consumer);
+                if (listener != null && listener.isRunning()) {
+                    flag = true;
                     if (log.isDebugEnabled()) {
-                        log.debug("listener assign:{}", container.getAssignedPartitions());
+                        log.debug("listener assign:{}", listener.getAssignedPartitions());
                     }
-                    if (container.getAssignedPartitions().size() > 0) {
-                        flag = true;
-                    }
+//                    if (listener.getAssignedPartitions().size() > 0 ) {
+//                        flag = true;
+//                    }
                 }
             }
+//            MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);
+//            if (container != null) {
+//                if (container.isRunning()) {
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("listener assign:{}", container.getAssignedPartitions());
+//                    }
+//                    if (container.getAssignedPartitions().size() > 0) {
+//                        flag = true;
+//                    }
+//                }
+//            }
         }
         if (log.isDebugEnabled()) {
             log.debug("listener state:{}", flag);
@@ -149,12 +191,19 @@ public class KafkaServiceImpl implements KafkaService {
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
         try {
             try {
+                String state = listenersState(groupId);
+                listenerContainer.get(groupId);
+                if ("true".equals(state)) {
+                    waitStopListen(groupId);
+                }
                 adminClient.deleteConsumerGroups(Collections.singleton(groupId)).all().get();
+                if ("false".equals(listenersState(groupId))) {
+                    adminClient.deleteTopics(Collections.singleton(topic));
+                }
             } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            if ("false".equals(listenersState(groupId))) {
-                adminClient.deleteTopics(Collections.singleton(topic));
+                if (log.isErrorEnabled()) {
+                    log.error("deleteTopic error:{}", e.getMessage());
+                }
             }
         } finally {
             adminClient.close();
@@ -190,7 +239,7 @@ public class KafkaServiceImpl implements KafkaService {
         AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties());
         try {
             if (log.isDebugEnabled()) {
-                log.debug("manual alert offset:{}", offset);
+                log.debug("manual alert offset:{}, groupId", offset, consumerGroupId);
             }
             Map<String, Map<TopicPartition, OffsetAndMetadata>> result = adminClient.listConsumerGroupOffsets(consumerGroupId).all().get();
             Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
@@ -214,12 +263,7 @@ public class KafkaServiceImpl implements KafkaService {
                     }
                 }
             }
-            stopListen(consumerGroupId);
-            while("true".equals(listenersState(consumerGroupId))) {
-                if (log.isDebugEnabled()) {
-                    log.debug("wait listener stop");
-                }
-            }
+            waitStopListen(consumerGroupId);
             if ("false".equals(listenersState(consumerGroupId))) {
                 if (log.isDebugEnabled()) {
                     log.debug("alert with offset:{}", offsets);
@@ -236,6 +280,15 @@ public class KafkaServiceImpl implements KafkaService {
             }
         } finally {
             adminClient.close();
+        }
+    }
+
+    private void waitStopListen(String consumerGroupId) {
+        stopListen(consumerGroupId);
+        while("true".equals(listenersState(consumerGroupId))) {
+            if (log.isDebugEnabled()) {
+                log.debug("wait listener stop");
+            }
         }
     }
 
@@ -266,5 +319,22 @@ public class KafkaServiceImpl implements KafkaService {
             throw new RuntimeException(e);
         }
         return "0";
+    }
+
+    private void createContainer(KafkaListenerContainerFactory<?> factory, String topic, String id, String group, String callback, boolean manualStop) {
+        ConcurrentMessageListenerContainer<String, Object> container = (ConcurrentMessageListenerContainer<String, Object>) factory.createContainer(topic);
+        listenerContainer.putIfAbsent(group, container);
+        container.getContainerProperties().setMessageListener(new ObjectListener(callback, manualStop, container));
+        container.getContainerProperties().setGroupId(group);
+        container.setBeanName(group);
+        container.setMainListenerId(id);
+        container.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        Properties properties = new Properties();
+        properties.put("value.deserializer", "org.apache.kafka.common.serialization.DelegatingDeserializer");
+        properties.put("allow.auto.create.topics", false);
+        properties.put("enable.auto.commit", "false");
+        properties.put("auto.offset.reset", "earliest");
+        container.getContainerProperties().setKafkaConsumerProperties(properties);
+        container.start();
     }
 }

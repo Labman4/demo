@@ -19,10 +19,12 @@ package com.elpsykongroo.auth.service.custom;
 import com.elpsykongroo.auth.entity.user.Authenticator;
 import com.elpsykongroo.auth.entity.user.User;
 import com.yubico.webauthn.data.ByteArray;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public interface AuthenticatorService {
     List<Authenticator> findByUser(String username);
 

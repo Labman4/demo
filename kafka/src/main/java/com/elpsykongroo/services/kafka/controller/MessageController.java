@@ -53,9 +53,6 @@ public class MessageController {
 
     @DeleteMapping("{ids}")
     public String stop(@PathVariable String ids) {
-        if (log.isDebugEnabled()) {
-            log.debug("stopListener ids:{}", ids);
-        }
         return kafkaService.stopListen(ids);
     }
 
@@ -69,9 +66,6 @@ public class MessageController {
 
     @PostMapping("offset")
     public void alertOffset(@RequestParam String offset, @RequestParam("group") String groupId) {
-        if (log.isDebugEnabled()) {
-            log.debug("alertOffset offset:{}, groupId:{}", offset, groupId);
-        }
         kafkaService.alterOffset(groupId, offset);
     }
 

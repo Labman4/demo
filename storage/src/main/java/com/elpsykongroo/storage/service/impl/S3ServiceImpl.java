@@ -120,6 +120,25 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
+    public void deleteObjects(String clientId, String bucket, String keys) {
+        if (log.isDebugEnabled()) {
+            log.debug("deleteObjects key:{}", keys);
+        }
+        ArrayList<ObjectIdentifier> toDelete = new ArrayList<>();
+        for (String key: keys.split(",")) {
+            toDelete.add(ObjectIdentifier.builder()
+                    .key(key)
+                    .build());
+        }
+        DeleteObjectsRequest deleteObjectRequest = DeleteObjectsRequest.builder()
+                .bucket(bucket)
+                .delete(Delete.builder().objects(toDelete).build())
+                .build();
+        clientMap.get(clientId).deleteObjects(deleteObjectRequest);
+    }
+
+
+    @Override
     public void deleteObjectByPrefix(String clientId, String bucket, String prefix) {
         List<ObjectIdentifier> toDelete = new ArrayList<>();
         listObject(clientId, bucket, prefix).contents().stream().forEach(obj -> toDelete.add(ObjectIdentifier.builder()

@@ -19,10 +19,12 @@ package com.elpsykongroo.auth.repository.user;
 import com.elpsykongroo.auth.entity.user.Group;
 import jakarta.transaction.Transactional;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public interface GroupRepository extends CrudRepository<Group, String> {
     List<Group> findByAuthorities_Authority(String authority);
 

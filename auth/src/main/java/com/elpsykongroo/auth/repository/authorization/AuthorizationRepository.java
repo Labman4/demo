@@ -26,7 +26,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.elpsykongroo.auth.entity.authorization.Authorization;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface AuthorizationRepository extends CrudRepository<Authorization, String> {
 	List<Authorization> findByPrincipalNameAndOidcIdTokenExpiresAtAfterOrderByAccessTokenIssuedAtDesc(String principalName, Instant oidcIdTokenExpiresAt);
 

@@ -18,6 +18,7 @@ package com.elpsykongroo.auth.service.client;
 
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import reactor.core.publisher.Mono;
 
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Service
 public class ReactiveJpaClientRegistrationRepository implements ReactiveClientRegistrationRepository {
     private final Map<String, ClientRegistration> clientIdToClientRegistration;
 

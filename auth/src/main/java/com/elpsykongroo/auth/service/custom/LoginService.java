@@ -18,7 +18,9 @@ package com.elpsykongroo.auth.service.custom;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface LoginService {
     String login(String username, HttpServletRequest request);
 

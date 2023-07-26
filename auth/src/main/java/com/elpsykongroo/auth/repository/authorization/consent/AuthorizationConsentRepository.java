@@ -20,7 +20,9 @@ import java.util.Optional;
 
 import com.elpsykongroo.auth.entity.authorization.consent.AuthorizationConsent;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface AuthorizationConsentRepository extends CrudRepository<AuthorizationConsent, AuthorizationConsent.AuthorizationConsentId> {
 	Optional<AuthorizationConsent> findByRegisteredClientIdAndPrincipalName(String registeredClientId, String principalName);
 	void deleteByRegisteredClientIdAndPrincipalName(String registeredClientId, String principalName);

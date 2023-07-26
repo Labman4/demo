@@ -290,9 +290,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	private String[] splitHeader(String headerType) {
 		Header header = requestConfig.getHeader();
-		if(log.isInfoEnabled()) {
-			log.info("headers:{}, headerType:{}", header, headerType);
-		}
 		switch(headerType){
 			case "true":
 				return header.getBlack().split(",");
