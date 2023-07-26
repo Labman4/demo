@@ -32,10 +32,10 @@ public class ByteArrayListener<K,V> {
     private final String id;
     private final String topic;
     private final String groupId;
+    private final String callback;
+    private final boolean manualStop;
     @Autowired
     private KafkaListenerEndpointRegistry endpointRegistry;
-    private String callback;
-    private boolean manualStop;
 
     public ByteArrayListener(String id, String groupId, String topic, String callback, boolean manualStop) {
         this.id = id;
@@ -67,6 +67,10 @@ public class ByteArrayListener<K,V> {
 
     public String getGroupId() {
         return this.groupId;
+    }
+
+    public String getCallback() {
+        return this.callback;
     }
 
     @KafkaListener(id = "#{__listener.id}", topics = "#{__listener.topic}", groupId = "#{__listener.groupId}", idIsGroup = false,
