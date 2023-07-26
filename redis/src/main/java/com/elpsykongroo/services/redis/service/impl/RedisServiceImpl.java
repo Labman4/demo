@@ -46,9 +46,6 @@ public class RedisServiceImpl implements RedisService {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    private MessageListenerAdapter messageListenerAdapter;
-
-    @Autowired
     private RedisConnectionFactory redisConnectionFactory;
 
 
@@ -131,11 +128,12 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void publish(String topic, String message) {
+    public void publish(String topic, String message, String callback) {
+        RedisSubscriber redisSubscriber = new RedisSubscriber(callback);
         ChannelTopic channelTopic = new ChannelTopic(topic);
         RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
         redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
-        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, channelTopic);
+        redisMessageListenerContainer.addMessageListener(redisSubscriber, channelTopic);
         redisMessageListenerContainer.afterPropertiesSet();
         redisMessageListenerContainer.start();
         redisTemplate.convertAndSend(channelTopic.getTopic(), message);

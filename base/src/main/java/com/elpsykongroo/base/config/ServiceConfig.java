@@ -138,6 +138,8 @@ public class ServiceConfig {
 
         private String storageCallback;
 
+        private String qrcodeCallback;
+
         private String kafka;
 
         private String loginPage;

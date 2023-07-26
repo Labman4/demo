@@ -16,19 +16,54 @@
 
 package com.elpsykongroo.services.redis.service.impl;
 
-import com.elpsykongroo.base.service.GatewayService;
+import com.elpsykongroo.base.config.ServiceConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.RequestEntity;
+import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.web.client.RestTemplate;
 
 public class RedisSubscriber implements MessageListener {
-    private GatewayService gatewayService;
 
-    public RedisSubscriber(GatewayService gatewayService) {
-        this.gatewayService = gatewayService;
+    private ThreadLocal<Integer> count = new ThreadLocal<>();
+
+    @Autowired
+    private ServiceConfig serviceConfig;
+
+    @Autowired
+    private OAuth2AuthorizedClientManager clientManager;
+
+    private String callback;
+
+    public RedisSubscriber(String callback) {
+        this.callback = callback;
     }
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-         gatewayService.receiveMessage(message.toString());
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + getAccessToken(clientManager));
+        RequestEntity requestEntity = RequestEntity.post(callback).headers(headers).body(message.toString());
+        count.set(0);
+        while (restTemplate.exchange(requestEntity, String.class).getStatusCode().is2xxSuccessful()) {
+            if (count.get() < 3 ) {
+                restTemplate.exchange(requestEntity, String.class);
+            }
+            count.set(count.get() + 1);
+        }
+    }
+
+    private String getAccessToken(OAuth2AuthorizedClientManager clientManager) {
+        OAuth2AuthorizeRequest oAuth2AuthorizeRequest = OAuth2AuthorizeRequest
+                .withClientRegistrationId(serviceConfig.getOAuth2().getRegisterId())
+                .principal("redis")
+                .build();
+        OAuth2AuthorizedClient client = clientManager.authorize(oAuth2AuthorizeRequest);
+        return client.getAccessToken().getTokenValue();
     }
 }

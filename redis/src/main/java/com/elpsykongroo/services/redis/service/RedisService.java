@@ -26,7 +26,7 @@ public interface RedisService {
 
     String getToken(String key);
 
-    void publish(String topic, String message);
+    void publish(String topic, String message, String callback);
 
     String lock(String key, String vaule, String minutes);
 }

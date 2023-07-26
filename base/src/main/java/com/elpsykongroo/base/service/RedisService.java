@@ -30,8 +30,8 @@ public interface RedisService {
     @RequestLine("GET /redis/token/{key}")
     String getToken(@Param String key);
 
-    @RequestLine("PUT /redis/topic?topic={topic}&message={message}")
-    String publish(@Param String topic, @Param String message);
+    @RequestLine("PUT /redis/topic?topic={topic}&message={message}&callback={callback}")
+    String publish(@Param String topic, @Param String message, @Param String callback);
 
     @RequestLine("PUT /redis/lock?key={key}&value={value}&duration={duration}")
     String lock(@Param String key , @Param String value, @Param String duration);

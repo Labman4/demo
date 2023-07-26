@@ -43,9 +43,6 @@ import java.util.Collections;
 @VaultPropertySource("${SECRETS_APP_REDIS_PATH:kv/app/dev/redis}")
 public class RedisConfig {
     @Autowired
-    private GatewayService gatewayService;
-
-    @Autowired
     private ServiceConfig serviceConfig;
 
     @Autowired
@@ -98,9 +95,4 @@ public class RedisConfig {
          redisTemplate.afterPropertiesSet();
          return redisTemplate;
      }
-
-    @Bean
-    MessageListenerAdapter messageListenerAdapter() {
-        return new MessageListenerAdapter(new RedisSubscriber(gatewayService));
-    }
 }

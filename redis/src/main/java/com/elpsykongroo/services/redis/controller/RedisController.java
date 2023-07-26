@@ -51,8 +51,9 @@ public class RedisController {
 
     @PutMapping("topic")
     public void publish (@RequestParam String topic,
-                         @RequestParam String message) {
-        redisService.publish(topic, message);
+                         @RequestParam String message,
+                         @RequestParam String callback) {
+        redisService.publish(topic, message, callback);
     }
 
     @PutMapping("lock")
