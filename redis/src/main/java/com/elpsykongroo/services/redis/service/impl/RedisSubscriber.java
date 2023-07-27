@@ -25,8 +25,10 @@ import org.springframework.http.RequestEntity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+@Component
 public class RedisSubscriber implements MessageListener {
 
     private ThreadLocal<Integer> count = new ThreadLocal<>();
