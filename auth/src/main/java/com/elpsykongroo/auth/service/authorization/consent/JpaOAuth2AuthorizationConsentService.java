@@ -18,8 +18,6 @@ package com.elpsykongroo.auth.service.authorization.consent;
 
 import java.util.HashSet;
 import java.util.Set;
-
-
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +28,6 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
 import com.elpsykongroo.auth.entity.authorization.consent.AuthorizationConsent;
 import com.elpsykongroo.auth.repository.authorization.consent.AuthorizationConsentRepository;
 
@@ -63,8 +60,8 @@ public class JpaOAuth2AuthorizationConsentService implements OAuth2Authorization
 	public OAuth2AuthorizationConsent findById(String registeredClientId, String principalName) {
 		Assert.hasText(registeredClientId, "registeredClientId cannot be empty");
 		Assert.hasText(principalName, "principalName cannot be empty");
-		return toObject(this.authorizationConsentRepository.findByRegisteredClientIdAndPrincipalName(
-				registeredClientId, principalName).get());
+		return this.authorizationConsentRepository.findByRegisteredClientIdAndPrincipalName(
+				registeredClientId, principalName).map(this::toObject).orElse(null);
 	}
 
 	private OAuth2AuthorizationConsent toObject(AuthorizationConsent authorizationConsent) {
