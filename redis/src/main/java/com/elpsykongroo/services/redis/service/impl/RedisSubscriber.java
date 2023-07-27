@@ -17,7 +17,6 @@
 package com.elpsykongroo.services.redis.service.impl;
 
 import com.elpsykongroo.base.config.ServiceConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.http.HttpHeaders;
@@ -33,20 +32,16 @@ public class RedisSubscriber implements MessageListener {
 
     private ThreadLocal<Integer> count = new ThreadLocal<>();
 
-    @Autowired
     private ServiceConfig serviceConfig;
 
-    @Autowired
     private OAuth2AuthorizedClientManager clientManager;
 
     private String callback;
 
-    public RedisSubscriber(String callback) {
+    public RedisSubscriber(String callback, ServiceConfig serviceConfig, OAuth2AuthorizedClientManager clientManager) {
         this.callback = callback;
-    }
-
-    public RedisSubscriber() {
-
+        this.serviceConfig = serviceConfig;
+        this.clientManager = clientManager;
     }
 
     @Override

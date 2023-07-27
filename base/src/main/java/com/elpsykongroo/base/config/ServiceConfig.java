@@ -116,6 +116,8 @@ public class ServiceConfig {
         private String storageUrl;
 
         private String storageLock;
+
+        private String qrcodeToken;
     }
 
     @Data

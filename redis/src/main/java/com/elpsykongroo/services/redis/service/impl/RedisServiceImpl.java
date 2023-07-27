@@ -16,6 +16,7 @@
 
 package com.elpsykongroo.services.redis.service.impl;
 
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.utils.EncryptUtils;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.services.redis.entity.MsgPack;
@@ -34,6 +35,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.Base64;
@@ -47,6 +49,11 @@ public class RedisServiceImpl implements RedisService {
     @Autowired
     private RedisConnectionFactory redisConnectionFactory;
 
+    @Autowired
+    private ServiceConfig serviceConfig;
+
+    @Autowired
+    private OAuth2AuthorizedClientManager clientManager;
 
     @Override
     public void setCache(String key, String value, String minutes) {
@@ -128,7 +135,7 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public void publish(String topic, String message, String callback) {
-        RedisSubscriber redisSubscriber = new RedisSubscriber(callback);
+        RedisSubscriber redisSubscriber = new RedisSubscriber(callback, serviceConfig, clientManager);
         ChannelTopic channelTopic = new ChannelTopic(topic);
         RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
         redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
