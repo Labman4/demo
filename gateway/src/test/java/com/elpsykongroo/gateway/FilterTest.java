@@ -142,7 +142,7 @@ class FilterTest {
         request.setMethod("GET");
         filter.doFilter(request, response, filterChain);
         request = new MockHttpServletRequest(servletContext);
-        request.addHeader("x-real-ip", "1.1.1.1");
+        request.addHeader("x-real-ip", "elpsykongroo.com");
         request.setRequestURI("/ip");
         request.setMethod("GET");
         filter.doFilter(request, response, filterChain);
