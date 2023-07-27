@@ -16,13 +16,14 @@
 
 package com.elpsykongroo.gateway.controller;
 
+import com.elpsykongroo.base.domain.message.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -33,11 +34,11 @@ public class MessageController {
     @Autowired
     private ApplicationContext ac;
 
-    @PutMapping("token")
-    public void receiveToken(@RequestParam String message) {
+    @PostMapping("token")
+    public void receiveToken(@RequestBody Message message) {
         if (log.isInfoEnabled()) {
-            log.info("receiveToken:{}", message);
+            log.info("receiveToken:{}", message.getValue());
         }
-        ac.publishEvent(message);
+        ac.publishEvent(message.getValue());
     }
 }

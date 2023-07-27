@@ -124,7 +124,7 @@ public class S3ServiceImpl implements S3Service {
         if (log.isDebugEnabled()) {
             log.debug("deleteObjects key:{}", keys);
         }
-        ArrayList<ObjectIdentifier> toDelete = new ArrayList<>();
+        List<ObjectIdentifier> toDelete = new ArrayList<>();
         for (String key: keys.split(",")) {
             toDelete.add(ObjectIdentifier.builder()
                     .key(key)

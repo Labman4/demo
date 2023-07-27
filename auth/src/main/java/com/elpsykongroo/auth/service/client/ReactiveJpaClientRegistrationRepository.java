@@ -43,7 +43,7 @@ public class ReactiveJpaClientRegistrationRepository implements ReactiveClientRe
 
     private static Map<String, ClientRegistration> toUnmodifiableConcurrentMap(List<ClientRegistration> registrations) {
         Assert.notEmpty(registrations, "registrations cannot be null or empty");
-        ConcurrentHashMap<String, ClientRegistration> result = new ConcurrentHashMap();
+        Map<String, ClientRegistration> result = new ConcurrentHashMap();
         Iterator var2 = registrations.iterator();
 
         while (var2.hasNext()) {

@@ -68,7 +68,7 @@ public class KafkaServiceImpl implements KafkaService {
     @Autowired
     private KafkaListenerContainerFactory<?> kafkaListenerContainerFactory;
 
-    private ConcurrentHashMap<String, ConcurrentMessageListenerContainer<String, Object>> listenerContainer = new ConcurrentHashMap<>();
+    private Map<String, ConcurrentMessageListenerContainer<String, Object>> listenerContainer = new ConcurrentHashMap<>();
 
 
     @Override

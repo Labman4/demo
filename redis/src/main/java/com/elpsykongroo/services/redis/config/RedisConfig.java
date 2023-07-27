@@ -17,8 +17,6 @@
 package com.elpsykongroo.services.redis.config;
 
 import com.elpsykongroo.base.config.ServiceConfig;
-import com.elpsykongroo.base.service.GatewayService;
-import com.elpsykongroo.services.redis.service.impl.RedisSubscriber;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +29,6 @@ import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.vault.annotation.VaultPropertySource;

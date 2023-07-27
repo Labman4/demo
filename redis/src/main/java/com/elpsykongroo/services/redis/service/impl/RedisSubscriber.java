@@ -48,7 +48,9 @@ public class RedisSubscriber implements MessageListener {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + getAccessToken(clientManager));
-        RequestEntity requestEntity = RequestEntity.post(callback).headers(headers).body(message.toString());
+        com.elpsykongroo.base.domain.message.Message msg = new com.elpsykongroo.base.domain.message.Message();
+        msg.setValue(message.toString());
+        RequestEntity requestEntity = RequestEntity.post(callback).headers(headers).body(msg);
         count.set(0);
         while (restTemplate.exchange(requestEntity, String.class).getStatusCode().is2xxSuccessful()) {
             if (count.get() < 3 ) {
