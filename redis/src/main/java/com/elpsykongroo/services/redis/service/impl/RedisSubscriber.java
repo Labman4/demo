@@ -45,6 +45,10 @@ public class RedisSubscriber implements MessageListener {
         this.callback = callback;
     }
 
+    public RedisSubscriber() {
+
+    }
+
     @Override
     public void onMessage(Message message, byte[] pattern) {
         RestTemplate restTemplate = new RestTemplate();
