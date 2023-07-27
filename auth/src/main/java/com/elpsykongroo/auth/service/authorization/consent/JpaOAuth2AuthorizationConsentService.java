@@ -63,8 +63,8 @@ public class JpaOAuth2AuthorizationConsentService implements OAuth2Authorization
 	public OAuth2AuthorizationConsent findById(String registeredClientId, String principalName) {
 		Assert.hasText(registeredClientId, "registeredClientId cannot be empty");
 		Assert.hasText(principalName, "principalName cannot be empty");
-		return this.authorizationConsentRepository.findByRegisteredClientIdAndPrincipalName(
-				registeredClientId, principalName).map(this::toObject).orElse(null);
+		return toObject(this.authorizationConsentRepository.findByRegisteredClientIdAndPrincipalName(
+				registeredClientId, principalName).get());
 	}
 
 	private OAuth2AuthorizationConsent toObject(AuthorizationConsent authorizationConsent) {
