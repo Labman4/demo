@@ -323,7 +323,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if(log.isWarnEnabled()) {
 					log.warn("ignore private ip:{}", ip);
 				}
-				return true;
+				flag = true;
 			}
 			String list = "";
 			try {
@@ -360,7 +360,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 					}
 				}
 				if (list.contains(ip)) {
-					return true;
+					flag = true;
 				} else {
 					if (log.isWarnEnabled()) {
 						log.warn("try to query domain in cacheList");
@@ -385,7 +385,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 										log.warn("update domain ip: {}", address.getHostAddress());
 									}
 									add(address.getHostAddress(), isBlack);
-									return true;
+									flag = true;
 								}
 							}
 						}

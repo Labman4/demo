@@ -246,6 +246,7 @@
     {"name":"<init>","parameterTypes":[] }, 
     {"name":"setAuth","parameterTypes":["java.lang.String"] }, 
     {"name":"setEs","parameterTypes":["java.lang.String"] }, 
+    {"name":"setGateway","parameterTypes":["java.lang.String"] }, 
     {"name":"setRedis","parameterTypes":["java.lang.String"] }, 
     {"name":"setStorage","parameterTypes":["java.lang.String"] }
   ]
@@ -287,6 +288,18 @@
   "queryAllPublicMethods":true
 },
 {
+  "name":"com.elpsykongroo.base.domain.message.Message",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setData","parameterTypes":["byte[]"] }, 
+    {"name":"setKey","parameterTypes":["java.lang.String"] }, 
+    {"name":"setValue","parameterTypes":["java.lang.String"] }
+  ]
+},
+{
   "name":"com.elpsykongroo.base.domain.search.QueryParam",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -324,6 +337,18 @@
     {"name":"getSourceIP","parameterTypes":[] }, 
     {"name":"getTimestamp","parameterTypes":[] }, 
     {"name":"getUserAgent","parameterTypes":[] }
+  ]
+},
+{
+  "name":"com.elpsykongroo.base.domain.search.repo.IpManage",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getAddress","parameterTypes":[] }, 
+    {"name":"getBlack","parameterTypes":[] }, 
+    {"name":"getId","parameterTypes":[] }, 
+    {"name":"getTimestamp","parameterTypes":[] }
   ]
 },
 {
@@ -390,18 +415,6 @@
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
     {"name":"main","parameterTypes":["java.lang.String[]"] }
-  ]
-},
-{
-  "name":"com.elpsykongroo.gateway.GatewayApplication$$SpringCGLIB$$0",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "fields":[{"name":"CGLIB$FACTORY_DATA"}],
-  "methods":[
-    {"name":"<init>","parameterTypes":[] }, 
-    {"name":"CGLIB$SET_STATIC_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }, 
-    {"name":"CGLIB$SET_THREAD_CALLBACKS","parameterTypes":["org.springframework.cglib.proxy.Callback[]"] }
   ]
 },
 {
@@ -486,6 +499,7 @@
     {"name":"setExclude","parameterTypes":["java.lang.String"] }, 
     {"name":"setFilter","parameterTypes":["java.lang.String"] }, 
     {"name":"setLimit","parameterTypes":["java.lang.String"] }, 
+    {"name":"setNonPrivate","parameterTypes":["java.lang.String"] }, 
     {"name":"setPermit","parameterTypes":["java.lang.String"] }
   ]
 },
@@ -531,6 +545,16 @@
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
     {"name":"securityFilterChain","parameterTypes":["org.springframework.security.config.annotation.web.builders.HttpSecurity"] }
+  ]
+},
+{
+  "name":"com.elpsykongroo.gateway.config.TomcatConfig",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"servletContainer","parameterTypes":[] }
   ]
 },
 {
@@ -599,7 +623,10 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"receiveToken","parameterTypes":["com.elpsykongroo.base.domain.message.Message"] }
+  ]
 },
 {
   "name":"com.elpsykongroo.gateway.controller.RedisController",
@@ -620,7 +647,10 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"user","parameterTypes":["java.lang.String"] }
+  ]
 },
 {
   "name":"com.elpsykongroo.gateway.controller.external.PublicController",
@@ -629,7 +659,8 @@
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
-    {"name":"accessIP","parameterTypes":["jakarta.servlet.http.HttpServletRequest"] }
+    {"name":"accessIP","parameterTypes":["jakarta.servlet.http.HttpServletRequest"] }, 
+    {"name":"qrToken","parameterTypes":["java.lang.String"] }
   ]
 },
 {
@@ -998,7 +1029,27 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"com.sun.crypto.provider.HmacCore$HmacSHA256",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"com.sun.crypto.provider.HmacCore$HmacSHA384",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.sun.crypto.provider.PBEKeyFactory$PBEWithMD5AndDES",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.sun.crypto.provider.PBES2Core$HmacSHA256AndAES_256",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.sun.crypto.provider.PBES2Parameters$General",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"com.sun.crypto.provider.PBES2Parameters$HmacSHA256AndAES_256",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -1038,7 +1089,12 @@
   "queryAllPublicMethods":true
 },
 {
-  "name":"com.sun.management.UnixOperatingSystemMXBean"
+  "name":"com.sun.management.UnixOperatingSystemMXBean",
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"getMaxFileDescriptorCount","parameterTypes":[] }, 
+    {"name":"getOpenFileDescriptorCount","parameterTypes":[] }
+  ]
 },
 {
   "name":"com.sun.management.VMOption",
@@ -1080,12 +1136,27 @@
   "name":"com.zaxxer.hikari.HikariDataSource"
 },
 {
+  "name":"feign.FeignException"
+},
+{
   "name":"feign.Headers",
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"feign.ReflectiveFeign$FeignInvocationHandler"
+},
+{
   "name":"feign.RequestLine",
   "queryAllDeclaredMethods":true
+},
+{
+  "name":"feign.ResponseHandler"
+},
+{
+  "name":"feign.SynchronousMethodHandler"
+},
+{
+  "name":"feign.codec.ErrorDecoder$Default"
 },
 {
   "name":"freemarker.template$Configuration"
@@ -2249,6 +2320,18 @@
   "name":"java.math.BigInteger"
 },
 {
+  "name":"java.net.Inet6AddressImpl"
+},
+{
+  "name":"java.net.InetAddress"
+},
+{
+  "name":"java.net.InetAddress$NameServiceAddresses"
+},
+{
+  "name":"java.net.InetAddress$PlatformNameService"
+},
+{
   "name":"java.net.NetPermission"
 },
 {
@@ -2691,7 +2774,10 @@
 },
 {
   "name":"org.apache.coyote.http11.AbstractHttp11Protocol",
-  "methods":[{"name":"isSSLEnabled","parameterTypes":[] }]
+  "methods":[
+    {"name":"isSSLEnabled","parameterTypes":[] }, 
+    {"name":"setSecure","parameterTypes":["boolean"] }
+  ]
 },
 {
   "name":"org.apache.coyote.http11.Http11NioProtocol",
@@ -2936,6 +3022,9 @@
 },
 {
   "name":"org.quartz.Scheduler"
+},
+{
+  "name":"org.reactivestreams$Publisher"
 },
 {
   "name":"org.reactivestreams.Publisher"
@@ -9346,7 +9435,13 @@
   "methods":[{"name":"afterPropertiesSet","parameterTypes":[] }]
 },
 {
+  "name":"org.springframework.security.web.ObservationFilterChainDecorator"
+},
+{
   "name":"org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation"
+},
+{
+  "name":"org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation"
 },
 {
   "name":"org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter"
@@ -9399,6 +9494,9 @@
   "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"org.springframework.security.web.authentication.AnonymousAuthenticationFilter"
 },
 {
   "name":"org.springframework.security.web.authentication.logout.LogoutFilter",
@@ -9894,11 +9992,19 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.web.bind.annotation.PathVariable",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"org.springframework.web.bind.annotation.PostMapping",
   "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.web.bind.annotation.PutMapping",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.web.bind.annotation.RequestBody",
   "queryAllDeclaredMethods":true
 },
 {
@@ -9916,6 +10022,15 @@
 {
   "name":"org.springframework.web.bind.annotation.RestController",
   "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.web.client.DefaultResponseErrorHandler"
+},
+{
+  "name":"org.springframework.web.client.HttpClientErrorException"
+},
+{
+  "name":"org.springframework.web.client.ResponseErrorHandler"
 },
 {
   "name":"org.springframework.web.client.RestTemplate"
@@ -10016,10 +10131,17 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.web.method.annotation.ExceptionHandlerMethodResolver",
+  "methods":[{"name":"noMatchingExceptionHandler","parameterTypes":[] }]
+},
+{
   "name":"org.springframework.web.method.support.CompositeUriComponentsContributor",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true
+},
+{
+  "name":"org.springframework.web.method.support.InvocableHandlerMethod"
 },
 {
   "name":"org.springframework.web.method.support.UriComponentsContributor",
@@ -10042,10 +10164,16 @@
   "queryAllDeclaredConstructors":true
 },
 {
+  "name":"org.springframework.web.reactive$DispatcherHandler"
+},
+{
   "name":"org.springframework.web.reactive.DispatcherHandler"
 },
 {
   "name":"org.springframework.web.reactive.HandlerResult"
+},
+{
+  "name":"org.springframework.web.reactive.config$EnableWebFlux"
 },
 {
   "name":"org.springframework.web.reactive.config.EnableWebFlux",
@@ -10053,6 +10181,9 @@
 },
 {
   "name":"org.springframework.web.reactive.config.WebFluxConfigurer"
+},
+{
+  "name":"org.springframework.web.reactive.function.client$ExchangeFilterFunction"
 },
 {
   "name":"org.springframework.web.reactive.function.client.ExchangeFilterFunction"
@@ -10458,6 +10589,9 @@
   ]
 },
 {
+  "name":"org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod"
+},
+{
   "name":"org.springframework.web.servlet.resource.ResourceUrlProvider",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -10647,6 +10781,12 @@
   "name":"org.yaml.snakeyaml.Yaml"
 },
 {
+  "name":"reactor.core.publisher$Flux"
+},
+{
+  "name":"reactor.core.publisher$Mono"
+},
+{
   "name":"reactor.core.publisher.Flux"
 },
 {
@@ -10747,7 +10887,15 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"sun.security.provider.JavaKeyStore$DualFormatJKS",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"sun.security.provider.JavaKeyStore$JKS",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.provider.NativePRNG",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -10800,6 +10948,10 @@
 },
 {
   "name":"sun.security.rsa.RSASignature$SHA256withRSA",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.security.ssl.KeyManagerFactoryImpl$SunX509",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -10863,6 +11015,10 @@
 {
   "name":"sun.security.x509.SubjectKeyIdentifierExtension",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
+},
+{
+  "name":"void",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"zipkin2.Component",

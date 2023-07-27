@@ -3,7 +3,16 @@
     "interfaces":["com.elpsykongroo.base.service.GatewayService"]
   },
   {
+    "interfaces":["interface org.springframework.data.redis.connection.RedisClusterConnection, interface org.springframework.data.redis.connection.DefaultedRedisClusterConnection, interface org.springframework.data.redis.connection.RedisConnection"]
+  },
+  {
     "interfaces":["io.lettuce.core.api.sync.RedisCommands","io.lettuce.core.cluster.api.sync.RedisClusterCommands"]
+  },
+  {
+    "interfaces":["io.lettuce.core.cluster.api.sync.RedisAdvancedClusterCommands"]
+  },
+  {
+    "interfaces":["io.lettuce.core.cluster.pubsub.api.sync.RedisClusterPubSubCommands","io.lettuce.core.pubsub.api.sync.RedisPubSubCommands"]
   },
   {
     "interfaces":["java.lang.reflect.ParameterizedType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
@@ -18,6 +27,9 @@
     "interfaces":["org.springframework.boot.context.properties.ConfigurationProperties"]
   },
   {
+    "interfaces":["org.springframework.data.redis.connection.RedisClusterConnection","org.springframework.data.redis.connection.DefaultedRedisClusterConnection","org.springframework.data.redis.connection.RedisConnection"]
+  },
+  {
     "interfaces":["org.springframework.web.bind.annotation.PathVariable"]
   },
   {
@@ -25,8 +37,5 @@
   },
   {
     "interfaces":["org.springframework.web.bind.annotation.RequestParam"]
-  },
-  {
-    "interfaces":["interface org.springframework.data.redis.connection.RedisClusterConnection, interface org.springframework.data.redis.connection.DefaultedRedisClusterConnection, interface org.springframework.data.redis.connection.RedisConnection"]
   }
 ]

@@ -1067,7 +1067,11 @@
     {"name":"<init>","parameterTypes":[] }, 
     {"name":"finishLogin","parameterTypes":["java.lang.String","java.lang.String","jakarta.servlet.http.HttpServletRequest","jakarta.servlet.http.HttpServletResponse"] }, 
     {"name":"finishRegisration","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
+    {"name":"generateQrcode","parameterTypes":[] }, 
+    {"name":"getToken","parameterTypes":["java.lang.String"] }, 
+    {"name":"loginWithToken","parameterTypes":["java.lang.String","java.lang.String","jakarta.servlet.http.HttpServletRequest","jakarta.servlet.http.HttpServletResponse"] }, 
     {"name":"newUserRegistration","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"setToken","parameterTypes":["java.lang.String"] }, 
     {"name":"startLogin","parameterTypes":["java.lang.String","jakarta.servlet.http.HttpServletRequest"] }
   ]
 },
@@ -1108,7 +1112,10 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"user","parameterTypes":["java.lang.String"] }
+  ]
 },
 {
   "name":"com.elpsykongroo.base.config.ServiceConfig",
@@ -1117,9 +1124,11 @@
   "queryAllDeclaredConstructors":true,
   "methods":[
     {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getTimeout","parameterTypes":[] }, 
     {"name":"getUrl","parameterTypes":[] }, 
     {"name":"setAdminEmail","parameterTypes":["java.lang.String"] }, 
     {"name":"setInitAdminAuth","parameterTypes":["java.lang.String"] }, 
+    {"name":"setTimeout","parameterTypes":["com.elpsykongroo.base.config.ServiceConfig$TimeOut"] }, 
     {"name":"setUrl","parameterTypes":["com.elpsykongroo.base.config.ServiceConfig$Url"] }, 
     {"name":"setVault","parameterTypes":["java.lang.String"] }
   ]
@@ -1158,7 +1167,11 @@
   "name":"com.elpsykongroo.base.config.ServiceConfig$TimeOut",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setQrcodeToken","parameterTypes":["java.lang.String"] }
+  ]
 },
 {
   "name":"com.elpsykongroo.base.config.ServiceConfig$Url",
@@ -1169,6 +1182,7 @@
     {"name":"<init>","parameterTypes":[] }, 
     {"name":"setAuth","parameterTypes":["java.lang.String"] }, 
     {"name":"setLoginPage","parameterTypes":["java.lang.String"] }, 
+    {"name":"setQrcodeCallback","parameterTypes":["java.lang.String"] }, 
     {"name":"setRedis","parameterTypes":["java.lang.String"] }
   ]
 },
@@ -1184,6 +1198,7 @@
     {"name":"getToken","parameterTypes":["java.lang.String"] }, 
     {"name":"lock","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
     {"name":"publish","parameterTypes":["java.lang.String","java.lang.String"] }, 
+    {"name":"publish","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
     {"name":"set","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
     {"name":"shutdown","parameterTypes":[] }
   ]
@@ -2057,12 +2072,27 @@
   "name":"com.zaxxer.hikari.util.DriverDataSource"
 },
 {
+  "name":"feign.FeignException"
+},
+{
   "name":"feign.Headers",
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"feign.ReflectiveFeign$FeignInvocationHandler"
+},
+{
   "name":"feign.RequestLine",
   "queryAllDeclaredMethods":true
+},
+{
+  "name":"feign.ResponseHandler"
+},
+{
+  "name":"feign.SynchronousMethodHandler"
+},
+{
+  "name":"feign.codec.ErrorDecoder$Default"
 },
 {
   "name":"freemarker.template$Configuration"
@@ -3431,6 +3461,12 @@
 },
 {
   "name":"java.security.SecurityPermission"
+},
+{
+  "name":"java.security.interfaces.ECPrivateKey"
+},
+{
+  "name":"java.security.interfaces.ECPublicKey"
 },
 {
   "name":"java.security.interfaces.RSAPrivateKey"
@@ -9729,6 +9765,7 @@
   "methods":[
     {"name":"close","parameterTypes":[] }, 
     {"name":"error","parameterTypes":["jakarta.servlet.http.HttpServletRequest"] }, 
+    {"name":"errorHtml","parameterTypes":["jakarta.servlet.http.HttpServletRequest","jakarta.servlet.http.HttpServletResponse"] }, 
     {"name":"shutdown","parameterTypes":[] }
   ]
 },
@@ -14202,6 +14239,12 @@
   "name":"org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken"
 },
 {
+  "name":"org.springframework.security.oauth2.server.resource.authentication.OpaqueTokenAuthenticationProvider"
+},
+{
+  "name":"org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector"
+},
+{
   "name":"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -14253,7 +14296,13 @@
   ]
 },
 {
+  "name":"org.springframework.security.web.ObservationFilterChainDecorator"
+},
+{
   "name":"org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation"
+},
+{
+  "name":"org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation"
 },
 {
   "name":"org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter"
@@ -14355,6 +14404,9 @@
     {"name":"setSecurityContextRepository","parameterTypes":["org.springframework.security.web.context.SecurityContextRepository"] }, 
     {"name":"setSessionAuthenticationStrategy","parameterTypes":["org.springframework.security.web.authentication.session.SessionAuthenticationStrategy"] }
   ]
+},
+{
+  "name":"org.springframework.security.web.authentication.AnonymousAuthenticationFilter"
 },
 {
   "name":"org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint",
@@ -15282,6 +15334,10 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.web.bind.annotation.PathVariable",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"org.springframework.web.bind.annotation.PostMapping",
   "queryAllDeclaredMethods":true
 },
@@ -15308,6 +15364,15 @@
 {
   "name":"org.springframework.web.bind.annotation.RestController",
   "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.web.client.DefaultResponseErrorHandler"
+},
+{
+  "name":"org.springframework.web.client.HttpClientErrorException"
+},
+{
+  "name":"org.springframework.web.client.ResponseErrorHandler"
 },
 {
   "name":"org.springframework.web.client.RestTemplate"
@@ -15408,6 +15473,10 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"org.springframework.web.method.annotation.ExceptionHandlerMethodResolver",
+  "methods":[{"name":"noMatchingExceptionHandler","parameterTypes":[] }]
+},
+{
   "name":"org.springframework.web.method.support.CompositeUriComponentsContributor",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -15423,6 +15492,9 @@
   "name":"org.springframework.web.method.support.HandlerMethodArgumentResolver",
   "queryAllDeclaredMethods":true,
   "queryAllPublicMethods":true
+},
+{
+  "name":"org.springframework.web.method.support.InvocableHandlerMethod"
 },
 {
   "name":"org.springframework.web.method.support.UriComponentsContributor",
@@ -15990,6 +16062,9 @@
   ]
 },
 {
+  "name":"org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod"
+},
+{
   "name":"org.springframework.web.servlet.resource.ResourceUrlProvider",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -16099,6 +16174,14 @@
   ]
 },
 {
+  "name":"org.springframework.web.servlet.view.AbstractUrlBasedView",
+  "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.web.servlet.view.AbstractView",
+  "queryAllDeclaredMethods":true
+},
+{
   "name":"org.springframework.web.servlet.view.BeanNameViewResolver",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -16132,6 +16215,10 @@
     {"name":"getViewName","parameterTypes":["jakarta.servlet.http.HttpServletRequest"] }, 
     {"name":"shutdown","parameterTypes":[] }
   ]
+},
+{
+  "name":"org.springframework.web.servlet.view.InternalResourceView",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"org.springframework.web.servlet.view.InternalResourceViewResolver",

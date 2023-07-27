@@ -209,6 +209,17 @@
   ]
 },
 {
+  "name":"com.elpsykongroo.base.domain.message.Message",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getData","parameterTypes":[] }, 
+    {"name":"getKey","parameterTypes":[] }, 
+    {"name":"getValue","parameterTypes":[] }
+  ]
+},
+{
   "name":"com.elpsykongroo.base.service.GatewayService",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -285,7 +296,35 @@
     {"name":"<init>","parameterTypes":[] }, 
     {"name":"get","parameterTypes":["java.lang.String"] }, 
     {"name":"getToken","parameterTypes":["java.lang.String"] }, 
+    {"name":"publish","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }, 
     {"name":"set","parameterTypes":["java.lang.String","java.lang.String","java.lang.String"] }
+  ]
+},
+{
+  "name":"com.elpsykongroo.services.redis.entity.MsgPack",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"getAt","parameterTypes":[] }, 
+    {"name":"getCa","parameterTypes":[] }, 
+    {"name":"getE","parameterTypes":[] }, 
+    {"name":"getEo","parameterTypes":[] }, 
+    {"name":"getG","parameterTypes":[] }, 
+    {"name":"getIt","parameterTypes":[] }, 
+    {"name":"getN","parameterTypes":[] }, 
+    {"name":"getPu","parameterTypes":[] }, 
+    {"name":"getRt","parameterTypes":[] }, 
+    {"name":"getU","parameterTypes":[] }, 
+    {"name":"setAt","parameterTypes":["java.lang.String"] }, 
+    {"name":"setCa","parameterTypes":["java.time.Instant"] }, 
+    {"name":"setE","parameterTypes":["java.lang.String"] }, 
+    {"name":"setEo","parameterTypes":["java.time.Instant"] }, 
+    {"name":"setIt","parameterTypes":["java.lang.String"] }, 
+    {"name":"setN","parameterTypes":["byte[]"] }, 
+    {"name":"setRt","parameterTypes":["java.lang.String"] }, 
+    {"name":"setU","parameterTypes":["java.lang.String"] }
   ]
 },
 {
@@ -1262,8 +1301,12 @@
   "queryAllDeclaredMethods":true
 },
 {
+  "name":"io.lettuce.core.cluster.RedisClusterPubSubAsyncCommandsImpl"
+},
+{
   "name":"io.lettuce.core.cluster.api.sync.RedisClusterCommands",
-  "queryAllDeclaredMethods":true
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true
 },
 {
   "name":"io.lettuce.core.cluster.topology.DefaultClusterTopologyRefresh"
@@ -1274,9 +1317,29 @@
   "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ConnectEvent"] }]
 },
 {
+  "name":"io.lettuce.core.event.connection.JfrConnectedEvent",
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ConnectionEventSupport"] }]
+},
+{
+  "name":"io.lettuce.core.event.connection.JfrConnectionActivatedEvent",
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ConnectionEventSupport"] }]
+},
+{
   "name":"io.lettuce.core.event.connection.JfrConnectionCreatedEvent",
   "queryAllDeclaredConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ConnectionCreatedEvent"] }]
+},
+{
+  "name":"io.lettuce.core.event.connection.JfrConnectionDeactivatedEvent",
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ConnectionEventSupport"] }]
+},
+{
+  "name":"io.lettuce.core.event.connection.JfrDisconnectedEvent",
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":["io.lettuce.core.event.connection.ConnectionEventSupport"] }]
 },
 {
   "name":"io.lettuce.core.metrics.DefaultCommandLatencyCollector",
@@ -1313,6 +1376,14 @@
     {"name":"channelRegistered","parameterTypes":["io.netty.channel.ChannelHandlerContext"] }, 
     {"name":"exceptionCaught","parameterTypes":["io.netty.channel.ChannelHandlerContext","java.lang.Throwable"] }
   ]
+},
+{
+  "name":"io.lettuce.core.pubsub.PubSubCommandHandler",
+  "methods":[{"name":"channelInactive","parameterTypes":["io.netty.channel.ChannelHandlerContext"] }]
+},
+{
+  "name":"io.lettuce.core.pubsub.RedisPubSubAsyncCommandsImpl",
+  "methods":[{"name":"subscribe","parameterTypes":["java.lang.Object[]"] }]
 },
 {
   "name":"io.lettuce.core.resource.ClientResources",
@@ -1353,6 +1424,9 @@
 },
 {
   "name":"io.micrometer.context$ContextSnapshot"
+},
+{
+  "name":"io.micrometer.context.ContextRegistry"
 },
 {
   "name":"io.micrometer.context.ContextSnapshot"
@@ -1482,6 +1556,10 @@
 },
 {
   "name":"io.netty.util.NettyRuntime"
+},
+{
+  "name":"io.netty.util.ReferenceCountUtil",
+  "queryAllDeclaredMethods":true
 },
 {
   "name":"io.netty.util.ResourceLeakDetector$DefaultResourceLeak",
@@ -1936,6 +2014,9 @@
 },
 {
   "name":"java.net.NetPermission"
+},
+{
+  "name":"java.net.Socket"
 },
 {
   "name":"java.net.SocketPermission"
@@ -2450,6 +2531,12 @@
 },
 {
   "name":"org.jooq.DSLContext"
+},
+{
+  "name":"org.msgpack.jackson.dataformat.MessagePackExtensionType",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true
 },
 {
   "name":"org.neo4j.driver.Driver"
@@ -6257,6 +6344,10 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"org.springframework.data.redis.connection.DefaultedRedisConnection",
+  "methods":[{"name":"get","parameterTypes":["byte[]"] }]
+},
+{
   "name":"org.springframework.data.redis.connection.MessageListener",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -6614,6 +6705,9 @@
   ]
 },
 {
+  "name":"org.springframework.data.redis.listener.RedisMessageListenerContainer"
+},
+{
   "name":"org.springframework.data.redis.listener.adapter.MessageListenerAdapter",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
@@ -6914,12 +7008,21 @@
   "name":"org.springframework.http.ReactiveHttpInputMessage"
 },
 {
+  "name":"org.springframework.http.client.AbstractBufferingClientHttpRequest"
+},
+{
+  "name":"org.springframework.http.client.AbstractClientHttpRequest"
+},
+{
   "name":"org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper",
   "allDeclaredFields":true
 },
 {
   "name":"org.springframework.http.client.ClientHttpRequestFactory",
   "queryAllPublicMethods":true
+},
+{
+  "name":"org.springframework.http.client.SimpleBufferingClientHttpRequest"
 },
 {
   "name":"org.springframework.http.client.SimpleClientHttpRequestFactory",
@@ -7682,6 +7785,15 @@
 {
   "name":"org.springframework.web.bind.annotation.RestController",
   "queryAllDeclaredMethods":true
+},
+{
+  "name":"org.springframework.web.client.DefaultResponseErrorHandler"
+},
+{
+  "name":"org.springframework.web.client.HttpClientErrorException"
+},
+{
+  "name":"org.springframework.web.client.ResponseErrorHandler"
 },
 {
   "name":"org.springframework.web.client.RestTemplate"
@@ -8560,6 +8672,21 @@
   "name":"sun.misc.VM"
 },
 {
+  "name":"sun.net.NetworkClient"
+},
+{
+  "name":"sun.net.www.http.HttpClient"
+},
+{
+  "name":"sun.net.www.protocol.http.HttpURLConnection"
+},
+{
+  "name":"sun.nio.ch.Net"
+},
+{
+  "name":"sun.nio.ch.NioSocketImpl"
+},
+{
   "name":"sun.nio.ch.SelectorImpl",
   "fields":[
     {"name":"publicSelectedKeys"}, 
@@ -8710,5 +8837,9 @@
 {
   "name":"sun.security.x509.SubjectKeyIdentifierExtension",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
+},
+{
+  "name":"void",
+  "queryAllDeclaredMethods":true
 }
 ]

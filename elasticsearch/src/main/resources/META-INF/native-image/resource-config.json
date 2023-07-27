@@ -5,16 +5,7 @@
       "pattern":"\\QMETA-INF/services/ch.qos.logback.classic.spi.Configurator\\E"
     }, 
     {
-      "pattern":"\\QMETA-INF/services/io.micrometer.context.ContextAccessor\\E"
-    }, 
-    {
-      "pattern":"\\QMETA-INF/services/io.micrometer.context.ThreadLocalAccessor\\E"
-    }, 
-    {
-      "pattern":"\\QMETA-INF/services/org.junit.platform.engine.TestEngine\\E"
-    }, 
-    {
-      "pattern":"\\QMETA-INF/services/org.junit.platform.launcher.TestExecutionListener\\E"
+      "pattern":"\\QMETA-INF/services/jakarta.json.spi.JsonProvider\\E"
     }, 
     {
       "pattern":"\\QMETA-INF/services/org.slf4j.spi.SLF4JServiceProvider\\E"
@@ -26,25 +17,16 @@
       "pattern":"\\QMETA-INF/spring.factories\\E"
     }, 
     {
-      "pattern":"\\QMETA-INF/spring/aot.factories\\E"
-    }, 
-    {
       "pattern":"\\QMETA-INF/spring/org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration.imports\\E"
     }, 
     {
       "pattern":"\\QMETA-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports\\E"
     }, 
     {
-      "pattern":"\\Q\\E"
-    }, 
-    {
-      "pattern":"\\Qapplication-test.yaml\\E"
-    }, 
-    {
-      "pattern":"\\Qapplication.properties\\E"
-    }, 
-    {
       "pattern":"\\Qapplication.yaml\\E"
+    }, 
+    {
+      "pattern":"\\Qco/elastic/clients/version.properties\\E"
     }, 
     {
       "pattern":"\\Qcom/elpsykongroo/base/\\E"
@@ -74,100 +56,25 @@
       "pattern":"\\Qcom/elpsykongroo/base/config/ServiceConfig.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/base/domain/auth/client/ClientRegistry$ProviderDetails.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/services/elasticsearch/\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/base/domain/auth/client/ClientRegistry.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/services/elasticsearch/config/ElasticConfig.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/gateway/\\E"
+      "pattern":"\\Qcom/elpsykongroo/services/elasticsearch/config/VaultTemplateConfig.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/FeginConfig.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/services/elasticsearch/config/\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/RequestConfig$Header.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/services/elasticsearch/controller/SearchController.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/RequestConfig$Limit.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/services/elasticsearch/service/SearchService.class\\E"
     }, 
     {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/RequestConfig$Path.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/RequestConfig$Record.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/RequestConfig$Token.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/RequestConfig.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/SecurityConfig.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/TomcatConfig.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/TraceConfig.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/VaultTemplateConfig.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/config/WebConfig.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/controller/AccessRecordController.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/controller/AuthController.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/controller/IPManagerController.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/controller/MessageController.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/controller/RedisController.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/controller/StorageController.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/controller/UserController.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/controller/external/PublicController.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/filter/ThrottlingFilter.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/interceptor/CustomOpaqueTokenIntrospector.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/service/AccessRecordService.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/service/IPManagerService.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/service/MessageService.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/service/impl/AccessRecordServiceImpl.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/service/impl/IPMangerServiceImpl.class\\E"
-    }, 
-    {
-      "pattern":"\\Qcom/elpsykongroo/gateway/service/impl/MessageServiceImpl.class\\E"
-    }, 
-    {
-      "pattern":"\\Qjakarta/servlet/Filter.class\\E"
+      "pattern":"\\Qcom/elpsykongroo/services/elasticsearch/service/impl/SearchServiceImpl.class\\E"
     }, 
     {
       "pattern":"\\Qmozilla/public-suffix-list.txt\\E"
@@ -192,6 +99,12 @@
     }, 
     {
       "pattern":"\\Qorg/apache/hc/client5/version.properties\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/apache/http/nio/client/version.properties\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/elasticsearch/client/version.properties\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/aot/hint/annotation/Reflective.class\\E"
@@ -221,9 +134,6 @@
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/availability/AvailabilityHealthContributorAutoConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/availability/AvailabilityProbesAutoConfiguration$ProbesCondition.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/availability/AvailabilityProbesAutoConfiguration.class\\E"
     }, 
     {
@@ -246,6 +156,12 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/context/properties/ConfigurationPropertiesReportEndpointAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/data/elasticsearch/ElasticsearchReactiveHealthContributorAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/elasticsearch/ElasticsearchRestHealthContributorAutoConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/endpoint/EndpointAutoConfiguration.class\\E"
@@ -288,6 +204,18 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/env/EnvironmentEndpointAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/health/AbstractCompositeHealthContributorConfiguration$ReflectionIndicatorFactory.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/health/AbstractCompositeHealthContributorConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/health/CompositeHealthContributorConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/health/CompositeReactiveHealthContributorConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/health/ConditionalOnEnabledHealthIndicator.class\\E"
@@ -407,16 +335,10 @@
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/cache/CacheMetricsRegistrarConfiguration.class\\E"
     }, 
     {
+      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/data/RepositoryMetricsAutoConfiguration.class\\E"
+    }, 
+    {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/export/ConditionalOnEnabledMetricsExport.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/export/prometheus/PrometheusMetricsExportAutoConfiguration$PrometheusPushGatewayConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/export/prometheus/PrometheusMetricsExportAutoConfiguration$PrometheusScrapeEndpointConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/export/prometheus/PrometheusMetricsExportAutoConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/metrics/export/simple/SimpleMetricsExportAutoConfiguration.class\\E"
@@ -491,16 +413,7 @@
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/scheduling/ScheduledTasksEndpointAutoConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/security/reactive/ReactiveManagementWebSecurityAutoConfiguration.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/security/servlet/ManagementWebSecurityAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/security/servlet/SecurityRequestMatchersManagementContextConfiguration$JerseyRequestMatcherConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/security/servlet/SecurityRequestMatchersManagementContextConfiguration$MvcRequestMatcherConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/security/servlet/SecurityRequestMatchersManagementContextConfiguration.class\\E"
@@ -510,54 +423,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/system/DiskSpaceHealthContributorAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/ConditionalOnEnabledTracing.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/MicrometerTracingAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/OpenTelemetryAutoConfiguration$BaggageConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/OpenTelemetryAutoConfiguration$NoBaggageConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/OpenTelemetryAutoConfiguration$OTelEventPublisher.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/OpenTelemetryAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/prometheus/PrometheusExemplarsAutoConfiguration$LazyTracingSpanContextSupplier.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/prometheus/PrometheusExemplarsAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$BraveConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$OpenTelemetryConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$ReporterConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$RestTemplateSenderConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$SenderConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$UrlConnectionSenderConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/tracing/zipkin/ZipkinConfigurations$WebClientSenderConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/actuate/autoconfigure/web/ManagementContextConfiguration.class\\E"
@@ -692,6 +557,9 @@
       "pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty.class\\E"
     }, 
     {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnSingleCandidate.class\\E"
+    }, 
+    {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/condition/ConditionalOnWebApplication.class\\E"
     }, 
     {
@@ -705,6 +573,72 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/context/PropertyPlaceholderAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/dao/PersistenceExceptionTranslationAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/AbstractRepositoryConfigurationSourceSupport.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/elasticsearch/ElasticsearchDataAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/elasticsearch/ElasticsearchDataConfiguration$BaseConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/elasticsearch/ElasticsearchDataConfiguration$JavaClientConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/elasticsearch/ElasticsearchDataConfiguration$ReactiveRestClientConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/elasticsearch/ElasticsearchRepositoriesAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/elasticsearch/ElasticsearchRepositoriesRegistrar.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/elasticsearch/ReactiveElasticsearchRepositoriesAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/elasticsearch/ReactiveElasticsearchRepositoriesRegistrar.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/data/web/SpringDataWebAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchClientAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchClientConfigurations$ElasticsearchClientConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchClientConfigurations$ElasticsearchTransportConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchClientConfigurations$JacksonJsonpMapperConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchClientConfigurations$JsonbJsonpMapperConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchClientConfigurations$SimpleJsonpMapperConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchRestClientAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchRestClientConfigurations$RestClientBuilderConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchRestClientConfigurations$RestClientConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ElasticsearchRestClientConfigurations$RestClientSnifferConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/elasticsearch/ReactiveElasticsearchClientAutoConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/http/GsonHttpMessageConvertersConfiguration.class\\E"
@@ -800,69 +734,6 @@
       "pattern":"\\Qorg/springframework/boot/autoconfigure/security/DefaultWebSecurityCondition.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/SecurityDataConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/oauth2/resource/reactive/ReactiveOAuth2ResourceServerAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerJwtConfiguration$JwtDecoderConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerJwtConfiguration$OAuth2SecurityFilterChainConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerOpaqueTokenConfiguration$OAuth2SecurityFilterChainConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/oauth2/resource/servlet/OAuth2ResourceServerOpaqueTokenConfiguration$OpaqueTokenIntrospectionClientConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/oauth2/resource/servlet/Oauth2ResourceServerConfiguration$JwtConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/oauth2/resource/servlet/Oauth2ResourceServerConfiguration$OpaqueTokenConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/reactive/ReactiveSecurityAutoConfiguration$EnableWebFluxSecurityConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/reactive/ReactiveSecurityAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/reactive/ReactiveUserDetailsServiceAutoConfiguration$ReactiveUserDetailsServiceCondition$RSocketSecurityEnabledCondition.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/reactive/ReactiveUserDetailsServiceAutoConfiguration$ReactiveUserDetailsServiceCondition$ReactiveWebApplicationCondition.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/reactive/ReactiveUserDetailsServiceAutoConfiguration$ReactiveUserDetailsServiceCondition.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/reactive/ReactiveUserDetailsServiceAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/servlet/SecurityAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/servlet/SecurityFilterAutoConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/servlet/SpringBootWebSecurityConfiguration$SecurityFilterChainConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/servlet/SpringBootWebSecurityConfiguration$WebSecurityEnablerConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/servlet/SpringBootWebSecurityConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/boot/autoconfigure/security/servlet/UserDetailsServiceAutoConfiguration.class\\E"
-    }, 
-    {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/sql/init/DataSourceInitializationConfiguration.class\\E"
     }, 
     {
@@ -885,6 +756,21 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/task/TaskSchedulingAutoConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$EnableTransactionManagementConfiguration$CglibAutoProxyConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$EnableTransactionManagementConfiguration$JdkDynamicAutoProxyConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$EnableTransactionManagementConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration$TransactionTemplateConfiguration.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/boot/autoconfigure/transaction/TransactionAutoConfiguration.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/boot/autoconfigure/web/client/RestTemplateAutoConfiguration$NotReactiveWebApplicationCondition$ReactiveWebApplication.class\\E"
@@ -1079,6 +965,12 @@
       "pattern":"\\Qorg/springframework/context/ResourceLoaderAware.class\\E"
     }, 
     {
+      "pattern":"\\Qorg/springframework/context/annotation/AdviceModeImportSelector.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/context/annotation/AutoProxyRegistrar.class\\E"
+    }, 
+    {
       "pattern":"\\Qorg/springframework/context/annotation/Conditional.class\\E"
     }, 
     {
@@ -1109,73 +1001,61 @@
       "pattern":"\\Qorg/springframework/core/annotation/Order.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/authentication/configuration/AuthenticationConfiguration$AuthenticationManagerDelegator.class\\E"
+      "pattern":"\\Qorg/springframework/data/elasticsearch/client/elc/ElasticsearchConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/authentication/configuration/AuthenticationConfiguration$DefaultPasswordEncoderAuthenticationManagerBuilder.class\\E"
+      "pattern":"\\Qorg/springframework/data/elasticsearch/config/ElasticsearchConfigurationSupport.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/authentication/configuration/AuthenticationConfiguration$EnableGlobalAuthenticationAutowiredConfigurer.class\\E"
+      "pattern":"\\Qorg/springframework/data/elasticsearch/repository/config/ElasticsearchRepositoriesRegistrar.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/authentication/configuration/AuthenticationConfiguration$LazyPasswordEncoder.class\\E"
+      "pattern":"\\Qorg/springframework/data/elasticsearch/repository/config/EnableElasticsearchRepositories.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/authentication/configuration/AuthenticationConfiguration.class\\E"
+      "pattern":"\\Qorg/springframework/data/repository/config/RepositoryBeanDefinitionRegistrarSupport.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/authentication/configuration/EnableGlobalAuthentication.class\\E"
+      "pattern":"\\Qorg/springframework/data/web/config/EnableSpringDataWebSupport$QuerydslActivator.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/configuration/ObjectPostProcessorConfiguration.class\\E"
+      "pattern":"\\Qorg/springframework/data/web/config/EnableSpringDataWebSupport$SpringDataWebConfigurationImportSelector.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/EnableWebSecurity.class\\E"
+      "pattern":"\\Qorg/springframework/data/web/config/EnableSpringDataWebSupport.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/HttpSecurityConfiguration$DefaultPasswordEncoderAuthenticationManagerBuilder.class\\E"
+      "pattern":"\\Qorg/springframework/data/web/config/ProjectingArgumentResolverRegistrar$ProjectingArgumentResolverBeanPostProcessor.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/HttpSecurityConfiguration$LazyPasswordEncoder.class\\E"
+      "pattern":"\\Qorg/springframework/data/web/config/ProjectingArgumentResolverRegistrar.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/HttpSecurityConfiguration.class\\E"
+      "pattern":"\\Qorg/springframework/data/web/config/SpringDataJacksonConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/OAuth2ImportSelector.class\\E"
+      "pattern":"\\Qorg/springframework/data/web/config/SpringDataJacksonModules.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/SecurityReactorContextConfiguration$LoadingMap.class\\E"
+      "pattern":"\\Qorg/springframework/data/web/config/SpringDataWebConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/SecurityReactorContextConfiguration$SecurityReactorContextSubscriber.class\\E"
+      "pattern":"\\Qorg/springframework/transaction/annotation/AbstractTransactionManagementConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/SecurityReactorContextConfiguration$SecurityReactorContextSubscriberRegistrar.class\\E"
+      "pattern":"\\Qorg/springframework/transaction/annotation/EnableTransactionManagement.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/SecurityReactorContextConfiguration.class\\E"
+      "pattern":"\\Qorg/springframework/transaction/annotation/ProxyTransactionManagementConfiguration.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/SpringWebMvcImportSelector.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/WebMvcSecurityConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/WebSecurityConfiguration$AnnotationAwareOrderComparator.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/security/config/annotation/web/configuration/WebSecurityConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/security/oauth2/server/resource/introspection/OpaqueTokenIntrospector.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/vault/annotation/VaultPropertySource.class\\E"
+      "pattern":"\\Qorg/springframework/transaction/annotation/TransactionManagementConfigurationSelector.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/vault/annotation/VaultPropertySourceRegistrar.class\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/springframework/vault/annotation/VaultPropertySources.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/vault/config/AbstractVaultConfiguration$ClientFactoryWrapper.class\\E"
@@ -1185,12 +1065,6 @@
     }, 
     {
       "pattern":"\\Qorg/springframework/vault/config/AbstractVaultConfiguration.class\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/vault/support/\\E"
-    }, 
-    {
-      "pattern":"\\Qorg/springframework/web/bind/annotation/CrossOrigin.class\\E"
     }, 
     {
       "pattern":"\\Qorg/springframework/web/bind/annotation/Mapping.class\\E"
@@ -1220,13 +1094,16 @@
       "pattern":"\\Qorg/springframework/web/servlet/config/annotation/WebMvcConfigurer.class\\E"
     }, 
     {
-      "pattern":"\\Qorg/springframework/web/util/HtmlCharacterEntityReferences.properties\\E"
+      "pattern":"\\Qversions.properties\\E"
     }
   ]},
   "bundles":[
     {
       "name":"jakarta.servlet.LocalStrings",
-      "locales":["und"]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"jakarta.servlet.http.LocalStrings",
@@ -1244,7 +1121,10 @@
     }, 
     {
       "name":"org.apache.catalina.authenticator.jaspic.LocalStrings",
-      "locales":["und"]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"org.apache.catalina.connector.LocalStrings",
@@ -1353,10 +1233,6 @@
     }, 
     {
       "name":"org.apache.coyote.http11.filters.LocalStrings",
-      "locales":["und"]
-    }, 
-    {
-      "name":"org.apache.coyote.http2.LocalStrings",
       "locales":[
         "", 
         "und"
@@ -1406,7 +1282,10 @@
     }, 
     {
       "name":"org.apache.tomcat.util.http.parser.LocalStrings",
-      "locales":["und"]
+      "locales":[
+        "", 
+        "und"
+      ]
     }, 
     {
       "name":"org.apache.tomcat.util.modeler.LocalStrings",
@@ -1417,20 +1296,6 @@
     }, 
     {
       "name":"org.apache.tomcat.util.net.LocalStrings",
-      "locales":[
-        "", 
-        "und"
-      ]
-    }, 
-    {
-      "name":"org.apache.tomcat.util.net.jsse.LocalStrings",
-      "locales":[
-        "", 
-        "und"
-      ]
-    }, 
-    {
-      "name":"org.apache.tomcat.util.net.openssl.ciphers.LocalStrings",
       "locales":[
         "", 
         "und"

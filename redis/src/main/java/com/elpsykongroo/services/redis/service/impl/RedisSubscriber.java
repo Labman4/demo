@@ -50,12 +50,15 @@ public class RedisSubscriber implements MessageListener {
         com.elpsykongroo.base.domain.message.Message msg = new com.elpsykongroo.base.domain.message.Message();
         msg.setValue(message.toString());
         RequestEntity requestEntity = RequestEntity.post(callback).headers(headers).body(msg);
-        count.set(0);
-        while (restTemplate.exchange(requestEntity, String.class).getStatusCode().is2xxSuccessful()) {
+        while (!restTemplate.exchange(requestEntity, String.class).getStatusCode().is2xxSuccessful()) {
+            if (count.get() != null) {
+                count.set(count.get() + 1);
+            } else {
+                count.set(0);
+            }
             if (count.get() < 3 ) {
                 restTemplate.exchange(requestEntity, String.class);
             }
-            count.set(count.get() + 1);
         }
     }
 
