@@ -16,14 +16,26 @@
 
 package com.elpsykongroo.base.utils;
 
+import com.elpsykongroo.base.config.RequestConfig;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
-public final class IPUtils {
+@Slf4j
+public class IPUtils {
 
     private IPUtils() {
         throw new IllegalStateException("Utility class");
+    }
+
+    private RequestConfig requestConfig;
+
+    public IPUtils(RequestConfig requestConfig) {
+        this.requestConfig = requestConfig;
     }
 
     public static boolean validate(String ip) {
@@ -60,5 +72,37 @@ public final class IPUtils {
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String accessIP(HttpServletRequest request, String headerType) {
+        String[] headers = splitHeader(headerType);
+        String ip = getIp(request, headers);
+        if (log.isDebugEnabled()) {
+            log.debug("IPUtils:{}", ip);
+        }
+        return ip;
+    }
+
+    private String[] splitHeader(String headerType) {
+        RequestConfig.Header header = requestConfig.getHeader();
+        switch(headerType){
+            case "true":
+                return header.getBlack().split(",");
+            case "false":
+                return header.getWhite().split(",");
+            case "record":
+                return header.getRecord().split(",");
+            default:
+                return header.getIp().split(",");
+        }
+    }
+
+    private String getIp(HttpServletRequest request, String[] headers) {
+        for (String head: headers) {
+            if (StringUtils.isNotBlank(request.getHeader(head))) {
+                return request.getHeader(head);
+            }
+        }
+        return request.getRemoteAddr();
     }
 }

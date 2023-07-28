@@ -20,7 +20,6 @@ import com.elpsykongroo.auth.service.custom.EmailService;
 import com.elpsykongroo.auth.service.custom.LoginService;
 
 import com.elpsykongroo.base.common.CommonResponse;
-import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.GatewayService;
 import com.elpsykongroo.base.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,11 +34,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.time.Instant;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @CrossOrigin(originPatterns = "*", allowCredentials = "true")
@@ -60,9 +54,7 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseBody
     public String newUserRegistration(@RequestParam String username,
-                                      @RequestParam String display,
-                                      HttpServletRequest request) {
-        saveRecord(request);
+                                      @RequestParam String display) {
         return CommonResponse.string(loginService.register(username, display));
     }
 
@@ -70,9 +62,7 @@ public class AuthController {
     @ResponseBody
     public String finishRegistration(@RequestParam String credential,
                                      @RequestParam String username,
-                                     @RequestParam String credname,
-                                     HttpServletRequest request) {
-        saveRecord(request);
+                                     @RequestParam String credname) {
         return CommonResponse.string(loginService.saveAuth(credential, username, credname));
     }
 
@@ -80,7 +70,6 @@ public class AuthController {
     @ResponseBody
     public String startLogin(@RequestParam String username,
                              HttpServletRequest request) {
-        saveRecord(request);
         return CommonResponse.string(loginService.login(username, request));
     }
 
@@ -90,25 +79,21 @@ public class AuthController {
                                  @RequestParam String idToken,
                                  HttpServletRequest request,
                                  HttpServletResponse response) {
-        saveRecord(request);
         return CommonResponse.string(loginService.loginWithToken(token, idToken, request, response));
     }
 
     @GetMapping("/qrcode")
-    public String generateQrcode(HttpServletRequest request) {
-        saveRecord(request);
+    public String generateQrcode() {
         return CommonResponse.string(loginService.qrcode());
     }
 
     @GetMapping("/login/qrcode")
-    public String setToken(@RequestParam String text, HttpServletRequest request) {
-        saveRecord(request);
+    public String setToken(@RequestParam String text) {
         return loginService.setToken(text);
     }
 
     @PostMapping("/access")
-    public String getToken(@RequestParam String key, HttpServletRequest request) {
-        saveRecord(request);
+    public String getToken(@RequestParam String key) {
         return CommonResponse.string(redisService.getToken(key));
     }
 
@@ -117,65 +102,32 @@ public class AuthController {
     public String finishLogin(@RequestParam String credential,
                               @RequestParam String username,
                               HttpServletRequest request, HttpServletResponse response) {
-        saveRecord(request);
         return CommonResponse.string(loginService.handleLogin(credential, username, request, response));
     }
 
     @GetMapping("/tmp/{text}")
     public ModelAndView tmpLogin(@PathVariable String text,
                                  HttpServletRequest request, HttpServletResponse response) {
-        saveRecord(request);
         return new ModelAndView(loginService.tmpLogin(text, request, response));
     }
 
     @PostMapping("/authenticator/add")
-    public String addAuthenticator(@RequestParam String username, HttpServletRequest request) {
-        saveRecord(request);
+    public String addAuthenticator(@RequestParam String username) {
         return CommonResponse.string(loginService.addAuthenticator(username));
     }
 
     @PostMapping("/email/tmp")
-    public void tmpLogin(@RequestParam String username,
-                         HttpServletRequest request) {
-        saveRecord(request);
+    public void tmpLogin(@RequestParam String username) {
         emailService.sendTmpLoginCert(username);
     }
 
     @GetMapping("/email/verify/{text}")
-    public String emailVerify(@PathVariable String text,
-                              HttpServletRequest request) {
-        saveRecord(request);
+    public String emailVerify(@PathVariable String text) {
         return CommonResponse.string(emailService.verify(text));
     }
 
     @PostMapping("/email/verify")
-    public void sendVerify(@RequestParam String username,
-                           HttpServletRequest request) {
-        saveRecord(request);
+    public void sendVerify(@RequestParam String username) {
         emailService.sendVerify(username);
     }
-
-    private void saveRecord(HttpServletRequest request) {
-        try {
-            Map<String, String> result = new HashMap<>();
-            Enumeration<String> headerNames = request.getHeaderNames();
-            while (headerNames.hasMoreElements()) {
-                String key = headerNames.nextElement();
-                String value = request.getHeader(key);
-                result.put(key, value);
-            }
-            AccessRecord record = new AccessRecord();
-            record.setSourceIP(gatewayService.getIP());
-            record.setRequestHeader(result);
-            record.setAccessPath(request.getRequestURI());
-            record.setTimestamp(Instant.now().toString());
-            record.setUserAgent(request.getHeader("user-agent"));
-            gatewayService.saveRecord(record);
-        } catch (Exception e) {
-            if (log.isDebugEnabled()) {
-                log.debug("saveRecord error:{}", e.getMessage());
-            }
-        }
-    }
-
 }

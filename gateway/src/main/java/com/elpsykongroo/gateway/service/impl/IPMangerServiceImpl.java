@@ -33,9 +33,9 @@ import com.elpsykongroo.base.service.SearchService;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 
-import com.elpsykongroo.gateway.config.RequestConfig;
-import com.elpsykongroo.gateway.config.RequestConfig.Header;
-import com.elpsykongroo.gateway.config.RequestConfig.Record.Exclude;
+import com.elpsykongroo.base.config.RequestConfig;
+import com.elpsykongroo.base.config.RequestConfig.Header;
+import com.elpsykongroo.base.config.RequestConfig.Record.Exclude;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -312,10 +312,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	@Override
-	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack){
+	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack, String ip){
 		boolean flag = false;
 		try {
-			String ip = accessIP(request, isBlack);
+			if (StringUtils.isBlank(ip)) {
+				ip = accessIP(request, isBlack);
+			}
 			if(log.isWarnEnabled()) {
 				log.warn("blackOrWhiteList ip:{}, black:{}", ip, isBlack);
 			}
@@ -323,7 +325,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if(log.isWarnEnabled()) {
 					log.warn("ignore private ip:{}", ip);
 				}
-				flag = true;
+				return true;
 			}
 			String list = "";
 			try {

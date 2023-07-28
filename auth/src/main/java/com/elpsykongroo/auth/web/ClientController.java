@@ -40,29 +40,29 @@ public class ClientController {
     private ClientRegistrationService clientRegistrationService;
 
     @PutMapping("/register")
-    public String addClientRegistry (@RequestBody ClientRegistry client) {
+    public String addClientRegistry(@RequestBody ClientRegistry client) {
         return CommonResponse.string(clientRegistrationService.add(client));
     }
     @DeleteMapping("/register/{registerId}")
-    public String deleteClientRegistry (@PathVariable String registerId) {
+    public String deleteClientRegistry(@PathVariable String registerId) {
         return CommonResponse.string(clientRegistrationService.delete(registerId));
     }
     @GetMapping("/register")
-    public String listClientRegistry () {
+    public String listClientRegistry() {
         return CommonResponse.data(clientRegistrationService.findAll());
     }
     @PutMapping
-    public String addClient (@RequestBody Client client) {
+    public String addClient(@RequestBody Client client) {
         return CommonResponse.string(clientService.add(client));
     }
 
     @DeleteMapping("/{clientId}")
-    public String deleteClient (@PathVariable String clientId) {
+    public String deleteClient(@PathVariable String clientId) {
         return CommonResponse.string(clientService.delete(clientId));
     }
 
     @GetMapping
-    public String listClient () {
+    public String listClient() {
         return CommonResponse.data(clientService.findAll());
     }
 }

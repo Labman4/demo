@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.filter;
+package com.elpsykongroo.base.optional.filter;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-
+import com.elpsykongroo.base.config.RequestConfig;
+import com.elpsykongroo.base.service.GatewayService;
+import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.utils.PathUtils;
+import com.elpsykongroo.base.utils.RecordUtils;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.ConsumptionProbe;
+import io.github.bucket4j.Refill;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,40 +33,25 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
-import com.elpsykongroo.base.config.RequestConfig;
-import com.elpsykongroo.gateway.service.AccessRecordService;
-import com.elpsykongroo.gateway.service.IPManagerService;
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.ConsumptionProbe;
-import io.github.bucket4j.Refill;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
-@Component("ThrottlingFilter")
+import java.io.IOException;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 @Slf4j
 public class ThrottlingFilter implements Filter {
 	private ThreadLocal<String> errorMsg = new ThreadLocal<>();
-	@Autowired
+
 	private RequestConfig requestConfig;
 
-	@Autowired
-	private AccessRecordService accessRecordService;
+	private GatewayService gatewayService;
 
-	@Autowired
-	private IPManagerService ipMangerService;
-
-	public ThrottlingFilter(RequestConfig requestConfig,
-							AccessRecordService accessRecordService,
-							IPManagerService ipMangerService) {
+	public ThrottlingFilter(RequestConfig requestConfig, GatewayService gatewayService) {
 		this.requestConfig = requestConfig;
-		this.accessRecordService = accessRecordService;
-		this.ipMangerService = ipMangerService;
+		this.gatewayService =gatewayService;
 	}
 
 	private Bucket createNewBucket() {
@@ -87,8 +76,8 @@ public class ThrottlingFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-		if (log.isTraceEnabled()) {
-			log.trace("request filter path:{}", requestConfig.getPath());
+		if (log.isDebugEnabled()) {
+			log.debug("request filter path:{}", requestConfig.getPath());
 		}
 		HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 		HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
@@ -97,7 +86,9 @@ public class ThrottlingFilter implements Filter {
 		errorMsg.set("");
 		String limitPath = requestConfig.getPath().getLimit();
 		if (StringUtils.isNotEmpty(limitPath) && PathUtils.beginWithPath(limitPath, requestUri)) {
-			accessRecordService.saveAccessRecord(httpRequest);
+			IPUtils ipUtils = new IPUtils(requestConfig);
+			RecordUtils recordUtils = new RecordUtils(gatewayService);
+			recordUtils.saveRecord(httpRequest, ipUtils.accessIP(httpRequest, ""));
 			String filterPath = requestConfig.getPath().getFilter();
 			String excludePath = requestConfig.getPath().getExclude();
 			if (limitByBucket("global", httpResponse, session)) {
@@ -117,26 +108,34 @@ public class ThrottlingFilter implements Filter {
 		}
 	}
 
-	private boolean filterPath(HttpServletRequest httpRequest, HttpServletResponse httpResponse, HttpSession session, String requestUri){
-		if (limitByBucket("", httpResponse, session)) {
-			if (blackOrWhite(httpRequest, httpResponse)) {
-				return isPublic(requestUri, httpRequest, httpResponse);
+	private boolean filterPath(HttpServletRequest request, HttpServletResponse response, HttpSession session, String requestUri){
+		try {
+			if (limitByBucket("", response, session)) {
+				IPUtils ipUtils = new IPUtils(requestConfig);
+				if (blackOrWhite(request, response, ipUtils)) {
+					return isPublic(requestUri, request, response, ipUtils);
+				}
+			}
+		} catch (Exception e) {
+			if (log.isDebugEnabled()) {
+				log.error("blackOrWhite error:{}", e.getMessage());
 			}
 		}
 		return false;
 	}
 
-	private boolean blackOrWhite(HttpServletRequest httpRequest, HttpServletResponse httpResponse){
-		if (ipMangerService.blackOrWhiteList(httpRequest, "false", "")) {
-			return true;
-		} else if (!ipMangerService.blackOrWhiteList(httpRequest, "true", "")) {
-			return true;
-		} else {
-			errorMsg.set("yours IP is our blacklist");
-			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
-			httpResponse.setContentType("text/plain");
-			return false;
-		}
+	private boolean blackOrWhite(HttpServletRequest request, HttpServletResponse httpResponse, IPUtils ipUtils){
+			if ("true".equals(gatewayService.blackOrWhite("false", ipUtils.accessIP(request, "false")))) {
+				return true;
+			} else if (!"true".equals(gatewayService.blackOrWhite("true", ipUtils.accessIP(request, "true")))) {
+				return true;
+			} else {
+				errorMsg.set("yours IP is our blacklist");
+				httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
+				httpResponse.setContentType("text/plain");
+				return false;
+			}
+
 	}
 
 	private boolean limitByBucket(String scope, HttpServletResponse httpResponse, HttpSession session) {
@@ -174,9 +173,9 @@ public class ThrottlingFilter implements Filter {
 		}
 	}
 
-	private boolean isPublic(String requestUri, ServletRequest request, HttpServletResponse servletResponse) {
+	private boolean isPublic(String requestUri, HttpServletRequest request, HttpServletResponse servletResponse, IPUtils ipUtils) {
 		if (!PathUtils.beginWithPath(requestConfig.getPath().getNonPrivate(), requestUri)) {
-			if (!ipMangerService.blackOrWhiteList((HttpServletRequest) request, "false", "")) {
+			if (!"true".equals(gatewayService.blackOrWhite( "false", ipUtils.accessIP(request, "false")))) {
 				servletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 				servletResponse.setContentType("text/plain");
 				errorMsg.set("no access");

@@ -23,7 +23,7 @@ import feign.RequestLine;
 
 public interface GatewayService {
     @RequestLine("PUT /message/token?message={message}")
-    void receiveMessage (@Param String message);
+    void receiveMessage(@Param String message);
 
     @RequestLine("GET /public/ip")
     String getIP();
@@ -34,4 +34,6 @@ public interface GatewayService {
     })
     void saveRecord(AccessRecord record);
 
+    @RequestLine("POST /ip?black={black}&ip={ip}")
+    String blackOrWhite(@Param String black, @Param String ip);
 }

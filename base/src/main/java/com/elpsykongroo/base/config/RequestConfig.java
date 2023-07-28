@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.config;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+package com.elpsykongroo.base.config;
 
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "request")

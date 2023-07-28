@@ -31,8 +31,8 @@ import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.SearchService;
 import jakarta.servlet.http.HttpServletRequest;
 
-import com.elpsykongroo.gateway.config.RequestConfig;
-import com.elpsykongroo.gateway.config.RequestConfig.Record.Exclude;
+import com.elpsykongroo.base.config.RequestConfig;
+import com.elpsykongroo.base.config.RequestConfig.Record.Exclude;
 import com.elpsykongroo.gateway.service.AccessRecordService;
 import com.elpsykongroo.gateway.service.IPManagerService;
 

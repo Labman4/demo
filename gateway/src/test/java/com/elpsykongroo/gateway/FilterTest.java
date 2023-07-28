@@ -16,7 +16,7 @@
 
 package com.elpsykongroo.gateway;
 
-import com.elpsykongroo.gateway.config.RequestConfig;
+import com.elpsykongroo.base.config.RequestConfig;
 import com.elpsykongroo.gateway.filter.ThrottlingFilter;
 import com.elpsykongroo.gateway.service.AccessRecordService;
 import com.elpsykongroo.gateway.service.IPManagerService;

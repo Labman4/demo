@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,7 +62,7 @@ public class IPManagerController {
 							 @RequestParam String pageSize,
 							 @RequestParam String order) {
 		if (log.isDebugEnabled()) {
-			log.debug("black:{}, pageNumber:{}, pageSize:{}", black, pageNumber, pageSize);
+			log.debug("ipPageList black:{}, pageNumber:{}, pageSize:{}", black, pageNumber, pageSize);
 		}
 		return CommonResponse.string(ipManagerService.list(black, pageNumber, pageSize, order));
 	}
@@ -70,11 +71,19 @@ public class IPManagerController {
 	public String patch(@RequestParam String address, @RequestParam String black, @RequestParam("id") String ids) {
 		try {
 			if (log.isDebugEnabled()) {
-				log.debug("black:{}, address:{}, ids:{}", black, address, ids);
+				log.debug("ip patch black:{}, address:{}, ids:{}", black, address, ids);
 			}
 			return ipManagerService.patch(address, black, ids);
 		} catch (Exception e) {
 			return CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
 		}
+	}
+
+	@PostMapping
+	public String blackOrWhiteList(@RequestParam String black, @RequestParam String ip) {
+		if (log.isDebugEnabled()) {
+			log.debug("blackOrWhite black:{}, ip:{}", black, ip);
+		}
+		return CommonResponse.data(ipManagerService.blackOrWhiteList(null, black, ip));
 	}
 }
