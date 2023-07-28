@@ -38,34 +38,29 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{username}")
-    public String user(
-            @PathVariable String username) {
+    public String user(@PathVariable String username) {
         return CommonResponse.string(userService.loadUserByUsername(username).toString());
     }
 
     @GetMapping
-    public String userList(
-            @RequestParam String pageNumber,
-            @RequestParam String pageSize,
-            @RequestParam String order) {
+    public String userList(@RequestParam String pageNumber,
+                           @RequestParam String pageSize,
+                           @RequestParam String order) {
         return CommonResponse.string(userService.list(pageNumber, pageSize, order).toString());
     }
 
     @GetMapping("/info/{username}")
-    public String loadUserInfo(
-            @PathVariable String username) {
+    public String loadUserInfo(@PathVariable String username) {
         return CommonResponse.string(userService.loadUserInfo(username));
     }
 
     @PostMapping
-    public String updateUser(
-            @RequestBody User user) {
+    public String updateUser(@RequestBody User user) {
         return CommonResponse.data(userService.updateUser(user));
     }
 
     @PostMapping("/info")
-    public String updateUserInfo(
-            @RequestBody UserInfo userInfo) {
+    public String updateUserInfo(@RequestBody UserInfo userInfo) {
         return CommonResponse.data(userService.updateUserInfo(userInfo));
     }
 

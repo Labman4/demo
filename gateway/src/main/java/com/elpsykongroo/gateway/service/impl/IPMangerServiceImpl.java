@@ -48,7 +48,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class IPMangerServiceImpl implements IPManagerService {
-	@Value("${ENV:dev}")
+	@Value("${REDIS_KEY_PREFIX:dev}")
 	private String env;
 
 	@Value("${service.whiteDomain:ip.elpsykongroo.com,localhost}")

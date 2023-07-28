@@ -16,6 +16,8 @@
 
 package com.elpsykongroo.base.service;
 
+import com.elpsykongroo.base.domain.search.repo.AccessRecord;
+import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
 
@@ -25,4 +27,11 @@ public interface GatewayService {
 
     @RequestLine("GET /public/ip")
     String getIP();
+
+    @RequestLine("PUT /record")
+    @Headers({
+            "Content-Type: application/json"
+    })
+    void saveRecord(AccessRecord record);
+
 }

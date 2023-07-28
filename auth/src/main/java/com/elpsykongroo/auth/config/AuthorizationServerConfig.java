@@ -44,10 +44,13 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
@@ -187,6 +190,18 @@ public class AuthorizationServerConfig {
 		DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientRepository);
 		authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
 		return authorizedClientManager;
+	}
+
+	@Bean
+	public ClientRegistrationRepository clientRegistrationRepository() {
+		ClientRegistration clientRegistration = ClientRegistration
+				.withRegistrationId(serviceConfig.getOAuth2().getRegisterId())
+				.clientId(serviceConfig.getOAuth2().getClientId())
+				.clientSecret(serviceConfig.getOAuth2().getClientSecret())
+				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+				.tokenUri(serviceConfig.getOAuth2().getTokenUri())
+				.build();
+		return new InMemoryClientRegistrationRepository(clientRegistration);
 	}
 
 	@Bean

@@ -60,8 +60,7 @@ public class AuthorityController {
     }
 
     @GetMapping
-    public String authorityList(
-    ) {
+    public String authorityList() {
         return CommonResponse.data(authorityService.authorityList());
     }
 
@@ -71,9 +70,7 @@ public class AuthorityController {
     }
 
     @PutMapping
-    public String addAuthority(
-            @RequestParam String name
-    ) {
+    public String addAuthority(@RequestParam String name) {
         return  CommonResponse.string(authorityService.addAuthority(name));
     }
 }

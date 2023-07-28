@@ -18,6 +18,7 @@ package com.elpsykongroo.gateway.service;
 
 import java.net.UnknownHostException;
 
+import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
@@ -32,5 +33,7 @@ public interface AccessRecordService {
 	String deleteRecord(String param) throws UnknownHostException;
 
 	void saveAccessRecord(HttpServletRequest request);
+
+	void saveRecord(AccessRecord record);
 
 }

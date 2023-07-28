@@ -22,7 +22,7 @@ import feign.RequestLine;
 public interface RedisService {
 
     @RequestLine("PUT /redis/key?key={key}&value={value}&duration={duration}")
-    void set(@Param String key , @Param String value, @Param String duration);
+    void set(@Param String key, @Param String value, @Param String duration);
 
     @RequestLine("GET /redis/key/{key}")
     String get(@Param String key);

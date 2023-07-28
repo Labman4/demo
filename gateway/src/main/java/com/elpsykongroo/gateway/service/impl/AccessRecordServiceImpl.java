@@ -79,7 +79,13 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 					result.put(key, value);
 				}
 				ip = ipMangerService.accessIP(request, "ip");
-				saveRecord(request, ip, result);
+				AccessRecord record = new AccessRecord();
+				record.setRequestHeader(result);
+				record.setAccessPath(request.getRequestURI());
+				record.setSourceIP(ip);
+				record.setTimestamp(Instant.now().toString());
+				record.setUserAgent(request.getHeader("user-agent"));
+				saveRecord(record);
 				if (log.isDebugEnabled()) {
 					log.debug("request header------------{} ", result);
 				}
@@ -87,14 +93,9 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		}
 	}
 
-	private void saveRecord(HttpServletRequest request, String ip, Map<String, String> result) {
+	@Override
+	public void saveRecord(AccessRecord record) {
 		try {
-			AccessRecord record = new AccessRecord();
-			record.setRequestHeader(result);
-			record.setAccessPath(request.getRequestURI());
-			record.setSourceIP(ip);
-			record.setTimestamp(Instant.now().toString());
-			record.setUserAgent(request.getHeader("user-agent"));
 			QueryParam queryParam = new QueryParam();
 			queryParam.setIndex("access_record");
 			queryParam.setOperation("save");

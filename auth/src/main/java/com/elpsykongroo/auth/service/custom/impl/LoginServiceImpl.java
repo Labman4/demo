@@ -98,8 +98,7 @@ public class LoginServiceImpl implements LoginService {
 
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
-    private final SecurityContextRepository securityContextRepository =
-            new HttpSessionSecurityContextRepository();
+    private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     @Autowired
     private RelyingParty relyingParty;
 

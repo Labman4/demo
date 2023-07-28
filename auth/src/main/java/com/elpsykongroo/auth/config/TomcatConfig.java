@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 the original author or authors.
+ * Copyright 2022-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,24 @@
 
 package com.elpsykongroo.auth.config;
 
-import com.elpsykongroo.base.config.ServiceConfig;
-import com.elpsykongroo.base.service.RedisService;
-import feign.Feign;
-import feign.codec.Decoder;
-import feign.codec.Encoder;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.catalina.connector.Connector;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-public class FeginConfig {
-    @Autowired
-    private ServiceConfig serviceConfig;
+public class TomcatConfig {
     @Bean
-    public RedisService redisService() {
-        return Feign.builder()
-                .decoder(new Decoder.Default())
-                .encoder(new Encoder.Default())
-                .target(RedisService.class, serviceConfig.getUrl().getRedis());
+    public TomcatServletWebServerFactory servletContainer() {
+        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
+        tomcat.addAdditionalTomcatConnectors(createStandardConnector());
+        return tomcat;
+    }
+    private Connector createStandardConnector() {
+        Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
+        connector.setScheme("http");
+        connector.setPort(9001);
+        connector.setSecure(false);
+        return connector;
     }
 }

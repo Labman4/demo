@@ -17,6 +17,7 @@
 package com.elpsykongroo.gateway.controller;
 
 import com.elpsykongroo.base.common.CommonResponse;
+import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.gateway.service.AccessRecordService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +28,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,7 +54,7 @@ public class AccessRecordController {
 	@DeleteMapping("{param}")
 	public String deleteRecord(@PathVariable String param) {
 		if (log.isDebugEnabled()) {
-			log.debug("delete accessRecord:{}", param);
+			log.debug("deleteRecord:{}", param);
 		}
 		try {
 			return accessRecordService.deleteRecord(param);
@@ -70,5 +73,13 @@ public class AccessRecordController {
 		} catch (Exception e) {
 			return CommonResponse.error(HttpStatus.SC_CLIENT_ERROR, e.getMessage());
 		}
+	}
+
+	@PutMapping
+	public void saveRecord(@RequestBody AccessRecord record) {
+		if (log.isDebugEnabled()) {
+			log.debug("saveRecord:{}", record.getSourceIP());
+		}
+		accessRecordService.saveRecord(record);
 	}
 }

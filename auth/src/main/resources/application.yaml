@@ -3,6 +3,10 @@ server:
     session:
       timeout: 3600
   port: 9000
+  ssl:
+    enabled: ${SSL:false}
+    certificate: ${TLS_CERT}
+    certificate-private-key: ${TLS_KEY}
 management:
   endpoint:
     health:

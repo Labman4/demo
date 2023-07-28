@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2022 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,44 +14,39 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.config;
+package com.elpsykongroo.auth.config;
 
+import com.elpsykongroo.auth.interceptor.OAuth2Interceptor;
 import com.elpsykongroo.base.config.ServiceConfig;
-import com.elpsykongroo.base.service.AuthService;
+import com.elpsykongroo.base.service.GatewayService;
 import com.elpsykongroo.base.service.RedisService;
-import com.elpsykongroo.base.service.SearchService;
-import com.elpsykongroo.base.service.StorageService;
-import com.elpsykongroo.gateway.interceptor.AuthorizationInterceptor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.Feign;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
-import feign.codec.StringDecoder;
-import feign.form.spring.SpringFormEncoder;
 import feign.jackson.JacksonEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 
 @Configuration(proxyBeanMethods = false)
-public class FeginConfig {
-//    @Bean
-//    public Contract useFeignAnnotations() {
-//        return new Contract.Default();
-//    }
-
+public class FeignConfig {
     @Autowired
     private ServiceConfig serviceConfig;
 
+    @Autowired
+    private OAuth2AuthorizedClientManager clientManager;
+
     @Bean
-    public AuthService authService() {
+    public GatewayService gatewayService() {
         return Feign.builder()
-                .decoder(new StringDecoder())
+                .decoder(new Decoder.Default())
                 .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
-                .requestInterceptor(new AuthorizationInterceptor())
-                .target(AuthService.class, serviceConfig.getUrl().getAuth());
+                .requestInterceptor(new OAuth2Interceptor(clientManager, serviceConfig))
+                .target(GatewayService.class, serviceConfig.getUrl().getGateway());
     }
 
     @Bean
@@ -60,21 +55,5 @@ public class FeginConfig {
                 .decoder(new Decoder.Default())
                 .encoder(new Encoder.Default())
                 .target(RedisService.class, serviceConfig.getUrl().getRedis());
-    }
-
-    @Bean
-    public SearchService searchService() {
-        return Feign.builder()
-                .decoder(new StringDecoder())
-                .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
-                .target(SearchService.class, serviceConfig.getUrl().getEs());
-    }
-
-    @Bean
-    public StorageService storageService() {
-        return Feign.builder()
-                .decoder(new StringDecoder())
-                .encoder(new SpringFormEncoder(new JacksonEncoder()))
-                .target(StorageService.class, serviceConfig.getUrl().getStorage());
     }
 }

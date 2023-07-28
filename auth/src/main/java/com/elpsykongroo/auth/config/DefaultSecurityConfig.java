@@ -52,16 +52,15 @@ public class DefaultSecurityConfig {
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorize ->
 			 	authorize.requestMatchers(
-								 	"/oauth2/**",
-									"/welcome",
-									"/login/**",
-									"/register",
-								"/actuator/health/**",
+						 		"/oauth2/**",
+								"/login/**",
+								"/welcome",
+								"/register",
+								"/finishAuth",
 								"/email/tmp",
 								"/tmp/**",
 								"/qrcode",
-								"/token/qrcode",
-								"/finishAuth").permitAll()
+								"/actuator/health/**").permitAll()
 						.requestMatchers(HttpMethod.GET,"/email/verify/**").permitAll()
 						.requestMatchers("/auth/user/list").hasAuthority("admin")
 						.requestMatchers("/auth/user/**").authenticated()
