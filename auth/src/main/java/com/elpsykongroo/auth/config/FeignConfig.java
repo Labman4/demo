@@ -44,7 +44,7 @@ public class FeignConfig {
     public GatewayService gatewayService() {
         return Feign.builder()
                 .decoder(new Decoder.Default())
-                .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
+                .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule())))
                 .requestInterceptor(new OAuth2Interceptor(clientManager, serviceConfig))
                 .target(GatewayService.class, serviceConfig.getUrl().getGateway());
     }
