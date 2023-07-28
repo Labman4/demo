@@ -117,7 +117,7 @@ public class ThrottlingFilter implements Filter {
 				}
 			}
 		} catch (Exception e) {
-			if (log.isDebugEnabled()) {
+			if (log.isErrorEnabled()) {
 				log.error("blackOrWhite error:{}", e.getMessage());
 			}
 		}
