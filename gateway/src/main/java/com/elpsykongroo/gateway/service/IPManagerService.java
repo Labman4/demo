@@ -36,8 +36,4 @@ public interface IPManagerService {
 
 	Boolean blackOrWhiteList(HttpServletRequest request, String isBlack, String ip);
 
-	boolean filterByIpOrList(String ip, String accessIP);
-
-	boolean filterByIp(String ip, String accessIP);
-
 }

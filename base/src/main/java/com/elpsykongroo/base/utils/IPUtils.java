@@ -83,7 +83,56 @@ public class IPUtils {
         return ip;
     }
 
-    private String[] splitHeader(String headerType) {
+    public static boolean filterByIpOrList(String ip, String accessIP) {
+        if (StringUtils.isNotEmpty(ip)) {
+            String[] ips = ip.split(",");
+            for (String i: ips) {
+                if(filterByIp(i, accessIP)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean filterByIp(String ip, String accessIP) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(accessIP);
+            if (inetAddress.isSiteLocalAddress()) {
+                if(log.isTraceEnabled()) {
+                    log.trace("ignore private ip");
+                }
+                return inetAddress.isSiteLocalAddress();
+            }
+            if(IPUtils.validateHost(ip)) {
+                InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
+                for (InetAddress addr: inetAddresses) {
+                    if (accessIP.equals(addr.getHostAddress())) {
+                        if(log.isTraceEnabled()) {
+                            log.trace("host: {} match, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
+                        }
+                        return true;
+                    } else {
+                        if(log.isTraceEnabled()) {
+                            log.trace("host: {} mismatch, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
+                        }
+                    }
+                }
+            } else if (accessIP.equals(ip)) {
+                if(log.isTraceEnabled()) {
+                    log.trace("ip match, ip:{}, accessIp:{}", ip, accessIP);
+                }
+                return true;
+            }
+        } catch (UnknownHostException e) {
+            if (log.isErrorEnabled()) {
+                log.error("UnknownHostException");
+            }
+        }
+        return false;
+    }
+
+    public String[] splitHeader(String headerType) {
         RequestConfig.Header header = requestConfig.getHeader();
         switch(headerType){
             case "true":
@@ -97,7 +146,7 @@ public class IPUtils {
         }
     }
 
-    private String getIp(HttpServletRequest request, String[] headers) {
+    public String getIp(HttpServletRequest request, String[] headers) {
         for (String head: headers) {
             if (StringUtils.isNotBlank(request.getHeader(head))) {
                 return request.getHeader(head);

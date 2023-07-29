@@ -29,10 +29,10 @@ import com.elpsykongroo.base.domain.search.QueryParam;
 import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.SearchService;
+import com.elpsykongroo.base.utils.RecordUtils;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.base.config.RequestConfig;
-import com.elpsykongroo.base.config.RequestConfig.Record.Exclude;
 import com.elpsykongroo.gateway.service.AccessRecordService;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
@@ -62,33 +62,25 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	@Override
 	public void saveAccessRecord(HttpServletRequest request) {
-		String ip = ipMangerService.accessIP(request, "record");
-		Exclude recordExclude = requestConfig.getRecord().getExclude();
-		if (log.isTraceEnabled()) {
-			log.trace("record exclude:{}", recordExclude);
-		}
-		boolean recordFlag = ipMangerService.filterByIpOrList(recordExclude.getIp(), ip);
-		if (!(StringUtils.isNotEmpty(recordExclude.getPath())
-				&& beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
-			if (!recordFlag) {
-				Map<String, String> result = new HashMap<>();
-				Enumeration<String> headerNames = request.getHeaderNames();
-				while (headerNames.hasMoreElements()) {
-					String key = headerNames.nextElement();
-					String value = request.getHeader(key);
-					result.put(key, value);
-				}
-				ip = ipMangerService.accessIP(request, "ip");
-				AccessRecord record = new AccessRecord();
-				record.setRequestHeader(result);
-				record.setAccessPath(request.getRequestURI());
-				record.setSourceIP(ip);
-				record.setTimestamp(Instant.now().toString());
-				record.setUserAgent(request.getHeader("user-agent"));
-				saveRecord(record);
-				if (log.isDebugEnabled()) {
-					log.debug("request header------------{} ", result);
-				}
+		RecordUtils recordUtils = new RecordUtils(requestConfig);
+		if (recordUtils.filterRecord(request)) {
+			Map<String, String> result = new HashMap<>();
+			Enumeration<String> headerNames = request.getHeaderNames();
+			while (headerNames.hasMoreElements()) {
+				String key = headerNames.nextElement();
+				String value = request.getHeader(key);
+				result.put(key, value);
+			}
+			IPUtils ipUtils = new IPUtils(requestConfig);
+			AccessRecord record = new AccessRecord();
+			record.setRequestHeader(result);
+			record.setAccessPath(request.getRequestURI());
+			record.setSourceIP(ipUtils.accessIP(request, ""));
+			record.setTimestamp(Instant.now().toString());
+			record.setUserAgent(request.getHeader("user-agent"));
+			saveRecord(record);
+			if (log.isDebugEnabled()) {
+				log.debug("request header------------{} ", result);
 			}
 		}
 	}
@@ -173,14 +165,4 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			return findAll(pageNo, pageSize, order);
 		}
 	}
-
-	private boolean beginWithPath(String paths, String url) {
-		String[] path = paths.split(",");
-		for (String p: path) {
-			if (url.startsWith(p)) {
-				return true;
-			}
-		}
-	return false;
-}
 }

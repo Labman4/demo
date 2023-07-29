@@ -27,15 +27,13 @@ import java.util.stream.Collectors;
 import com.elpsykongroo.base.domain.search.repo.IpManage;
 import com.elpsykongroo.base.domain.search.QueryParam;
 import com.elpsykongroo.base.utils.IPUtils;
-import com.elpsykongroo.base.utils.PathUtils;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.service.SearchService;
+import com.elpsykongroo.base.utils.RecordUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.base.config.RequestConfig;
-import com.elpsykongroo.base.config.RequestConfig.Header;
-import com.elpsykongroo.base.config.RequestConfig.Record.Exclude;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -271,44 +269,16 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	@Override
-	public String accessIP(HttpServletRequest request, String headerType) {		
-		String[] headers = splitHeader(headerType);
-		String ip = getIp(request, headers);
-		Exclude recordExclude = requestConfig.getRecord().getExclude();		
-		if (!PathUtils.beginWithPath(recordExclude.getPath(), request.getRequestURI())) {
-			String[] head= splitHeader("record");
-			String recordIp = getIp(request, head);                                                       
-			boolean recordFlag = filterByIpOrList(recordExclude.getIp(), recordIp);
-			if (!recordFlag) {
-				if (log.isInfoEnabled()) {
-					log.info("ip------------{}, type:{}, header:{}", ip, headerType, headers);
-				}
+	public String accessIP(HttpServletRequest request, String headerType) {
+		IPUtils ipUtils = new IPUtils(requestConfig);
+		String ip = ipUtils.accessIP(request, "");
+		RecordUtils recordUtils = new RecordUtils(requestConfig);
+		if (recordUtils.filterRecord(request)) {
+			if (log.isInfoEnabled()) {
+				log.info("ip------------{}, type:{}", ip, headerType);
 			}
 		}
 		return ip;
-	}
-
-	private String[] splitHeader(String headerType) {
-		Header header = requestConfig.getHeader();
-		switch(headerType){
-			case "true":
-				return header.getBlack().split(",");
-			case "false":
-				return header.getWhite().split(",");
-			case "record":
-				return header.getRecord().split(",");
-			default:
-				return header.getIp().split(",");
-		}
-	}
-
-	private String getIp(HttpServletRequest request, String[] headers) {
-		for (String head: headers) {
-		 	if (StringUtils.isNotBlank(request.getHeader(head))) {
-				return request.getHeader(head);
-			}
-		}
-		return request.getRemoteAddr();
 	}
 
 	@Override
@@ -423,57 +393,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 		}
 		return flag;
     }
-
-	@Override
-	public boolean filterByIpOrList(String ip, String accessIP) {
-		if (StringUtils.isNotEmpty(ip)) {
-			String[] ips = ip.split(",");
-			for (String i: ips) {
-				if(filterByIp(i, accessIP)){
-					return true;
-				}
-			}
-		}
-		return false;
-	} 
-
-	@Override
-	public boolean filterByIp(String ip, String accessIP) {
-		try {
-			InetAddress inetAddress = InetAddress.getByName(accessIP);
-			if (inetAddress.isSiteLocalAddress()) {
-				if(log.isTraceEnabled()) {
-					log.trace("ignore private ip");
-				}
-				return inetAddress.isSiteLocalAddress();
-			}
-			if(IPUtils.validateHost(ip)) {
-				InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
-				for (InetAddress addr: inetAddresses) {
-					if (accessIP.equals(addr.getHostAddress())) {
-						if(log.isTraceEnabled()) {
-							log.trace("host: {} match, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
-						}
-						return true;
-					} else {
-						if(log.isTraceEnabled()) {
-							log.trace("host: {} mismatch, accessIp:{}, ip:{}", ip, accessIP, addr.getHostAddress());
-						}
-					}
-				}			
-			} else if (accessIP.equals(ip)) {
-				if(log.isTraceEnabled()) {
-					log.trace("ip match, ip:{}, accessIp:{}", ip, accessIP);
-				}
-				return true;
-			}
-		} catch (UnknownHostException e) {
-			if (log.isErrorEnabled()) {
-				log.error("UnknownHostException");
-			}
-		}
-		return false;
-	}
 
 	private void initWhite(){
 		try {

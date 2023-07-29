@@ -16,10 +16,12 @@
 
 package com.elpsykongroo.base.utils;
 
+import com.elpsykongroo.base.config.RequestConfig;
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.GatewayService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 import java.util.Enumeration;
@@ -31,29 +33,58 @@ public class RecordUtils {
 
     private GatewayService gatewayService;
 
-    public RecordUtils(GatewayService gatewayService) {
+    private RequestConfig requestConfig;
+
+    public RecordUtils(GatewayService gatewayService, RequestConfig requestConfig) {
+        this.requestConfig = requestConfig;
         this.gatewayService = gatewayService;
     }
-    public void saveRecord(HttpServletRequest request, String ip) {
+
+    public RecordUtils(RequestConfig requestConfig) {
+        this.requestConfig = requestConfig;
+    }
+
+    public boolean filterRecord(HttpServletRequest request) {
         try {
-            Map<String, String> result = new HashMap<>();
-            Enumeration<String> headerNames = request.getHeaderNames();
-            while (headerNames.hasMoreElements()) {
-                String key = headerNames.nextElement();
-                String value = request.getHeader(key);
-                result.put(key, value);
+            IPUtils ipUtils = new IPUtils(requestConfig);
+            String ip = ipUtils.accessIP(request, "record");
+            RequestConfig.Record.Exclude recordExclude = requestConfig.getRecord().getExclude();
+            if (log.isTraceEnabled()) {
+                log.trace("RecordUtils exclude:{}", recordExclude);
             }
-            AccessRecord record = new AccessRecord();
-            record.setSourceIP(ip);
-            record.setRequestHeader(result);
-            record.setAccessPath(request.getRequestURI());
-            record.setTimestamp(Instant.now().toString());
-            record.setUserAgent(request.getHeader("user-agent"));
-            gatewayService.saveRecord(record);
+            boolean recordFlag = IPUtils.filterByIpOrList(recordExclude.getIp(), ip);
+            if (!(StringUtils.isNotEmpty(recordExclude.getPath())
+                    && PathUtils.beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
+                if (!recordFlag) {
+                    return true;
+                }
+            }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("saveRecord error:{}", e.getMessage());
+                log.error("RecordUtils saveRecord error:{}", e.getMessage());
             }
+        }
+        return false;
+    }
+
+    public void saveRecord(HttpServletRequest request) {
+        IPUtils ipUtils = new IPUtils(requestConfig);
+        Map<String, String> result = new HashMap<>();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String key = headerNames.nextElement();
+            String value = request.getHeader(key);
+            result.put(key, value);
+        }
+        AccessRecord record = new AccessRecord();
+        record.setSourceIP(ipUtils.accessIP(request, ""));
+        record.setRequestHeader(result);
+        record.setAccessPath(request.getRequestURI());
+        record.setTimestamp(Instant.now().toString());
+        record.setUserAgent(request.getHeader("user-agent"));
+        gatewayService.saveRecord(record);
+        if (log.isDebugEnabled()) {
+            log.debug("request header------------{} ", result);
         }
     }
 }
