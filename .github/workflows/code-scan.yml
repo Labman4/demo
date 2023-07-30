@@ -1,13 +1,8 @@
 name: Code scan
 on:
-  workflow_dispatch:
   push:
     branches:
     - develop
-    - native-image
-    - main
-    paths-ignore:
-    -  '.github/**'
     
   pull_request:
     branches:

@@ -1,14 +1,9 @@
-name: Just build native (host)
+name: prod native deploy (host)
 on: 
   workflow_dispatch:
-    inputs:
-      deploy_secret:
-        type: string
-        required: false
 jobs:
-  deploy:
+  build:
     uses: Labman4/workflow/.github/workflows/host-build-native.yml@native-image
-    with: 
-      deploy_secret: ${{ inputs.deploy_secret }}
     secrets: inherit
+
 
