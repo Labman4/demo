@@ -136,7 +136,6 @@ public class ThrottlingFilter implements Filter {
 				httpResponse.setContentType("text/plain");
 				return false;
 			}
-
 	}
 
 	private boolean limitByBucket(String scope, HttpServletResponse httpResponse, HttpSession session) {

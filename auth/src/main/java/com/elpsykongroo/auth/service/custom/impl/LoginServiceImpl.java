@@ -381,7 +381,7 @@ public class LoginServiceImpl implements LoginService {
                 if (log.isDebugEnabled()) {
                     log.debug("set tmp SecurityContext");
                 }
-                redisService.set("TmpCert_" + username, "", "");
+                redisService.set("TmpCert_" + username, "", "1");
                 return "redirect:" + serviceConfig.getUrl().getLoginPage() + "?username=" + username;
             }
         } catch (Exception e) {
@@ -396,7 +396,7 @@ public class LoginServiceImpl implements LoginService {
     public String qrcode() {
         String codeVerifier = PkceUtils.generateVerifier();
         Instant instant = Instant.now();
-        redisService.set("QR_CODE-" + instant, PkceUtils.generateChallenge(codeVerifier), "5");
+        redisService.set("QR_CODE-" + instant, PkceUtils.generateChallenge(codeVerifier), serviceConfig.getTimeout().getQrcodeToken());
         return codeVerifier + "*" + instant;
     }
 

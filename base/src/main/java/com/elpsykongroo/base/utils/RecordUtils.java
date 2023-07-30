@@ -45,7 +45,6 @@ public class RecordUtils {
     }
 
     public boolean filterRecord(HttpServletRequest request) {
-        try {
             IPUtils ipUtils = new IPUtils(requestConfig);
             String ip = ipUtils.accessIP(request, "record");
             RequestConfig.Record.Exclude recordExclude = requestConfig.getRecord().getExclude();
@@ -59,11 +58,6 @@ public class RecordUtils {
                     return true;
                 }
             }
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("RecordUtils saveRecord error:{}", e.getMessage());
-            }
-        }
         return false;
     }
 
@@ -82,9 +76,15 @@ public class RecordUtils {
         record.setAccessPath(request.getRequestURI());
         record.setTimestamp(Instant.now().toString());
         record.setUserAgent(request.getHeader("user-agent"));
-        gatewayService.saveRecord(record);
-        if (log.isDebugEnabled()) {
-            log.debug("request header------------{} ", result);
+        try {
+            gatewayService.saveRecord(record);
+            if (log.isDebugEnabled()) {
+                log.debug("request header------------{} ", result);
+            }
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("RecordUtils saveRecord error:{}", e.getMessage());
+            }
         }
     }
 }

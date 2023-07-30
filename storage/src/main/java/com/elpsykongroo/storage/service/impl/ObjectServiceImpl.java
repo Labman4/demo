@@ -108,18 +108,18 @@ public class ObjectServiceImpl implements ObjectService {
         ListObjectsV2Iterable listResp = null;
         try {
             listResp = s3Service.listObject(s3.getClientId(), s3.getBucket(), "");
+            listResp.contents().stream()
+                .forEach(content -> objects.add(new ListObjectResult(content.key(),
+                        content.lastModified(),
+                        content.size())));
         } catch (NoSuchBucketException e) {
             if (log.isWarnEnabled()) {
                 log.warn("bucket not exist");
             }
-            if(s3Service.createBucket(s3.getClientId(), s3.getBucket())) {
+            if(s3Service.createBucket(s3.getClientId(), s3.getPlatform(), s3.getBucket())) {
                 return objects;
             }
         }
-        listResp.contents().stream()
-                .forEach(content -> objects.add(new ListObjectResult(content.key(),
-                        content.lastModified(),
-                        content.size())));
         return objects;
     }
 

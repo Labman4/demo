@@ -43,6 +43,7 @@ import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
+import software.amazon.awssdk.services.s3.model.CreateBucketConfiguration;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
@@ -254,11 +255,16 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public boolean createBucket(String clientId, String bucket) {
+    public boolean createBucket(String clientId, String platform, String bucket) {
         try {
+            CreateBucketConfiguration createBucketConfiguration = CreateBucketConfiguration.builder().build();
+            if (StringUtils.isNotBlank(platform) && "cloudflare".equals(platform)) {
+                createBucketConfiguration = CreateBucketConfiguration.builder().locationConstraint("auto").build();
+            }
             S3Waiter s3Waiter = clientMap.get(clientId).waiter();
             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
                     .bucket(bucket)
+                    .createBucketConfiguration(createBucketConfiguration)
                     .build();
 
             clientMap.get(clientId).createBucket(bucketRequest);

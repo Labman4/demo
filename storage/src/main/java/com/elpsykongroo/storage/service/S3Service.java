@@ -48,7 +48,7 @@ public interface S3Service {
 
     CreateMultipartUploadResponse createMultiPart(String clientId, String bucket, String key);
 
-    boolean createBucket(String clientId, String bucket);
+    boolean createBucket(String clientId, String platform, String bucket);
 
     HeadObjectResponse headObject(String clientId, String bucket, String key);
 

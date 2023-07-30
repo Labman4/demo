@@ -104,7 +104,7 @@ public class IPUtils {
                 }
                 return inetAddress.isSiteLocalAddress();
             }
-            if(IPUtils.validateHost(ip)) {
+            if(validateHost(ip)) {
                 InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
                 for (InetAddress addr: inetAddresses) {
                     if (accessIP.equals(addr.getHostAddress())) {
