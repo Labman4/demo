@@ -34,3 +34,6 @@ target/
 .vscode
 out
 gen
+htmlReport/
+wechat/
+.env

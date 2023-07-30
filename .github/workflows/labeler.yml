@@ -1,0 +1,31 @@
+name: "Pull Request Labeler"
+on:
+- pull_request_target
+
+jobs:
+  pr_number:
+      runs-on: ubuntu-latest
+  #     if: ${{ github.event_name == 'push' }}
+      steps:
+        - uses: actions/checkout@d0651293c4a5a52e711f25b41b05b2212f385d28
+          with:
+            fetch-depth: 0
+        - name: Get Pull Request Number
+          id: pr
+          run: echo "::set-output name=pull_request_number::$(gh pr view --json number -q .number || echo "")"
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        - run: echo ${{ steps.pr.outputs.pull_request_number }}
+  triage:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/labeler@v4
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  automerge:
+    needs: triage
+    uses: Labman4/workflow/.github/workflows/automerge.yml@automerge

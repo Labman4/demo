@@ -1,0 +1,30 @@
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:broker.elpsykongroo.com:443}
+    security:
+      protocol: SSL
+    ssl:
+      trust-store-type: PEM
+      trust-store-location: ${SSL_PEM:classpath:/ssl.pem}
+    admin:
+      security:
+        protocol: SSL
+      ssl:
+        trust-store-type: PEM
+        trust-store-location: ${SSL_PEM:classpath:/ssl.pem}
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      security:
+        protocol: SSL
+      ssl:
+        trust-store-type: PEM
+        trust-store-location: ${SSL_PEM:classpath:/ssl.pem}
+    listener:
+      immediate-stop: true
+      ack-mode: MANUAL_IMMEDIATE
+      async-acks: true
+    properties:
+      max:
+        request:
+          size: 10000000
