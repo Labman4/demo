@@ -19,6 +19,7 @@ package com.elpsykongroo.base.domain.storage.object;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+<<<<<<< HEAD:base/src/main/java/com/elpsykongroo/base/domain/storage/object/ListObjectResult.java
 import java.time.Instant;
 
 @Data
@@ -33,4 +34,21 @@ public class ListObjectResult {
         this.timestamp = lastModified;
         this.size = size;
     }
+=======
+@NoArgsConstructor
+public class ServiceException extends RuntimeException {
+	private static final long serialVersionUID = 5639223247225972389L;
+
+	public ServiceException(Throwable cause) {
+		super(cause);
+	}
+
+	public ServiceException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public ServiceException(String message) {
+		super(message);
+	}
+>>>>>>> main:base/src/main/java/com/elpsykongroo/base/domain/storage/object/ServiceException.java
 }

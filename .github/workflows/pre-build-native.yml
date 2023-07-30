@@ -1,0 +1,22 @@
+name: Prepare build (native)
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+    - main 
+  push: 
+    branches:
+    - native-image
+jobs:
+  native:
+    uses: Labman4/workflow/.github/workflows/native-image.yml@native-image
+    secrets: inherit
+ 
+
+    
+          
+    
+          
+
+    
+  

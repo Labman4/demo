@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
+<<<<<<< HEAD:base/src/main/java/com/elpsykongroo/base/domain/message/Send.java
 package com.elpsykongroo.base.domain.message;
+=======
+package com.elpsykongroo.demo.repo.elasticsearch;
+>>>>>>> main:base/src/main/java/com/elpsykongroo/base/domain/message/elasticsearch/AccessRecordRepo.java
 
 import lombok.Data;
 
+<<<<<<< HEAD:base/src/main/java/com/elpsykongroo/base/domain/message/Send.java
 @Data
 public class Send {
     private String id;
@@ -29,12 +34,30 @@ public class Send {
     private String callback;
 
     private String key;
+=======
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import com.elpsykongroo.demo.domain.AccessRecord;
+
+public interface AccessRecordRepo extends ElasticsearchRepository<AccessRecord, String> {
+	Page<AccessRecord> findAll(Pageable pageable);
+>>>>>>> main:base/src/main/java/com/elpsykongroo/base/domain/message/elasticsearch/AccessRecordRepo.java
 
     private String message;
 
+<<<<<<< HEAD:base/src/main/java/com/elpsykongroo/base/domain/message/Send.java
     private byte[] data;
 
     private String sha256;
+=======
+	List<AccessRecord> findByAccessPath(String path);
+
+	List<AccessRecord> findByUserAgentLike(String agent);
+
+	List<AccessRecord> findByRequestHeaderLike(String header);
+
+>>>>>>> main:base/src/main/java/com/elpsykongroo/base/domain/message/elasticsearch/AccessRecordRepo.java
 
     private boolean manualStop;
 

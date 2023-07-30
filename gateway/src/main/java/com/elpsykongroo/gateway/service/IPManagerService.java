@@ -18,6 +18,7 @@ package com.elpsykongroo.gateway.service;
 
 import java.net.UnknownHostException;
 
+import com.elpsykongroo.demo.exception.ServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;

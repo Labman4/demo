@@ -1,0 +1,111 @@
+server:
+  http2:
+    enabled: true
+  shutdown: graceful
+  port: 8443
+  
+spring:
+  elasticsearch:
+    socket-timeout: 100s
+    restclient:
+      sniffer:
+        delay-after-failure: 100s
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${AUTH_URL:https://auth.elpsykongroo.com}/oauth2/jwks
+  #  cloud:
+  #    kubernetes:
+  #      discovery:
+  #        enabled: true
+  #        all-namespaces: true
+  #        #        master-url: https://kubernetes.default.svc
+  #        #      include-not-ready-addresses: true
+  #        discovery-server-url: ${DISCOVERY_URL}
+  #    discovery:
+  #      client:
+  #        health-indicator:
+  #          enabled: false
+
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:mysql://${MYSQL_IP:mysql}:${MYSQL_PORT:3306}/demo
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+    redis:
+      # host: 127.0.0.1
+      # port: 6379
+      ssl: false
+      client-type: ${REDIS_TYPE:LETTUCE}
+      # cluster:
+      #   nodes: ${REDIS_NODE:redis-cluster.redis.svc.cluster.local:6379}
+      lettuce:
+        pool:
+          enabled: false
+          maxIdle: 10
+          minIdle: 1
+          maxActive: 5
+          maxWait: 5
+          timeBetweenEvictionRuns: 100000
+      jedis:
+        pool:
+          enabled: true
+          maxIdle: 5
+          minIdle: 1
+          maxActive: 5
+          maxWait: 5
+          timeBetweenEvictionRuns: 100000
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:kafka}
+    security:
+      protocol: ssl
+    ssl:
+      trust-store-location: ${JKS:jks}
+      trust-store-password: ${JKS_PASS:pass}
+    consumer:
+      #      security:
+      #        protocol: ssl
+      auto-offset-reset: earliest
+request:
+  limit:
+    global:
+      tokens: ${GLOBAL_REQUEST_LIMIT:1000}
+      duration: ${GLOBAL_REQUEST_DURATION:1}
+      speed: ${GLOBAL_REQUEST_DURATION_SPEED:100}
+    scope:
+      tokens: ${REQUEST_LIMIT:100}
+      duration: ${REQUEST_DURATION:1}
+      speed: ${REQUEST_DURATION_SPEED:10}
+  path:
+    permit: ${PERMIT_PATH:/**}
+    nonPrivate: ${PUBLIC_PATH:/}
+    limit: ${LIMIT_PATH:/}
+    exclude:
+      all: ${EXCLUDE_PATH:/actuator}
+      record: ${RECORD_EXCLUDE_PATH:/actuator}
+    filter: ${FILTER_PATH:/}
+  header:
+    ip: ${IP_HEADER:x-forward-for}
+    black: ${BLACK_HEADER:x-forward-for}
+    white: ${WHITE_HEADER:x-forward-for}
+
+service:
+  ssl:
+    ca:  ${CA_CRT}
+    cert:  ${TLS_CERT}
+    key:  ${TLS_KEY}
+  es:
+    user: elastic
+    pass: 123456
+    ssl:
+      type: none
+      ca: ${ES_CA_CRT:ca.crt}
+      cert: ${ES_TLS_CERT:tls.crt}
+      key: ${ES_TLS_KEY:tls.key}
+    timeout:
+      connect: ${ES_CONNECT_TIME:100}
+      socket: ${ES_SOCKET_TIME:100}

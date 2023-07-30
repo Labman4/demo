@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
+<<<<<<< HEAD:base/src/main/java/com/elpsykongroo/base/domain/search/repo/IpManage.java
 package com.elpsykongroo.base.domain.search.repo;
+=======
+package com.elpsykongroo.demo.domain;
+>>>>>>> main:gateway/src/main/java/com/elpsykongroo/gateway/domain/IPManage.java
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
+<<<<<<< HEAD:base/src/main/java/com/elpsykongroo/base/domain/search/repo/IpManage.java
+=======
+@Document(indexName = "ip")
+>>>>>>> main:gateway/src/main/java/com/elpsykongroo/gateway/domain/IPManage.java
 @Data
 @NoArgsConstructor
 public class IpManage {
