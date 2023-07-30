@@ -1,0 +1,9 @@
+name: Update maven cache
+on: 
+  workflow_dispatch:
+  push:
+    paths: 
+      "**/pom.xml"
+jobs:
+  cache: 
+    uses: Labman4/workflow/.github/workflows/maven.yml@cache
