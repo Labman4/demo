@@ -25,6 +25,15 @@ public final class MessageDigestUtils {
         throw new IllegalStateException("Utility class");
     }
 
+    public static String md5(byte[] bytes) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("md5");
+            return BytesUtils.bytesToHex(md.digest(bytes));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static String sha256(byte[] bytes) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -39,6 +48,15 @@ public final class MessageDigestUtils {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
             return BytesUtils.bytesToHex(hashBytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static byte[] sha256ByteArray(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return digest.digest(input.getBytes(StandardCharsets.UTF_8));
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

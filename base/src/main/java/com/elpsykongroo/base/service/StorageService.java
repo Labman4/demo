@@ -32,11 +32,24 @@ public interface StorageService {
     })
     String createMultiPart(S3 s3);
 
+    @RequestLine("POST /storage/object/abort")
+    @Headers({
+            "Content-Type: application/json"
+    })
+    void abortMultiPart(S3 s3);
+
+
+    @RequestLine("POST /storage/object")
+    @Headers({
+            "Content-Type: application/octet-stream"
+    })
+    void uploadByte(S3 s3);
+
     @RequestLine("POST /storage/object")
     @Headers({
             "Content-Type: multipart/form-data"
     })
-    void uploadObject(S3 s3);
+    void uploadFile(S3 s3);
 
     @RequestLine("POST /storage/object/download")
     @Headers({

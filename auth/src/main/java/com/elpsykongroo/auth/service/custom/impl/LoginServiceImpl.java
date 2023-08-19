@@ -226,6 +226,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String register(String username, String display) {
+        if ("admin".equals(username)) {
+            return "409";
+        }
         User saveUser = null;
         try {
             removeInvalid(username);

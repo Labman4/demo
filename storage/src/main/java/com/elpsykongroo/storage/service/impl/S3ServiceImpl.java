@@ -39,6 +39,7 @@ import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.http.apache.ProxyConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
@@ -257,21 +258,21 @@ public class S3ServiceImpl implements S3Service {
     @Override
     public boolean createBucket(String clientId, String platform, String bucket) {
         try {
-            CreateBucketConfiguration createBucketConfiguration = CreateBucketConfiguration.builder().build();
-            if (StringUtils.isNotBlank(platform) && "cloudflare".equals(platform)) {
-                createBucketConfiguration = CreateBucketConfiguration.builder().locationConstraint("auto").build();
-            }
-            S3Waiter s3Waiter = clientMap.get(clientId).waiter();
             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
                     .bucket(bucket)
-                    .createBucketConfiguration(createBucketConfiguration)
                     .build();
-
+            if (StringUtils.isNotBlank(platform) && "cloudflare".equals(platform)) {
+                CreateBucketConfiguration createBucketConfiguration  = CreateBucketConfiguration.builder().locationConstraint("auto").build();
+                bucketRequest = CreateBucketRequest.builder()
+                        .bucket(bucket)
+                        .createBucketConfiguration(createBucketConfiguration)
+                        .build();
+            }
+            S3Waiter s3Waiter = clientMap.get(clientId).waiter();
             clientMap.get(clientId).createBucket(bucketRequest);
             HeadBucketRequest bucketRequestWait = HeadBucketRequest.builder()
                     .bucket(bucket)
                     .build();
-
             WaiterResponse<HeadBucketResponse> waiterResponse = s3Waiter.waitUntilBucketExists(bucketRequestWait);
             return waiterResponse.matched().response().isPresent();
         } catch (S3Exception e) {
@@ -337,14 +338,15 @@ public class S3ServiceImpl implements S3Service {
         return resp;
     }
 
-//    public void abortMultipartUpload (String bucket, String key, String uploadId) {
-//        AbortMultipartUploadRequest abortMultipartUploadRequest = AbortMultipartUploadRequest.builder()
-//                        .bucket(bucket)
-//                        .key(key)
-//                        .uploadId(uploadId)
-//                        .build();
-//        s3Client.abortMultipartUpload(abortMultipartUploadRequest);
-//    }
+    @Override
+    public void abortMultipartUpload (String clientId, String bucket, String key, String uploadId) {
+        AbortMultipartUploadRequest abortMultipartUploadRequest = AbortMultipartUploadRequest.builder()
+                        .bucket(bucket)
+                        .key(key)
+                        .uploadId(uploadId)
+                        .build();
+        clientMap.get(clientId).abortMultipartUpload(abortMultipartUploadRequest);
+    }
 
     @Override
     public void listCompletedPart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
@@ -375,7 +377,7 @@ public class S3ServiceImpl implements S3Service {
     @Override
     public ListPartsResponse listParts(String clientId, String bucket, String key, String uploadId) {
         if (log.isDebugEnabled()) {
-            log.debug("list parts uploadId:{}", uploadId);
+            log.debug("list parts uploadId:{}, bucket:{}, key:{}", uploadId, bucket, key);
         }
         try {
             ListPartsRequest listRequest = ListPartsRequest.builder()

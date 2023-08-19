@@ -28,7 +28,7 @@ public final class EncryptUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    public static byte[] encrypt(String plaintext, byte[] key) {
+    public static byte[] encryptString(String plaintext, byte[] key) {
         try {
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             SecretKey secretKey = new SecretKeySpec(key, "AES");
@@ -36,6 +36,23 @@ public final class EncryptUtils {
             GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
             byte[] encryptedData = cipher.doFinal(plaintext.getBytes(StandardCharsets.UTF_8));
+            byte[] ivAndEncryptedData = new byte[iv.length + encryptedData.length];
+            System.arraycopy(iv, 0, ivAndEncryptedData, 0, iv.length);
+            System.arraycopy(encryptedData, 0, ivAndEncryptedData, iv.length, encryptedData.length);
+            return ivAndEncryptedData;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static byte[] encryptByte(byte[] plaintext, byte[] key) {
+        try {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            SecretKey secretKey = new SecretKeySpec(key, "AES");
+            byte[] iv = BytesUtils.generateRandomByte(12);
+            GCMParameterSpec parameterSpec = new GCMParameterSpec(128, iv);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
+            byte[] encryptedData = cipher.doFinal(plaintext);
             byte[] ivAndEncryptedData = new byte[iv.length + encryptedData.length];
             System.arraycopy(iv, 0, ivAndEncryptedData, 0, iv.length);
             System.arraycopy(encryptedData, 0, ivAndEncryptedData, iv.length, encryptedData.length);

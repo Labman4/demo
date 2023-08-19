@@ -63,4 +63,6 @@ public interface S3Service {
     void completePart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts);
 
     void initClient(S3 s3, String clientId);
+
+    void abortMultipartUpload (String clientId, String bucket, String key, String uploadId);
 }
