@@ -16,6 +16,7 @@ jobs:
     with: 
       module: gateway
       version: 0.0.2
+      secretPath: kv/app/native/gateway
  
 
     
