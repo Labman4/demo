@@ -15,3 +15,4 @@ jobs:
       module: kafka
       version: 0.0.1
       native: true
+      secretPath: kv/app/native/kafka
