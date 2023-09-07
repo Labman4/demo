@@ -149,6 +149,8 @@ public class ServiceConfig {
         private String qrcodeCallback;
 
         private String loginPage;
+
+        private String authUrl;
     }
 
     @Data
