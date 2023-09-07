@@ -38,6 +38,8 @@ public class ServiceConfig {
 
     private String vault;
 
+    private String security;
+
     private Redis redis;
 
     private Elastic es;
@@ -48,7 +50,7 @@ public class ServiceConfig {
 
     private S3 s3;
 
-    private OAuth2 oAuth2;
+    private OAuth2 oauth2;
 
     @Data
     public static class SSL {
@@ -134,6 +136,10 @@ public class ServiceConfig {
 
         private String object;
 
+        private String kafka;
+
+        private String message;
+
         private String storagePort;
 
         private String storageProtocol;
@@ -141,8 +147,6 @@ public class ServiceConfig {
         private String storageCallback;
 
         private String qrcodeCallback;
-
-        private String kafka;
 
         private String loginPage;
     }
@@ -156,5 +160,7 @@ public class ServiceConfig {
         private String tokenUri;
 
         private String registerId;
+
+        private boolean enable;
     }
 }

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.config;
+package com.elpsykongroo.base.optional.config;
 
+import com.elpsykongroo.base.config.AccessManager;
+import com.elpsykongroo.base.config.RequestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,25 +25,37 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
-import com.elpsykongroo.base.config.RequestConfig;
-
+//
+//@ConditionalOnProperty(
+//		prefix = "service",
+//		name = "security",
+//		havingValue = "gateway",
+//		matchIfMissing = true)
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
 	@Autowired
 	private RequestConfig requestConfig;
 
+	@Autowired
+	private AccessManager accessManager;
+
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors().and()
-//				.csrf().disable()
+				.csrf().disable()
  //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
-						.requestMatchers("/public/**").permitAll()
+ 						.requestMatchers("/public/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
 						.requestMatchers(HttpMethod.GET,"/storage/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/ip").permitAll()
+						.requestMatchers(HttpMethod.POST, "/search").permitAll()
+						.requestMatchers(HttpMethod.PUT, "/notice/register").permitAll()
+						.requestMatchers(HttpMethod.GET, "/notice/user").permitAll()
+						.requestMatchers("/notice/**").hasAuthority("admin")
 						.requestMatchers(requestConfig.getPath().getPermit()).permitAll()
-						.anyRequest().authenticated()
+						.anyRequest().access(accessManager)
 				)
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
 		return http.build();

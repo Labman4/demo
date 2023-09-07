@@ -36,7 +36,6 @@ import java.time.Duration;
         name = "vault",
         havingValue = "true",
         matchIfMissing = false)
-@VaultPropertySource("${SECRETS_APP_ES_PATH:kv/app/dev/es}")
 @VaultPropertySource(value = "${SECRETS_DATA_ES_PATH:database/creds/elastic}", renewal = VaultPropertySource.Renewal.ROTATE)
 @Configuration(proxyBeanMethods = false)
 @EnableElasticsearchRepositories

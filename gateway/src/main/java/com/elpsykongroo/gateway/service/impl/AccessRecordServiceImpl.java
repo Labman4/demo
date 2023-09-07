@@ -113,28 +113,28 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	}
 
 	@Override
-	public String deleteRecord(String params) throws UnknownHostException {
-		if (StringUtils.isBlank(params)) {
+	public String deleteRecord(List<String> params) throws UnknownHostException {
+		if (params.isEmpty()) {
 			return "0";
 		}
+		List<String> ids = new ArrayList<>();
 		QueryParam deleteParam = new QueryParam();
 		deleteParam.setOperation("delete");
 		deleteParam.setIndex("access_record");
-		if (!params.contains(",")) {
-			if (IPUtils.validateHost(params) || IPUtils.validateHost(params)) {
-				InetAddress[] inetAddresses = InetAddress.getAllByName(params);
-				String records = "";
+		for (String param : params) {
+			if (IPUtils.validateHost(param) || IPUtils.validate(param)) {
+				InetAddress[] inetAddresses = InetAddress.getAllByName(param);
 				QueryParam queryParam = new QueryParam();
 				queryParam.setIndex("access_record");
 				queryParam.setType(AccessRecord.class);
 				queryParam.setField("sourceIP");
 				queryParam.setFuzzy(false);
-				for (InetAddress addr: inetAddresses) {
+				for (InetAddress addr : inetAddresses) {
 					queryParam.setParam(addr.getHostAddress());
-					records += searchService.query(queryParam);
+					ids.add(searchService.query(queryParam));
 				}
-				deleteParam.setIds(records);
-				return searchService.query(deleteParam);
+			} else {
+				ids.add(param);
 			}
 		}
 		deleteParam.setIds(params);

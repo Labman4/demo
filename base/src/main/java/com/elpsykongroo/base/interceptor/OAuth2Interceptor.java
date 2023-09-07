@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.interceptor;
+package com.elpsykongroo.base.interceptor;
 import com.elpsykongroo.base.config.ServiceConfig;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -35,12 +35,14 @@ public class OAuth2Interceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
-        requestTemplate.header("Authorization", "Bearer " + getAccessToken(clientManager));
+        if (serviceConfig.getOauth2().isEnable()) {
+            requestTemplate.header("Authorization", "Bearer " + getAccessToken(clientManager));
+        }
     }
 
     private String getAccessToken(OAuth2AuthorizedClientManager clientManager) {
         OAuth2AuthorizeRequest oAuth2AuthorizeRequest = OAuth2AuthorizeRequest
-                .withClientRegistrationId(serviceConfig.getOAuth2().getRegisterId())
+                .withClientRegistrationId(serviceConfig.getOauth2().getRegisterId())
                 .principal("auth")
                 .build();
         OAuth2AuthorizedClient client = clientManager.authorize(oAuth2AuthorizeRequest);

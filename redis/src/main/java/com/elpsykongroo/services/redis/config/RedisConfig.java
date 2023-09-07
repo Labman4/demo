@@ -36,8 +36,6 @@ import org.springframework.vault.annotation.VaultPropertySource;
 import java.util.Collections;
 
 @Configuration(proxyBeanMethods = false)
-//@VaultPropertySource(value = "${SECRETS_DATA_REDIS_PATH:database/creds/redis-cluster}", renewal = VaultPropertySource.Renewal.RENEW)
-@VaultPropertySource("${SECRETS_APP_REDIS_PATH:kv/app/dev/redis}")
 public class RedisConfig {
     @Autowired
     private ServiceConfig serviceConfig;

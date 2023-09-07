@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.auth.security;
+package com.elpsykongroo.base.interceptor;
 
-import com.elpsykongroo.auth.service.custom.UserService;
+import com.elpsykongroo.base.domain.auth.user.Authority;
+import com.elpsykongroo.base.service.AuthService;
+import com.elpsykongroo.base.utils.JsonUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,8 +32,10 @@ import org.springframework.security.oauth2.server.resource.introspection.OpaqueT
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class CustomAuthoritiesOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     @Value("${spring.security.oauth2.resourceserver.opaque-token.introspection-uri}")
@@ -42,8 +48,7 @@ public class CustomAuthoritiesOpaqueTokenIntrospector implements OpaqueTokenIntr
     String clientSecret;
 
     @Autowired
-    private UserService userService;
-
+    private AuthService authService;
 
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
@@ -55,9 +60,14 @@ public class CustomAuthoritiesOpaqueTokenIntrospector implements OpaqueTokenIntr
     }
 
     private Collection<GrantedAuthority> extractAuthorities(OAuth2AuthenticatedPrincipal principal) {
-        return userService.userAuthority(principal.getName()).stream().map(authority -> {
-                   return new SimpleGrantedAuthority(authority.getAuthority());
-                }).collect(Collectors.toList());
-
+        String authorities = authService.userAllAuthority(principal.getName());
+        if(log.isInfoEnabled()) {
+            log.info("authorities:{}", authorities);
+        }
+        List<Authority> authorityList = JsonUtils.toType(authorities, new TypeReference<List<Authority>>() {
+        });
+        return authorityList.stream().map(authority -> {
+            return new SimpleGrantedAuthority(authority.getAuthority());
+        }).collect(Collectors.toList());
     }
 }

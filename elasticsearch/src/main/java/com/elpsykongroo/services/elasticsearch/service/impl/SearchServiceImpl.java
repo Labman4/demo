@@ -149,9 +149,8 @@ public class SearchServiceImpl implements SearchService {
             }
             return String.valueOf(count);
         } else if ("delete".equals(queryParam.getOperation())) {
-            List<String> deleteIds = Arrays.stream(queryParam.getIds().split(",")).collect(Collectors.toList());
-            deleteIds.forEach(id -> operations.delete(id, IndexCoordinates.of(queryParam.getIndex())));
-            return String.valueOf(deleteIds.size());
+            queryParam.getIds().forEach(id -> operations.delete(id, IndexCoordinates.of(queryParam.getIndex())));
+            return "";
         } else if ("deleteQuery".equals(queryParam.getOperation())) {
             ByQueryResponse response = operations.delete(getQuery(queryParam, pageable), queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
             return String.valueOf(response.getDeleted());
@@ -159,7 +158,7 @@ public class SearchServiceImpl implements SearchService {
         else if ("save".equals(queryParam.getOperation())) {
             return operations.save(queryParam.getEntity(), IndexCoordinates.of(queryParam.getIndex())).toString();
         } else if ("update".equals(queryParam.getOperation())) {
-            UpdateQuery updateQuery = UpdateQuery.builder(queryParam.getIds())
+            UpdateQuery updateQuery = UpdateQuery.builder(queryParam.getIds().get(0))
                     .withParams(queryParam.getUpdateParam())
                     .withScript(queryParam.getScript())
                     .withScriptType(ScriptType.INLINE)

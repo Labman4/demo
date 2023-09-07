@@ -195,11 +195,11 @@ public class AuthorizationServerConfig {
 	@Bean
 	public ClientRegistrationRepository clientRegistrationRepository() {
 		ClientRegistration clientRegistration = ClientRegistration
-				.withRegistrationId(serviceConfig.getOAuth2().getRegisterId())
-				.clientId(serviceConfig.getOAuth2().getClientId())
-				.clientSecret(serviceConfig.getOAuth2().getClientSecret())
+				.withRegistrationId(serviceConfig.getOauth2().getRegisterId())
+				.clientId(serviceConfig.getOauth2().getClientId())
+				.clientSecret(serviceConfig.getOauth2().getClientSecret())
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-				.tokenUri(serviceConfig.getOAuth2().getTokenUri())
+				.tokenUri(serviceConfig.getOauth2().getTokenUri())
 				.build();
 		return new InMemoryClientRegistrationRepository(clientRegistration);
 	}

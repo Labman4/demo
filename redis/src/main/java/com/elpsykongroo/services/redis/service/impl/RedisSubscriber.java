@@ -64,7 +64,7 @@ public class RedisSubscriber implements MessageListener {
 
     private String getAccessToken(OAuth2AuthorizedClientManager clientManager) {
         OAuth2AuthorizeRequest oAuth2AuthorizeRequest = OAuth2AuthorizeRequest
-                .withClientRegistrationId(serviceConfig.getOAuth2().getRegisterId())
+                .withClientRegistrationId(serviceConfig.getOauth2().getRegisterId())
                 .principal("redis")
                 .build();
         OAuth2AuthorizedClient client = clientManager.authorize(oAuth2AuthorizeRequest);

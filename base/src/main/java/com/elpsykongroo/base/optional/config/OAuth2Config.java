@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.services.kafka.config;
+package com.elpsykongroo.base.optional.config;
 
 import com.elpsykongroo.base.config.ServiceConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
@@ -34,28 +35,37 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnProperty(
+        prefix = "service",
+        name = "security",
+        havingValue = "true",
+        matchIfMissing = true)
 public class OAuth2Config {
+
     @Autowired
     private ServiceConfig serviceConfig;
+
     @Bean
     public OAuth2AuthorizedClientRepository authorizedClientRepository(
             OAuth2AuthorizedClientService authorizedClientService) {
         return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
     }
+
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
         ClientRegistration clientRegistration = ClientRegistration
-                .withRegistrationId(serviceConfig.getOAuth2().getRegisterId())
-                .clientId(serviceConfig.getOAuth2().getClientId())
-                .clientSecret(serviceConfig.getOAuth2().getClientSecret())
+                .withRegistrationId(serviceConfig.getOauth2().getRegisterId())
+                .clientId(serviceConfig.getOauth2().getClientId())
+                .clientSecret(serviceConfig.getOauth2().getClientSecret())
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-                .tokenUri(serviceConfig.getOAuth2().getTokenUri())
+                .tokenUri(serviceConfig.getOauth2().getTokenUri())
                 .build();
         return new InMemoryClientRegistrationRepository(clientRegistration);
     }
     @Bean
     public OAuth2AuthorizedClientService authorizedClientService(
             ClientRegistrationRepository clientRegistrationRepository) {
+
         return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
     }
 
@@ -69,6 +79,7 @@ public class OAuth2Config {
         AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager = new AuthorizedClientServiceOAuth2AuthorizedClientManager(
                 clientRegistrationRepository, authorizedClientService);
         authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
+
         return authorizedClientManager;
     }
 }

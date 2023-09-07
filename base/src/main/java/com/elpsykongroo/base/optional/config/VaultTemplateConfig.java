@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.config;
+package com.elpsykongroo.base.optional.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -34,8 +34,10 @@ import java.net.URI;
     name = "vault",
     havingValue = "true",
     matchIfMissing = false)
-@VaultPropertySource("${SECRETS_APP_GATEWAY_PATH:kv/app/dev/gateway}")
+@VaultPropertySource("${SECRETS_APP_BASE_PATH:kv/app/dev/base}")
+@VaultPropertySource("${SECRETS_APP_PATH}")
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
+
     @Override
     public ClientAuthentication clientAuthentication() {
          if ("prod".equals(getEnvironment().getProperty("ENV"))) {

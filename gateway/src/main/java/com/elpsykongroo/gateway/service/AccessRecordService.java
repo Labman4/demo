@@ -17,6 +17,7 @@
 package com.elpsykongroo.gateway.service;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +31,7 @@ public interface AccessRecordService {
 
 	String filterByParams(String params, String pageNumber, String pageSize, String order);
 
-	String deleteRecord(String param) throws UnknownHostException;
+	String deleteRecord(List<String> param) throws UnknownHostException;
 
 	void saveAccessRecord(HttpServletRequest request);
 

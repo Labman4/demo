@@ -64,7 +64,7 @@ spring:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
 service:
   vault: ${VAULT_ENABLE:true}
-
+  security: oauth2
 logging:
   level:
     root: ${ROOT_LOG_LEVEL:info}

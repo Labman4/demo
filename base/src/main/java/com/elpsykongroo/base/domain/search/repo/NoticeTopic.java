@@ -14,49 +14,23 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.base.domain.search;
+package com.elpsykongroo.base.domain.search.repo;
 
+import com.elpsykongroo.base.utils.JsonUtils;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 @Data
-public class QueryParam {
+public class NoticeTopic {
+    private List<String> registers;
 
-    private String pageNumber;
+    private List<String> users;
 
-    private String pageSize;
+    private String name;
 
-    private String order;
-
-    private String orderBy;
-
-    private String index;
-
-    private List<String> fields;
-
-    private String field;
-
-    private String param;
-
-    private List<String> queryStringParam;
-
-    private Map<String, Object> updateParam;
-
-    private String script;
-
-    private Class type;
-
-    private boolean fuzzy;
-
-    private boolean boolQuery;
-
-    private String boolType;
-
-    private String operation;
-
-    private List<String> ids;
-
-    private Object entity;
+    @Override
+    public String toString() {
+        return JsonUtils.toJson(this);
+    }
 }

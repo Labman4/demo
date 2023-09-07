@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.config;
+package com.elpsykongroo.base.config;
 
-import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.interceptor.OAuth2Interceptor;
 import com.elpsykongroo.base.service.AuthService;
+import com.elpsykongroo.base.service.GatewayService;
+import com.elpsykongroo.base.service.KafkaService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.service.SearchService;
 import com.elpsykongroo.base.service.StorageService;
-import com.elpsykongroo.gateway.interceptor.AuthorizationInterceptor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.Feign;
 import feign.codec.Decoder;
@@ -34,6 +36,7 @@ import feign.jackson.JacksonEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 
 @Configuration(proxyBeanMethods = false)
 public class FeignConfig {
@@ -43,15 +46,43 @@ public class FeignConfig {
 //    }
 
     @Autowired
+    private OAuth2AuthorizedClientManager clientManager;
+
+    @Autowired
     private ServiceConfig serviceConfig;
+
+    @Bean
+    public GatewayService gatewayService() {
+        return Feign.builder()
+                .decoder(new Decoder.Default())
+                .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)))
+                .requestInterceptor(new OAuth2Interceptor(clientManager, serviceConfig))
+                .target(GatewayService.class, serviceConfig.getUrl().getGateway());
+    }
+
+//    @Bean
+//    public GatewayService gatewayService() {
+//        return Feign.builder()
+//                .decoder(new Decoder.Default())
+//                .encoder(new Encoder.Default())
+//                .target(GatewayService.class, serviceConfig.getUrl().getGateway());
+//    }
 
     @Bean
     public AuthService authService() {
         return Feign.builder()
                 .decoder(new StringDecoder())
                 .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
-                .requestInterceptor(new AuthorizationInterceptor())
+                .requestInterceptor(new OAuth2Interceptor(clientManager, serviceConfig))
                 .target(AuthService.class, serviceConfig.getUrl().getAuth());
+    }
+
+    @Bean
+    public KafkaService kafkaService() {
+        return Feign.builder()
+                .decoder(new StringDecoder())
+                .encoder(new SpringFormEncoder(new JacksonEncoder()))
+                .target(KafkaService.class, serviceConfig.getUrl().getKafka());
     }
 
     @Bean
