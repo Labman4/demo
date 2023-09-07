@@ -20,3 +20,4 @@ jobs:
     with:
       module: elasticsearch
       version: 1.0.0
+      secretPath: kv/app/native/es
