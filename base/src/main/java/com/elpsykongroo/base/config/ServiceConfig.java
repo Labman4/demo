@@ -120,6 +120,8 @@ public class ServiceConfig {
         private String storageLock;
 
         private String qrcodeToken;
+
+        private String publicKey;
     }
 
     @Data

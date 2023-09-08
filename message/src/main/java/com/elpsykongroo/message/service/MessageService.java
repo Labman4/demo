@@ -16,8 +16,12 @@
 
 package com.elpsykongroo.message.service;
 
-public interface MessageService {
-    String getMessage(String text);
+import com.elpsykongroo.base.domain.message.Message;
 
-    void receiveMessage(String message);
+public interface MessageService {
+    String getMessageByPublicKey(String text);
+
+    String generatePublicKey();
+
+    void setMessage(Message message);
 }

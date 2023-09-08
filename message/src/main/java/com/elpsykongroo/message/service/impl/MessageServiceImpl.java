@@ -17,27 +17,61 @@
 
 package com.elpsykongroo.message.service.impl;
 
+import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.domain.message.Message;
+import com.elpsykongroo.base.service.RedisService;
+import com.elpsykongroo.base.utils.PkceUtils;
 import com.elpsykongroo.message.service.MessageService;
-import org.springframework.context.event.EventListener;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 
 @Service
 public class MessageServiceImpl implements MessageService {
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private ServiceConfig serviceConfig;
+
     private String message = "";
     @Override
-    public String getMessage(String text) {
-        String[] msg = this.message.split("\\*");
-        if (msg.length > 1) {
-            if (text.equals(msg[0])) {
-                message = "";
-                return msg[1];
+    public String getMessageByPublicKey(String text) {
+        String[] texts= text.split("\\*");
+        String codeVerifier = texts[0];
+        String timestamp = texts[1];
+        String encodedVerifier = PkceUtils.verifyChallenge(codeVerifier);
+        String challenge = redisService.get("PKCE-" + timestamp);
+        if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
+            String message = redisService.get(text);
+            if (StringUtils.isNotEmpty(message)) {
+                redisService.set("PKCE-" + timestamp, "", "1");
             }
+            return message;
+//            String[] msg = this.message.split("\\*");
+//            if (msg.length > 1) {
+//                if (text.equals(msg[0])) {
+//                    message = "";
+//                    return msg[1];
+//                }
+//            }
         }
         return "";
     }
+
     @Override
-    @EventListener
-    public void receiveMessage(String message) {
-        this.message = message;
+    public String generatePublicKey() {
+        String codeVerifier = PkceUtils.generateVerifier();
+        long timestamp = Instant.now().toEpochMilli();
+        redisService.set("PKCE-" + timestamp, PkceUtils.generateChallenge(codeVerifier), serviceConfig.getTimeout().getPublicKey());
+        return codeVerifier + "*" + timestamp;
+    }
+
+    @Override
+    public void setMessage(Message message) {
+        redisService.set(message.getKey(), message.getValue(), "");
     }
 }

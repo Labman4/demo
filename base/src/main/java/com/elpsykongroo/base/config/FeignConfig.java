@@ -20,6 +20,7 @@ import com.elpsykongroo.base.interceptor.OAuth2Interceptor;
 import com.elpsykongroo.base.service.AuthService;
 import com.elpsykongroo.base.service.GatewayService;
 import com.elpsykongroo.base.service.KafkaService;
+import com.elpsykongroo.base.service.MessageService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.service.SearchService;
 import com.elpsykongroo.base.service.StorageService;
@@ -58,6 +59,15 @@ public class FeignConfig {
                 .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)))
                 .requestInterceptor(new OAuth2Interceptor(clientManager, serviceConfig))
                 .target(GatewayService.class, serviceConfig.getUrl().getGateway());
+    }
+
+    @Bean
+    public MessageService messageService() {
+        return Feign.builder()
+                .decoder(new Decoder.Default())
+                .encoder(new JacksonEncoder(new ObjectMapper().registerModule(new JavaTimeModule()).disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)))
+                .requestInterceptor(new OAuth2Interceptor(clientManager, serviceConfig))
+                .target(MessageService.class, serviceConfig.getUrl().getMessage());
     }
 
 //    @Bean

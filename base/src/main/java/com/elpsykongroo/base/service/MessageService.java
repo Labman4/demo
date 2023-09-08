@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.gateway.service;
+package com.elpsykongroo.base.service;
+
+import com.elpsykongroo.base.domain.message.Message;
+import feign.Headers;
+import feign.Param;
+import feign.RequestLine;
 
 public interface MessageService {
-    String getMessage(String text);
 
-    void receiveMessage(String message);
+    @RequestLine("GET /message/publicKey")
+    String getPublicKey();
+
+    @RequestLine("GET /message?text={text}")
+    String getMessage(@Param String text);
+
+    @RequestLine("PUT /message")
+    @Headers({
+            "Content-Type: application/json"
+    })
+    String setMessage(Message message);
 }

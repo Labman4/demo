@@ -59,7 +59,6 @@ public class DefaultSecurityConfig {
 								"/finishAuth",
 								"/email/tmp",
 								"/tmp/**",
-								"/qrcode",
 								"/actuator/health/**").permitAll()
 						.requestMatchers(HttpMethod.GET,"/email/verify/**").permitAll()
 						.requestMatchers("/auth/user/list").hasAuthority("admin")

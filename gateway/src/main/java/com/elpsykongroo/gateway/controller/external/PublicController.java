@@ -17,8 +17,7 @@
 package com.elpsykongroo.gateway.controller.external;
 
 import com.elpsykongroo.base.common.CommonResponse;
-import com.elpsykongroo.base.service.RedisService;
-import com.elpsykongroo.gateway.service.MessageService;
+import com.elpsykongroo.base.service.MessageService;
 import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
@@ -42,11 +41,7 @@ public class PublicController {
 	private IPManagerService ipManagerService;
 
 	@Autowired
-	private RedisService redisService;
-
-	@Autowired
 	private MessageService messageService;
-
 
 	@GetMapping("ip")
 	public String accessIP(HttpServletRequest request) {

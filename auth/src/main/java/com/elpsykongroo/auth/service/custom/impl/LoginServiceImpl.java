@@ -27,6 +27,8 @@ import com.elpsykongroo.auth.service.custom.EmailService;
 import com.elpsykongroo.auth.service.custom.LoginService;
 import com.elpsykongroo.auth.service.custom.UserService;
 import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.domain.message.Message;
+import com.elpsykongroo.base.service.MessageService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.BytesUtils;
 import com.elpsykongroo.base.utils.PkceUtils;
@@ -125,6 +127,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private ServiceConfig serviceConfig;
+
+    @Autowired
+    private MessageService messageService;
 
     @Override
     public String login(String username, HttpServletRequest servletRequest) {
@@ -396,14 +401,6 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public String qrcode() {
-        String codeVerifier = PkceUtils.generateVerifier();
-        Instant instant = Instant.now();
-        redisService.set("QR_CODE-" + instant, PkceUtils.generateChallenge(codeVerifier), serviceConfig.getTimeout().getQrcodeToken());
-        return codeVerifier + "*" + instant;
-    }
-
-    @Override
     public String loginWithToken(String token, String idToken, HttpServletRequest request, HttpServletResponse response) {
         try {
             OAuth2AuthenticatedPrincipal result = tokenIntrospector.introspect(token);
@@ -440,13 +437,17 @@ public class LoginServiceImpl implements LoginService {
         String codeVerifier = texts[0];
         String timestamp = texts[1];
         String encodedVerifier = PkceUtils.verifyChallenge(codeVerifier);
-        String challenge = redisService.get("QR_CODE-" + timestamp);
+        String challenge = redisService.get("PKCE-" + timestamp);
         if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String token = authorizationService.getToken(authentication.getPrincipal().toString(), timestamp);
             if (StringUtils.isNotEmpty(token)) {
-                redisService.publish("QR_CODE-token-" + codeVerifier,codeVerifier + "*" + token, serviceConfig.getUrl().getQrcodeCallback());
-                redisService.set("QR_CODE-" + timestamp , "", serviceConfig.getTimeout().getQrcodeToken());
+                Message message = new Message();
+                message.setKey(text);
+                message.setValue(token);
+                messageService.setMessage(message);
+//                redisService.publish("QR_CODE-token-" + codeVerifier,codeVerifier + "*" + token, serviceConfig.getUrl().getQrcodeCallback());
+//                redisService.set("PKCE-" + timestamp , "", "1");
                 return "200";
             } else {
                 return "404";

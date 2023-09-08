@@ -18,13 +18,15 @@ package com.elpsykongroo.message.controller;
 
 import com.elpsykongroo.base.domain.message.Message;
 
+import com.elpsykongroo.message.service.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -32,16 +34,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("message")
 public class MessageController {
-    @Autowired
-    private ApplicationContext ac;
 
-    @PostMapping("token")
-    public void receiveToken(@RequestBody Message message) {
-        if (log.isInfoEnabled()) {
-            log.info("receiveToken:{}", message.getValue());
-        }
-        ac.publishEvent(message.getValue());
+    @Autowired
+    private MessageService messageService;
+
+    @GetMapping("publicKey")
+    public String generatePublicKey() {
+        return messageService.generatePublicKey();
     }
 
+    @PutMapping
+    public void setMessage(@RequestBody Message message) {
+        if (log.isInfoEnabled()) {
+            log.info("receiveMessage:{}", message);
+        }
+        messageService.setMessage(message);
+    }
 
+    @GetMapping
+    public String getMessage(@RequestParam String text) {
+        return messageService.getMessageByPublicKey(text);
+    }
 }
