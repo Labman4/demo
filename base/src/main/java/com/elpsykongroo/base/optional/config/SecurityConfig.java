@@ -55,6 +55,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/notice/user").permitAll()
 						.requestMatchers("/notice/**").hasAuthority("admin")
 						.requestMatchers(requestConfig.getPath().getPermit()).permitAll()
+						.requestMatchers("/access").authenticated()
 						.anyRequest().access(accessManager)
 				)
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
