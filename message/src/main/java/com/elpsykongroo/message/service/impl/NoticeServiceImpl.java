@@ -113,8 +113,11 @@ public class NoticeServiceImpl implements NoticeService {
             params.add(topic);
             params.add(String.valueOf(notice.isDraft()));
             String result = queryString(fields, params, "notification", Notice.class, "", "must");
-            List<Notice> noticeList = JsonUtils.toType(result, new TypeReference<List<Notice>>() {});
-            notices.addAll(noticeList);
+            if (StringUtils.isNotEmpty(result)) {
+                List<Notice> noticeList = JsonUtils.toType(result, new TypeReference<List<Notice>>() {
+                });
+                notices.addAll(noticeList);
+            }
         }
         return JsonUtils.toJson(notices);
     }
