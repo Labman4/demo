@@ -7,8 +7,6 @@ on:
   push:
     paths:
       - gateway/**   
-      - base/**	
-
 jobs:
   build:
     uses: Labman4/workflow/.github/workflows/native-image-gateway.yml@native-image
