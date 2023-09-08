@@ -53,6 +53,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.POST, "/search").permitAll()
 						.requestMatchers(HttpMethod.PUT, "/notice/register").permitAll()
 						.requestMatchers(HttpMethod.GET, "/notice/user").permitAll()
+						.requestMatchers(HttpMethod.GET, "/message/publicKey").permitAll()
 						.requestMatchers("/notice/**").hasAuthority("admin")
 						.requestMatchers(requestConfig.getPath().getPermit()).permitAll()
 						.requestMatchers("/access").authenticated()
