@@ -370,11 +370,9 @@ public class NoticeServiceImpl implements NoticeService {
 //            URI uri = new URI("https://fcm.googleapis.com/v1/projects/elpsykongroo/messages:send");
 //            Security.addProvider(new BouncyCastleProvider());
 //            Notification notification = new Notification(subscription, "test");
-//            PushService pushService = new PushService("AIzaSyCRthXUaRcPNWmYYq3NokfWVBRzm8uC09U");
+//            PushService pushService = new PushService("apikey");
 //            HttpPost httpPost = pushService.preparePost(notification, Encoding.AES128GCM);
 //            httpPost.setURI(uri);
-//            System.out.println(credentials.getAccessToken().getTokenValue());
-//            System.out.println(httpPost.getFirstHeader("Authorization").getValue());
 //            CloseableHttpAsyncClient closeableHttpAsyncClient = HttpAsyncClients.custom()
 //                    .setProxy(proxy)
 //                    .setRoutePlanner(routePlanner)
