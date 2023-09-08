@@ -46,11 +46,11 @@ public class ServiceConfig {
     //public ca
     private SSL ssl;
 
-    private String proxy;
-
     private S3 s3;
 
     private OAuth2 oauth2;
+
+    private String credentialsPath;
 
     @Data
     public static class SSL {
@@ -151,6 +151,10 @@ public class ServiceConfig {
         private String loginPage;
 
         private String authUrl;
+
+        private String proxy;
+
+        private int proxyPort;
     }
 
     @Data

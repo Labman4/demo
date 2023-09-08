@@ -22,7 +22,7 @@
         <module>gateway</module>
         <module>redis</module>
         <module>storage</module>
-<!--        <module>message</module>-->
+        <module>message</module>
     </modules>
     
     <properties>
