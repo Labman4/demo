@@ -61,8 +61,8 @@ public class CustomAuthoritiesOpaqueTokenIntrospector implements OpaqueTokenIntr
 
     private Collection<GrantedAuthority> extractAuthorities(OAuth2AuthenticatedPrincipal principal) {
         String authorities = authService.userAllAuthority(principal.getName());
-        if(log.isInfoEnabled()) {
-            log.info("authorities:{}", authorities);
+        if(log.isTraceEnabled()) {
+            log.trace("authorities:{}", authorities);
         }
         List<Authority> authorityList = JsonUtils.toType(authorities, new TypeReference<List<Authority>>() {
         });

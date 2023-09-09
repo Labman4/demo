@@ -186,11 +186,13 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public List<NoticeTopic> topicListByUser(String user) {
         List<NoticeTopic> noticeTopics = new ArrayList<>();
-        if (StringUtils.isEmpty(user)) {
-            String result = existQuery("users", "notice_topic", NoticeTopic.class, "must_not");
-            if (StringUtils.isNotEmpty(result)) {
-                List<NoticeTopic> notices = JsonUtils.toType(result, new TypeReference<List<NoticeTopic>>() {});
+        String publicResult = existQuery("users", "notice_topic", NoticeTopic.class, "must_not");
+        if (StringUtils.isNotEmpty(publicResult)) {
+            List<NoticeTopic> notices = JsonUtils.toType(publicResult, new TypeReference<List<NoticeTopic>>() {});
+            if (StringUtils.isEmpty(user)) {
                 return notices;
+            } else {
+                noticeTopics.addAll((notices));
             }
         }
         List<String> fields = new ArrayList<>();
@@ -419,6 +421,9 @@ public class NoticeServiceImpl implements NoticeService {
             BatchResponse response = null;
             try {
                 response = FirebaseMessaging.getInstance(firebaseApp).sendMulticast(message);
+                if (log.isDebugEnabled()) {
+                    log.debug("push result success:{}, failed: {}",  response.getSuccessCount(), response.getFailureCount());
+                }
             } catch (FirebaseMessagingException e) {
                 throw new RuntimeException(e);
             }
@@ -440,6 +445,9 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     private List<String> checkToken(List<String> tokens) {
+        if (log.isDebugEnabled()) {
+            log.debug("checkToken:{}", tokens.size());
+        }
         List<String> validToken = new ArrayList<>();
         for (String token : tokens) {
             if (StringUtils.isNotBlank(token)) {
