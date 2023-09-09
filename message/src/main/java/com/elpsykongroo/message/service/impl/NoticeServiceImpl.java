@@ -236,11 +236,15 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     private String save(String index, Object entity) {
-        QueryParam queryParam = new QueryParam();
-        queryParam.setIndex(index);
-        queryParam.setOperation("save");
-        queryParam.setEntity(entity);
-        return searchService.query(queryParam);
+        try {
+            QueryParam queryParam = new QueryParam();
+            queryParam.setIndex(index);
+            queryParam.setOperation("save");
+            queryParam.setEntity(entity);
+            return searchService.query(queryParam);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private String queryString(List<String> fields, List<String> params, String index, Class type, String operation, String boolType) {
@@ -264,44 +268,56 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     private int updateQuery(List<String> fields, List<String> params, Map<String, Object> update, String index, Class type, String script, int updated) {
-        QueryParam queryParam = new QueryParam();
-        queryParam.setUpdateParam(update);
-        queryParam.setScript(script);
-        queryParam.setBoolType("should");
-        queryParam.setBoolQuery(true);
-        queryParam.setOperation("updateQuery");
-        queryParam.setType(type);
-        queryParam.setIndex(index);
-        queryParam.setFields(fields);
-        queryParam.setQueryStringParam(params);
-        String result = searchService.query(queryParam);
-        updated += Integer.parseInt(result);
-        return updated;
+        try {
+            QueryParam queryParam = new QueryParam();
+            queryParam.setUpdateParam(update);
+            queryParam.setScript(script);
+            queryParam.setBoolType("should");
+            queryParam.setBoolQuery(true);
+            queryParam.setOperation("updateQuery");
+            queryParam.setType(type);
+            queryParam.setIndex(index);
+            queryParam.setFields(fields);
+            queryParam.setQueryStringParam(params);
+            String result = searchService.query(queryParam);
+            updated += Integer.parseInt(result);
+            return updated;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     private String matchAllQuery(String index, Class type) {
-        QueryParam queryParam = new QueryParam();
-        queryParam.setIndex(index);
-        queryParam.setType(type);
-        return searchService.query(queryParam);
+        try {
+            QueryParam queryParam = new QueryParam();
+            queryParam.setIndex(index);
+            queryParam.setType(type);
+            return searchService.query(queryParam);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private int termQuery(String field, String param, List<String> updateParam, List<Object> updateParams, String index, Class type, String script, int updated) {
-        QueryParam queryParam = new QueryParam();
-        Map<String, Object> update = new HashMap<>();
-        for (int i = 0; i< updateParam.size(); i++) {
-            update.put(updateParam.get(i), updateParams.get(i));
+        try {
+            QueryParam queryParam = new QueryParam();
+            Map<String, Object> update = new HashMap<>();
+            for (int i = 0; i< updateParam.size(); i++) {
+                update.put(updateParam.get(i), updateParams.get(i));
+            }
+            queryParam.setUpdateParam(update);
+            queryParam.setScript(script);
+            queryParam.setOperation("updateQuery");
+            queryParam.setType(type);
+            queryParam.setIndex(index);
+            queryParam.setField(field);
+            queryParam.setParam(param);
+            String result = searchService.query(queryParam);
+            updated += Integer.parseInt(result);
+            return updated;
+        } catch (Exception e) {
+            return 0;
         }
-        queryParam.setUpdateParam(update);
-        queryParam.setScript(script);
-        queryParam.setOperation("updateQuery");
-        queryParam.setType(type);
-        queryParam.setIndex(index);
-        queryParam.setField(field);
-        queryParam.setParam(param);
-        String result = searchService.query(queryParam);
-        updated += Integer.parseInt(result);
-        return updated;
     }
 
     @Override

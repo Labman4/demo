@@ -31,6 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.NoSuchIndexException;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ScriptType;
@@ -44,9 +45,7 @@ import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -138,43 +137,47 @@ public class SearchServiceImpl implements SearchService {
         }
         query = getQuery(queryParam, pageable);
         SearchHits searchHits;
-        if ("count".equals(queryParam.getOperation())) {
-            long count = 0;
-            try {
-                count = operations.count(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
-            } catch (Exception e) {
-                if (log.isErrorEnabled()) {
-                    log.error("count error:{}", e.getMessage());
+        try {
+            if ("count".equals(queryParam.getOperation())) {
+                long count = 0;
+                try {
+                    count = operations.count(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                } catch (Exception e) {
+                    if (log.isErrorEnabled()) {
+                        log.error("count error:{}", e.getMessage());
+                    }
                 }
+                return String.valueOf(count);
+            } else if ("delete".equals(queryParam.getOperation())) {
+                queryParam.getIds().forEach(id -> operations.delete(id, IndexCoordinates.of(queryParam.getIndex())));
+                return "";
+            } else if ("deleteQuery".equals(queryParam.getOperation())) {
+                ByQueryResponse response = operations.delete(getQuery(queryParam, pageable), queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                return String.valueOf(response.getDeleted());
             }
-            return String.valueOf(count);
-        } else if ("delete".equals(queryParam.getOperation())) {
-            queryParam.getIds().forEach(id -> operations.delete(id, IndexCoordinates.of(queryParam.getIndex())));
+            else if ("save".equals(queryParam.getOperation())) {
+                return operations.save(queryParam.getEntity(), IndexCoordinates.of(queryParam.getIndex())).toString();
+            } else if ("update".equals(queryParam.getOperation())) {
+                UpdateQuery updateQuery = UpdateQuery.builder(queryParam.getIds().get(0))
+                        .withParams(queryParam.getUpdateParam())
+                        .withScript(queryParam.getScript())
+                        .withScriptType(ScriptType.INLINE)
+                        .build();
+                return operations.update(updateQuery, IndexCoordinates.of(queryParam.getIndex())).getResult().toString();
+            } else if ("updateQuery".equals(queryParam.getOperation())) {
+                UpdateQuery updateQuery = UpdateQuery.builder(getQuery(queryParam, pageable))
+                        .withIndex(queryParam.getIndex())
+                        .withParams(queryParam.getUpdateParam())
+                        .withScriptType(ScriptType.INLINE)
+                        .withScript(queryParam.getScript())
+                        .build();
+                ByQueryResponse byQueryResponse = operations.updateByQuery(updateQuery, IndexCoordinates.of(queryParam.getIndex()));
+                return String.valueOf(byQueryResponse.getTotal());
+            } else {
+                searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+            }
+        } catch (NoSuchIndexException e) {
             return "";
-        } else if ("deleteQuery".equals(queryParam.getOperation())) {
-            ByQueryResponse response = operations.delete(getQuery(queryParam, pageable), queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
-            return String.valueOf(response.getDeleted());
-        }
-        else if ("save".equals(queryParam.getOperation())) {
-            return operations.save(queryParam.getEntity(), IndexCoordinates.of(queryParam.getIndex())).toString();
-        } else if ("update".equals(queryParam.getOperation())) {
-            UpdateQuery updateQuery = UpdateQuery.builder(queryParam.getIds().get(0))
-                    .withParams(queryParam.getUpdateParam())
-                    .withScript(queryParam.getScript())
-                    .withScriptType(ScriptType.INLINE)
-                    .build();
-            return operations.update(updateQuery, IndexCoordinates.of(queryParam.getIndex())).getResult().toString();
-        } else if ("updateQuery".equals(queryParam.getOperation())) {
-            UpdateQuery updateQuery = UpdateQuery.builder(getQuery(queryParam, pageable))
-                    .withIndex(queryParam.getIndex())
-                    .withParams(queryParam.getUpdateParam())
-                    .withScriptType(ScriptType.INLINE)
-                    .withScript(queryParam.getScript())
-                    .build();
-            ByQueryResponse byQueryResponse = operations.updateByQuery(updateQuery, IndexCoordinates.of(queryParam.getIndex()));
-            return String.valueOf(byQueryResponse.getTotal());
-        } else {
-            searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
         }
         if (pageable != null) {
             SearchPage searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
