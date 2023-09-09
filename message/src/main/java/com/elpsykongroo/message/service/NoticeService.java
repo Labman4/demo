@@ -19,6 +19,7 @@ package com.elpsykongroo.message.service;
 
 import com.elpsykongroo.base.domain.search.repo.Notice;
 import com.elpsykongroo.base.domain.search.repo.NoticeTopic;
+import com.elpsykongroo.base.domain.search.repo.RegisterToken;
 
 import java.util.List;
 
@@ -27,11 +28,11 @@ public interface NoticeService {
 
     void push(Notice notice);
 
-    String findToken(String user);
+    List<RegisterToken> findToken(List<String> user);
 
-    String noticeList(Notice notice);
+    List<Notice> noticeList(Notice notice);
 
-    String noticeListByUser(String user, String draft);
+    List<Notice> noticeListByUser(String user, String draft);
 
     String sendNotice(Notice notice);
 

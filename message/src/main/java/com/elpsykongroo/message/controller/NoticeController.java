@@ -43,12 +43,12 @@ public class NoticeController {
 
     @PostMapping
     public String noticeList(@RequestBody Notice notice) {
-        return noticeService.noticeList(notice);
+        return noticeService.noticeList(notice).toString();
     }
 
     @GetMapping("user")
     public String noticeListByUser(@RequestParam String user, @RequestParam String draft) {
-        return noticeService.noticeListByUser(user, draft);
+        return noticeService.noticeListByUser(user, draft).toString();
     }
 
     @DeleteMapping
@@ -57,8 +57,8 @@ public class NoticeController {
     }
 
     @GetMapping("token")
-    public String getToken(@RequestParam(required = false) String user) {
-        return noticeService.findToken(user);
+    public String getToken(@RequestParam(required = false) List<String> user) {
+        return noticeService.findToken(user).toString();
     }
 
     @PutMapping("register")

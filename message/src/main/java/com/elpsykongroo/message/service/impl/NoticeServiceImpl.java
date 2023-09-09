@@ -88,42 +88,61 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public String findToken(String user) {
-        if (StringUtils.isEmpty(user)) {
-            return matchAllQuery("register_token", RegisterToken.class);
-        }
-        List<String> fields = new ArrayList<>();
-        fields.add("user");
-        List<String> params = new ArrayList<>();
-        params.add(user);
-        return queryString(fields, params, "register_token", RegisterToken.class, "", "");
-    }
-
-    @Override
-    public String noticeList(Notice notice) {
-        if (notice.getTopic().isEmpty()) {
-            return matchAllQuery("notification", Notice.class);
-        }
-        List<Notice> notices = new ArrayList<>();
-        for (String topic : notice.getTopic()) {
-            List<String> fields = new ArrayList<>();
-            fields.add("topic");
-            fields.add("draft");
-            List<String> params = new ArrayList<>();
-            params.add(topic);
-            params.add(String.valueOf(notice.isDraft()));
-            String result = queryString(fields, params, "notification", Notice.class, "", "must");
+    public List<RegisterToken> findToken(List<String> users) {
+        List<RegisterToken> tokens = new ArrayList<>();
+        if (users == null || users.isEmpty()) {
+            String result = matchAllQuery("register_token", RegisterToken.class);
             if (StringUtils.isNotEmpty(result)) {
-                List<Notice> noticeList = JsonUtils.toType(result, new TypeReference<List<Notice>>() {
-                });
-                notices.addAll(noticeList);
+                List<RegisterToken> registerTokens = JsonUtils.toType(result, new TypeReference<List<RegisterToken>>() {});
+                return registerTokens;
+            }
+        } else {
+            List<String> fields = new ArrayList<>();
+            List<String> params = new ArrayList<>();
+            for (String user : users) {
+                fields.add("user");
+                params.add(user);
+                String result = queryString(fields, params, "register_token", RegisterToken.class, "", "");
+                if (StringUtils.isNotEmpty(result)) {
+                    List<RegisterToken> registerTokens = JsonUtils.toType(result, new TypeReference<List<RegisterToken>>() {
+                    });
+                    tokens.addAll(registerTokens);
+                }
             }
         }
-        return JsonUtils.toJson(notices);
+        return tokens;
     }
 
     @Override
-    public String noticeListByUser(String user, String draft) {
+    public List<Notice> noticeList(Notice notice) {
+        List<Notice> notices = new ArrayList<>();
+        if (notice.getTopic() == null || notice.getTopic().isEmpty()) {
+            String result = matchAllQuery("notification", Notice.class);
+            if (StringUtils.isNotEmpty(result)) {
+                List<Notice> noticeList = JsonUtils.toType(result, new TypeReference<List<Notice>>() {});
+                return noticeList;
+            }
+        } else {
+            for (String topic : notice.getTopic()) {
+                List<String> fields = new ArrayList<>();
+                fields.add("topic");
+                fields.add("draft");
+                List<String> params = new ArrayList<>();
+                params.add(topic);
+                params.add(String.valueOf(notice.isDraft()));
+                String result = queryString(fields, params, "notification", Notice.class, "", "must");
+                if (StringUtils.isNotEmpty(result)) {
+                    List<Notice> noticeList = JsonUtils.toType(result, new TypeReference<List<Notice>>() {
+                    });
+                    notices.addAll(noticeList);
+                }
+            }
+        }
+        return notices;
+    }
+
+    @Override
+    public List<Notice> noticeListByUser(String user, String draft) {
         List<NoticeTopic> noticeTopics = topicListByUser(user);
         List<String> topics = new ArrayList<>();
         for (NoticeTopic n : noticeTopics) {
@@ -141,22 +160,24 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public List<NoticeTopic> topicList(List<String> topics) {
         List<NoticeTopic> noticeTopics = new ArrayList<>();
-        if (topics.isEmpty()) {
+        if (topics == null || topics.isEmpty()) {
             String result = matchAllQuery("notice_topic", NoticeTopic.class);
             if (StringUtils.isNotEmpty(result)) {
                 List<NoticeTopic> notices = JsonUtils.toType(result, new TypeReference<List<NoticeTopic>>() {});
-                noticeTopics.addAll(notices);
+                return notices;
             }
-        }
-        List<String> fields = new ArrayList<>();
-        List<String> params = new ArrayList<>();
-        for (String topic : topics) {
-            fields.add("name");
-            params.add(topic);
-            String result = queryString(fields, params, "notice_topic", NoticeTopic.class, "", "");
-            if (StringUtils.isNotEmpty(result)) {
-                List<NoticeTopic> notices = JsonUtils.toType(result, new TypeReference<List<NoticeTopic>>() {});
-                noticeTopics.addAll(notices);
+        } else {
+            List<String> fields = new ArrayList<>();
+            List<String> params = new ArrayList<>();
+            for (String topic : topics) {
+                fields.add("name");
+                params.add(topic);
+                String result = queryString(fields, params, "notice_topic", NoticeTopic.class, "", "");
+                if (StringUtils.isNotEmpty(result)) {
+                    List<NoticeTopic> notices = JsonUtils.toType(result, new TypeReference<List<NoticeTopic>>() {
+                    });
+                    noticeTopics.addAll(notices);
+                }
             }
         }
         return noticeTopics;
@@ -342,11 +363,9 @@ public class NoticeServiceImpl implements NoticeService {
                     registrationTokens.addAll(n.getRegisters());
                 }
                 if (n.getUsers() == null || n.getUsers().isEmpty()) {
-                    findTokenByUser(registrationTokens, "");
+                    findTokenByUser(registrationTokens, new ArrayList<>());
                 } else {
-                    for (String user : n.getUsers()) {
-                        findTokenByUser(registrationTokens, user);
-                    }
+                    findTokenByUser(registrationTokens,  n.getUsers());
                 }
             }
             pushNotice(registrationTokens, notification);
@@ -433,13 +452,10 @@ public class NoticeServiceImpl implements NoticeService {
         queryString(fields, params, "register_token", RegisterToken.class, "deleteQuery", "should");
     }
 
-    private void findTokenByUser(List<String> registrationTokens, String user) {
-        String token = findToken(user);
-        if (StringUtils.isNotEmpty(token)) {
-            RegisterToken[] registerToken = JsonUtils.toObject(token, RegisterToken[].class);
-            for (RegisterToken register : registerToken) {
-                registrationTokens.add(register.getToken());
-            }
+    private void findTokenByUser(List<String> registrationTokens, List<String> user) {
+        List<RegisterToken> token = findToken(user);
+        for (RegisterToken register : token) {
+            registrationTokens.add(register.getToken());
         }
     }
 }
