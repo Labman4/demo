@@ -187,7 +187,11 @@ public class NoticeServiceImpl implements NoticeService {
     public List<NoticeTopic> topicListByUser(String user) {
         List<NoticeTopic> noticeTopics = new ArrayList<>();
         if (StringUtils.isEmpty(user)) {
-            return noticeTopics;
+            String result = existQuery("users", "notice_topic", NoticeTopic.class, "must_not");
+            if (StringUtils.isNotEmpty(result)) {
+                List<NoticeTopic> notices = JsonUtils.toType(result, new TypeReference<List<NoticeTopic>>() {});
+                return notices;
+            }
         }
         List<String> fields = new ArrayList<>();
         List<String> params = new ArrayList<>();
@@ -262,6 +266,21 @@ public class NoticeServiceImpl implements NoticeService {
             queryParam.setIndex(index);
             queryParam.setOperation("save");
             queryParam.setEntity(entity);
+            return searchService.query(queryParam);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private String existQuery(String field, String index, Class type, String boolType) {
+        try {
+            QueryParam queryParam = new QueryParam();
+            queryParam.setIndex(index);
+            queryParam.setType(type);
+            queryParam.setField(field);
+            queryParam.setOperation("exist");
+            queryParam.setBoolType(boolType);
+            queryParam.setBoolQuery(true);
             return searchService.query(queryParam);
         } catch (Exception e) {
             return "";

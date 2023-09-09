@@ -17,6 +17,7 @@
 package com.elpsykongroo.services.elasticsearch.service.impl;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.ExistsQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchAllQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
@@ -55,7 +56,7 @@ public class SearchServiceImpl implements SearchService {
 
     private static Query getQuery(QueryParam queryParam, Pageable pageable) {
         Query query;
-        if (StringUtils.isNotEmpty(queryParam.getParam()) ||
+        if (StringUtils.isNotEmpty(queryParam.getParam()) || StringUtils.isNotEmpty(queryParam.getField()) ||
                 (queryParam.getQueryStringParam() != null && !queryParam.getQueryStringParam().isEmpty())) {
             if (queryParam.isFuzzy()) {
                   MultiMatchQuery multiMatchQuery = new MultiMatchQuery.Builder()
@@ -73,16 +74,21 @@ public class SearchServiceImpl implements SearchService {
                    query = nativeQuery;
                }
             } else if (queryParam.isBoolQuery()) {
-                List<String> fields = queryParam.getFields();
-                List<String> params = queryParam.getQueryStringParam();
-                List<QueryStringQuery> queryStringQueries = new ArrayList<>();
-                for (int i = 0; i< queryParam.getQueryStringParam().size(); i++) {
-                    queryStringQueries.add(new QueryStringQuery.Builder()
+                List<co.elastic.clients.elasticsearch._types.query_dsl.Query> queries = new ArrayList<>();
+                if ("exist".equals(queryParam.getOperation())) {
+                    ExistsQuery existsQuery = new ExistsQuery.Builder().field(queryParam.getField()).build();
+                    queries.add(existsQuery._toQuery());
+                } else {
+                    List<String> fields = queryParam.getFields();
+                    List<String> params = queryParam.getQueryStringParam();
+                    List<QueryStringQuery> queryStringQueries = new ArrayList<>();
+                    for (int i = 0; i < queryParam.getQueryStringParam().size(); i++) {
+                        queryStringQueries.add(new QueryStringQuery.Builder()
                                 .query(params.get(i)).fields(fields.get(i))
                                 .build());
+                    }
+                    queryStringQueries.forEach(queryStringQuery -> queries.add(queryStringQuery._toQuery()));
                 }
-                List<co.elastic.clients.elasticsearch._types.query_dsl.Query> queries = new ArrayList<>();
-                queryStringQueries.forEach(queryStringQuery -> queries.add(queryStringQuery._toQuery()));
                 BoolQuery boolQuery = null;
                 if ("filter".equals(queryParam.getBoolType())) {
                     boolQuery = new BoolQuery.Builder().filter(queries).build();
