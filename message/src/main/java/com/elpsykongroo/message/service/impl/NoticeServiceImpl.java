@@ -81,6 +81,15 @@ public class NoticeServiceImpl implements NoticeService {
             Map<String, Object> update = new HashMap<>();
             update.put("timestamp", timestamp);
             update.put("user", user);
+            if (StringUtils.isEmpty(user)) {
+                String tokenResult = queryString(fields, params, "register_token", RegisterToken.class, "", "");
+                List<RegisterToken> registerTokens = JsonUtils.toType(tokenResult, new TypeReference<List<RegisterToken>>() {});
+                for (RegisterToken register : registerTokens) {
+                    if (StringUtils.isNotEmpty(register.getUser())) {
+                        script = "ctx._source.timestamp=params.timestamp";
+                    }
+                }
+            }
             updateQuery(fields, params, update, "register_token", RegisterToken.class, script, 0);
         } else {
             save("register_token", registerToken);
