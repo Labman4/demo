@@ -36,7 +36,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService;
@@ -123,11 +122,7 @@ public class AuthorizationServerConfig {
 
 		http.apply(authorizationServerConfigurer);
 		http
-			.securityMatcher(endpointsMatcher)
-			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.NEVER)
-				.maximumSessions(1);
-//				.maxSessionsPreventsLogin(true);
+			.securityMatcher(endpointsMatcher);
 		http.httpBasic((basic) -> basic
 					.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
 						@Override
