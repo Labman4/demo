@@ -326,6 +326,11 @@
                 <version>7.6.0</version>
             </dependency>
             <dependency>
+                <groupId>com.bucket4j</groupId>
+                <artifactId>bucket4j-core</artifactId>
+                <version>8.3.0</version>
+            </dependency>
+            <dependency>
                 <groupId>io.github.openfeign.form</groupId>
                 <artifactId>feign-form-spring</artifactId>
                 <version>3.8.0</version>
@@ -391,6 +396,11 @@
                 <version>2.20.79</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.bucket4j</groupId>
+                <artifactId>bucket4j-postgresql</artifactId>
+                <version>8.3.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

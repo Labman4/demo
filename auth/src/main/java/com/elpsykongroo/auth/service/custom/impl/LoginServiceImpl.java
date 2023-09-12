@@ -31,6 +31,7 @@ import com.elpsykongroo.base.domain.message.Message;
 import com.elpsykongroo.base.service.MessageService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.BytesUtils;
+import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.PkceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yubico.webauthn.AssertionRequest;
@@ -154,7 +155,7 @@ public class LoginServiceImpl implements LoginService {
                     AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
                             .username(username)
                             .build());
-                    servletContext.setAttribute(username, request);
+                    servletContext.setAttribute(username, request.toJson());
                     return request.toCredentialsGetJson();
                 } else {
                     return "400";
@@ -177,7 +178,7 @@ public class LoginServiceImpl implements LoginService {
         try {
             PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>
                     pkc = PublicKeyCredential.parseAssertionResponseJson(credential);
-            AssertionRequest assertionRequest = (AssertionRequest) servletContext.getAttribute(username);
+            AssertionRequest assertionRequest = JsonUtils.toObject(servletContext.getAttribute(username).toString(), AssertionRequest.class);
             servletContext.removeAttribute(username);
             if (log.isDebugEnabled()) {
                 log.debug("remove pkc success");
@@ -195,11 +196,14 @@ public class LoginServiceImpl implements LoginService {
 //                        result.getCredential().getCredentialId());
                 log.debug("login success");
                 SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+                /**
+                 * user byteArray cant serializable and do not need add authorities with authentication when use OpaqueToken
+                 */
                 Authentication authentication =
                         WebAuthnAuthenticationToken.authenticated(
-                                result.getUsername(),
-                                result.getCredential(),
-                                userService.userAuthority(username));
+                                username,
+                                null,
+                                null);
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);

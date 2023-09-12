@@ -154,4 +154,14 @@ public class IPUtils {
         }
         return request.getRemoteAddr();
     }
+
+    public static Long ipToBigInteger(String ipAddress) throws UnknownHostException {
+        InetAddress inetAddress = InetAddress.getByName(ipAddress);
+        byte[] addressBytes = inetAddress.getAddress();
+        long result = 0;
+        for (byte b : addressBytes) {
+            result = result << 8 | (b & 0xFF);
+        }
+        return result;
+    }
 }

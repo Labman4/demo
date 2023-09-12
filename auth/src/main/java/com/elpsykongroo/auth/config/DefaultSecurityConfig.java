@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,6 +32,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -77,14 +80,14 @@ public class DefaultSecurityConfig {
 		HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
 		requestCache.setRequestMatcher(new AntPathRequestMatcher("/oauth2/authorize/**"));
 		http
-//				.httpBasic((basic) -> basic
-//						.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
-//							@Override
-//							public <O extends BasicAuthenticationFilter> O postProcess(O filter) {
-//								filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
-//								return filter;
-//							}
-//						}))
+				.httpBasic((basic) -> basic
+						.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
+							@Override
+							public <O extends BasicAuthenticationFilter> O postProcess(O filter) {
+								filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
+								return filter;
+							}
+						}))
 				.cors().and()
 				.requestCache(
 						cache -> cache.requestCache(requestCache)

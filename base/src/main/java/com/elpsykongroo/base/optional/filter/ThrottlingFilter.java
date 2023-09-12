@@ -23,8 +23,14 @@ import com.elpsykongroo.base.utils.PathUtils;
 import com.elpsykongroo.base.utils.RecordUtils;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
+import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.Refill;
+import io.github.bucket4j.TimeMeter;
+import io.github.bucket4j.distributed.jdbc.SQLProxyConfiguration;
+import io.github.bucket4j.distributed.jdbc.SQLProxyConfigurationBuilder;
+import io.github.bucket4j.distributed.proxy.ClientSideConfig;
+import io.github.bucket4j.postgresql.PostgreSQLadvisoryLockBasedProxyManager;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -37,7 +43,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -49,29 +57,36 @@ public class ThrottlingFilter implements Filter {
 
 	private GatewayService gatewayService;
 
+	private DataSource dataSource;
+
+
+	public ThrottlingFilter(RequestConfig requestConfig, GatewayService gatewayService, DataSource source) {
+		this.requestConfig = requestConfig;
+		this.gatewayService =gatewayService;
+		this.dataSource = source;
+	}
+
 	public ThrottlingFilter(RequestConfig requestConfig, GatewayService gatewayService) {
 		this.requestConfig = requestConfig;
 		this.gatewayService =gatewayService;
 	}
 
-	private Bucket createNewBucket() {
-		if (log.isTraceEnabled()) {
-			log.trace("request scope limit:{}", requestConfig.getLimit().getScope());
+	private Bucket createBucket(Long appKey, Long speed, Long duration, Long tokens) {
+		Refill refill = Refill.greedy(speed,
+				Duration.ofSeconds(duration));
+		Bandwidth limit = Bandwidth.classic(tokens, refill);
+		if (dataSource != null) {
+			SQLProxyConfiguration configuration = SQLProxyConfigurationBuilder.builder()
+					.withClientSideConfig(ClientSideConfig.getDefault().withClientClock(TimeMeter.SYSTEM_MILLISECONDS))
+					.build(dataSource);
+			PostgreSQLadvisoryLockBasedProxyManager proxyManager = new PostgreSQLadvisoryLockBasedProxyManager(configuration);
+			BucketConfiguration bucketConfiguration = BucketConfiguration.builder()
+					.addLimit(limit)
+					.build();
+			return proxyManager.builder().build(appKey, bucketConfiguration);
+		} else {
+			return Bucket.builder().addLimit(limit).build();
 		}
-		Refill refill = Refill.greedy(requestConfig.getLimit().getScope().getSpeed(),
-					    Duration.ofSeconds(requestConfig.getLimit().getScope().getDuration()));
-		Bandwidth limit = Bandwidth.classic(requestConfig.getLimit().getScope().getTokens(), refill);
-		return Bucket.builder().addLimit(limit).build();
-	}
-
-	private Bucket createGlobalNewBucket() {
-		if (log.isTraceEnabled()) {
-			log.trace("request global limit:{}", requestConfig.getLimit().getGlobal());
-		}
-		Refill refill = Refill.greedy(requestConfig.getLimit().getGlobal().getSpeed(), 
-						Duration.ofSeconds(requestConfig.getLimit().getGlobal().getDuration()));
-		Bandwidth limit = Bandwidth.classic(requestConfig.getLimit().getGlobal().getTokens(), refill);
-		return Bucket.builder().addLimit(limit).build();
 	}
 
 	@Override
@@ -138,22 +153,40 @@ public class ThrottlingFilter implements Filter {
 			}
 	}
 
-	private boolean limitByBucket(String scope, HttpServletResponse httpResponse, HttpSession session) {
-		String appKey = session.getId();
-		Bucket bucket = (Bucket) session.getAttribute(scope + "throttler-" + appKey);
+	private boolean limitByBucket(String scope, HttpServletResponse httpResponse, HttpSession session) throws UnknownHostException {
+		String ip = gatewayService.getIP();
+		Long appKey = IPUtils.ipToBigInteger(ip);
+		Bucket bucket = null;
+		String attrName = "";
+		if (dataSource == null) {
+			if ("global".equals(scope)) {
+				attrName = scope + "throttler";
+				bucket = (Bucket) session.getAttribute(attrName);
+			} else {
+				attrName = scope + "throttler-" + session.getId();
+				bucket = (Bucket) session.getAttribute(attrName);
+			}
+		}
 		if (bucket == null) {
 			if ("global".equals(scope)) {
-				bucket = createGlobalNewBucket();
+				bucket = createBucket(appKey,
+						requestConfig.getLimit().getGlobal().getSpeed(),
+						requestConfig.getLimit().getGlobal().getDuration(),
+						requestConfig.getLimit().getGlobal().getTokens());
 			} else {
-				bucket = createNewBucket();
+				bucket = createBucket(appKey,
+						requestConfig.getLimit().getScope().getSpeed(),
+						requestConfig.getLimit().getScope().getDuration(),
+						requestConfig.getLimit().getScope().getTokens());
 			}
-			session.setAttribute(scope +"throttler-" + appKey, bucket);
+			if (dataSource == null) {
+				session.setAttribute(attrName, bucket);
+			}
 		}
 		// tryConsume returns false immediately if no tokens available with the bucket
 		if (bucket.tryConsume(1)) {
 			// the limit is not exceeded
 			return true;
-//				filterChain.doFilter(servletRequest, servletResponse);
 		} else {
 			// limit is exceeded
 			ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);

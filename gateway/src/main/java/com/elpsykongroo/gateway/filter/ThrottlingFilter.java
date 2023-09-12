@@ -21,6 +21,12 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import com.elpsykongroo.base.utils.PathUtils;
+import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.TimeMeter;
+import io.github.bucket4j.distributed.jdbc.SQLProxyConfiguration;
+import io.github.bucket4j.distributed.jdbc.SQLProxyConfigurationBuilder;
+import io.github.bucket4j.distributed.proxy.ClientSideConfig;
+import io.github.bucket4j.postgresql.PostgreSQLadvisoryLockBasedProxyManager;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -65,23 +71,10 @@ public class ThrottlingFilter implements Filter {
 		this.ipMangerService = ipMangerService;
 	}
 
-	private Bucket createNewBucket() {
-		if (log.isTraceEnabled()) {
-			log.trace("request scope limit:{}", requestConfig.getLimit().getScope());
-		}
-		Refill refill = Refill.greedy(requestConfig.getLimit().getScope().getSpeed(),
-					    Duration.ofSeconds(requestConfig.getLimit().getScope().getDuration()));
-		Bandwidth limit = Bandwidth.classic(requestConfig.getLimit().getScope().getTokens(), refill);
-		return Bucket.builder().addLimit(limit).build();
-	}
-
-	private Bucket createGlobalNewBucket() {
-		if (log.isTraceEnabled()) {
-			log.trace("request global limit:{}", requestConfig.getLimit().getGlobal());
-		}
-		Refill refill = Refill.greedy(requestConfig.getLimit().getGlobal().getSpeed(), 
-						Duration.ofSeconds(requestConfig.getLimit().getGlobal().getDuration()));
-		Bandwidth limit = Bandwidth.classic(requestConfig.getLimit().getGlobal().getTokens(), refill);
+	private Bucket createBucket(Long speed, Long duration, Long tokens) {
+		Refill refill = Refill.greedy(speed,
+				Duration.ofSeconds(duration));
+		Bandwidth limit = Bandwidth.classic(tokens, refill);
 		return Bucket.builder().addLimit(limit).build();
 	}
 
@@ -140,15 +133,26 @@ public class ThrottlingFilter implements Filter {
 	}
 
 	private boolean limitByBucket(String scope, HttpServletResponse httpResponse, HttpSession session) {
-		String appKey = session.getId();
-		Bucket bucket = (Bucket) session.getAttribute(scope + "throttler-" + appKey);
+		String attrName = "";
+		if ("global".equals(scope)) {
+			attrName = scope + "throttler";
+		} else {
+			attrName = scope + "throttler" + session.getId();
+		}
+		Bucket bucket = (Bucket) session.getAttribute(attrName);
 		if (bucket == null) {
 			if ("global".equals(scope)) {
-				bucket = createGlobalNewBucket();
+				bucket = createBucket(
+						requestConfig.getLimit().getGlobal().getSpeed(),
+						requestConfig.getLimit().getGlobal().getDuration(),
+						requestConfig.getLimit().getGlobal().getTokens());
 			} else {
-				bucket = createNewBucket();
+				bucket = createBucket(
+						requestConfig.getLimit().getScope().getSpeed(),
+						requestConfig.getLimit().getScope().getDuration(),
+						requestConfig.getLimit().getScope().getTokens());
 			}
-			session.setAttribute(scope +"throttler-" + appKey, bucket);
+			session.setAttribute(attrName, bucket);
 		}
 		// tryConsume returns false immediately if no tokens available with the bucket
 		if (bucket.tryConsume(1)) {

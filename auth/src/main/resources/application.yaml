@@ -17,6 +17,9 @@ management:
       exposure:
         include: ${ENDPOINTS_WEB:health}
 spring:
+  session:
+    jdbc:
+      initialize-schema: ALWAYS
   mail:
     host: smtp.gmail.com
     port: 587
@@ -73,4 +76,4 @@ logging:
       springframework:
         security: ${SECURITY_LOG_LEVEL:debug}
     com:
-      elpsykongroo: ${AUTH_LOG_LEVEL:debug}
+      elpsykongroo: ${APP_LEVEL:debug}

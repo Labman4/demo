@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.sql.DataSource;
+
 @Configuration(proxyBeanMethods = false)
 public class LimitBucketConfig {
 
@@ -32,8 +34,11 @@ public class LimitBucketConfig {
     @Autowired
     private GatewayService gatewayService;
 
+    @Autowired
+    private DataSource dataSource;
+
     @Bean
     public ThrottlingFilter throttlingFilter() {
-        return new ThrottlingFilter(requestConfig, gatewayService);
+        return new ThrottlingFilter(requestConfig, gatewayService, dataSource);
     }
 }

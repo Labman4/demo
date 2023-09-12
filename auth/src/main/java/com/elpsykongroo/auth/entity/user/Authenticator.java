@@ -31,6 +31,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 
@@ -38,8 +39,8 @@ import java.util.Optional;
 @Entity
 @Table(name = "authenticator")
 @NoArgsConstructor
-public class Authenticator{
-
+public class Authenticator implements Serializable {
+    
     @Id
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "uuid2")
