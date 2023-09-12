@@ -64,7 +64,7 @@ public class WebConfig {
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
         defaultCookieSerializer.setCookiePath("/");
         defaultCookieSerializer.setSameSite(null);
-        defaultCookieSerializer.setDomainNamePattern("^(([^.]+)\\.)?(elpsykongroo\\.com|localhost|127.0.0.1)$");
+        defaultCookieSerializer.setDomainNamePattern("^(([^.]+)\\.)?(elpsykongroo\\.com|localhost|127.0.0.1|auth.|auth-pre.)$");
         return defaultCookieSerializer;
     }
 }
