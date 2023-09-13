@@ -125,7 +125,7 @@ public class AuthorizationServerConfig {
 		http
 			.securityMatcher(endpointsMatcher)
 			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.NEVER)
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.maximumSessions(1);
 //				.maxSessionsPreventsLogin(true);
 		http.httpBasic((basic) -> basic

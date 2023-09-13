@@ -74,7 +74,7 @@ public class DefaultSecurityConfig {
 					.deleteCookies("JSESSIONID"));
 		http
 			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.NEVER)
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.maximumSessions(1);
 //			.maxSessionsPreventsLogin(true);
 		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
