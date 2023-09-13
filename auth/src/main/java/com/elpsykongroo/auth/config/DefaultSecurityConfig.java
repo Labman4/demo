@@ -70,8 +70,7 @@ public class DefaultSecurityConfig {
 					.clearAuthentication(true)
 					.invalidateHttpSession(true)
 					.addLogoutHandler(new SecurityContextLogoutHandler())
-					.logoutSuccessHandler(new CustomLogoutSuccessHandler())
-					.deleteCookies("JSESSIONID"));
+					);
 		http
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

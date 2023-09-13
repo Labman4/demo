@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package com.elpsykongroo.base.interceptor;
+package com.elpsykongroo.auth.interceptor;
 
-import com.elpsykongroo.base.domain.auth.user.Authority;
-import com.elpsykongroo.base.service.AuthService;
-import com.elpsykongroo.base.utils.JsonUtils;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.elpsykongroo.auth.entity.user.Authority;
+import com.elpsykongroo.auth.service.custom.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +46,7 @@ public class CustomAuthoritiesOpaqueTokenIntrospector implements OpaqueTokenIntr
     String clientSecret;
 
     @Autowired
-    private AuthService authService;
+    private UserService userService;
 
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
@@ -60,12 +58,7 @@ public class CustomAuthoritiesOpaqueTokenIntrospector implements OpaqueTokenIntr
     }
 
     private Collection<GrantedAuthority> extractAuthorities(OAuth2AuthenticatedPrincipal principal) {
-        String authorities = authService.userAllAuthority(principal.getName());
-        if(log.isTraceEnabled()) {
-            log.trace("authorities:{}", authorities);
-        }
-        List<Authority> authorityList = JsonUtils.toType(authorities, new TypeReference<List<Authority>>() {
-        });
+        List<Authority> authorityList = userService.userAuthority(principal.getName());
         return authorityList.stream().map(authority -> {
             return new SimpleGrantedAuthority(authority.getAuthority());
         }).collect(Collectors.toList());
