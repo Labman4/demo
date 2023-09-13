@@ -33,8 +33,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService;
@@ -57,6 +59,8 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -119,16 +123,19 @@ public class AuthorizationServerConfig {
 
 		http.apply(authorizationServerConfigurer);
 		http
-			.securityMatcher(endpointsMatcher);
-		http
-//				.httpBasic((basic) -> basic
-//					.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
-//						@Override
-//						public <O extends BasicAuthenticationFilter> O postProcess(O filter) {
-//							filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
-//							return filter;
-//						}
-//					}))
+			.securityMatcher(endpointsMatcher)
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.NEVER)
+				.maximumSessions(1);
+//				.maxSessionsPreventsLogin(true);
+		http.httpBasic((basic) -> basic
+					.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
+						@Override
+						public <O extends BasicAuthenticationFilter> O postProcess(O filter) {
+							filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
+							return filter;
+						}
+					}))
 				.cors().and().csrf().disable();
 //			.exceptionHandling((exceptions) -> exceptions
 //							.authenticationEntryPoint((req, resp, e) -> {
