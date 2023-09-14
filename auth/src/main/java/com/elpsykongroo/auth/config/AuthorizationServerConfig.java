@@ -32,10 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
@@ -64,6 +62,8 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 
 @Configuration(proxyBeanMethods = false)
 public class AuthorizationServerConfig {
@@ -81,7 +81,7 @@ public class AuthorizationServerConfig {
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
-		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
+		http.oauth2ResourceServer(rs -> rs.opaqueToken(withDefaults()));
 
 		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
 				new OAuth2AuthorizationServerConfigurer();
@@ -96,7 +96,7 @@ public class AuthorizationServerConfig {
 //		resolver.setAuthorizationRequestCustomizer(OAuth2AuthorizationRequestCustomizers.withPkce());
 
 		authorizationServerConfigurer
-				.oidc(Customizer.withDefaults())
+				.oidc(withDefaults())
 //				.oidc((oidc) -> oidc
 //						.userInfoEndpoint((userInfo) -> userInfo
 //								.userInfoMapper(userInfoMapper)
@@ -104,7 +104,7 @@ public class AuthorizationServerConfig {
 //						.providerConfigurationEndpoint(Customizer.withDefaults())
 //						.clientRegistrationEndpoint(Customizer.withDefaults())
 //				)
-				.authorizationEndpoint(Customizer.withDefaults())
+				.authorizationEndpoint(withDefaults())
 				.clientAuthentication(clientAuthentication ->
 						clientAuthentication
 								.authenticationConverter(new PublicRevokeAuthenticationConverter(registeredClientRepository))
@@ -124,10 +124,11 @@ public class AuthorizationServerConfig {
 		http.apply(authorizationServerConfigurer);
 		http
 			.securityMatcher(endpointsMatcher)
-			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				.maximumSessions(1);
-//				.maxSessionsPreventsLogin(true);
+				.sessionManagement( s ->
+								s.sessionCreationPolicy(SessionCreationPolicy.NEVER)
+										.maximumSessions(1)
+//							.maxSessionsPreventsLogin(true)
+				);
 		http.httpBasic((basic) -> basic
 					.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
 						@Override
@@ -136,7 +137,8 @@ public class AuthorizationServerConfig {
 							return filter;
 						}
 					}))
-				.cors().and().csrf().disable();
+				.cors(withDefaults())
+				.csrf(csrf -> csrf.disable());
 //			.exceptionHandling((exceptions) -> exceptions
 //							.authenticationEntryPoint((req, resp, e) -> {
 //							resp.setContentType("application/json;charset=utf-8");

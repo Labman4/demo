@@ -16,7 +16,6 @@
 
 package com.elpsykongroo.auth.config;
 
-import com.elpsykongroo.auth.security.CustomLogoutSuccessHandler;
 import com.elpsykongroo.auth.security.FederatedIdentityAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +25,6 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -37,6 +35,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
 @Configuration(proxyBeanMethods = false)
@@ -65,18 +65,19 @@ public class DefaultSecurityConfig {
 						.requestMatchers("/auth/user/**").authenticated()
 						.requestMatchers("/auth/**").hasAuthority("admin")
 							.anyRequest().authenticated())
-			.formLogin().disable()
+			.formLogin(f -> f.disable())
 			.logout((logout) -> logout
 					.clearAuthentication(true)
 					.invalidateHttpSession(true)
 					.addLogoutHandler(new SecurityContextLogoutHandler())
 					);
 		http
-			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.maximumSessions(1);
-//			.maxSessionsPreventsLogin(true);
-		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
+				.sessionManagement( s ->
+								s.sessionCreationPolicy(SessionCreationPolicy.NEVER)
+										.maximumSessions(1)
+//							.maxSessionsPreventsLogin(true)
+				);
+		http.oauth2ResourceServer(rs -> rs.opaqueToken(withDefaults()));
 		HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
 		requestCache.setRequestMatcher(new AntPathRequestMatcher("/oauth2/authorize/**"));
 		http.httpBasic((basic) -> basic
@@ -87,10 +88,10 @@ public class DefaultSecurityConfig {
 								return filter;
 							}
 						}))
-				.cors().and()
+				.cors(withDefaults())
 				.requestCache(
 						cache -> cache.requestCache(requestCache)
-				).csrf().disable()
+				).csrf(csrf -> csrf.disable())
 				.exceptionHandling(exceptionHandling ->
 						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint)
 				);
