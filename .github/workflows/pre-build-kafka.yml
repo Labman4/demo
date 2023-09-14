@@ -3,12 +3,14 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-    - main 
+      - main
+    paths:
+      - kafka/**
   push:
     branches-ignore:
       - main
     paths:
-      -  'kafka/**'
+      - kafka/**
 jobs:
   build:
     uses: Labman4/workflow/.github/workflows/native-image-kafka.yml@native-image

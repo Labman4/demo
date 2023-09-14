@@ -3,12 +3,14 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-    - main 
+      - main
+    paths:
+      - elasticsearch/**
   push:
     branches-ignore:
       - main
     paths:
-      -  'elasticsearch/**'
+      - elasticsearch/**
 jobs:
   pre-build:
     uses: Labman4/workflow/.github/workflows/buildpacks-native.yml@buildpacks
