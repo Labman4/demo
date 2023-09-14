@@ -32,6 +32,8 @@ public interface ObjectService {
 
     String multipartUpload(S3 s3) throws IOException;
 
+    void abortMultipartUpload(S3 s3);
+
     List<ListObjectResult> list(S3 s3);
 
     void download(S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException;

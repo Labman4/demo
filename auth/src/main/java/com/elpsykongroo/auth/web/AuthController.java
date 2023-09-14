@@ -82,11 +82,6 @@ public class AuthController {
         return CommonResponse.string(loginService.loginWithToken(token, idToken, request, response));
     }
 
-    @GetMapping("/qrcode")
-    public String generateQrcode() {
-        return CommonResponse.string(loginService.qrcode());
-    }
-
     @GetMapping("/login/qrcode")
     public String setToken(@RequestParam String text) {
         return loginService.setToken(text);

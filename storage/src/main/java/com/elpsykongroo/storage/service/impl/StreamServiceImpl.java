@@ -74,7 +74,7 @@ public class StreamServiceImpl implements StreamService {
     @Override
     public String checkSha256(S3 s3) {
         if (StringUtils.isNotBlank(s3.getSha256()) && StringUtils.isNotBlank(s3.getPartCount()) && StringUtils.isNotBlank(s3.getPartNum())) {
-            String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + NormalizedUtils.topicNormalize(s3.getKey()) +  "-bytes";
+            String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + NormalizedUtils.topicNormalize(s3.getKey());
             String consumerGroupS3Key = s3.getBucket() + "-" + s3.getKey() + "-consumerId";
             String consumerGroupId = getConsumerGroupId(s3, topic, consumerGroupS3Key, false);
             if (log.isDebugEnabled()) {
@@ -102,7 +102,7 @@ public class StreamServiceImpl implements StreamService {
         if (StringUtils.isNotBlank(s3.getPartCount())) {
             partCount = Integer.parseInt(s3.getPartCount());
         }
-        String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" +  s3.getBucket() + "-" + NormalizedUtils.topicNormalize(s3.getKey()) + "-bytes";
+        String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" +  s3.getBucket() + "-" + NormalizedUtils.topicNormalize(s3.getKey());
         String consumerGroupKey = topic + "-consumerId";
         String consumerGroupS3Key = s3.getBucket() + "-" + s3.getKey() + "-consumerId";
         String consumerGroupId = getConsumerGroupId(s3, topic, consumerGroupS3Key, true);
@@ -274,7 +274,7 @@ public class StreamServiceImpl implements StreamService {
                                 log.debug("autoComplete reset offset");
                             }
                             kafkaService.alertOffset(s3.getConsumerGroupId(), "0");
-                            String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + NormalizedUtils.topicNormalize(s3.getKey()) + "-bytes" ;
+                            String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + NormalizedUtils.topicNormalize(s3.getKey());
                             startListener(topic, s3.getConsumerGroupId(), "", s3.getConsumerGroupId());
                         }
                     }
@@ -284,7 +284,7 @@ public class StreamServiceImpl implements StreamService {
     }
 
     private void completeTopic(S3 s3) {
-        String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + NormalizedUtils.topicNormalize(s3.getKey()) + "-bytes" ;
+        String topic = s3.getPlatform() + "-" + s3.getRegion() + "-" + s3.getBucket() + "-" + NormalizedUtils.topicNormalize(s3.getKey());
         String consumerGroupKey = topic + "-consumerId";
         String consumerGroupS3Key = s3.getBucket() + "-" + s3.getKey() + "-consumerId";
         String consumerGroupId = getConsumerGroupId(s3, topic, consumerGroupS3Key, false);

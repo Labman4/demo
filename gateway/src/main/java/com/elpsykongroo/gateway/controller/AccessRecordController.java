@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -52,7 +53,7 @@ public class AccessRecordController {
 	}
 
 	@DeleteMapping("{param}")
-	public String deleteRecord(@PathVariable String param) {
+	public String deleteRecord(@PathVariable List<String> param) {
 		if (log.isDebugEnabled()) {
 			log.debug("deleteRecord:{}", param);
 		}

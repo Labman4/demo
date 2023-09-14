@@ -27,8 +27,11 @@ import com.elpsykongroo.auth.service.custom.EmailService;
 import com.elpsykongroo.auth.service.custom.LoginService;
 import com.elpsykongroo.auth.service.custom.UserService;
 import com.elpsykongroo.base.config.ServiceConfig;
+import com.elpsykongroo.base.domain.message.Message;
+import com.elpsykongroo.base.service.MessageService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.BytesUtils;
+import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.PkceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yubico.webauthn.AssertionRequest;
@@ -126,6 +129,9 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private ServiceConfig serviceConfig;
 
+    @Autowired
+    private MessageService messageService;
+
     @Override
     public String login(String username, HttpServletRequest servletRequest) {
         try {
@@ -149,7 +155,7 @@ public class LoginServiceImpl implements LoginService {
                     AssertionRequest request = relyingParty.startAssertion(StartAssertionOptions.builder()
                             .username(username)
                             .build());
-                    servletContext.setAttribute(username, request);
+                    servletContext.setAttribute(username, request.toJson());
                     return request.toCredentialsGetJson();
                 } else {
                     return "400";
@@ -172,7 +178,7 @@ public class LoginServiceImpl implements LoginService {
         try {
             PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs>
                     pkc = PublicKeyCredential.parseAssertionResponseJson(credential);
-            AssertionRequest assertionRequest = (AssertionRequest) servletContext.getAttribute(username);
+            AssertionRequest assertionRequest = JsonUtils.toObject(servletContext.getAttribute(username).toString(), AssertionRequest.class);
             servletContext.removeAttribute(username);
             if (log.isDebugEnabled()) {
                 log.debug("remove pkc success");
@@ -190,11 +196,14 @@ public class LoginServiceImpl implements LoginService {
 //                        result.getCredential().getCredentialId());
                 log.debug("login success");
                 SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+                /**
+                 * user byteArray cant serializable and do not need add authorities with authentication when use OpaqueToken
+                 */
                 Authentication authentication =
                         WebAuthnAuthenticationToken.authenticated(
-                                result.getUsername(),
-                                result.getCredential(),
-                                userService.userAuthority(username));
+                                username,
+                                null,
+                                null);
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);
@@ -226,6 +235,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String register(String username, String display) {
+        if ("admin".equals(username)) {
+            return "409";
+        }
         User saveUser = null;
         try {
             removeInvalid(username);
@@ -393,14 +405,6 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public String qrcode() {
-        String codeVerifier = PkceUtils.generateVerifier();
-        Instant instant = Instant.now();
-        redisService.set("QR_CODE-" + instant, PkceUtils.generateChallenge(codeVerifier), serviceConfig.getTimeout().getQrcodeToken());
-        return codeVerifier + "*" + instant;
-    }
-
-    @Override
     public String loginWithToken(String token, String idToken, HttpServletRequest request, HttpServletResponse response) {
         try {
             OAuth2AuthenticatedPrincipal result = tokenIntrospector.introspect(token);
@@ -437,13 +441,17 @@ public class LoginServiceImpl implements LoginService {
         String codeVerifier = texts[0];
         String timestamp = texts[1];
         String encodedVerifier = PkceUtils.verifyChallenge(codeVerifier);
-        String challenge = redisService.get("QR_CODE-" + timestamp);
+        String challenge = redisService.get("PKCE-" + timestamp);
         if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String token = authorizationService.getToken(authentication.getPrincipal().toString(), timestamp);
             if (StringUtils.isNotEmpty(token)) {
-                redisService.publish("QR_CODE-token-" + codeVerifier,codeVerifier + "*" + token, serviceConfig.getUrl().getQrcodeCallback());
-                redisService.set("QR_CODE-" + timestamp , "", serviceConfig.getTimeout().getQrcodeToken());
+                Message message = new Message();
+                message.setKey(text);
+                message.setValue(token);
+                messageService.setMessage(message);
+//                redisService.publish("QR_CODE-token-" + codeVerifier,codeVerifier + "*" + token, serviceConfig.getUrl().getQrcodeCallback());
+//                redisService.set("PKCE-" + timestamp , "", "1");
                 return "200";
             } else {
                 return "404";

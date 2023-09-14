@@ -19,6 +19,7 @@ package com.elpsykongroo.storage.controller;
 import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.base.domain.message.Message;
 import com.elpsykongroo.base.domain.storage.object.S3;
+import com.elpsykongroo.base.utils.MessageDigestUtils;
 import com.elpsykongroo.storage.service.ObjectService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,6 +50,11 @@ public class ObjectController {
         return objectService.obtainUploadId(s3);
     }
 
+    @PostMapping("/abort")
+    public void abortMultipartUpload(@RequestBody S3 s3) {
+        objectService.abortMultipartUpload(s3);
+    }
+
     @PostMapping("receive")
     public String receiveData(@RequestBody Message message) {
         try {
@@ -64,12 +70,29 @@ public class ObjectController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void multipartUpload(S3 s3) {
         try {
-            if (!s3.getData()[0].isEmpty()) {
+            if ((s3.getData() != null && !s3.getData()[0].isEmpty())) {
+                if (log.isDebugEnabled()) {
+                    String sha256 = MessageDigestUtils.sha256(s3.getData()[0].getBytes());
+                    log.debug("sha256:{}", sha256);
+                }
                 objectService.multipartUpload(s3);
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("multipart error: {}", e.getMessage());
+                log.error("multipart file error: {}", e.getMessage());
+            }
+        }
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public void uploadByte(S3 s3) {
+        try {
+            if ((s3.getByteData() != null && s3.getByteData().length > 0)) {
+                objectService.multipartUpload(s3);
+            }
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("multipart byte error: {}", e.getMessage());
             }
         }
     }

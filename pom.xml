@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.1</version>
+        <version>3.1.3</version>
     </parent>
 
     <groupId>com.elpsykongroo</groupId>
@@ -22,6 +22,7 @@
         <module>gateway</module>
         <module>redis</module>
         <module>storage</module>
+        <module>message</module>
     </modules>
     
     <properties>
@@ -277,6 +278,16 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.google.auth</groupId>
+                <artifactId>google-auth-library-oauth2-http</artifactId>
+                <version>1.19.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.firebase</groupId>
+                <artifactId>firebase-admin</artifactId>
+                <version>9.2.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.tomcat</groupId>
                 <artifactId>tomcat-coyote</artifactId>
                 <version>10.1.11</version>
@@ -313,6 +324,11 @@
                 <groupId>com.github.vladimir-bukhtoyarov</groupId>
                 <artifactId>bucket4j-core</artifactId>
                 <version>7.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bucket4j</groupId>
+                <artifactId>bucket4j-core</artifactId>
+                <version>8.3.0</version>
             </dependency>
             <dependency>
                 <groupId>io.github.openfeign.form</groupId>
@@ -380,6 +396,11 @@
                 <version>2.20.79</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.bucket4j</groupId>
+                <artifactId>bucket4j-postgresql</artifactId>
+                <version>8.3.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

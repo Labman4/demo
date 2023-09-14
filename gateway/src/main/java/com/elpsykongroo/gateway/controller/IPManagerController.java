@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 
 @CrossOrigin
@@ -43,7 +44,7 @@ public class IPManagerController {
 	private IPManagerService ipManagerService;
 
 	@PutMapping
-	public String add(@RequestParam String address, @RequestParam String black) {
+	public String add(@RequestParam List<String> address, @RequestParam String black) {
 		if (log.isDebugEnabled()) {
 			log.debug("add sourceIP:{}, black:{}", address, black);
 		}
@@ -68,7 +69,7 @@ public class IPManagerController {
 	}
 
 	@PatchMapping
-	public String patch(@RequestParam String address, @RequestParam String black, @RequestParam("id") String ids) {
+	public String patch(@RequestParam List<String> address, @RequestParam String black, @RequestParam("id") String ids) {
 		try {
 			if (log.isDebugEnabled()) {
 				log.debug("ip patch black:{}, address:{}, ids:{}", black, address, ids);

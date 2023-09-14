@@ -7,8 +7,6 @@ on:
   push:
     paths:
       - gateway/**   
-      - base/**	
-
 jobs:
   build:
     uses: Labman4/workflow/.github/workflows/native-image-gateway.yml@native-image
@@ -16,6 +14,9 @@ jobs:
     with: 
       module: gateway
       version: 0.0.2
+      native: true
+      secretPath: kv/app/native/gateway
+      
  
 
     

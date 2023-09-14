@@ -1,6 +1,8 @@
 server:
   servlet:
     session:
+#      cookie:
+#        domain: .elpsykongroo.com
       timeout: 3600
   port: 9000
   ssl:
@@ -17,6 +19,9 @@ management:
       exposure:
         include: ${ENDPOINTS_WEB:health}
 spring:
+  session:
+    jdbc:
+      initialize-schema: ALWAYS
   mail:
     host: smtp.gmail.com
     port: 587
@@ -64,7 +69,7 @@ spring:
           introspection-uri: ${AUTH_URL:http://localhost:9000}/oauth2/introspect
 service:
   vault: ${VAULT_ENABLE:true}
-
+  security: oauth2
 logging:
   level:
     root: ${ROOT_LOG_LEVEL:info}
@@ -73,4 +78,4 @@ logging:
       springframework:
         security: ${SECURITY_LOG_LEVEL:debug}
     com:
-      elpsykongroo: ${AUTH_LOG_LEVEL:debug}
+      elpsykongroo: ${APP_LEVEL:debug}

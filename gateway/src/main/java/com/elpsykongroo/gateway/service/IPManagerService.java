@@ -17,6 +17,7 @@
 package com.elpsykongroo.gateway.service;
 
 import java.net.UnknownHostException;
+import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -26,11 +27,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IPManagerService {
 
-	int add(String address, String isBlack) throws UnknownHostException;
+	int add(List<String> address, String isBlack) throws UnknownHostException;
 
 	String list(String isBlack, String pageNumber, String pageSize, String order);
 
-	String patch(String addresses, String isBlack, String ids) throws UnknownHostException;
+	String patch(List<String> addresses, String isBlack, String ids) throws UnknownHostException;
 
 	String accessIP(HttpServletRequest request, String type);
 

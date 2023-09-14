@@ -56,7 +56,7 @@ public class QueryParam {
 
     private String operation;
 
-    private String ids;
+    private List<String> ids;
 
     private Object entity;
 }

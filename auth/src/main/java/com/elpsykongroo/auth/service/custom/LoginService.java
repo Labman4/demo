@@ -34,8 +34,6 @@ public interface LoginService {
 
     String tmpLogin(String text, HttpServletRequest request, HttpServletResponse response);
 
-    String qrcode();
-
     String setToken(String text);
 
     String loginWithToken(String token, String idToken, HttpServletRequest request, HttpServletResponse response);

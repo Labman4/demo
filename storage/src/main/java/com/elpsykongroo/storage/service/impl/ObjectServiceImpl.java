@@ -90,6 +90,11 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
+    public void abortMultipartUpload(S3 s3) {
+        s3Service.initClient(s3, "");
+        s3Service.abortMultipartUpload(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId());
+    }
+    @Override
     public void download(S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException {
         s3Service.initClient(s3, "");
         downloadStream(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getOffset(), request, response);
@@ -128,7 +133,7 @@ public class ObjectServiceImpl implements ObjectService {
         s3Service.initClient(s3, "");
         String plainText = s3.getPlatform() + "*" + s3.getRegion() + "*" + s3.getBucket();
         byte[] iv = BytesUtils.generateRandomByte(16);
-        byte[] ciphertext = EncryptUtils.encrypt(plainText, iv);
+        byte[] ciphertext = EncryptUtils.encryptString(plainText, iv);
         String cipherBase64 = Base64.getUrlEncoder().encodeToString(ciphertext);
         String ivBase64 = Base64.getUrlEncoder().encodeToString(iv);
         String codeVerifier = PkceUtils.generateVerifier();
@@ -183,7 +188,7 @@ public class ObjectServiceImpl implements ObjectService {
         return "0";    }
 
     @Override
-    public String obtainUploadId(S3 s3) throws IOException {
+    public String obtainUploadId(S3 s3) {
         s3Service.initClient(s3, "");
         String match = streamService.checkSha256(s3);
         if (log.isDebugEnabled()) {
@@ -226,6 +231,9 @@ public class ObjectServiceImpl implements ObjectService {
             if ("stream".equals(s3.getMode()) && (fileSize >= partSize || StringUtils.isNotBlank(s3.getPartNum()))) {
                 streamService.uploadStream(s3.getClientId(), s3, num, s3.getUploadId());
             }
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("fileSize:{}, pageSize:{}", fileSize, partSize);
         }
         if (fileSize < partSize && StringUtils.isEmpty(s3.getPartNum())) {
             String eTag = s3Service.uploadObject(s3.getClientId(), s3.getBucket(), s3.getKey(), requestBody);
@@ -271,22 +279,24 @@ public class ObjectServiceImpl implements ObjectService {
                     }
                 }
                 if(!flag) {
-                    String shaKey = s3.getConsumerGroupId() + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + (partNum - 1);
-                    String sha = s3Service.getObject(s3.getClientId(), s3.getBucket(), shaKey);
-                    if (sha256.equals(sha)) {
-                        UploadPartResponse uploadPartResponse = s3Service.uploadPart(s3.getClientId(), s3, requestBody, partNum, endOffset);
-                        if (uploadPartResponse != null) {
-                            completedParts.add(
-                                    CompletedPart.builder()
-                                            .partNumber(partNum)
-                                            .eTag(uploadPartResponse.eTag())
-                                            .build()
-                            );
+                    if (StringUtils.isNotBlank(s3.getConsumerGroupId())) {
+                        String shaKey = s3.getConsumerGroupId() + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + (partNum - 1);
+                        String sha = s3Service.getObject(s3.getClientId(), s3.getBucket(), shaKey);
+                        if (StringUtils.isNotBlank(sha) && !sha256.equals(sha)) {
+                            if (log.isInfoEnabled()) {
+                                log.info("uploadPart sha256:{} not match with s3:{}, key:{}", sha256, sha, shaKey);
+                                continue;
+                            }
                         }
-                    } else {
-                        if (log.isInfoEnabled()) {
-                            log.info("uploadPart sha256:{} not match with s3:{}, key:{}", sha256, sha, shaKey);
-                        }
+                    }
+                    UploadPartResponse uploadPartResponse = s3Service.uploadPart(s3.getClientId(), s3, requestBody, partNum, endOffset);
+                    if (uploadPartResponse != null) {
+                        completedParts.add(
+                                CompletedPart.builder()
+                                        .partNumber(partNum)
+                                        .eTag(uploadPartResponse.eTag())
+                                        .build()
+                        );
                     }
                 } else {
                     if (log.isInfoEnabled()) {
@@ -343,4 +353,8 @@ public class ObjectServiceImpl implements ObjectService {
             }
         }
     }
+
+//    private decrypt() {
+//
+//    }
 }

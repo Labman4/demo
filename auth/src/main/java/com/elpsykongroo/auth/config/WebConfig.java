@@ -59,12 +59,12 @@ public class WebConfig {
 //        return source;
 //    }
 
-    @Bean
-    public DefaultCookieSerializer defaultCookieSerializer() {
-        DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
-        defaultCookieSerializer.setCookiePath("/");
-        defaultCookieSerializer.setSameSite(null);
-        defaultCookieSerializer.setDomainNamePattern("^(([^.]+)\\.)?(elpsykongroo\\.com|localhost|127.0.0.1)$");
-        return defaultCookieSerializer;
-    }
+//    @Bean
+//    public DefaultCookieSerializer defaultCookieSerializer() {
+//        DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
+//        defaultCookieSerializer.setCookiePath("/");
+//        defaultCookieSerializer.setSameSite(null);
+//        defaultCookieSerializer.setDomainNamePattern("^(([^.]+)\\.)?(elpsykongroo\\.com|localhost|127.0.0.1|auth.|auth-pre.)$");
+//        return defaultCookieSerializer;
+//    }
 }

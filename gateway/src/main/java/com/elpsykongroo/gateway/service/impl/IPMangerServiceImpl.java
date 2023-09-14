@@ -19,6 +19,7 @@ package com.elpsykongroo.gateway.service.impl;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,10 +101,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	@Override
-	public String patch(String address, String isBlack, String id) throws UnknownHostException {
+	public String patch(List<String> address, String isBlack, String id) throws UnknownHostException {
 		int updated = 0;
 		String script = "ctx._source.black=params.black;";
-		String[] addr = address.split(",");
 		QueryParam queryParam = new QueryParam();
 		Map<String, Object> update = new HashMap<>();
 		queryParam.setIndex("ip");
@@ -113,14 +113,14 @@ public class IPMangerServiceImpl implements IPManagerService {
 		try {
 			if (StringUtils.isNotEmpty(id)) {
 				queryParam.setOperation("update");
-				queryParam.setIds(id);
+				queryParam.setIds(Collections.singletonList(id).stream().toList());
 				queryParam.setUpdateParam(update);
 				queryParam.setScript(script);
 				String result = searchService.query(queryParam);
 				updateCache(isBlack);
 				return String.valueOf(result);
 			}
-			for (String ad : addr) {
+			for (String ad : address) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(ad);
 				for (InetAddress inetAd : inetAddresses) {
 					List<String> params = new ArrayList<>();
@@ -141,9 +141,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 						String deleted = searchService.query(queryParam);
 						updated += Integer.parseInt(deleted);
 					} else if (exist(inetAd.getHostAddress(), isBlack) == 0){
-						updated += add(inetAd.getHostAddress(), isBlack);
+						updated += add(Collections.singleton(inetAd.getHostAddress()).stream().toList(), isBlack);
 					} else if (exist(inetAd.getHostName(), isBlack) == 0) {
-						updated += add(inetAd.getHostName(), isBlack);
+						updated += add(Collections.singleton(inetAd.getHostName()).stream().toList(), isBlack);
 					} else {
 						queryParam.setOperation("updateQuery");
 						queryParam.setUpdateParam(update);
@@ -165,17 +165,16 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	@Override
-	public int add(String addresses, String isBlack) throws UnknownHostException {
+	public int add(List<String> addresses, String isBlack) throws UnknownHostException {
 		int result = 0;
 		if (log.isDebugEnabled()) {
 			log.debug("add ip:{}, black:{}", addresses, isBlack);
 		}
-		if (StringUtils.isNotEmpty(addresses)) {
+		if (!addresses.isEmpty()) {
 			QueryParam queryParam = new QueryParam();
 			queryParam.setIndex("ip");
 			queryParam.setOperation("save");
-			String[] ads = addresses.split(",");
-			for (String address: ads) {
+			for (String address: addresses) {
 				InetAddress[] inetAddresses = InetAddress.getAllByName(address);
 				for (InetAddress ad: inetAddresses) {
 					if(addNoExist(isBlack, queryParam, ad.getHostAddress())) {
@@ -258,6 +257,10 @@ public class IPMangerServiceImpl implements IPManagerService {
 		queryParam.setField("black");
 		queryParam.setParam(isBlack);
 		String list = searchService.query(queryParam);
+//		List<IpManage> ipManages = JsonUtils.toType(list, new TypeReference<List<IpManage>>() {});
+//		for (IpManage ipManage : ipManages) {
+//
+//		}
 		StringBuffer ipList = new StringBuffer();
 		String[] ips = list.split(",");
 		for (String str: ips) {
@@ -295,7 +298,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 				if(log.isWarnEnabled()) {
 					log.warn("ignore private ip:{}", ip);
 				}
-				return true;
+				return !Boolean.valueOf(isBlack);
 			}
 			String list = "";
 			try {
@@ -356,7 +359,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 									if (log.isWarnEnabled()) {
 										log.warn("update domain ip: {}", address.getHostAddress());
 									}
-									add(address.getHostAddress(), isBlack);
+									add(Collections.singleton(address.getHostAddress()).stream().toList(), isBlack);
 									flag = true;
 								}
 							}
@@ -397,7 +400,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 	private void initWhite(){
 		try {
 			for(String d: whiteDomain.split(",")) {
-				add(d, "false");
+				add(Collections.singleton(d).stream().toList(), "false");
 			}
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
