@@ -3,8 +3,12 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-    - main 
+      - main
+    paths:
+      - gateway/**
   push:
+    branches-ignore:
+      - main
     paths:
       - gateway/**   
 jobs:
