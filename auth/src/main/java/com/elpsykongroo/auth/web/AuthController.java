@@ -69,8 +69,9 @@ public class AuthController {
     @PostMapping("/login")
     @ResponseBody
     public String startLogin(@RequestParam String username,
-                             HttpServletRequest request) {
-        return CommonResponse.string(loginService.login(username, request));
+                             HttpServletRequest request,
+                             HttpServletResponse response) {
+        return CommonResponse.string(loginService.login(username, request, response));
     }
 
     @PostMapping("/login/token")

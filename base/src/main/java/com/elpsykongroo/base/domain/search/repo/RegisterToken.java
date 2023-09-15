@@ -20,13 +20,10 @@ import com.elpsykongroo.base.utils.JsonUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
-
 @Data
 @NoArgsConstructor
 public class RegisterToken {
     private String md5;
-
     private String token;
     private String timestamp;
     private String user;

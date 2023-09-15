@@ -30,6 +30,7 @@ import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.SearchService;
 import com.elpsykongroo.base.utils.RecordUtils;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.base.config.RequestConfig;
@@ -109,7 +110,14 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		queryParam.setPageSize(pageSize);
 		queryParam.setIndex("access_record");
 		queryParam.setType(AccessRecord.class);
-		return searchService.query(queryParam);
+		try {
+			return searchService.query(queryParam);
+		} catch (FeignException e) {
+			if(log.isErrorEnabled()) {
+				log.error("feign error :{}", e.getMessage());
+			}
+			return "";
+		}
 	}
 
 	@Override

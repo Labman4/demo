@@ -31,6 +31,7 @@ import com.elpsykongroo.base.domain.message.Message;
 import com.elpsykongroo.base.service.MessageService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.BytesUtils;
+import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.PkceUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -133,7 +134,17 @@ public class LoginServiceImpl implements LoginService {
     private MessageService messageService;
 
     @Override
-    public String login(String username, HttpServletRequest servletRequest) {
+    public String login(String username, HttpServletRequest servletRequest, HttpServletResponse response) {
+//        SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+//        Authentication authentication =
+//                WebAuthnAuthenticationToken.authenticated(
+//                        username,
+//                        null,
+//                        null);
+//        context.setAuthentication(authentication);
+//        securityContextHolderStrategy.setContext(context);
+//        securityContextRepository.saveContext(context, servletRequest, response);
+//        return "200";
         try {
             DeferredSecurityContext securityContext = securityContextRepository.loadDeferredContext(servletRequest);
             if (securityContext.get().getAuthentication() != null) {

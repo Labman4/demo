@@ -43,8 +43,8 @@ public class SecurityConfig {
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors(withDefaults())
-				.csrf(csrf -> csrf.disable())
- //				.requiresChannel(channel ->
+//				.csrf(csrf -> csrf.disable())
+//				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
  						.requestMatchers("/public/**").permitAll()
@@ -67,6 +67,7 @@ public class SecurityConfig {
 								"/email/tmp",
 								"/tmp/**").permitAll()
 						.requestMatchers(HttpMethod.GET,"/email/verify/**").permitAll()
+						.requestMatchers("/auth/user/authority/**").permitAll()
 						.requestMatchers("/auth/user/list").hasAuthority("admin")
 						.requestMatchers("/auth/user/**").authenticated()
 						.requestMatchers("/auth/**").hasAuthority("admin")

@@ -102,8 +102,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (users == null || users.isEmpty()) {
             String result = matchAllQuery("register_token", RegisterToken.class);
             if (StringUtils.isNotEmpty(result)) {
-                List<RegisterToken> registerTokens = JsonUtils.toType(result, new TypeReference<List<RegisterToken>>() {});
-                return registerTokens;
+                return JsonUtils.toType(result, new TypeReference<List<RegisterToken>>() {});
             }
         } else {
             List<String> fields = new ArrayList<>();
@@ -128,8 +127,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (notice.getTopic() == null || notice.getTopic().isEmpty()) {
             String result = matchAllQuery("notification", Notice.class);
             if (StringUtils.isNotEmpty(result)) {
-                List<Notice> noticeList = JsonUtils.toType(result, new TypeReference<List<Notice>>() {});
-                return noticeList;
+                return JsonUtils.toType(result, new TypeReference<List<Notice>>() {});
             }
         } else {
             for (String topic : notice.getTopic()) {
@@ -172,8 +170,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (topics == null || topics.isEmpty()) {
             String result = matchAllQuery("notice_topic", NoticeTopic.class);
             if (StringUtils.isNotEmpty(result)) {
-                List<NoticeTopic> notices = JsonUtils.toType(result, new TypeReference<List<NoticeTopic>>() {});
-                return notices;
+                return JsonUtils.toType(result, new TypeReference<List<NoticeTopic>>() {});
             }
         } else {
             List<String> fields = new ArrayList<>();

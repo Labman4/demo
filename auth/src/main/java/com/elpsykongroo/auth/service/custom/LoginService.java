@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface LoginService {
-    String login(String username, HttpServletRequest request);
+    String login(String username, HttpServletRequest request, HttpServletResponse response);
 
     String handleLogin(String credential, String username, HttpServletRequest request, HttpServletResponse response);
 
