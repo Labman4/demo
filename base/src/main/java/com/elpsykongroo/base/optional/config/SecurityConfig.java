@@ -19,19 +19,19 @@ package com.elpsykongroo.base.optional.config;
 import com.elpsykongroo.base.config.AccessManager;
 import com.elpsykongroo.base.config.RequestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 
-@ConditionalOnProperty(
-		prefix = "service",
-		name = "security",
-		havingValue = "gateway",
-		matchIfMissing = true)
+import static org.springframework.security.config.Customizer.withDefaults;
+
+//@ConditionalOnProperty(
+//		prefix = "service",
+//		name = "security",
+//		havingValue = "gateway",
+//		matchIfMissing = true)
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfig {
 	@Autowired
@@ -42,8 +42,8 @@ public class SecurityConfig {
 
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.cors().and()
-				.csrf().disable()
+		http.cors(withDefaults())
+				.csrf(csrf -> csrf.disable())
  //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
 				.authorizeHttpRequests((authorize) -> authorize
@@ -58,9 +58,21 @@ public class SecurityConfig {
 						.requestMatchers("/notice/**").hasAuthority("admin")
 						.requestMatchers(requestConfig.getPath().getPermit()).permitAll()
 						.requestMatchers("/access").authenticated()
+						.requestMatchers(
+								"/oauth2/**",
+								"/login/**",
+								"/welcome",
+								"/register",
+								"/finishAuth",
+								"/email/tmp",
+								"/tmp/**").permitAll()
+						.requestMatchers(HttpMethod.GET,"/email/verify/**").permitAll()
+						.requestMatchers("/auth/user/list").hasAuthority("admin")
+						.requestMatchers("/auth/user/**").authenticated()
+						.requestMatchers("/auth/**").hasAuthority("admin")
 						.anyRequest().access(accessManager)
 				)
-				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
+				.oauth2ResourceServer(rs -> rs.opaqueToken(withDefaults()));
 		return http.build();
 	}
 }
