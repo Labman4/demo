@@ -420,7 +420,8 @@ public class LoginServiceImpl implements LoginService {
                 Authentication authentication =
                         WebAuthnAuthenticationToken.authenticated(
                                 id.getSubject(),
-                                null, userService.userAuthority(id.getSubject()));
+                                null,
+                                null);
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);
