@@ -77,11 +77,8 @@ public class AuthorizationServerConfig {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
+		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
 		http.oauth2ResourceServer(rs -> rs.opaqueToken(withDefaults()));
-
-		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-				new OAuth2AuthorizationServerConfigurer();
 		RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 //		Function<OidcUserInfoAuthenticationContext, OidcUserInfo> userInfoMapper = (context) -> {
 //			OidcUserInfoAuthenticationToken authentication = context.getAuthentication();
@@ -110,9 +107,6 @@ public class AuthorizationServerConfig {
 						tokenRevocationEndpoint
 								.revocationRequestConverter(new PublicRevokeAuthenticationConverter(registeredClientRepository))
 				);
-
-
-
 
 //				.oauth2Client()
 //					.authorizationCodeGrant()

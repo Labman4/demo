@@ -35,8 +35,14 @@ public class AccessManager<T> implements AuthorizationManager<T> {
     @Autowired
     private GatewayService gatewayService;
 
+    @Autowired
+    private ServiceConfig serviceConfig;
+
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, T object) {
+        if ("gateway".equals(serviceConfig.getSecurity())) {
+            return new AuthorizationDecision(true);
+        }
         String ip = gatewayService.getIP();
         if (log.isDebugEnabled()) {
             log.debug("AccessManager ip:{}", ip);

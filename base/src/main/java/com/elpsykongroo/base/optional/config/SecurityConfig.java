@@ -18,12 +18,18 @@ package com.elpsykongroo.base.optional.config;
 
 import com.elpsykongroo.base.config.AccessManager;
 import com.elpsykongroo.base.config.RequestConfig;
+import com.elpsykongroo.base.handler.SpaCsrfTokenRequestHandler;
+import com.elpsykongroo.base.optional.filter.CsrfCookieFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -43,6 +49,12 @@ public class SecurityConfig {
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors(withDefaults())
+				.csrf((csrf) -> csrf
+						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+						.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+						.ignoringRequestMatchers("ip", "search")
+				)
+				.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
 //				.csrf(csrf -> csrf.disable())
 //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
