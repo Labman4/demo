@@ -56,7 +56,8 @@ public class SearchServiceImpl implements SearchService {
 
     private static Query getQuery(QueryParam queryParam, Pageable pageable) {
         Query query;
-        if (StringUtils.isNotEmpty(queryParam.getParam()) || StringUtils.isNotEmpty(queryParam.getField()) ||
+        if (StringUtils.isNotEmpty(queryParam.getParam()) ||
+                (StringUtils.isNotEmpty(queryParam.getField()) && StringUtils.isNotEmpty(queryParam.getOperation())) ||
                 (queryParam.getQueryStringParam() != null && !queryParam.getQueryStringParam().isEmpty())) {
             if (queryParam.isFuzzy()) {
                   MultiMatchQuery multiMatchQuery = new MultiMatchQuery.Builder()

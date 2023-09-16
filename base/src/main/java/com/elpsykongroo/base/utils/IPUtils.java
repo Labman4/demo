@@ -70,7 +70,7 @@ public class IPUtils {
                 return inetAddress.isSiteLocalAddress() || inetAddress.isLoopbackAddress();
             }
         } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            return false;
         }
     }
 
