@@ -18,12 +18,12 @@ package com.elpsykongroo.base.optional.config;
 
 import com.elpsykongroo.base.config.AccessManager;
 import com.elpsykongroo.base.config.RequestConfig;
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.handler.SpaCsrfTokenRequestHandler;
 import com.elpsykongroo.base.optional.filter.CsrfCookieFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -43,7 +43,7 @@ public class SecurityConfig {
 	private RequestConfig requestConfig;
 
 	@Autowired
-	private Environment env;
+	private ServiceConfig serviceConfig;
 
 
 	@Autowired
@@ -52,7 +52,7 @@ public class SecurityConfig {
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-		csrfTokenRepository.setCookieDomain(env.getProperty("HOSTNAME"));
+		csrfTokenRepository.setCookieDomain(serviceConfig.getCookieDomain());
 		http.cors(withDefaults())
 				.csrf((csrf) -> csrf
 						.csrfTokenRepository(csrfTokenRepository)

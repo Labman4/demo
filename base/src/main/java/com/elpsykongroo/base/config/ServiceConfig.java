@@ -32,6 +32,8 @@ public class ServiceConfig {
 
     private String whiteDomain;
 
+    private String cookieDomain;
+
     private Url url;
 
     private String adminEmail;
