@@ -18,6 +18,7 @@ package com.elpsykongroo.services.elasticsearch.service.impl;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.ExistsQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.IdsQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchAllQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
@@ -57,6 +58,7 @@ public class SearchServiceImpl implements SearchService {
     private static Query getQuery(QueryParam queryParam, Pageable pageable) {
         Query query;
         if (StringUtils.isNotEmpty(queryParam.getParam()) ||
+                (queryParam.getIds() !=null && !queryParam.getIds().isEmpty()) ||
                 (StringUtils.isNotEmpty(queryParam.getField()) && StringUtils.isNotEmpty(queryParam.getOperation())) ||
                 (queryParam.getQueryStringParam() != null && !queryParam.getQueryStringParam().isEmpty())) {
             if (queryParam.isFuzzy()) {
@@ -104,6 +106,17 @@ public class SearchServiceImpl implements SearchService {
                     query = NativeQuery.builder().withQuery(boolQuery._toQuery()).withPageable(pageable).build();
                 } else {
                     NativeQuery nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
+                    nativeQuery.setMaxResults(10000);
+                    query = nativeQuery;
+                }
+            } else if (queryParam.isIdsQuery()) {
+                IdsQuery idsQuery = new IdsQuery.Builder().values(queryParam.getIds()).build();
+                if(pageable != null) {
+                    query = NativeQuery.builder().withQuery(q ->
+                            q.ids(idsQuery)).withPageable(pageable).build();
+                } else{
+                    NativeQuery nativeQuery =  NativeQuery.builder().withQuery(q ->
+                            q.ids(idsQuery)).build();
                     nativeQuery.setMaxResults(10000);
                     query = nativeQuery;
                 }

@@ -52,6 +52,8 @@ public class QueryParam {
 
     private boolean boolQuery;
 
+    private boolean idsQuery;
+
     private String boolType;
 
     private String operation;

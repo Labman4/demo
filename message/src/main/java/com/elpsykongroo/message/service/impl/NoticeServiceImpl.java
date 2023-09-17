@@ -225,14 +225,11 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void deleteNotice(List<String> ids) {
-        List<String> fields = new ArrayList<>();
-        for (int i= 0; i < ids.size(); i++) {
-            fields.add("id");
-        }
         QueryParam queryParam = new QueryParam();
         queryParam.setIds(ids);
-        queryParam.setOperation("delete");
+        queryParam.setOperation("deleteQuery");
         queryParam.setIndex("notification");
+        queryParam.setIdsQuery(true);
         searchService.query(queryParam);
     }
 

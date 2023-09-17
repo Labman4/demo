@@ -127,7 +127,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		}
 		List<String> ids = new ArrayList<>();
 		QueryParam deleteParam = new QueryParam();
-		deleteParam.setOperation("delete");
+		deleteParam.setOperation("deleteQuery");
 		deleteParam.setIndex("access_record");
 		for (String param : params) {
 			if (IPUtils.validateHost(param) || IPUtils.validate(param)) {
@@ -145,7 +145,8 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				ids.add(param);
 			}
 		}
-		deleteParam.setIds(params);
+		deleteParam.setIds(ids);
+		deleteParam.setIdsQuery(true);
 		return searchService.query(deleteParam);
 	}
 
