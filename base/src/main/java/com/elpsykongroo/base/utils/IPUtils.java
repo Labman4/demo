@@ -50,6 +50,16 @@ public class IPUtils {
         }
         return false;
     }
+
+    public static boolean isIpv6(String ip) {
+        String ipv6Regex="((([0-9a-fA-F]){1,4})\\:){7}([0-9a-fA-F]){1,4}";
+        Pattern p6 = Pattern.compile(ipv6Regex);
+        if (p6.matcher(ip).matches()) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean validateHost(String ip) {
         String hostnameRegex = "^((?!-)[A-Za-z0-9-]"
                                 + "{1,63}(?<!-)\\.)"

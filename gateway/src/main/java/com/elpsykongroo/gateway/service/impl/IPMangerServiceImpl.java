@@ -127,9 +127,17 @@ public class IPMangerServiceImpl implements IPManagerService {
 					List<String> fields = new ArrayList<>();
 					params.add(inetAd.getHostAddress());
 					params.add(inetAd.getHostName());
+					List<String> p = params.stream().distinct().collect(Collectors.toList());
+					for (int i=0; i< p.size(); i++) {
+						if (IPUtils.isIpv6(p.get(i))) {
+							String np = "\"" + p.get(i) + "\"";
+							p.remove(i);
+							p.add(np);
+						}
+					}
 					fields.add("address");
 					queryParam.setBoolQuery(true);
-					queryParam.setQueryStringParam(params.stream().distinct().collect(Collectors.toList()));
+					queryParam.setQueryStringParam(p);
 					if (queryParam.getQueryStringParam().size() > 1) {
 						fields.add("address");
 					}
@@ -169,6 +177,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 		int result = 0;
 		if (log.isDebugEnabled()) {
 			log.debug("add ip:{}, black:{}", addresses, isBlack);
+		}
+		if (StringUtils.isEmpty(isBlack)) {
+			return 0;
 		}
 		if (!addresses.isEmpty()) {
 			QueryParam queryParam = new QueryParam();
@@ -219,7 +230,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 			fields.add("address");
 			fields.add("black");
 			List<String> params = new ArrayList<>();
-			params.add(ad);
+			if (IPUtils.isIpv6(ad)) {
+				params.add("\"" + ad + "\"");
+			} else {
+				params.add(ad);
+			}
 			params.add(isBlack);
 			queryParam.setQueryStringParam(params);
 			queryParam.setFields(fields);
