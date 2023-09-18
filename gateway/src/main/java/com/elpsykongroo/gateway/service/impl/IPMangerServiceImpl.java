@@ -204,19 +204,22 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	private boolean addNoExist(String isBlack, QueryParam queryParam, String ad) {
-		int size = exist(ad, isBlack);
-		if(log.isDebugEnabled()) {
-			log.debug("exist size :{}", size);
-		}
-		try {
-			if (size == 0) {
-				queryParam.setEntity(new IpManage(ad, isBlack));
-				searchService.query(queryParam);
-				return true;
+		String lock = redisService.lock(ad, "", "1");
+		if ("true".equals(lock)) {
+			int size = exist(ad, isBlack);
+			if (log.isDebugEnabled()) {
+				log.debug("exist size :{}", size);
 			}
-		} catch (FeignException e) {
-			if(log.isErrorEnabled()) {
-				log.error("feign error :{}", e.getMessage());
+			try {
+				if (size == 0) {
+					queryParam.setEntity(new IpManage(ad, isBlack));
+					searchService.query(queryParam);
+					return true;
+				}
+			} catch (FeignException e) {
+				if (log.isErrorEnabled()) {
+					log.error("feign error :{}", e.getMessage());
+				}
 			}
 		}
 		return false;
