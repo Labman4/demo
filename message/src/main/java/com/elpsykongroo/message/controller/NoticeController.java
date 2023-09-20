@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@CrossOrigin
+@CrossOrigin(originPatterns = "*", allowCredentials = "true")
 @Slf4j
 @RestController
 @RequestMapping("notice")
