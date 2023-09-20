@@ -54,12 +54,24 @@ request:
     record: ${RECORD_HEADER:x-real-ip}
 
 service:
+  url:
+    gateway: http://localhost
+    message: http://localhost
+    kafka: http://localhost
+    redis: http://localhost
+    auth: http://localhost
+
   env: ${ENV:test}
   timeout:
     connect: 10
     read: 10
     socket: 10
   vault: false
+  oauth2:
+    register-id: auth
+    client-id: test
+    client-secret: test
+    token-uri: http://localhost
 
 logging:
   level:

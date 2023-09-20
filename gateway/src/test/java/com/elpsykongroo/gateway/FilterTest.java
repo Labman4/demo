@@ -78,6 +78,12 @@ class FilterTest {
                         .withMethod("PUT"))
                 .respond(HttpResponse.response()
                         .withStatusCode(200));
+        mockServerClient
+                .when(HttpRequest.request()
+                        .withPath("/redis/lock")
+                        .withMethod("PUT"))
+                .respond(HttpResponse.response().withBody("true")
+                        .withStatusCode(200));
         mockServerClient.when(HttpRequest.request().withPath("/search.*").withMethod("POST"))
                 .respond(HttpResponse.response()
                         .withStatusCode(200));
