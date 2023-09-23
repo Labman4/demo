@@ -20,7 +20,7 @@ import com.elpsykongroo.base.config.AccessManager;
 import com.elpsykongroo.base.config.RequestConfig;
 import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.handler.SpaCsrfTokenRequestHandler;
-import com.elpsykongroo.base.optional.filter.CsrfCookieFilter;
+import com.elpsykongroo.base.optional.filter.CsrfSessionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -45,21 +45,18 @@ public class SecurityConfig {
 	@Autowired
 	private ServiceConfig serviceConfig;
 
-
 	@Autowired
 	private AccessManager accessManager;
 
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-		csrfTokenRepository.setCookieDomain(serviceConfig.getCookieDomain());
 		http.cors(withDefaults())
 				.csrf((csrf) -> csrf
-						.csrfTokenRepository(csrfTokenRepository)
+						.csrfTokenRepository(httpSessionCsrfTokenRepository())
 						.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
 						.ignoringRequestMatchers("ip", "search", "message")
 				)
-				.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+				.addFilterAfter(csrfSessionFilter(), BasicAuthenticationFilter.class)
 //				.csrf(csrf -> csrf.disable())
 //				.requiresChannel(channel ->
 //						channel.anyRequest().requiresSecure())
@@ -92,5 +89,15 @@ public class SecurityConfig {
 				)
 				.oauth2ResourceServer(rs -> rs.opaqueToken(withDefaults()));
 		return http.build();
+	}
+
+	@Bean
+	public HttpSessionCsrfTokenRepository httpSessionCsrfTokenRepository () {
+		return new HttpSessionCsrfTokenRepository();
+	}
+
+	@Bean
+	public CsrfSessionFilter csrfSessionFilter() {
+		return new CsrfSessionFilter(httpSessionCsrfTokenRepository());
 	}
 }

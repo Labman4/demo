@@ -21,19 +21,29 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import java.io.IOException;
 
-public class CsrfCookieFilter implements Filter {
+public class CsrfSessionFilter implements Filter {
+
+    private final HttpSessionCsrfTokenRepository sessionCsrfTokenRepository;
+
+    public CsrfSessionFilter(HttpSessionCsrfTokenRepository sessionCsrfTokenRepository) {
+        this.sessionCsrfTokenRepository = sessionCsrfTokenRepository;
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        CsrfToken csrfToken = (CsrfToken) request.getAttribute("_csrf");
-        // Render the token value to a cookie by causing the deferred token to be loaded
-        csrfToken.getToken();
-
+        CsrfToken csrfToken = sessionCsrfTokenRepository.loadToken((HttpServletRequest) request);
+        if (csrfToken != null) {
+            HttpServletResponse httpResponse = (HttpServletResponse) response;
+            httpResponse.setHeader(csrfToken.getHeaderName(), csrfToken.getToken());
+        }
         filterChain.doFilter(request, response);
     }
 }
