@@ -29,7 +29,10 @@ import com.elpsykongroo.base.domain.search.QueryParam;
 import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.SearchService;
+import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.RecordUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.base.config.RequestConfig;
@@ -109,7 +112,14 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		queryParam.setPageSize(pageSize);
 		queryParam.setIndex("access_record");
 		queryParam.setType(AccessRecord.class);
-		return searchService.query(queryParam);
+		try {
+			return searchService.query(queryParam);
+		} catch (FeignException e) {
+			if(log.isErrorEnabled()) {
+				log.error("feign error :{}", e.getMessage());
+			}
+			return "";
+		}
 	}
 
 	@Override
@@ -119,26 +129,39 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		}
 		List<String> ids = new ArrayList<>();
 		QueryParam deleteParam = new QueryParam();
-		deleteParam.setOperation("delete");
+		deleteParam.setOperation("deleteQuery");
 		deleteParam.setIndex("access_record");
-		for (String param : params) {
-			if (IPUtils.validateHost(param) || IPUtils.validate(param)) {
-				InetAddress[] inetAddresses = InetAddress.getAllByName(param);
-				QueryParam queryParam = new QueryParam();
-				queryParam.setIndex("access_record");
-				queryParam.setType(AccessRecord.class);
-				queryParam.setField("sourceIP");
-				queryParam.setFuzzy(false);
-				for (InetAddress addr : inetAddresses) {
-					queryParam.setParam(addr.getHostAddress());
-					ids.add(searchService.query(queryParam));
+		try {
+			for (String param : params) {
+				if (IPUtils.validateHost(param) || IPUtils.validate(param)) {
+					InetAddress[] inetAddresses = InetAddress.getAllByName(param);
+					QueryParam queryParam = new QueryParam();
+					queryParam.setIndex("access_record");
+					queryParam.setType(AccessRecord.class);
+					queryParam.setField("sourceIP");
+					queryParam.setFuzzy(false);
+					for (InetAddress addr : inetAddresses) {
+						queryParam.setParam(addr.getHostAddress());
+						String result = searchService.query(queryParam);
+						if (StringUtils.isNotEmpty(result)) {
+							List<String> idList = JsonUtils.toType(result, new TypeReference<>() {
+							});
+							ids.addAll(idList);
+						}
+					}
+				} else {
+					ids.add(param);
 				}
-			} else {
-				ids.add(param);
 			}
+			deleteParam.setIds(ids);
+			deleteParam.setIdsQuery(true);
+			return searchService.query(deleteParam);
+		} catch (FeignException e) {
+			if(log.isErrorEnabled()) {
+				log.error("feign error :{}", e.getMessage());
+			}
+			return "";
 		}
-		deleteParam.setIds(params);
-		return searchService.query(deleteParam);
 	}
 
 

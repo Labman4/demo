@@ -42,13 +42,10 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
@@ -80,11 +77,8 @@ public class AuthorizationServerConfig {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
+		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
 		http.oauth2ResourceServer(rs -> rs.opaqueToken(withDefaults()));
-
-		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-				new OAuth2AuthorizationServerConfigurer();
 		RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 //		Function<OidcUserInfoAuthenticationContext, OidcUserInfo> userInfoMapper = (context) -> {
 //			OidcUserInfoAuthenticationToken authentication = context.getAuthentication();
@@ -114,9 +108,6 @@ public class AuthorizationServerConfig {
 								.revocationRequestConverter(new PublicRevokeAuthenticationConverter(registeredClientRepository))
 				);
 
-
-
-
 //				.oauth2Client()
 //					.authorizationCodeGrant()
 //					.authorizationRequestResolver(resolver);
@@ -137,16 +128,7 @@ public class AuthorizationServerConfig {
 							return filter;
 						}
 					}))
-				.cors(withDefaults())
-				.csrf(csrf -> csrf.disable());
-//			.exceptionHandling((exceptions) -> exceptions
-//							.authenticationEntryPoint((req, resp, e) -> {
-//							resp.setContentType("application/json;charset=utf-8");
-//							PrintWriter out = resp.getWriter();
-//							out.write("401");
-//							out.flush();
-//							out.close();
-//						}))
+				.cors(withDefaults());
 		return http.build();
 	}
 
@@ -192,18 +174,6 @@ public class AuthorizationServerConfig {
 		DefaultOAuth2AuthorizedClientManager authorizedClientManager = new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientRepository);
 		authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
 		return authorizedClientManager;
-	}
-
-	@Bean
-	public ClientRegistrationRepository clientRegistrationRepository() {
-		ClientRegistration clientRegistration = ClientRegistration
-				.withRegistrationId(serviceConfig.getOauth2().getRegisterId())
-				.clientId(serviceConfig.getOauth2().getClientId())
-				.clientSecret(serviceConfig.getOauth2().getClientSecret())
-				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-				.tokenUri(serviceConfig.getOauth2().getTokenUri())
-				.build();
-		return new InMemoryClientRegistrationRepository(clientRegistration);
 	}
 
 	@Bean

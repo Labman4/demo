@@ -20,7 +20,6 @@ import com.elpsykongroo.auth.security.FederatedIdentityAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -50,21 +49,7 @@ public class DefaultSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(authorize ->
-			 	authorize.requestMatchers(
-						 		"/oauth2/**",
-								"/login/**",
-								"/welcome",
-								"/register",
-								"/finishAuth",
-								"/email/tmp",
-								"/tmp/**",
-								"/actuator/health/**").permitAll()
-						.requestMatchers(HttpMethod.GET,"/email/verify/**").permitAll()
-						.requestMatchers("/auth/user/list").hasAuthority("admin")
-						.requestMatchers("/auth/user/**").authenticated()
-						.requestMatchers("/auth/**").hasAuthority("admin")
-							.anyRequest().authenticated())
+		http
 			.formLogin(f -> f.disable())
 			.logout((logout) -> logout
 					.clearAuthentication(true)

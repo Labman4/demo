@@ -73,6 +73,8 @@ public class BaseTest {
                 .respond(HttpResponse.response().withStatusCode(200));
         client.when(HttpRequest.request().withPath("/redis/key.*").withMethod("PUT"))
                 .respond(HttpResponse.response().withStatusCode(200));
+        client.when(HttpRequest.request().withPath("/redis/lock.*").withMethod("PUT"))
+                .respond(HttpResponse.response().withStatusCode(200).withBody("true"));
         client.when(HttpRequest.request().withPath("/search"))
                 .respond(HttpResponse.response().withStatusCode(200));
     }

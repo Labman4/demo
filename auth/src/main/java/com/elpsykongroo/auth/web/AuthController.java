@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
-@CrossOrigin(originPatterns = "*", allowCredentials = "true")
+@CrossOrigin(originPatterns = "*", allowCredentials = "true", exposedHeaders = {"X-CSRF-TOKEN"})
 @RestController
 public class AuthController {
     @Autowired
@@ -69,8 +69,9 @@ public class AuthController {
     @PostMapping("/login")
     @ResponseBody
     public String startLogin(@RequestParam String username,
-                             HttpServletRequest request) {
-        return CommonResponse.string(loginService.login(username, request));
+                             HttpServletRequest request,
+                             HttpServletResponse response) {
+        return CommonResponse.string(loginService.login(username, request, response));
     }
 
     @PostMapping("/login/token")

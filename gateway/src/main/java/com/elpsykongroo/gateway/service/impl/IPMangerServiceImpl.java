@@ -127,9 +127,17 @@ public class IPMangerServiceImpl implements IPManagerService {
 					List<String> fields = new ArrayList<>();
 					params.add(inetAd.getHostAddress());
 					params.add(inetAd.getHostName());
+					List<String> p = params.stream().distinct().collect(Collectors.toList());
+					for (int i=0; i< p.size(); i++) {
+						if (IPUtils.isIpv6(p.get(i))) {
+							String np = "\"" + p.get(i) + "\"";
+							p.remove(i);
+							p.add(np);
+						}
+					}
 					fields.add("address");
 					queryParam.setBoolQuery(true);
-					queryParam.setQueryStringParam(params.stream().distinct().collect(Collectors.toList()));
+					queryParam.setQueryStringParam(p);
 					if (queryParam.getQueryStringParam().size() > 1) {
 						fields.add("address");
 					}
@@ -170,6 +178,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 		if (log.isDebugEnabled()) {
 			log.debug("add ip:{}, black:{}", addresses, isBlack);
 		}
+		if (StringUtils.isEmpty(isBlack)) {
+			return 0;
+		}
 		if (!addresses.isEmpty()) {
 			QueryParam queryParam = new QueryParam();
 			queryParam.setIndex("ip");
@@ -193,19 +204,22 @@ public class IPMangerServiceImpl implements IPManagerService {
 	}
 
 	private boolean addNoExist(String isBlack, QueryParam queryParam, String ad) {
-		int size = exist(ad, isBlack);
-		if(log.isDebugEnabled()) {
-			log.debug("exist size :{}", size);
-		}
-		try {
-			if (size == 0) {
-				queryParam.setEntity(new IpManage(ad, isBlack));
-				searchService.query(queryParam);
-				return true;
+		String lock = redisService.lock(ad, "", "1");
+		if ("true".equals(lock)) {
+			int size = exist(ad, isBlack);
+			if (log.isDebugEnabled()) {
+				log.debug("exist size :{}", size);
 			}
-		} catch (FeignException e) {
-			if(log.isErrorEnabled()) {
-				log.error("feign error :{}", e.getMessage());
+			try {
+				if (size == 0) {
+					queryParam.setEntity(new IpManage(ad, isBlack));
+					searchService.query(queryParam);
+					return true;
+				}
+			} catch (FeignException e) {
+				if (log.isErrorEnabled()) {
+					log.error("feign error :{}", e.getMessage());
+				}
 			}
 		}
 		return false;
@@ -219,7 +233,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 			fields.add("address");
 			fields.add("black");
 			List<String> params = new ArrayList<>();
-			params.add(ad);
+			if (IPUtils.isIpv6(ad)) {
+				params.add("\"" + ad + "\"");
+			} else {
+				params.add(ad);
+			}
 			params.add(isBlack);
 			queryParam.setQueryStringParam(params);
 			queryParam.setFields(fields);
