@@ -139,6 +139,9 @@ public class SearchServiceImpl implements SearchService {
             query = NativeQuery.builder().withQuery(q ->
                     q.matchAll(matchAllQuery)).withPageable(pageable).build();
         }
+        if (log.isDebugEnabled()) {
+            log.debug("execute query:{}", query);
+        }
         return query;
     }
 
