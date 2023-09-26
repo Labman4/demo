@@ -114,17 +114,6 @@ public class SearchServiceImpl implements SearchService {
                     nativeQuery =  NativeQuery.builder().withQuery(q ->
                             q.ids(idsQuery)).build();
                 }
-            } else if (queryParam.isIdsQuery()) {
-                IdsQuery idsQuery = new IdsQuery.Builder().values(queryParam.getIds()).build();
-                if(pageable != null) {
-                    query = NativeQuery.builder().withQuery(q ->
-                            q.ids(idsQuery)).withPageable(pageable).build();
-                } else{
-                    NativeQuery nativeQuery =  NativeQuery.builder().withQuery(q ->
-                            q.ids(idsQuery)).build();
-                    nativeQuery.setMaxResults(10000);
-                    query = nativeQuery;
-                }
             } else {
                 TermQuery termQuery = new TermQuery.Builder()
                       .value(queryParam.getParam())
