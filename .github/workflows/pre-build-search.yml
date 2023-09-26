@@ -1,11 +1,11 @@
 name: Prepare build (search)
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - elasticsearch/**
+#  pull_request:
+#    branches:
+#      - main
+#    paths:
+#      - elasticsearch/**
   push:
     branches-ignore:
       - main

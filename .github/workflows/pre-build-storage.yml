@@ -1,11 +1,11 @@
 name: Prepare build (storage)
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - storage/**
+#  pull_request:
+#    branches:
+#      - main
+#    paths:
+#      - storage/**
   push:
     branches-ignore:
       - main

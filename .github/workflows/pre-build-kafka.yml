@@ -1,11 +1,11 @@
 name: Prepare build (kafka)
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - kafka/**
+#  pull_request:
+#    branches:
+#      - main
+#    paths:
+#      - kafka/**
   push:
     branches-ignore:
       - main

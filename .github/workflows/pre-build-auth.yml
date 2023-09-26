@@ -1,11 +1,11 @@
 name: Prepare build (auth)
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - auth/**
+#  pull_request:
+#    branches:
+#      - main
+#    paths:
+#      - auth/**
   push:
     branches-ignore:
       - main
