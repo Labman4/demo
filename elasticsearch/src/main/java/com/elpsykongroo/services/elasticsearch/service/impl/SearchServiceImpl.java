@@ -56,7 +56,7 @@ public class SearchServiceImpl implements SearchService {
     private ElasticsearchOperations operations;
 
     private static Query getQuery(QueryParam queryParam, Pageable pageable) {
-        Query query;
+        NativeQuery nativeQuery;
         if (StringUtils.isNotEmpty(queryParam.getParam()) ||
                 (queryParam.getIds() !=null && !queryParam.getIds().isEmpty()) ||
                 (StringUtils.isNotEmpty(queryParam.getField()) && StringUtils.isNotEmpty(queryParam.getOperation())) ||
@@ -68,13 +68,11 @@ public class SearchServiceImpl implements SearchService {
                           .fuzziness("auto")
                           .build();
                if (pageable != null) {
-                   query = NativeQuery.builder().withQuery(q ->
+                   nativeQuery = NativeQuery.builder().withQuery(q ->
                           q.multiMatch(multiMatchQuery)).withPageable(pageable).build();
                } else {
-                   NativeQuery nativeQuery = NativeQuery.builder().withQuery(q ->
+                   nativeQuery = NativeQuery.builder().withQuery(q ->
                            q.multiMatch(multiMatchQuery)).build();
-                   nativeQuery.setMaxResults(10000);
-                   query = nativeQuery;
                }
             } else if (queryParam.isBoolQuery()) {
                 List<co.elastic.clients.elasticsearch._types.query_dsl.Query> queries = new ArrayList<>();
@@ -103,43 +101,41 @@ public class SearchServiceImpl implements SearchService {
                     boolQuery = new BoolQuery.Builder().must(queries).build();
                 }
                 if (pageable != null) {
-                    query = NativeQuery.builder().withQuery(boolQuery._toQuery()).withPageable(pageable).build();
+                    nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).withPageable(pageable).build();
                 } else {
-                    NativeQuery nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
-                    nativeQuery.setMaxResults(10000);
-                    query = nativeQuery;
+                    nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
                 }
             } else if (queryParam.isIdsQuery()) {
                 IdsQuery idsQuery = new IdsQuery.Builder().values(queryParam.getIds()).build();
                 if(pageable != null) {
-                    query = NativeQuery.builder().withQuery(q ->
+                    nativeQuery = NativeQuery.builder().withQuery(q ->
                             q.ids(idsQuery)).withPageable(pageable).build();
                 } else{
-                    NativeQuery nativeQuery =  NativeQuery.builder().withQuery(q ->
+                    nativeQuery =  NativeQuery.builder().withQuery(q ->
                             q.ids(idsQuery)).build();
-                    nativeQuery.setMaxResults(10000);
-                    query = nativeQuery;
                 }
             } else {
                 TermQuery termQuery = new TermQuery.Builder()
                       .value(queryParam.getParam())
                       .field(queryParam.getField()).build();
                 if(pageable != null) {
-                  query = NativeQuery.builder().withQuery(q ->
+                    nativeQuery = NativeQuery.builder().withQuery(q ->
                           q.term(termQuery)).withPageable(pageable).build();
                 } else{
-                  NativeQuery nativeQuery =  NativeQuery.builder().withQuery(q ->
+                    nativeQuery =  NativeQuery.builder().withQuery(q ->
                           q.term(termQuery)).build();
-                  nativeQuery.setMaxResults(10000);
-                  query = nativeQuery;
                 }
             }
         } else {
             MatchAllQuery matchAllQuery = new MatchAllQuery.Builder().build();
-            query = NativeQuery.builder().withQuery(q ->
+            nativeQuery = NativeQuery.builder().withQuery(q ->
                     q.matchAll(matchAllQuery)).withPageable(pageable).build();
         }
-        return query;
+        if (log.isDebugEnabled()) {
+            log.debug("execute query:{}", nativeQuery.getQuery().toString());
+        }
+        nativeQuery.setMaxResults(10000);
+        return nativeQuery;
     }
 
     @Override

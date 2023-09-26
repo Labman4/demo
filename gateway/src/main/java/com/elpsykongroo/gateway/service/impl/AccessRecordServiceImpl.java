@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -138,10 +139,14 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 					QueryParam queryParam = new QueryParam();
 					queryParam.setIndex("access_record");
 					queryParam.setType(AccessRecord.class);
-					queryParam.setField("sourceIP");
-					queryParam.setFuzzy(false);
+					queryParam.setFields(Collections.singletonList("sourceIP"));
+					queryParam.setBoolQuery(true);
 					for (InetAddress addr : inetAddresses) {
-						queryParam.setParam(addr.getHostAddress());
+						if (IPUtils.isIpv6(addr.getHostAddress())) {
+							queryParam.setQueryStringParam(Collections.singletonList("\"" + addr.getHostAddress() + "\""));
+						} else {
+							queryParam.setQueryStringParam(Collections.singletonList(addr.getHostAddress()));
+						}
 						String result = searchService.query(queryParam);
 						if (StringUtils.isNotEmpty(result)) {
 							List<String> idList = JsonUtils.toType(result, new TypeReference<>() {

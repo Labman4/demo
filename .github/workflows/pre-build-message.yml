@@ -1,11 +1,11 @@
 name: Prepare build (message)
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - message/**
+#  pull_request:
+#    branches:
+#      - main
+#    paths:
+#      - message/**
   push:
     branches-ignore:
       - main

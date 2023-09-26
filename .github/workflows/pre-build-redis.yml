@@ -1,11 +1,11 @@
 name: Prepare build (redis)
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - redis/**
+#  pull_request:
+#    branches:
+#      - main
+#    paths:
+#      - redis/**
   push:
     branches-ignore:
       - main
