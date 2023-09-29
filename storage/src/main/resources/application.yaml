@@ -27,8 +27,7 @@ logging:
       springframework:
         security: ${SECURITY_LOG_LEVEL:debug}
     com:
-      elpsykongroo:
-        storage: ${STORAGE_LOG_LEVEL:debug}
+      elpsykongroo: ${APP_LOG_LEVEL:debug}
 management:
   endpoint:
     prometheus:

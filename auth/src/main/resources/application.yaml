@@ -78,4 +78,4 @@ logging:
       springframework:
         security: ${SECURITY_LOG_LEVEL:debug}
     com:
-      elpsykongroo: ${APP_LEVEL:debug}
+      elpsykongroo: ${APP_LOG_LEVEL:debug}
