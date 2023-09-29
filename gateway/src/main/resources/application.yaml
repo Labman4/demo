@@ -55,7 +55,7 @@ logging:
     root: ${ROOT_LOG_LEVEL:info}
     web: ${WEB_LOG_LEVEL:debug}
     com:
-      elpsykongroo: ${GATEWAY_LOG_LEVEL:debug}
+      elpsykongroo: ${APP_LOG_LEVEL:debug}
     org:
       springframework:
         security: ${SECURITY_LOG_LEVEL:debug}

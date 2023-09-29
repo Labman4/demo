@@ -21,9 +21,7 @@ logging:
     root: ${ROOT_LOG_LEVEL:info}
     web: ${WEB_LOG_LEVEL:info}
     com:
-      elpsykongroo:
-        services:
-          kafka: ${KAFKA_LOG:DEBUG}
+      elpsykongroo: ${APP_LOG_LEVEL:DEBUG}
 
 management:
   endpoint:
