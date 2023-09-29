@@ -88,7 +88,7 @@
                                 <env>
                                     <BP_JVM_VERSION>17</BP_JVM_VERSION>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-                                    <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>--initialize-at-build-time=ch.qos.logback.core,ch.qos.logback.classic,org.springframework.data.domain.Page,org.springframework.data.domain.Pageable</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
+                                    <BP_NATIVE_IMAGE_BUILD_ARGUMENTS>--initialize-at-build-time=ch.qos.logback.core,ch.qos.logback.classic,org.springframework.data.domain.Page,org.springframework.data.domain.Pageable --initialize-at-run-time=com.elpsykongroo.base.domain.message.OffsetResult</BP_NATIVE_IMAGE_BUILD_ARGUMENTS>
                                 </env>
                                 <name>
                                     ${project.artifactId}:native
