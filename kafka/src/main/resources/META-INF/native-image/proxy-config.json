@@ -1,6 +1,24 @@
 [
   {
+    "interfaces":["com.elpsykongroo.base.service.AuthService"]
+  },
+  {
     "interfaces":["com.elpsykongroo.base.service.GatewayService"]
+  },
+  {
+    "interfaces":["com.elpsykongroo.base.service.KafkaService"]
+  },
+  {
+    "interfaces":["com.elpsykongroo.base.service.MessageService"]
+  },
+  {
+    "interfaces":["com.elpsykongroo.base.service.RedisService"]
+  },
+  {
+    "interfaces":["com.elpsykongroo.base.service.SearchService"]
+  },
+  {
+    "interfaces":["com.elpsykongroo.base.service.StorageService"]
   },
   {
     "interfaces":["java.lang.reflect.ParameterizedType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
