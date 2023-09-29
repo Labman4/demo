@@ -266,8 +266,7 @@ public class StreamServiceImpl implements StreamService {
                     if (log.isDebugEnabled()) {
                         log.debug("autoComplete get offset:{}", offsets);
                     }
-                    List<OffsetResult> offsetResults = JsonUtils.toType(offsets, new TypeReference<List<OffsetResult>>() {
-                    });
+                    List<OffsetResult> offsetResults = JsonUtils.toType(offsets, new TypeReference<>() {});
                     for (OffsetResult offset : offsetResults) {
                         if (offset.getOffset() > completedParts.size()) {
                             if (log.isDebugEnabled()) {
