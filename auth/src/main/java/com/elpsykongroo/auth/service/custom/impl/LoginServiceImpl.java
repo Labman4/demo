@@ -209,11 +209,12 @@ public class LoginServiceImpl implements LoginService {
                 /**
                  * user byteArray cant serializable and do not need add authorities with authentication when use OpaqueToken
                  */
+                List<Authority> authorities = userService.userAuthority(username);
                 Authentication authentication =
                         WebAuthnAuthenticationToken.authenticated(
                                 username,
                                 null,
-                                null);
+                                authorities);
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);
@@ -427,11 +428,12 @@ public class LoginServiceImpl implements LoginService {
                     log.debug("token user:{}", id.getSubject());
                 }
                 SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+                List<Authority> authorities = userService.userAuthority(id.getSubject());
                 Authentication authentication =
                         WebAuthnAuthenticationToken.authenticated(
                                 id.getSubject(),
                                 null,
-                                null);
+                                authorities);
                 context.setAuthentication(authentication);
                 securityContextHolderStrategy.setContext(context);
                 securityContextRepository.saveContext(context, request, response);

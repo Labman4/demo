@@ -97,6 +97,7 @@ management:
 
 service:
   vault: ${VAULT_ENABLE:true}
+  limit: false
 #request:
 #  limit:
 #    global:

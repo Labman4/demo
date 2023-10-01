@@ -70,6 +70,7 @@ spring:
 service:
   vault: ${VAULT_ENABLE:true}
   security: oauth2
+  limit: false
 logging:
   level:
     root: ${ROOT_LOG_LEVEL:info}
