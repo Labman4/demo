@@ -9,6 +9,9 @@
     "interfaces":["com.elpsykongroo.base.service.KafkaService"]
   },
   {
+    "interfaces":["com.elpsykongroo.base.service.MessageService"]
+  },
+  {
     "interfaces":["com.elpsykongroo.base.service.RedisService"]
   },
   {
@@ -16,15 +19,6 @@
   },
   {
     "interfaces":["com.elpsykongroo.base.service.StorageService"]
-  },
-  {
-    "interfaces":["java.lang.reflect.ParameterizedType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
-  },
-  {
-    "interfaces":["java.lang.reflect.TypeVariable","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
-  },
-  {
-    "interfaces":["java.lang.reflect.WildcardType","org.springframework.core.SerializableTypeWrapper$SerializableTypeProxy","java.io.Serializable"]
   },
   {
     "interfaces":["org.springframework.boot.actuate.endpoint.annotation.Endpoint"]
@@ -37,9 +31,6 @@
   },
   {
     "interfaces":["org.springframework.boot.test.context.SpringBootTest"]
-  },
-  {
-    "interfaces":["org.springframework.context.event.EventListener"]
   },
   {
     "interfaces":["org.springframework.test.context.ActiveProfiles"]
