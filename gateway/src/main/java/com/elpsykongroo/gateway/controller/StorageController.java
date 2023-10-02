@@ -67,7 +67,7 @@ public class StorageController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public void uploadByte( byte[] byteData, @RequestBody S3 s3) {
+    public void uploadByte(byte[] byteData, @RequestBody S3 s3) {
         if ((s3.getByteData() != null && s3.getByteData().length > 0)) {
             storageService.uploadByte(s3);
         }

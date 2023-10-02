@@ -14,3 +14,18 @@ logging:
         security: ${SECURITY_LOG_LEVEL:debug}
     com:
       elpsykongroo: ${APP_LOG_LEVEL:debug}
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      cors:
+        allowed-origins: "*"
+        allowed-headers: "*"
+        allowed-methods: OPTIONS, GET
+      exposure:
+        include: ${ENDPOINTS_WEB:health,prometheus}

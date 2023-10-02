@@ -29,7 +29,6 @@ public class WebConfig {
 
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/auth/**").allowedOriginPatterns("*");
                 registry.addMapping("/logout").allowedOriginPatterns("*").allowCredentials(true);
                 registry.addMapping("/connect/logout").allowedOriginPatterns("*").allowCredentials(true);
                 registry.addMapping("/oauth2/**").allowedOriginPatterns("*").allowCredentials(true);
@@ -38,6 +37,15 @@ public class WebConfig {
         };
     }
 
+//    @Override
+//    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+//        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()
+//                .indentOutput(true)
+//                .dateFormat(new SimpleDateFormat("yyyy-MM-dd"))
+//                .modulesToInstall(new ParameterNamesModule());
+//        converters.add(new MappingJackson2HttpMessageConverter(builder.build()));
+//        converters.add(new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(true).build()));
+//    }
 
 //    @Bean
 //    public CorsConfigurationSource corsConfigurationSource() {

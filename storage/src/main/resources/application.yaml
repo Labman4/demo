@@ -8,8 +8,6 @@ server:
     keep-alive-timeout: 12000
   port: 9999
 spring:
-  main:
-    allow-bean-definition-overriding: true
   servlet:
     multipart:
       max-request-size: -1
@@ -30,12 +28,16 @@ logging:
       elpsykongroo: ${APP_LOG_LEVEL:debug}
 management:
   endpoint:
+    health:
+      probes:
+        enabled: true
     prometheus:
       enabled: true
   endpoints:
     web:
+      cors:
+        allowed-origins: "*"
+        allowed-headers: "*"
+        allowed-methods: OPTIONS, GET
       exposure:
-        include: ${ENDPOINTS_WEB:prometheus}
-  metrics:
-    tags:
-      application: ${METRICS_TAG:storage}
+        include: ${ENDPOINTS_WEB:health,prometheus}

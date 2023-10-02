@@ -91,8 +91,8 @@ public class ThrottlingFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-		if (log.isDebugEnabled()) {
-			log.debug("request filter path:{}", requestConfig.getPath());
+		if (log.isTraceEnabled()) {
+			log.trace("request filter path:{}", requestConfig.getPath());
 		}
 		HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 		HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;

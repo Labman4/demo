@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @Slf4j
-@CrossOrigin
+@CrossOrigin(originPatterns = "*")
 @RestController
 @RequestMapping("public")
 public class PublicController {
