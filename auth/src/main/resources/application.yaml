@@ -1,8 +1,6 @@
 server:
   servlet:
     session:
-#      cookie:
-#        domain: .elpsykongroo.com
       timeout: 3600
   port: 9000
   ssl:
@@ -14,10 +12,15 @@ management:
     health:
       probes:
         enabled: true
+    prometheus:
+      enabled: true
   endpoints:
     web:
+      cors:
+        allowed-origin-patterns:
+          - "*"
       exposure:
-        include: ${ENDPOINTS_WEB:health}
+        include: ${ENDPOINTS_WEB:health,prometheus}
 spring:
   session:
     jdbc:
