@@ -32,8 +32,6 @@ public class ServiceConfig {
 
     private String whiteDomain;
 
-    private String cookieDomain;
-
     private Url url;
 
     private String adminEmail;
@@ -41,6 +39,8 @@ public class ServiceConfig {
     private String vault;
 
     private String security;
+
+    private String limit;
 
     private Redis redis;
 

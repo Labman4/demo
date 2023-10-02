@@ -163,9 +163,9 @@ public class KafkaServiceImpl implements KafkaService {
                     if (log.isDebugEnabled()) {
                         log.debug("listener assign:{}", listener.getAssignedPartitions());
                     }
-//                    if (listener.getAssignedPartitions().size() > 0 ) {
-//                        flag = true;
-//                    }
+                    if (listener.getAssignedPartitions().size() > 0 ) {
+                        flag = true;
+                    }
                 }
             }
 //            MessageListenerContainer container = endpointRegistry.getListenerContainer(consumer);

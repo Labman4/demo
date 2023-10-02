@@ -17,18 +17,18 @@
 package com.elpsykongroo.storage.service.impl;
 
 import com.elpsykongroo.base.config.ServiceConfig;
-import com.elpsykongroo.base.domain.message.OffsetResult;
 import com.elpsykongroo.base.domain.message.Send;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.base.service.GatewayService;
 import com.elpsykongroo.base.service.KafkaService;
 import com.elpsykongroo.base.service.RedisService;
-import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.MessageDigestUtils;
 import com.elpsykongroo.base.utils.NormalizedUtils;
 import com.elpsykongroo.storage.service.S3Service;
 import com.elpsykongroo.storage.service.StreamService;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 @Service
 @Slf4j
@@ -266,10 +267,17 @@ public class StreamServiceImpl implements StreamService {
                     if (log.isDebugEnabled()) {
                         log.debug("autoComplete get offset:{}", offsets);
                     }
-                    List<OffsetResult> offsetResults = JsonUtils.toType(offsets, new TypeReference<List<OffsetResult>>() {
-                    });
-                    for (OffsetResult offset : offsetResults) {
-                        if (offset.getOffset() > completedParts.size()) {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode jsonArray = null;
+                    try {
+                        jsonArray = objectMapper.readTree(offsets);
+                    } catch (JsonProcessingException e) {
+                        if (log.isErrorEnabled()) {
+                            log.error("convert json error");
+                        }                    }
+                    for (JsonNode element : jsonArray) {
+                        int offset = element.get("offset").asInt();
+                        if (offset > completedParts.size()) {
                             if (log.isDebugEnabled()) {
                                 log.debug("autoComplete reset offset");
                             }
