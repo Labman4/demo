@@ -38,6 +38,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Base64;
 
 @Service
@@ -130,13 +131,14 @@ public class RedisServiceImpl implements RedisService {
                         .registerModule(TimestampExtensionModule.INSTANCE);
                 obj = mapper.readValue(plainText, MsgPack.class);
                 unPacker.close();
-            } else {
-                return "";
+                if (obj.getEo().isAfter(Instant.now())) {
+                    return JsonUtils.toJson(obj);
+                }
             }
         } catch (Exception e) {
             return "";
         }
-        return JsonUtils.toJson(obj);
+        return "";
     }
 
     @Override
