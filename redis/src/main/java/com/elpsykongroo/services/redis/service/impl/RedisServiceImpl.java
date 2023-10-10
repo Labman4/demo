@@ -107,8 +107,10 @@ public class RedisServiceImpl implements RedisService {
             byte[] bytes = redisTemplate.execute((RedisCallback<byte[]>) connection -> {
                 return connection.get(ticket[0].getBytes());
             });
-            byte[] secret = Base64.getUrlDecoder().decode(ticket[1]);
-            byte[] plainText = EncryptUtils.decryptAsByte(bytes, secret);
+            if (bytes.length > 0) {
+                byte[] secret = Base64.getUrlDecoder().decode(ticket[1]);
+                byte[] plainText = EncryptUtils.decryptAsByte(bytes, secret);
+
 //        LZ4Factory factory = LZ4Factory.fastestInstance();
 //        LZ4FastDecompressor decompressor = factory.fastDecompressor();
 //        LZ4DecompressorWithLength decompressorWithLength = new LZ4DecompressorWithLength(decompressor);
@@ -121,14 +123,18 @@ public class RedisServiceImpl implements RedisService {
 //        inStream.read(restored);
 //        inStream.close();
 //        System.out.println(restored.length);
-            MessageUnpacker unPacker = MessagePack.newDefaultUnpacker(plainText);
-            ObjectMapper mapper = new ObjectMapper(new MessagePackFactory())
-                    .registerModule(new JavaTimeModule())
-                    .registerModule(TimestampExtensionModule.INSTANCE);
-            obj = mapper.readValue(plainText, MsgPack.class);
-            unPacker.close();
+
+                MessageUnpacker unPacker = MessagePack.newDefaultUnpacker(plainText);
+                ObjectMapper mapper = new ObjectMapper(new MessagePackFactory())
+                        .registerModule(new JavaTimeModule())
+                        .registerModule(TimestampExtensionModule.INSTANCE);
+                obj = mapper.readValue(plainText, MsgPack.class);
+                unPacker.close();
+            } else {
+                return "";
+            }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return "";
         }
         return JsonUtils.toJson(obj);
     }
