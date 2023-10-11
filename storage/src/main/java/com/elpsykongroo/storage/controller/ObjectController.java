@@ -70,7 +70,7 @@ public class ObjectController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void multipartUpload(S3 s3) {
         try {
-            if ((s3.getData() != null && !s3.getData()[0].isEmpty())) {
+            if (s3.getData() != null && !s3.getData()[0].isEmpty()) {
                 if (log.isDebugEnabled()) {
                     String sha256 = MessageDigestUtils.sha256(s3.getData()[0].getBytes());
                     log.debug("sha256:{}", sha256);
@@ -87,7 +87,7 @@ public class ObjectController {
     @PostMapping(consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void uploadByte(S3 s3) {
         try {
-            if ((s3.getByteData() != null && s3.getByteData().length > 0)) {
+            if (s3.getByteData() != null && s3.getByteData().length > 0) {
                 objectService.multipartUpload(s3);
             }
         } catch (Exception e) {

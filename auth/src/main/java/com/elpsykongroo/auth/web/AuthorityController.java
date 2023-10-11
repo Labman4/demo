@@ -72,6 +72,6 @@ public class AuthorityController {
 
     @PutMapping
     public String addAuthority(@RequestParam String name) {
-        return  CommonResponse.string(authorityService.addAuthority(name));
+        return  CommonResponse.data(authorityService.addAuthority(name));
     }
 }

@@ -56,7 +56,7 @@ public class StorageController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadFile(S3 s3) {
-        if ((s3.getData() != null && !s3.getData()[0].isEmpty())) {
+        if (s3.getData() != null && !s3.getData()[0].isEmpty()) {
             storageService.uploadFile(s3);
         }
     }
@@ -68,7 +68,7 @@ public class StorageController {
 
     @PostMapping(consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public void uploadByte(byte[] byteData, @RequestBody S3 s3) {
-        if ((s3.getByteData() != null && s3.getByteData().length > 0)) {
+        if (s3.getByteData() != null && s3.getByteData().length > 0) {
             storageService.uploadByte(s3);
         }
     }

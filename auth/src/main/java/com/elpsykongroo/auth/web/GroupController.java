@@ -46,7 +46,7 @@ public class GroupController {
 
     @PutMapping
     public String addGroup(@RequestParam String name) {
-        return CommonResponse.string(groupService.addGroup(name));
+        return CommonResponse.data(groupService.addGroup(name));
     }
 
     @DeleteMapping("/{name}")
