@@ -198,7 +198,7 @@ public class NoticeServiceImpl implements NoticeService {
             if (StringUtils.isEmpty(user)) {
                 return notices;
             } else {
-                noticeTopics.addAll((notices));
+                noticeTopics.addAll(notices);
             }
         }
         List<String> fields = new ArrayList<>();
@@ -217,9 +217,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public String deleteTopic(List<String> topics) {
        List<String> fields = new ArrayList<>();
-       for (int i= 0; i < topics.size(); i++) {
-           fields.add("name");
-       }
+       topics.stream().forEach(topic -> fields.add("name"));
        return queryString(fields, topics, "notice_topic", NoticeTopic.class, "deleteQuery", "should");
     }
 

@@ -43,11 +43,11 @@ public class ClientController {
 
     @PutMapping("/register")
     public String addClientRegistry(@RequestBody ClientRegistry client) {
-        return CommonResponse.string(clientRegistrationService.add(client));
+        return CommonResponse.data(clientRegistrationService.add(client));
     }
     @DeleteMapping("/register/{registerId}")
     public String deleteClientRegistry(@PathVariable String registerId) {
-        return CommonResponse.string(clientRegistrationService.delete(registerId));
+        return CommonResponse.data(clientRegistrationService.delete(registerId));
     }
     @GetMapping("/register")
     public String listClientRegistry() {
@@ -55,7 +55,7 @@ public class ClientController {
     }
     @PutMapping
     public String addClient(@RequestBody Client client) {
-        return CommonResponse.string(clientService.add(client));
+        return CommonResponse.data(clientService.add(client));
     }
 
     @DeleteMapping("/{clientId}")
