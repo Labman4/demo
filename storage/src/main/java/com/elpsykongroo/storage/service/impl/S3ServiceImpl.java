@@ -327,11 +327,16 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public ListMultipartUploadsResponse listMultipartUploads(String clientId, String bucket) {
+    public ListMultipartUploadsResponse listMultipartUploads(String clientId, S3Client s3Client, String bucket) {
         ListMultipartUploadsRequest listMultipartUploadsRequest = ListMultipartUploadsRequest.builder()
                 .bucket(bucket)
                 .build();
-        ListMultipartUploadsResponse resp = clientMap.get(clientId).listMultipartUploads(listMultipartUploadsRequest);
+        ListMultipartUploadsResponse resp = null;
+        if (clientMap.get(clientId) != null) {
+            resp = clientMap.get(clientId).listMultipartUploads(listMultipartUploadsRequest);
+        } else {
+            resp = s3Client.listMultipartUploads(listMultipartUploadsRequest);
+        }
         if (log.isDebugEnabled()) {
             log.debug("listMultipartUploads: {}", resp.uploads().size());
         }
@@ -417,6 +422,7 @@ public class S3ServiceImpl implements S3Service {
 
     @Override
     public void initClient(S3 s3, String clientId) {
+        S3Client s3Client = null;
         if (StringUtils.isBlank(s3.getPlatform())) {
             s3.setPlatform(serviceconfig.getS3().getPlatform());
         }
@@ -432,7 +438,7 @@ public class S3ServiceImpl implements S3Service {
         if (log.isDebugEnabled()) {
             log.debug("clientMap before:{}", clientMap.keySet());
         }
-        if (clientMap.containsKey(clientId)) {
+        if (clientMap.containsKey(clientId) && clientMap.get(clientId) != null) {
             if (!stsClientMap.containsKey(clientId + "-timestamp")) {
                 if (log.isTraceEnabled()) {
                     log.trace("skip init");
@@ -486,37 +492,49 @@ public class S3ServiceImpl implements S3Service {
             }
         } else if (StringUtils.isNotBlank(s3.getEndpoint())) {
             if (StringUtils.isNotBlank(s3.getAccessKey())) {
-                clientMap.putIfAbsent(clientId, S3Client.builder()
+                s3Client = S3Client.builder()
                         .httpClientBuilder(builder)
                         .region(Region.of(s3.getRegion()))
                         .credentialsProvider(() -> AwsBasicCredentials.create(s3.getAccessKey(), s3.getAccessSecret()))
                         .endpointOverride(URI.create(s3.getEndpoint()))
                         .forcePathStyle(true)
-                        .build());
+                        .build();
             } else {
-                clientMap.putIfAbsent(clientId, S3Client.builder()
+                s3Client = S3Client.builder()
                         .httpClientBuilder(builder)
                         .region(Region.of(s3.getRegion()))
                         .credentialsProvider(() -> awsCredentials)
                         .endpointOverride(URI.create(s3.getEndpoint()))
                         .forcePathStyle(true)
-                        .build());
+                        .build();
             }
         } else if (StringUtils.isNotBlank(s3.getAccessKey())) {
-            clientMap.putIfAbsent(clientId, S3Client.builder()
+            s3Client = S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
                     .credentialsProvider(() -> AwsBasicCredentials.create(s3.getAccessKey(), s3.getAccessSecret()))
                     .forcePathStyle(true)
-                    .build());
+                    .build();
         } else {
-            clientMap.putIfAbsent(clientId, S3Client.builder()
+            s3Client = S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
                     .credentialsProvider(() -> awsCredentials)
                     .forcePathStyle(true)
-                    .build());
+                    .build();
         }
+        checkClient(s3, clientId, s3Client);
+    }
+
+    private boolean checkClient(S3 s3, String clientId, S3Client s3Client) {
+        try {
+            listMultipartUploads(clientId, s3Client, s3.getBucket());
+        } catch (Exception e) {
+            clientMap.putIfAbsent(clientId, null);
+            return false;
+        }
+        clientMap.putIfAbsent(clientId, s3Client);
+        return true;
     }
 
     private void getStsToken(S3 s3, String clientId, SdkHttpClient.Builder builder, int exp) {
@@ -529,6 +547,7 @@ public class S3ServiceImpl implements S3Service {
                         .webIdentityToken(s3.getIdToken())
                         .build();
         StsClient stsClient;
+        S3Client s3Client = null;
         if(StringUtils.isNotBlank(s3.getEndpoint())) {
             stsClient = StsClient.builder()
                     .httpClientBuilder(builder)
@@ -541,14 +560,13 @@ public class S3ServiceImpl implements S3Service {
                     credentials.accessKeyId(),
                     credentials.secretAccessKey(),
                     credentials.sessionToken());
-
-            clientMap.put(clientId, S3Client.builder()
+            s3Client =  S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
                     .credentialsProvider(() ->  awsCredentials)
                     .endpointOverride(URI.create(s3.getEndpoint()))
                     .forcePathStyle(true)
-                    .build());
+                    .build();
         } else {
             stsClient = StsClient.builder()
                     .httpClientBuilder(builder)
@@ -560,15 +578,16 @@ public class S3ServiceImpl implements S3Service {
                     credentials.accessKeyId(),
                     credentials.secretAccessKey(),
                     credentials.sessionToken());
-
-            clientMap.put(clientId, S3Client.builder()
+            s3Client = S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
                     .credentialsProvider(() ->  awsCredentials)
                     .forcePathStyle(true)
-                    .build());
+                    .build();
         }
-        stsClientMap.put(clientId + "-timestamp", String.valueOf(exp));
+        if(checkClient(s3, clientId, s3Client)) {
+            stsClientMap.put(clientId + "-timestamp", String.valueOf(exp));
+        }
 
 //            StsAssumeRoleWithWebIdentityCredentialsProvider provider = StsAssumeRoleWithWebIdentityCredentialsProvider.builder()
 //                    .refreshRequest(awRequest)

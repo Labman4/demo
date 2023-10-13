@@ -19,6 +19,7 @@ package com.elpsykongroo.storage.service;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
@@ -54,7 +55,7 @@ public interface S3Service {
 
     UploadPartResponse uploadPart(String clientId, S3 s3, RequestBody requestBody, int partNum, long endOffset) throws IOException;
 
-    ListMultipartUploadsResponse listMultipartUploads(String clientId, String bucket);
+    ListMultipartUploadsResponse listMultipartUploads(String clientId, S3Client s3Client, String bucket);
 
     void listCompletedPart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts);
 
