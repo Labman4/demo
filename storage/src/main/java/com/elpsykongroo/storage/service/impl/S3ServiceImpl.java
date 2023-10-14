@@ -143,7 +143,7 @@ public class S3ServiceImpl implements S3Service {
     @Override
     public void deleteObjectByPrefix(String clientId, String bucket, String prefix) {
         List<ObjectIdentifier> toDelete = new ArrayList<>();
-        listObject(clientId, bucket, prefix).contents().stream().forEach(obj -> toDelete.add(ObjectIdentifier.builder()
+        listObject(clientId, null, bucket, prefix).contents().stream().forEach(obj -> toDelete.add(ObjectIdentifier.builder()
                 .key(obj.key()).build()));
         DeleteObjectsRequest deleteObjectRequest = DeleteObjectsRequest.builder()
                 .bucket(bucket)
@@ -235,12 +235,18 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public ListObjectsV2Iterable listObject(String clientId, String bucket, String prefix) {
+    public ListObjectsV2Iterable listObject(String clientId, S3Client s3Client, String bucket, String prefix) {
         ListObjectsV2Request listReq = ListObjectsV2Request.builder()
                 .bucket(bucket)
                 .prefix(prefix)
                 .build();
-        return clientMap.get(clientId).listObjectsV2Paginator(listReq);
+        if (clientMap.get(clientId) != null) {
+            return clientMap.get(clientId).listObjectsV2Paginator(listReq);
+        } else if (s3Client != null){
+            return s3Client.listObjectsV2Paginator(listReq);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -421,7 +427,7 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public void initClient(S3 s3, String clientId) {
+    public S3Client initClient(S3 s3, String clientId) {
         S3Client s3Client = null;
         if (StringUtils.isBlank(s3.getPlatform())) {
             s3.setPlatform(serviceconfig.getS3().getPlatform());
@@ -443,14 +449,14 @@ public class S3ServiceImpl implements S3Service {
                 if (log.isTraceEnabled()) {
                     log.trace("skip init");
                 }
-                return;
+                return clientMap.get(clientId);
             } else {
                 String timestamp = stsClientMap.get(clientId + "-timestamp");
                 if (log.isDebugEnabled()) {
                     log.debug("client expired time :{}", timestamp);
                 }
                 if (Instant.now().compareTo(Instant.ofEpochMilli(Long.parseLong(timestamp)*1000)) < 0) {
-                    return;
+                    return clientMap.get(clientId);
                 } else {
                     if (log.isTraceEnabled()) {
                         log.trace("client expired, continue init");
@@ -523,14 +529,17 @@ public class S3ServiceImpl implements S3Service {
                     .forcePathStyle(true)
                     .build();
         }
-        checkClient(s3, clientId, s3Client);
+        if (checkClient(s3, clientId, s3Client)) {
+            return s3Client;
+        } else {
+            return null;
+        }
     }
 
     private boolean checkClient(S3 s3, String clientId, S3Client s3Client) {
         try {
             listMultipartUploads(clientId, s3Client, s3.getBucket());
         } catch (Exception e) {
-            clientMap.putIfAbsent(clientId, null);
             return false;
         }
         clientMap.putIfAbsent(clientId, s3Client);

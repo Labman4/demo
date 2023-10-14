@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.MultipartUpload;
@@ -108,15 +109,17 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Override
     public List<ListObjectResult> list(S3 s3) {
-        s3Service.initClient(s3, "");
+        S3Client s3Client = s3Service.initClient(s3, "");
         List<ListObjectResult> objects = new ArrayList<>();
         ListObjectsV2Iterable listResp = null;
         try {
-            listResp = s3Service.listObject(s3.getClientId(), s3.getBucket(), "");
-            listResp.contents().stream()
-                .forEach(content -> objects.add(new ListObjectResult(content.key(),
-                        content.lastModified(),
-                        content.size())));
+            listResp = s3Service.listObject(s3.getClientId(), s3Client, s3.getBucket(), "");
+            if (listResp != null) {
+                listResp.contents().stream()
+                        .forEach(content -> objects.add(new ListObjectResult(content.key(),
+                                content.lastModified(),
+                                content.size())));
+            }
         } catch (NoSuchBucketException e) {
             if (log.isWarnEnabled()) {
                 log.warn("bucket not exist");
