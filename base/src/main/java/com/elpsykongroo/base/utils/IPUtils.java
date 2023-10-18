@@ -165,10 +165,18 @@ public class IPUtils {
         return request.getRemoteAddr();
     }
 
-    public static Long ipToBigInteger(String ipAddress) throws UnknownHostException {
-        InetAddress inetAddress = InetAddress.getByName(ipAddress);
-        byte[] addressBytes = inetAddress.getAddress();
+    public static Long ipToBigInteger(String ipAddress) {
         long result = 0;
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(ipAddress);
+        } catch (UnknownHostException e) {
+            if (log.isErrorEnabled()) {
+                log.error("UnknownHostException");
+            }
+            return result;
+        }
+        byte[] addressBytes = inetAddress.getAddress();
         for (byte b : addressBytes) {
             result = result << 8 | (b & 0xFF);
         }
