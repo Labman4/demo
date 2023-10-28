@@ -21,7 +21,5 @@ import com.elpsykongroo.base.domain.message.Message;
 public interface MessageService {
     String getMessageByPublicKey(String text);
 
-    String generatePublicKey();
-
     void setMessage(Message message);
 }

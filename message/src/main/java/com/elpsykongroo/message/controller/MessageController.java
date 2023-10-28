@@ -38,11 +38,6 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-    @GetMapping("publicKey")
-    public String generatePublicKey() {
-        return messageService.generatePublicKey();
-    }
-
     @PutMapping
     public void setMessage(@RequestBody Message message) {
         if (log.isInfoEnabled()) {
