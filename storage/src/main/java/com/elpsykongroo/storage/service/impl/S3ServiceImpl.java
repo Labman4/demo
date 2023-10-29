@@ -537,6 +537,9 @@ public class S3ServiceImpl implements S3Service {
     }
 
     private boolean checkClient(S3 s3, String clientId, S3Client s3Client) {
+        if (log.isDebugEnabled()) {
+            log.debug("checkClient clientId:{}, s3Client:{}", clientId, s3Client);
+        }
         try {
             listMultipartUploads(clientId, s3Client, s3.getBucket());
         } catch (Exception e) {
