@@ -33,17 +33,19 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public String getMessageByPublicKey(String text) {
-        String[] texts= text.split("\\*");
-        String codeVerifier = texts[0];
-        String timestamp = texts[1];
-        String encodedVerifier = PkceUtils.verifyChallenge(codeVerifier);
-        String challenge = redisService.get("PKCE-" + timestamp);
-        if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
-            String message = redisService.get(text);
-            if (StringUtils.isNotEmpty(message)) {
-                redisService.set("PKCE-" + timestamp, "", "1");
+        if (StringUtils.isNotBlank(text) && text.contains("*")) {
+            String[] texts = text.split("\\*");
+            String codeVerifier = texts[0];
+            String timestamp = texts[1];
+            String encodedVerifier = PkceUtils.verifyChallenge(codeVerifier);
+            String challenge = redisService.get("PKCE-" + timestamp);
+            if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
+                String message = redisService.get(text);
+                if (StringUtils.isNotEmpty(message)) {
+                    redisService.set("PKCE-" + timestamp, "", "1");
+                }
+                return message;
             }
-            return message;
         }
         return "";
     }
