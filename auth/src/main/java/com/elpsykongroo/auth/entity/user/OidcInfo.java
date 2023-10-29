@@ -35,7 +35,6 @@ public class OidcInfo {
     public String gender;
     public String birthdate;
     public String zoneinfo;
-
     public String locale;
     public String phone_number;
     public String phone_number_verified;

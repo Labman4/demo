@@ -21,6 +21,7 @@ import com.elpsykongroo.base.service.GatewayService;
 import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.utils.PathUtils;
 import com.elpsykongroo.base.utils.RecordUtils;
+import feign.FeignException;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
@@ -45,7 +46,6 @@ import org.springframework.http.HttpStatus;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -141,20 +141,37 @@ public class ThrottlingFilter implements Filter {
 	}
 
 	private boolean blackOrWhite(HttpServletRequest request, HttpServletResponse httpResponse, IPUtils ipUtils){
-			if ("true".equals(gatewayService.blackOrWhite("false", ipUtils.accessIP(request, "false")))) {
-				return true;
-			} else if (!"true".equals(gatewayService.blackOrWhite("true", ipUtils.accessIP(request, "true")))) {
-				return true;
-			} else {
-				errorMsg.set("yours IP is our blacklist");
-				httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
-				httpResponse.setContentType("text/plain");
-				return false;
+		String whiteFlag = "";
+		String blackFlag = "";
+		try {
+			whiteFlag = gatewayService.blackOrWhite( "false", ipUtils.accessIP(request, "false"));
+			blackFlag = gatewayService.blackOrWhite( "true", ipUtils.accessIP(request, "true"));
+		} catch (FeignException e) {
+			if (log.isErrorEnabled()) {
+				log.error("feign error");
 			}
+		}
+		if ("true".equals(whiteFlag)) {
+			return true;
+		} else if (!"true".equals(blackFlag)) {
+			return true;
+		} else {
+			errorMsg.set("yours IP is our blacklist");
+			httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
+			httpResponse.setContentType("text/plain");
+			return false;
+		}
 	}
 
-	private boolean limitByBucket(String scope, HttpServletResponse httpResponse, HttpSession session) throws UnknownHostException {
-		String ip = gatewayService.getIP();
+	private boolean limitByBucket(String scope, HttpServletResponse httpResponse, HttpSession session) {
+		String ip = null;
+		try {
+			ip = gatewayService.getIP();
+		} catch (Exception e) {
+			if (log.isErrorEnabled()) {
+				log.error("feign error");
+			}
+		}
 		Long appKey = IPUtils.ipToBigInteger(ip);
 		Bucket bucket = null;
 		String attrName = "";
@@ -208,7 +225,15 @@ public class ThrottlingFilter implements Filter {
 
 	private boolean isPublic(String requestUri, HttpServletRequest request, HttpServletResponse servletResponse, IPUtils ipUtils) {
 		if (!PathUtils.beginWithPath(requestConfig.getPath().getNonPrivate(), requestUri)) {
-			if (!"true".equals(gatewayService.blackOrWhite( "false", ipUtils.accessIP(request, "false")))) {
+			String flag = null;
+			try {
+				flag = gatewayService.blackOrWhite( "false", ipUtils.accessIP(request, "false"));
+			} catch (FeignException e) {
+				if (log.isErrorEnabled()) {
+					log.error("feign error");
+				}
+			}
+			if (!"true".equals(flag)) {
 				servletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
 				servletResponse.setContentType("text/plain");
 				errorMsg.set("no access");

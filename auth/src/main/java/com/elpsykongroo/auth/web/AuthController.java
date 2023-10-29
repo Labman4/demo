@@ -74,6 +74,12 @@ public class AuthController {
         return CommonResponse.string(loginService.login(username, request, response));
     }
 
+    @GetMapping("/login/tmp/{text}")
+    public ModelAndView tmpLogin(@PathVariable String text,
+                                 HttpServletRequest request, HttpServletResponse response) {
+        return new ModelAndView(loginService.tmpLogin(text, request, response));
+    }
+
     @PostMapping("/login/token")
     @ResponseBody
     public String loginWithToken(@RequestParam String token,
@@ -99,12 +105,6 @@ public class AuthController {
                               @RequestParam String username,
                               HttpServletRequest request, HttpServletResponse response) {
         return CommonResponse.string(loginService.handleLogin(credential, username, request, response));
-    }
-
-    @GetMapping("/tmp/{text}")
-    public ModelAndView tmpLogin(@PathVariable String text,
-                                 HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView(loginService.tmpLogin(text, request, response));
     }
 
     @PostMapping("/authenticator/add")

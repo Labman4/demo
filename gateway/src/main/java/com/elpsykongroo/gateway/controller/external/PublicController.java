@@ -17,7 +17,10 @@
 package com.elpsykongroo.gateway.controller.external;
 
 import com.elpsykongroo.base.common.CommonResponse;
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.service.MessageService;
+import com.elpsykongroo.base.service.RedisService;
+import com.elpsykongroo.base.utils.PkceUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
@@ -30,9 +33,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
+
 
 @Slf4j
-@CrossOrigin(originPatterns = "*")
+@CrossOrigin(originPatterns = "*", allowCredentials = "true", exposedHeaders = {"X-CSRF-TOKEN"})
 @RestController
 @RequestMapping("public")
 public class PublicController {
@@ -43,9 +48,23 @@ public class PublicController {
 	@Autowired
 	private MessageService messageService;
 
+	@Autowired
+	private RedisService redisService;
+
+	@Autowired
+	private ServiceConfig serviceConfig;
+
 	@GetMapping("ip")
 	public String accessIP(HttpServletRequest request) {
 		return CommonResponse.string(ipManagerService.accessIP(request, ""));
+	}
+
+	@GetMapping("key")
+	public String generatePublicKey() {
+		String codeVerifier = PkceUtils.generateVerifier();
+		long timestamp = Instant.now().toEpochMilli();
+		redisService.set("PKCE-" + timestamp, PkceUtils.generateChallenge(codeVerifier), serviceConfig.getTimeout().getPublicKey());
+		return codeVerifier + "*" + timestamp;
 	}
 
 	@GetMapping("token/qrcode")

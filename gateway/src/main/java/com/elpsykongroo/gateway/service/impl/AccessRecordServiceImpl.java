@@ -33,7 +33,6 @@ import com.elpsykongroo.base.service.SearchService;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.RecordUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
-import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.base.config.RequestConfig;
@@ -113,14 +112,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		queryParam.setPageSize(pageSize);
 		queryParam.setIndex("access_record");
 		queryParam.setType(AccessRecord.class);
-		try {
-			return searchService.query(queryParam);
-		} catch (FeignException e) {
-			if(log.isErrorEnabled()) {
-				log.error("feign error :{}", e.getMessage());
-			}
-			return "";
-		}
+		return searchService.query(queryParam);
 	}
 
 	@Override
@@ -132,41 +124,34 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		QueryParam deleteParam = new QueryParam();
 		deleteParam.setOperation("deleteQuery");
 		deleteParam.setIndex("access_record");
-		try {
-			for (String param : params) {
-				if (IPUtils.validateHost(param) || IPUtils.validate(param)) {
-					InetAddress[] inetAddresses = InetAddress.getAllByName(param);
-					QueryParam queryParam = new QueryParam();
-					queryParam.setIndex("access_record");
-					queryParam.setType(AccessRecord.class);
-					queryParam.setFields(Collections.singletonList("sourceIP"));
-					queryParam.setBoolQuery(true);
-					for (InetAddress addr : inetAddresses) {
-						if (IPUtils.isIpv6(addr.getHostAddress())) {
-							queryParam.setQueryStringParam(Collections.singletonList("\"" + addr.getHostAddress() + "\""));
-						} else {
-							queryParam.setQueryStringParam(Collections.singletonList(addr.getHostAddress()));
-						}
-						String result = searchService.query(queryParam);
-						if (StringUtils.isNotEmpty(result)) {
-							List<String> idList = JsonUtils.toType(result, new TypeReference<>() {
-							});
-							ids.addAll(idList);
-						}
+		for (String param : params) {
+			if (IPUtils.validateHost(param) || IPUtils.validate(param)) {
+				InetAddress[] inetAddresses = InetAddress.getAllByName(param);
+				QueryParam queryParam = new QueryParam();
+				queryParam.setIndex("access_record");
+				queryParam.setType(AccessRecord.class);
+				queryParam.setFields(Collections.singletonList("sourceIP"));
+				queryParam.setBoolQuery(true);
+				for (InetAddress addr : inetAddresses) {
+					if (IPUtils.isIpv6(addr.getHostAddress())) {
+						queryParam.setQueryStringParam(Collections.singletonList("\"" + addr.getHostAddress() + "\""));
+					} else {
+						queryParam.setQueryStringParam(Collections.singletonList(addr.getHostAddress()));
 					}
-				} else {
-					ids.add(param);
+					String result = searchService.query(queryParam);
+					if (StringUtils.isNotEmpty(result)) {
+						List<String> idList = JsonUtils.toType(result, new TypeReference<>() {
+						});
+						ids.addAll(idList);
+					}
 				}
+			} else {
+				ids.add(param);
 			}
-			deleteParam.setIds(ids);
-			deleteParam.setIdsQuery(true);
-			return searchService.query(deleteParam);
-		} catch (FeignException e) {
-			if(log.isErrorEnabled()) {
-				log.error("feign error :{}", e.getMessage());
-			}
-			return "";
 		}
+		deleteParam.setIds(ids);
+		deleteParam.setIdsQuery(true);
+		return searchService.query(deleteParam);
 	}
 
 
