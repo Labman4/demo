@@ -494,7 +494,7 @@ public class S3ServiceImpl implements S3Service {
             String payload = new String(Base64.getUrlDecoder().decode(jwtParts[1]));
             Map<String, Object> idToken = JsonUtils.toObject(payload, Map.class);
             if (idToken.get("sub").equals(s3.getBucket())) {
-                getStsToken(s3, clientId, builder, (int) idToken.get("exp"));
+                return getStsToken(s3, clientId, builder, (int) idToken.get("exp"));
             }
         } else if (StringUtils.isNotBlank(s3.getEndpoint())) {
             if (StringUtils.isNotBlank(s3.getAccessKey())) {
@@ -549,7 +549,7 @@ public class S3ServiceImpl implements S3Service {
         return true;
     }
 
-    private void getStsToken(S3 s3, String clientId, SdkHttpClient.Builder builder, int exp) {
+    private S3Client getStsToken(S3 s3, String clientId, SdkHttpClient.Builder builder, int exp) {
         AssumeRoleWithWebIdentityRequest awRequest =
                 AssumeRoleWithWebIdentityRequest.builder()
                         .durationSeconds(3600)
@@ -599,6 +599,9 @@ public class S3ServiceImpl implements S3Service {
         }
         if(checkClient(s3, clientId, s3Client)) {
             stsClientMap.put(clientId + "-timestamp", String.valueOf(exp));
+            return s3Client;
+        } else {
+            return null;
         }
 
 //            StsAssumeRoleWithWebIdentityCredentialsProvider provider = StsAssumeRoleWithWebIdentityCredentialsProvider.builder()
