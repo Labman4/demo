@@ -571,6 +571,9 @@ public class S3ServiceImpl implements S3Service {
                     .endpointOverride(URI.create(s3.getEndpoint()))
                     .build();
             Credentials credentials = stsClient.assumeRoleWithWebIdentity(awRequest).credentials();
+            if (log.isDebugEnabled()) {
+                log.debug("getStsToken sts keyId:{}", credentials.accessKeyId());
+            }
             AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
                     credentials.accessKeyId(),
                     credentials.secretAccessKey(),
