@@ -87,8 +87,8 @@ public class IPUtils {
     public String accessIP(HttpServletRequest request, String headerType) {
         String[] headers = splitHeader(headerType);
         String ip = getIp(request, headers);
-        if (log.isDebugEnabled()) {
-            log.debug("IPUtils:{}", ip);
+        if (log.isTraceEnabled()) {
+            log.trace("IPUtils:{}", ip);
         }
         return ip;
     }
