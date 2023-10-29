@@ -458,6 +458,8 @@ public class S3ServiceImpl implements S3Service {
                 if (Instant.now().compareTo(Instant.ofEpochMilli(Long.parseLong(timestamp)*1000)) < 0) {
                     if (checkClient(s3, clientId, clientMap.get(clientId))) {
                         return clientMap.get(clientId);
+                    } else {
+                        clientMap.remove(clientId);
                     }
                 }
                 if (log.isTraceEnabled()) {
