@@ -456,11 +456,12 @@ public class S3ServiceImpl implements S3Service {
                     log.debug("client expired time :{}", timestamp);
                 }
                 if (Instant.now().compareTo(Instant.ofEpochMilli(Long.parseLong(timestamp)*1000)) < 0) {
-                    return clientMap.get(clientId);
-                } else {
-                    if (log.isTraceEnabled()) {
-                        log.trace("client expired, continue init");
+                    if (checkClient(s3, clientId, clientMap.get(clientId))) {
+                        return clientMap.get(clientId);
                     }
+                }
+                if (log.isTraceEnabled()) {
+                    log.trace("client expired, continue init");
                 }
             }
         } else {
