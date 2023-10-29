@@ -240,10 +240,10 @@ public class S3ServiceImpl implements S3Service {
                 .bucket(bucket)
                 .prefix(prefix)
                 .build();
-        if (clientMap.get(clientId) != null) {
-            return clientMap.get(clientId).listObjectsV2Paginator(listReq);
-        } else if (s3Client != null){
+        if (s3Client != null) {
             return s3Client.listObjectsV2Paginator(listReq);
+        } else if (clientMap.get(clientId) != null){
+            return clientMap.get(clientId).listObjectsV2Paginator(listReq);
         } else {
             return null;
         }
@@ -338,10 +338,10 @@ public class S3ServiceImpl implements S3Service {
                 .bucket(bucket)
                 .build();
         ListMultipartUploadsResponse resp = null;
-        if (clientMap.get(clientId) != null) {
-            resp = clientMap.get(clientId).listMultipartUploads(listMultipartUploadsRequest);
-        } else {
+        if (s3Client != null) {
             resp = s3Client.listMultipartUploads(listMultipartUploadsRequest);
+        } else {
+            resp = clientMap.get(clientId).listMultipartUploads(listMultipartUploadsRequest);
         }
         if (log.isDebugEnabled()) {
             log.debug("listMultipartUploads: {}", resp.uploads().size());
@@ -571,9 +571,6 @@ public class S3ServiceImpl implements S3Service {
                     .endpointOverride(URI.create(s3.getEndpoint()))
                     .build();
             Credentials credentials = stsClient.assumeRoleWithWebIdentity(awRequest).credentials();
-            if (log.isDebugEnabled()) {
-                log.debug("getStsToken sts keyId:{}", credentials.accessKeyId());
-            }
             AwsSessionCredentials awsCredentials = AwsSessionCredentials.create(
                     credentials.accessKeyId(),
                     credentials.secretAccessKey(),
