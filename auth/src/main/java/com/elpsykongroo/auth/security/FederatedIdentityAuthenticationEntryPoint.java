@@ -65,17 +65,20 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 				ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(subDomain);
 				if (clientRegistration != null) {
 					log.debug("match idp");
-					this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
+					String redirectUri = UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request))
+							.replaceQuery(null)
+							.replacePath(this.authorizationRequestUri)
+							.buildAndExpand(clientRegistration.getRegistrationId())
+							.toUriString();
+					this.redirectStrategy.sendRedirect(request, response, redirectUri);
 					return;
 				}
-			} else {
-				log.debug("not match idp");
-				this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
-				return;
 			}
+			this.redirectStrategy.sendRedirect(request, response, "https://" + parent + "?" + query);
+			return;
 		}
 		String idp = request.getParameter("idp");
-		if (idp != null) {
+		if (StringUtils.isNotBlank(idp)) {
 			ClientRegistration clientRegistration = this.clientRegistrationRepository.findByRegistrationId(idp);
 			if (clientRegistration != null) {
 				String redirectUri = UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request))

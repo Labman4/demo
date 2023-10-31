@@ -487,10 +487,6 @@ public class S3ServiceImpl implements S3Service {
                 .connectionAcquisitionTimeout(connectDuration)
                 .connectionMaxIdleTime(connectDuration)
                 .connectionTimeToLive(connectDuration);
-        AwsCredentials awsCredentials =
-                AwsBasicCredentials.create(
-                        serviceconfig.getS3().getAccessKey(),
-                        serviceconfig.getS3().getAccessSecret());
 
         if(StringUtils.isNotBlank(s3.getIdToken()) && StringUtils.isBlank(s3.getAccessSecret())) {
             String[] jwtParts = s3.getIdToken().split("\\.");
@@ -509,6 +505,10 @@ public class S3ServiceImpl implements S3Service {
                         .forcePathStyle(true)
                         .build();
             } else {
+                AwsCredentials awsCredentials =
+                        AwsBasicCredentials.create(
+                                serviceconfig.getS3().getAccessKey(),
+                                serviceconfig.getS3().getAccessSecret());
                 s3Client = S3Client.builder()
                         .httpClientBuilder(builder)
                         .region(Region.of(s3.getRegion()))
@@ -525,6 +525,10 @@ public class S3ServiceImpl implements S3Service {
                     .forcePathStyle(true)
                     .build();
         } else {
+            AwsCredentials awsCredentials =
+                    AwsBasicCredentials.create(
+                            serviceconfig.getS3().getAccessKey(),
+                            serviceconfig.getS3().getAccessSecret());
             s3Client = S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
