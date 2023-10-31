@@ -35,6 +35,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -63,6 +64,8 @@ public class DefaultSecurityConfig {
 //							.maxSessionsPreventsLogin(true)
 				);
 		http.oauth2ResourceServer(rs -> rs.opaqueToken(withDefaults()));
+		HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+		requestCache.setRequestMatcher(new AntPathRequestMatcher("/oauth2/authorize/**"));
 		http.httpBasic((basic) -> basic
 						.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
 							@Override
@@ -72,6 +75,9 @@ public class DefaultSecurityConfig {
 							}
 						}))
 				.cors(withDefaults())
+				.requestCache(
+					cache -> cache.requestCache(requestCache)
+				)
 				.exceptionHandling(exceptionHandling ->
 						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint())
 				);
