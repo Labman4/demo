@@ -54,7 +54,9 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -118,6 +120,8 @@ public class AuthorizationServerConfig {
 										.maximumSessions(1)
 //							.maxSessionsPreventsLogin(true)
 				);
+		HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+		requestCache.setRequestMatcher(new AntPathRequestMatcher("/oauth2/authorize/**"));
 		http.httpBasic((basic) -> basic
 					.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
 						@Override
@@ -127,6 +131,9 @@ public class AuthorizationServerConfig {
 						}
 					}))
 				.cors(withDefaults())
+				.requestCache(
+						cache -> cache.requestCache(requestCache)
+				)
 				.exceptionHandling(exceptionHandling ->
 						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint)
 				);
