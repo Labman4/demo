@@ -29,6 +29,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -50,6 +52,8 @@ public class SecurityConfig {
 
 	@Bean
 	public DefaultSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+		requestCache.setRequestMatcher(new AntPathRequestMatcher("/oauth2/authorize/**"));
 		http.cors(withDefaults())
 				.csrf((csrf) -> csrf
 						.csrfTokenRepository(httpSessionCsrfTokenRepository())
@@ -87,7 +91,10 @@ public class SecurityConfig {
 						.requestMatchers("/auth/**").hasAuthority("admin")
 						.anyRequest().access(accessManager)
 				)
-				.oauth2ResourceServer(rs -> rs.opaqueToken(withDefaults()));
+				.oauth2ResourceServer(rs -> rs.opaqueToken(withDefaults()))
+				.requestCache(
+						cache -> cache.requestCache(requestCache)
+				);
 		return http.build();
 	}
 
