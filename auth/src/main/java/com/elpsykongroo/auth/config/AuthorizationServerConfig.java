@@ -69,7 +69,7 @@ public class AuthorizationServerConfig {
 	RegisteredClientRepository registeredClientRepository;
 
 	@Autowired
-	private FederatedIdentityAuthenticationEntryPoint federatedIdentityAuthenticationEntryPoint;
+	private FederatedIdentityAuthenticationEntryPoint authenticationEntryPoint;
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -128,7 +128,7 @@ public class AuthorizationServerConfig {
 					}))
 				.cors(withDefaults())
 				.exceptionHandling(exceptionHandling ->
-						exceptionHandling.authenticationEntryPoint(federatedIdentityAuthenticationEntryPoint)
+						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint)
 				);
 		return http.build();
 	}

@@ -77,6 +77,9 @@ public class DefaultSecurityConfig {
 				.cors(withDefaults())
 				.requestCache(
 						cache -> cache.requestCache(requestCache)
+				)
+				.exceptionHandling(exceptionHandling ->
+						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint())
 				);
 		return http.build();
 	}
