@@ -505,14 +505,12 @@ public class S3ServiceImpl implements S3Service {
                         .forcePathStyle(true)
                         .build();
             } else {
-                AwsCredentials awsCredentials =
-                        AwsBasicCredentials.create(
-                                serviceconfig.getS3().getAccessKey(),
-                                serviceconfig.getS3().getAccessSecret());
                 s3Client = S3Client.builder()
                         .httpClientBuilder(builder)
                         .region(Region.of(s3.getRegion()))
-                        .credentialsProvider(() -> awsCredentials)
+                        .credentialsProvider(() -> AwsBasicCredentials.create(
+                                        serviceconfig.getS3().getAccessKey(),
+                                        serviceconfig.getS3().getAccessSecret()))
                         .endpointOverride(URI.create(s3.getEndpoint()))
                         .forcePathStyle(true)
                         .build();
@@ -525,14 +523,12 @@ public class S3ServiceImpl implements S3Service {
                     .forcePathStyle(true)
                     .build();
         } else {
-            AwsCredentials awsCredentials =
-                    AwsBasicCredentials.create(
-                            serviceconfig.getS3().getAccessKey(),
-                            serviceconfig.getS3().getAccessSecret());
             s3Client = S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))
-                    .credentialsProvider(() -> awsCredentials)
+                    .credentialsProvider(() -> AwsBasicCredentials.create(
+                            serviceconfig.getS3().getAccessKey(),
+                            serviceconfig.getS3().getAccessSecret()))
                     .forcePathStyle(true)
                     .build();
         }
