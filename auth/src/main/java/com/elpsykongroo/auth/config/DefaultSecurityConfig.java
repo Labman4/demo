@@ -16,7 +16,7 @@
 
 package com.elpsykongroo.auth.config;
 
-import com.elpsykongroo.auth.security.FederatedIdentityAuthenticationEntryPoint;
+import com.elpsykongroo.base.config.ServiceConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -44,8 +46,7 @@ public class DefaultSecurityConfig {
     private UserDetailsService userDetailsService;
 
 	@Autowired
-	private FederatedIdentityAuthenticationEntryPoint authenticationEntryPoint;
-
+	private ServiceConfig serviceConfig;
 
 	@Bean
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -75,10 +76,10 @@ public class DefaultSecurityConfig {
 						}))
 				.cors(withDefaults())
 				.requestCache(
-						cache -> cache.requestCache(requestCache)
-				).csrf(csrf -> csrf.disable())
+					cache -> cache.requestCache(requestCache)
+				)
 				.exceptionHandling(exceptionHandling ->
-						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint)
+						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint())
 				);
 		return http.build();
 	}
@@ -96,5 +97,10 @@ public class DefaultSecurityConfig {
 	@Bean
 	public HttpSessionRequestCache httpSessionRequestCache() {
 		return new HttpSessionRequestCache();
+	}
+
+	@Bean
+	public AuthenticationEntryPoint authenticationEntryPoint() {
+		return new LoginUrlAuthenticationEntryPoint(serviceConfig.getUrl().getLoginPage());
 	}
 }

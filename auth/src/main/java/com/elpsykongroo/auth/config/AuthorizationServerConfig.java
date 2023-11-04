@@ -16,10 +16,10 @@
 
 package com.elpsykongroo.auth.config;
 
+import com.elpsykongroo.auth.security.FederatedIdentityAuthenticationEntryPoint;
 import com.elpsykongroo.auth.security.convert.PublicRevokeAuthenticationConverter;
 import com.elpsykongroo.auth.security.provider.WebAuthnAuthenticationProvider;
 import com.elpsykongroo.auth.utils.jose.Jwks;
-import com.elpsykongroo.base.config.ServiceConfig;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -51,12 +51,12 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -71,7 +71,7 @@ public class AuthorizationServerConfig {
 	RegisteredClientRepository registeredClientRepository;
 
 	@Autowired
-	private ServiceConfig serviceConfig;
+	private FederatedIdentityAuthenticationEntryPoint authenticationEntryPoint;
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
@@ -120,6 +120,8 @@ public class AuthorizationServerConfig {
 										.maximumSessions(1)
 //							.maxSessionsPreventsLogin(true)
 				);
+		HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+		requestCache.setRequestMatcher(new AntPathRequestMatcher("/oauth2/authorize/**"));
 		http.httpBasic((basic) -> basic
 					.addObjectPostProcessor(new ObjectPostProcessor<BasicAuthenticationFilter>() {
 						@Override
@@ -128,7 +130,13 @@ public class AuthorizationServerConfig {
 							return filter;
 						}
 					}))
-				.cors(withDefaults());
+				.cors(withDefaults())
+				.requestCache(
+						cache -> cache.requestCache(requestCache)
+				)
+				.exceptionHandling(exceptionHandling ->
+						exceptionHandling.authenticationEntryPoint(authenticationEntryPoint)
+				);
 		return http.build();
 	}
 
@@ -186,8 +194,4 @@ public class AuthorizationServerConfig {
 		return new HttpSessionEventPublisher();
 	}
 
-	@Bean
-	public AuthenticationEntryPoint authenticationEntryPoint() {
-		return new LoginUrlAuthenticationEntryPoint(serviceConfig.getUrl().getLoginPage());
-	}
 }
