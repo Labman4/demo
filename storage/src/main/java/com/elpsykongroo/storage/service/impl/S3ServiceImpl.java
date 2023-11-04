@@ -63,6 +63,7 @@ import software.amazon.awssdk.services.s3.model.ListMultipartUploadsResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListPartsRequest;
 import software.amazon.awssdk.services.s3.model.ListPartsResponse;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.NoSuchUploadException;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
@@ -333,15 +334,26 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public ListMultipartUploadsResponse listMultipartUploads(String clientId, S3Client s3Client, String bucket) {
+    public ListMultipartUploadsResponse listMultipartUploads(String clientId, S3Client s3Client, String platform, String bucket) {
         ListMultipartUploadsRequest listMultipartUploadsRequest = ListMultipartUploadsRequest.builder()
                 .bucket(bucket)
                 .build();
         ListMultipartUploadsResponse resp = null;
+        S3Client client;
         if (s3Client != null) {
-            resp = s3Client.listMultipartUploads(listMultipartUploadsRequest);
+            client = s3Client;
+        } else if (clientMap.get(clientId) != null){
+            client = clientMap.get(clientId);
         } else {
-            resp = clientMap.get(clientId).listMultipartUploads(listMultipartUploadsRequest);
+            return ListMultipartUploadsResponse.builder().build();
+        }
+        try {
+            resp = client.listMultipartUploads(listMultipartUploadsRequest);
+        } catch (NoSuchBucketException e) {
+            if (log.isWarnEnabled()) {
+                log.warn("listMultipartUploads, bucket not exist, will create auto");
+            }
+            createBucket(clientId, platform, bucket);
         }
         if (log.isDebugEnabled()) {
             log.debug("listMultipartUploads: {}", resp.uploads().size());
@@ -544,7 +556,7 @@ public class S3ServiceImpl implements S3Service {
             log.debug("checkClient clientId:{}, s3Client:{}", clientId, s3Client);
         }
         try {
-            listMultipartUploads(clientId, s3Client, s3.getBucket());
+            listMultipartUploads(clientId, s3Client, s3.getPlatform(), s3.getBucket());
         } catch (Exception e) {
             return false;
         }

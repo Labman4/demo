@@ -201,7 +201,7 @@ public class ObjectServiceImpl implements ObjectService {
             return match;
         }
         if (!"minio".equals(s3.getPlatform())) {
-            List<MultipartUpload> uploads = s3Service.listMultipartUploads(s3.getClientId(), null, s3.getBucket()).uploads();
+            List<MultipartUpload> uploads = s3Service.listMultipartUploads(s3.getClientId(), null, s3.getPlatform(), s3.getBucket()).uploads();
             for (MultipartUpload upload : uploads) {
                 if (s3.getKey().equals(upload.key())) {
                     return upload.uploadId();

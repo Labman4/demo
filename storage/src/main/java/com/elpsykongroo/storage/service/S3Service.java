@@ -55,7 +55,7 @@ public interface S3Service {
 
     UploadPartResponse uploadPart(String clientId, S3 s3, RequestBody requestBody, int partNum, long endOffset) throws IOException;
 
-    ListMultipartUploadsResponse listMultipartUploads(String clientId, S3Client s3Client, String bucket);
+    ListMultipartUploadsResponse listMultipartUploads(String clientId, S3Client s3Client, String platform, String bucket);
 
     void listCompletedPart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts);
 
