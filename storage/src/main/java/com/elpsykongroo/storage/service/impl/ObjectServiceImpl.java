@@ -51,11 +51,14 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
 public class ObjectServiceImpl implements ObjectService {
     private final ThreadLocal<Integer> count = new ThreadLocal<>();
+    @Autowired
+    private Map<String, S3Client> clientMap;
 
     @Autowired
     private ServiceConfig serviceconfig;
@@ -93,7 +96,7 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public void abortMultipartUpload(S3 s3) {
         s3Service.initClient(s3, "");
-        s3Service.abortMultipartUpload(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId());
+        s3Service.abortMultipartUpload(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getKey(), s3.getUploadId());
     }
     @Override
     public void download(S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -104,7 +107,7 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public void delete(S3 s3) {
         s3Service.initClient(s3, "");
-        s3Service.deleteObjects(s3.getClientId(), s3.getBucket(), s3.getKey());
+        s3Service.deleteObjects(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getKey());
     }
 
     @Override
@@ -113,7 +116,7 @@ public class ObjectServiceImpl implements ObjectService {
         List<ListObjectResult> objects = new ArrayList<>();
         ListObjectsV2Iterable listResp = null;
         try {
-            listResp = s3Service.listObject(s3.getClientId(), s3Client, s3.getBucket(), "");
+            listResp = s3Service.listObject(clientMap.get(s3.getClientId()), s3.getBucket(), "");
             if (listResp != null) {
                 listResp.contents().stream()
                         .forEach(content -> objects.add(new ListObjectResult(content.key(),
@@ -124,7 +127,7 @@ public class ObjectServiceImpl implements ObjectService {
             if (log.isWarnEnabled()) {
                 log.warn("bucket not exist");
             }
-            if(s3Service.createBucket(s3.getClientId(), s3.getPlatform(), s3.getBucket())) {
+            if(s3Service.createBucket(clientMap.get(s3.getClientId()), s3.getPlatform(), s3.getBucket())) {
                 return objects;
             }
         }
@@ -201,14 +204,14 @@ public class ObjectServiceImpl implements ObjectService {
             return match;
         }
         if (!"minio".equals(s3.getPlatform())) {
-            List<MultipartUpload> uploads = s3Service.listMultipartUploads(s3.getClientId(), null, s3.getPlatform(), s3.getBucket()).uploads();
+            List<MultipartUpload> uploads = s3Service.listMultipartUploads(clientMap.get(s3.getClientId()), s3.getPlatform(), s3.getBucket()).uploads();
             for (MultipartUpload upload : uploads) {
                 if (s3.getKey().equals(upload.key())) {
                     return upload.uploadId();
                 }
             }
         }
-        return s3Service.createMultiPart(s3.getClientId(), s3.getBucket(), s3.getKey()).uploadId();
+        return s3Service.createMultiPart(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getKey()).uploadId();
     }
 
     private List<CompletedPart> uploadPart(S3 s3) throws IOException {
@@ -239,7 +242,7 @@ public class ObjectServiceImpl implements ObjectService {
             log.debug("fileSize:{}, pageSize:{}", fileSize, partSize);
         }
         if (fileSize < partSize && StringUtils.isEmpty(s3.getPartNum())) {
-            String eTag = s3Service.uploadObject(s3.getClientId(), s3.getBucket(), s3.getKey(), requestBody);
+            String eTag = s3Service.uploadObject(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getKey(), requestBody);
             completedParts.add(
                     CompletedPart.builder()
                             .partNumber(1)
@@ -251,7 +254,7 @@ public class ObjectServiceImpl implements ObjectService {
         if(!"stream".equals(s3.getMode())) {
             int startPart = 0;
             if ("minio".equals(s3.getPlatform())) {
-                String uploadId = s3Service.getObject(s3.getClientId(), s3.getBucket(), s3.getConsumerGroupId() + "-uploadId");
+                String uploadId = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getConsumerGroupId() + "-uploadId");
                 if (log.isInfoEnabled()) {
                     log.info("uploadPart consumerGroupId:{}, uploadId:{}", s3.getConsumerGroupId(), uploadId);
                 }
@@ -259,7 +262,7 @@ public class ObjectServiceImpl implements ObjectService {
                     s3.setUploadId(uploadId);
                 }
             }
-            s3Service.listCompletedPart(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
+            s3Service.listCompletedPart(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
             if (!completedParts.isEmpty() && completedParts.size() < num) {
                 // only work when upload without chunk
                 startPart = completedParts.size();
@@ -284,7 +287,7 @@ public class ObjectServiceImpl implements ObjectService {
                 if(!flag) {
                     if (StringUtils.isNotBlank(s3.getConsumerGroupId())) {
                         String shaKey = s3.getConsumerGroupId() + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + (partNum - 1);
-                        String sha = s3Service.getObject(s3.getClientId(), s3.getBucket(), shaKey);
+                        String sha = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), shaKey);
                         if (StringUtils.isNotBlank(sha) && !sha256.equals(sha)) {
                             if (log.isInfoEnabled()) {
                                 log.info("uploadPart sha256:{} not match with s3:{}, key:{}", sha256, sha, shaKey);
@@ -292,7 +295,7 @@ public class ObjectServiceImpl implements ObjectService {
                             }
                         }
                     }
-                    UploadPartResponse uploadPartResponse = s3Service.uploadPart(s3.getClientId(), s3, requestBody, partNum, endOffset);
+                    UploadPartResponse uploadPartResponse = s3Service.uploadPart(clientMap.get(s3.getClientId()), s3, requestBody, partNum, endOffset);
                     if (uploadPartResponse != null) {
                         completedParts.add(
                                 CompletedPart.builder()
@@ -308,7 +311,7 @@ public class ObjectServiceImpl implements ObjectService {
                 }
             }
             if (StringUtils.isBlank(s3.getPartCount()) && completedParts.size() == num) {
-                s3Service.completePart(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
+                s3Service.completePart(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
             }
         }
         return completedParts;
@@ -321,7 +324,7 @@ public class ObjectServiceImpl implements ObjectService {
             offset = ranges[0];
         }
         ResponseInputStream<GetObjectResponse> in =
-                s3Service.getObjectStream(clientId, bucket, key, offset);
+                s3Service.getObjectStream(clientMap.get(clientId), bucket, key, offset);
         if (in != null) {
             String filename = NormalizedUtils.topicNormalize(key);
             response.setHeader("Accept-Ranges", in.response().acceptRanges());
