@@ -36,6 +36,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 
@@ -52,6 +53,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @Slf4j
 public class StreamServiceImpl implements StreamService {
+    @Autowired
+    private Map<String, S3Client> clientMap;
 
     private final Map<String, List<String>> consumerMap = new ConcurrentHashMap<>();
 
@@ -83,7 +86,7 @@ public class StreamServiceImpl implements StreamService {
             }
             if (StringUtils.isNotBlank(consumerGroupId)) {
                 String shaKey = consumerGroupId + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + s3.getPartNum();
-                String sha256 = s3Service.getObject(s3.getClientId(), s3.getBucket(), shaKey);
+                String sha256 = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), shaKey);
                 if (sha256 != null && sha256.toLowerCase(Locale.US).equals(s3.getSha256())) {
                     return "";
                 } else {
@@ -131,11 +134,11 @@ public class StreamServiceImpl implements StreamService {
             }
             if (StringUtils.isNotBlank(consumerGroupId)) {
                 if (!uploadMap.containsKey(consumerGroupId + "-uploadId")) {
-                    HeadObjectResponse uploadIdHead = s3Service.headObject(clientId, s3.getBucket(), consumerGroupId + "-uploadId");
+                    HeadObjectResponse uploadIdHead = s3Service.headObject(clientMap.get(clientId), s3.getBucket(), consumerGroupId + "-uploadId");
                     if (uploadIdHead == null) {
                         String flag = uploadMap.putIfAbsent(consumerGroupId + "-uploadId", uploadId);
                         if (flag == null) {
-                            s3Service.uploadObject(clientId, s3.getBucket(), consumerGroupId + "-uploadId",
+                            s3Service.uploadObject(clientMap.get(clientId), s3.getBucket(), consumerGroupId + "-uploadId",
                                     RequestBody.fromString(uploadId));
                         }
                     }
@@ -168,7 +171,7 @@ public class StreamServiceImpl implements StreamService {
             }
             String shaKey = consumerGroupId + "*" +s3.getKey() + "*" + partCount + "*" + partNum;
             String sha256 = MessageDigestUtils.sha256(output[i]);
-            HeadObjectResponse headObjectResponse = s3Service.headObject(clientId, s3.getBucket(), shaKey);
+            HeadObjectResponse headObjectResponse = s3Service.headObject(clientMap.get(clientId), s3.getBucket(), shaKey);
             Send send = new Send();
             send.setTopic(topic);
             send.setKey(key);
@@ -177,14 +180,14 @@ public class StreamServiceImpl implements StreamService {
             if (headObjectResponse == null) {
                 String sendResult = kafkaService.send(send);
                 if ("1".equals(sendResult)) {
-                    s3Service.uploadObject(clientId, s3.getBucket(), shaKey, RequestBody.fromString(sha256));
+                    s3Service.uploadObject(clientMap.get(clientId), s3.getBucket(), shaKey, RequestBody.fromString(sha256));
                 } else {
                     if (log.isWarnEnabled()) {
                         log.warn("uploadPartByStream sha256 have changed between transform");
                     }
                 }
             } else {
-                String sha = s3Service.getObject(clientId, s3.getBucket(), shaKey);
+                String sha = s3Service.getObject(clientMap.get(clientId), s3.getBucket(), shaKey);
                 if (sha256.equals(sha)) {
                     if (log.isInfoEnabled()) {
                         log.info("uploadPartByStream part:{} is completed", partNum);
@@ -209,7 +212,7 @@ public class StreamServiceImpl implements StreamService {
                 if (log.isDebugEnabled()) {
                     log.debug("initListener, upload consumerId to s3");
                 }
-                s3Service.uploadObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key,
+                s3Service.uploadObject(clientMap.get(s3.getClientId()), s3.getBucket(), consumerGroupS3Key,
                         RequestBody.fromString(consumerGroupId));
             }
         }
@@ -250,16 +253,16 @@ public class StreamServiceImpl implements StreamService {
     public void autoComplete(S3 s3) {
         if (StringUtils.isNotBlank(s3.getPartCount())) {
             List<CompletedPart> completedParts = new ArrayList<CompletedPart>();
-            s3Service.listCompletedPart(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
+            s3Service.listCompletedPart(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
             if (completedParts.size() == Integer.parseInt(s3.getPartCount())) {
                 if (log.isDebugEnabled()) {
                     log.debug("autoComplete start complete");
                 }
-                s3Service.completePart(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
+                s3Service.completePart(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getKey(), s3.getUploadId(), completedParts);
                 if (StringUtils.isNotBlank(s3.getConsumerGroupId())) {
                     completeTopic(s3);
-                    s3Service.deleteObjectByPrefix(s3.getClientId(), s3.getBucket(), s3.getConsumerGroupId());
-                    s3Service.deleteObject(s3.getClientId(), s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId");
+                    s3Service.deleteObjectByPrefix(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getConsumerGroupId());
+                    s3Service.deleteObject(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getBucket() + "-" + s3.getKey() + "-consumerId");
                 }
             } else {
                 if (StringUtils.isNotBlank(s3.getConsumerGroupId())) {
@@ -349,14 +352,14 @@ public class StreamServiceImpl implements StreamService {
     }
 
     private String getConsumerGroupIdFromS3(S3 s3, String consumerGroupS3Key, String consumerGroupKey) {
-        HeadObjectResponse response = s3Service.headObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
+        HeadObjectResponse response = s3Service.headObject(clientMap.get(s3.getClientId()), s3.getBucket(), consumerGroupS3Key);
         if (response != null) {
-            String s3Id = s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
+            String s3Id = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), consumerGroupS3Key);
             while (s3Id == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("getConsumerGroupIdFromS3, try to fetch consumerGroupId from s3");
                 }
-                s3Id = s3Service.getObject(s3.getClientId(), s3.getBucket(), consumerGroupS3Key);
+                s3Id = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), consumerGroupS3Key);
             }
             if (StringUtils.isNotBlank(s3Id)) {
                 List<String> consumerId = new ArrayList<>();

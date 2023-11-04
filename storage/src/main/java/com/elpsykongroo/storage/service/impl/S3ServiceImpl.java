@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseBytes;
@@ -63,6 +62,7 @@ import software.amazon.awssdk.services.s3.model.ListMultipartUploadsResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListPartsRequest;
 import software.amazon.awssdk.services.s3.model.ListPartsResponse;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.NoSuchUploadException;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
@@ -91,14 +91,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class S3ServiceImpl implements S3Service {
 
-    public final Map<String, S3Client> clientMap = new ConcurrentHashMap<>();
+    @Autowired
+    private Map<String, S3Client> clientMap;
 
     private final Map<String, String> stsClientMap = new ConcurrentHashMap<>();
     @Autowired
     public ServiceConfig serviceconfig;
 
     @Override
-    public String uploadObject(String clientId, String bucket, String key, RequestBody requestBody) {
+    public String uploadObject(S3Client s3Client, String bucket, String key, RequestBody requestBody) {
         if (log.isDebugEnabled()) {
             log.debug("uploadObject key:{}", key);
         }
@@ -106,11 +107,11 @@ public class S3ServiceImpl implements S3Service {
                 .bucket(bucket)
                 .key(key)
                 .build();
-        return clientMap.get(clientId).putObject(objectRequest, requestBody).eTag();
+        return s3Client.putObject(objectRequest, requestBody).eTag();
     }
 
     @Override
-    public void deleteObject(String clientId, String bucket, String key) {
+    public void deleteObject(S3Client s3Client, String bucket, String key) {
         if (log.isDebugEnabled()) {
             log.debug("deleteObject key:{}", key);
         }
@@ -118,11 +119,11 @@ public class S3ServiceImpl implements S3Service {
                 .bucket(bucket)
                 .key(key)
                 .build();
-        clientMap.get(clientId).deleteObject(deleteObjectRequest);
+        s3Client.deleteObject(deleteObjectRequest);
     }
 
     @Override
-    public void deleteObjects(String clientId, String bucket, String keys) {
+    public void deleteObjects(S3Client s3Client, String bucket, String keys) {
         if (log.isDebugEnabled()) {
             log.debug("deleteObjects key:{}", keys);
         }
@@ -136,31 +137,31 @@ public class S3ServiceImpl implements S3Service {
                 .bucket(bucket)
                 .delete(Delete.builder().objects(toDelete).build())
                 .build();
-        clientMap.get(clientId).deleteObjects(deleteObjectRequest);
+        s3Client.deleteObjects(deleteObjectRequest);
     }
 
 
     @Override
-    public void deleteObjectByPrefix(String clientId, String bucket, String prefix) {
+    public void deleteObjectByPrefix(S3Client s3Client, String bucket, String prefix) {
         List<ObjectIdentifier> toDelete = new ArrayList<>();
-        listObject(clientId, null, bucket, prefix).contents().stream().forEach(obj -> toDelete.add(ObjectIdentifier.builder()
+        listObject(s3Client, bucket, prefix).contents().stream().forEach(obj -> toDelete.add(ObjectIdentifier.builder()
                 .key(obj.key()).build()));
         DeleteObjectsRequest deleteObjectRequest = DeleteObjectsRequest.builder()
                 .bucket(bucket)
                 .delete(Delete.builder().objects(toDelete).build())
                 .build();
-        clientMap.get(clientId).deleteObjects(deleteObjectRequest);
+        s3Client.deleteObjects(deleteObjectRequest);
     }
 
     @Override
-    public String getObject(String clientId, String bucket, String key) {
+    public String getObject(S3Client s3Client, String bucket, String key) {
         try {
             GetObjectRequest objectRequest = GetObjectRequest
                     .builder()
                     .bucket(bucket)
                     .key(key)
                     .build();
-            ResponseBytes<GetObjectResponse> bytesResp = clientMap.get(clientId).getObjectAsBytes(objectRequest);
+            ResponseBytes<GetObjectResponse> bytesResp = s3Client.getObjectAsBytes(objectRequest);
             if (bytesResp != null) {
                 String str = new String(bytesResp.asByteArray());
                 if (log.isTraceEnabled()) {
@@ -193,7 +194,7 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public ResponseInputStream<GetObjectResponse> getObjectStream(String clientId, String bucket, String key, String offset) {
+    public ResponseInputStream<GetObjectResponse> getObjectStream(S3Client s3Client, String bucket, String key, String offset) {
         try {
             GetObjectRequest objectRequest = null;
             GetObjectRequest.Builder builder = GetObjectRequest
@@ -206,7 +207,7 @@ public class S3ServiceImpl implements S3Service {
             } else {
                 objectRequest = builder.build();
             }
-            ResponseInputStream<GetObjectResponse> streamResp = clientMap.get(clientId).getObject(objectRequest);
+            ResponseInputStream<GetObjectResponse> streamResp = s3Client.getObject(objectRequest);
             if (streamResp != null) {
                 return streamResp;
             }
@@ -235,22 +236,20 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public ListObjectsV2Iterable listObject(String clientId, S3Client s3Client, String bucket, String prefix) {
+    public ListObjectsV2Iterable listObject(S3Client s3Client, String bucket, String prefix) {
         ListObjectsV2Request listReq = ListObjectsV2Request.builder()
                 .bucket(bucket)
                 .prefix(prefix)
                 .build();
         if (s3Client != null) {
             return s3Client.listObjectsV2Paginator(listReq);
-        } else if (clientMap.get(clientId) != null){
-            return clientMap.get(clientId).listObjectsV2Paginator(listReq);
         } else {
             return null;
         }
     }
 
     @Override
-    public CreateMultipartUploadResponse createMultiPart(String clientId, String bucket, String key) {
+    public CreateMultipartUploadResponse createMultiPart(S3Client s3Client, String bucket, String key) {
         if (log.isTraceEnabled()) {
             log.trace("create multipartUpload");
         }
@@ -258,11 +257,11 @@ public class S3ServiceImpl implements S3Service {
                 .bucket(bucket)
                 .key(key)
                 .build();
-        return clientMap.get(clientId).createMultipartUpload(createMultipartUploadRequest);
+        return s3Client.createMultipartUpload(createMultipartUploadRequest);
     }
 
     @Override
-    public boolean createBucket(String clientId, String platform, String bucket) {
+    public boolean createBucket(S3Client s3Client, String platform, String bucket) {
         try {
             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
                     .bucket(bucket)
@@ -274,8 +273,8 @@ public class S3ServiceImpl implements S3Service {
                         .createBucketConfiguration(createBucketConfiguration)
                         .build();
             }
-            S3Waiter s3Waiter = clientMap.get(clientId).waiter();
-            clientMap.get(clientId).createBucket(bucketRequest);
+            S3Waiter s3Waiter = s3Client.waiter();
+            s3Client.createBucket(bucketRequest);
             HeadBucketRequest bucketRequestWait = HeadBucketRequest.builder()
                     .bucket(bucket)
                     .build();
@@ -290,16 +289,16 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public HeadObjectResponse headObject(String clientId, String bucket, String key) {
+    public HeadObjectResponse headObject(S3Client s3Client, String bucket, String key) {
         if (log.isTraceEnabled()) {
-            log.trace("headObject clientId:{}, bucket:{}, key:{}", clientId, bucket, key);
+            log.trace("headObject:{}, bucket:{}, key:{}", bucket, key);
         }
         try {
             HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
                     .bucket(bucket)
                     .key(key)
                     .build();
-            return clientMap.get(clientId).headObject(headObjectRequest);
+            return s3Client.headObject(headObjectRequest);
         } catch (NoSuchKeyException e) {
             if (log.isTraceEnabled()) {
                 log.trace("object not exist");
@@ -314,7 +313,7 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public UploadPartResponse uploadPart(String clientId, S3 s3, RequestBody requestBody, int partNum, long endOffset) throws IOException {
+    public UploadPartResponse uploadPart(S3Client s3Client, S3 s3, RequestBody requestBody, int partNum, long endOffset) throws IOException {
         UploadPartRequest uploadRequest = null;
         try {
             uploadRequest = UploadPartRequest.builder()
@@ -324,24 +323,27 @@ public class S3ServiceImpl implements S3Service {
                     .partNumber(partNum)
                     .contentLength(endOffset)
                     .build();
-            return clientMap.get(clientId).uploadPart(uploadRequest, requestBody);
+            return s3Client.uploadPart(uploadRequest, requestBody);
         } catch (NoSuchUploadException e) {
             return null;
         } catch (SdkClientException e) {
-            return clientMap.get(clientId).uploadPart(uploadRequest, requestBody);
+            return s3Client.uploadPart(uploadRequest, requestBody);
         }
     }
 
     @Override
-    public ListMultipartUploadsResponse listMultipartUploads(String clientId, S3Client s3Client, String bucket) {
+    public ListMultipartUploadsResponse listMultipartUploads(S3Client s3Client, String platform, String bucket) {
         ListMultipartUploadsRequest listMultipartUploadsRequest = ListMultipartUploadsRequest.builder()
                 .bucket(bucket)
                 .build();
         ListMultipartUploadsResponse resp = null;
-        if (s3Client != null) {
+        try {
             resp = s3Client.listMultipartUploads(listMultipartUploadsRequest);
-        } else {
-            resp = clientMap.get(clientId).listMultipartUploads(listMultipartUploadsRequest);
+        } catch (NoSuchBucketException e) {
+            if (log.isWarnEnabled()) {
+                log.warn("listMultipartUploads, bucket not exist, will create auto");
+            }
+            createBucket(s3Client, platform, bucket); 
         }
         if (log.isDebugEnabled()) {
             log.debug("listMultipartUploads: {}", resp.uploads().size());
@@ -350,20 +352,20 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public void abortMultipartUpload (String clientId, String bucket, String key, String uploadId) {
+    public void abortMultipartUpload(S3Client s3Client, String bucket, String key, String uploadId) {
         AbortMultipartUploadRequest abortMultipartUploadRequest = AbortMultipartUploadRequest.builder()
                         .bucket(bucket)
                         .key(key)
                         .uploadId(uploadId)
                         .build();
-        clientMap.get(clientId).abortMultipartUpload(abortMultipartUploadRequest);
+        s3Client.abortMultipartUpload(abortMultipartUploadRequest);
     }
 
     @Override
-    public void listCompletedPart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
+    public void listCompletedPart(S3Client s3Client, String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
         ListPartsResponse listPartsResponse = null;
         try {
-            listPartsResponse = listParts(clientId, bucket, key, uploadId);
+            listPartsResponse = listParts(s3Client, bucket, key, uploadId);
         } catch (AwsServiceException e) {
             if (log.isErrorEnabled()) {
                 log.error("listPart awsService error: {}", e.awsErrorDetails());
@@ -386,7 +388,7 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public ListPartsResponse listParts(String clientId, String bucket, String key, String uploadId) {
+    public ListPartsResponse listParts(S3Client s3Client, String bucket, String key, String uploadId) {
         if (log.isDebugEnabled()) {
             log.debug("list parts uploadId:{}, bucket:{}, key:{}", uploadId, bucket, key);
         }
@@ -396,7 +398,7 @@ public class S3ServiceImpl implements S3Service {
                     .key(key)
                     .uploadId(uploadId)
                     .build();
-            return clientMap.get(clientId).listParts(listRequest);
+            return s3Client.listParts(listRequest);
         } catch (SdkClientException e) {
             if (log.isErrorEnabled()) {
                 log.error("listPart sdk client error: {}", e.getMessage());
@@ -406,7 +408,7 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public void completePart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
+    public void completePart(S3Client s3Client, String bucket, String key, String uploadId, List<CompletedPart> completedParts) {
         if (log.isInfoEnabled()) {
             log.info("start complete part");
         }
@@ -420,7 +422,7 @@ public class S3ServiceImpl implements S3Service {
                                 .build()
                 )
                 .build();
-        CompleteMultipartUploadResponse response = clientMap.get(clientId).completeMultipartUpload(completeRequest);
+        CompleteMultipartUploadResponse response = s3Client.completeMultipartUpload(completeRequest);
         if (log.isInfoEnabled()) {
             log.info("complete MultipartUpload: {}", response.eTag());
         }
@@ -545,6 +547,19 @@ public class S3ServiceImpl implements S3Service {
         }
         try {
             listMultipartUploads(clientId, s3Client, s3.getBucket());
+        } catch (Exception e) {
+            return false;
+        }
+        clientMap.putIfAbsent(clientId, s3Client);
+        return true;
+    }
+
+    private boolean checkClient(S3 s3, String clientId, S3Client s3Client) {
+        if (log.isDebugEnabled()) {
+            log.debug("checkClient clientId:{}, s3Client:{}", clientId, s3Client);
+        }
+        try {
+            listMultipartUploads(s3Client, s3.getPlatform(), s3.getBucket());
         } catch (Exception e) {
             return false;
         }

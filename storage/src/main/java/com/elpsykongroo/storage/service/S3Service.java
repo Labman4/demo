@@ -33,37 +33,37 @@ import java.io.IOException;
 import java.util.List;
 
 public interface S3Service {
-    String uploadObject(String clientId, String bucket, String key, RequestBody requestBody);
+    String uploadObject(S3Client s3Client, String bucket, String key, RequestBody requestBody);
 
-    void deleteObject(String clientId, String bucket, String key);
+    void deleteObject(S3Client s3Client, String bucket, String key);
 
-    void deleteObjects(String clientId, String bucket, String keys);
+    void deleteObjects(S3Client s3Client, String bucket, String keys);
 
-    void deleteObjectByPrefix(String clientId, String bucket, String prefix);
+    void deleteObjectByPrefix(S3Client s3Client, String bucket, String prefix);
 
-    String getObject(String clientId, String bucket, String key);
+    String getObject(S3Client s3Client, String bucket, String key);
 
-    ResponseInputStream<GetObjectResponse> getObjectStream(String clientId, String bucket, String key, String offset);
+    ResponseInputStream<GetObjectResponse> getObjectStream(S3Client s3Client, String bucket, String key, String offset);
 
-    ListObjectsV2Iterable listObject(String clientId, S3Client s3Client, String bucket, String prefix);
+    ListObjectsV2Iterable listObject(S3Client s3Client, String bucket, String prefix);
 
-    CreateMultipartUploadResponse createMultiPart(String clientId, String bucket, String key);
+    CreateMultipartUploadResponse createMultiPart(S3Client s3Client, String bucket, String key);
 
-    boolean createBucket(String clientId, String platform, String bucket);
+    boolean createBucket(S3Client s3Client, String platform, String bucket);
 
-    HeadObjectResponse headObject(String clientId, String bucket, String key);
+    HeadObjectResponse headObject(S3Client s3Client, String bucket, String key);
 
-    UploadPartResponse uploadPart(String clientId, S3 s3, RequestBody requestBody, int partNum, long endOffset) throws IOException;
+    UploadPartResponse uploadPart(S3Client s3Client, S3 s3, RequestBody requestBody, int partNum, long endOffset) throws IOException;
 
-    ListMultipartUploadsResponse listMultipartUploads(String clientId, S3Client s3Client, String bucket);
+    ListMultipartUploadsResponse listMultipartUploads(S3Client s3Client, String platform, String bucket);
 
-    void listCompletedPart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts);
+    void listCompletedPart(S3Client s3Client, String bucket, String key, String uploadId, List<CompletedPart> completedParts);
 
-    ListPartsResponse listParts(String clientId, String bucket, String key, String uploadId);
+    ListPartsResponse listParts(S3Client s3Client, String bucket, String key, String uploadId);
 
-    void completePart(String clientId, String bucket, String key, String uploadId, List<CompletedPart> completedParts);
+    void completePart(S3Client s3Client, String bucket, String key, String uploadId, List<CompletedPart> completedParts);
 
     S3Client initClient(S3 s3, String clientId);
 
-    void abortMultipartUpload (String clientId, String bucket, String key, String uploadId);
+    void abortMultipartUpload (S3Client s3Client, String bucket, String key, String uploadId);
 }
