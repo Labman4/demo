@@ -343,7 +343,7 @@ public class S3ServiceImpl implements S3Service {
             if (log.isWarnEnabled()) {
                 log.warn("listMultipartUploads, bucket not exist, will create auto");
             }
-            createBucket(s3Client, platform, bucket);
+            createBucket(s3Client, platform, bucket); 
         }
         if (log.isDebugEnabled()) {
             log.debug("listMultipartUploads: {}", resp.uploads().size());
@@ -539,6 +539,19 @@ public class S3ServiceImpl implements S3Service {
         } else {
             return null;
         }
+    }
+
+    private boolean checkClient(S3 s3, String clientId, S3Client s3Client) {
+        if (log.isDebugEnabled()) {
+            log.debug("checkClient clientId:{}, s3Client:{}", clientId, s3Client);
+        }
+        try {
+            listMultipartUploads(s3Client, s3.getPlatform(), s3.getBucket());
+        } catch (Exception e) {
+            return false;
+        }
+        clientMap.putIfAbsent(clientId, s3Client);
+        return true;
     }
 
     private boolean checkClient(S3 s3, String clientId, S3Client s3Client) {
