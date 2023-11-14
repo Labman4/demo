@@ -154,7 +154,7 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public String getObject(S3Client s3Client, String bucket, String key) {
+    public ResponseBytes<GetObjectResponse> getObject(S3Client s3Client, String bucket, String key) {
         try {
             GetObjectRequest objectRequest = GetObjectRequest
                     .builder()
@@ -162,6 +162,37 @@ public class S3ServiceImpl implements S3Service {
                     .key(key)
                     .build();
             ResponseBytes<GetObjectResponse> bytesResp = s3Client.getObjectAsBytes(objectRequest);
+            if (bytesResp != null) {
+                return bytesResp;
+            }
+        } catch (NoSuchKeyException e) {
+            if (log.isErrorEnabled()) {
+                log.error("getObjectAsBytes error:{} key:{}", e.getMessage(), key);
+            }
+            return null;
+        } catch (SdkClientException e) {
+            if (log.isErrorEnabled()) {
+                log.error("getObjectAsBytes client error:{}", e.getMessage());
+            }
+            return null;
+        } catch (InvalidObjectStateException e) {
+            if (log.isErrorEnabled()) {
+                log.error("getObjectAsBytes state error:{}", e.getMessage());
+            }
+            return null;
+        } catch (S3Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("getObjectAsBytes s3 error:{}", e.getMessage());
+            }
+            return null;
+        }
+        return null;
+    }
+
+    @Override
+    public String getObjectString(S3Client s3Client, String bucket, String key) {
+        try {
+            ResponseBytes<GetObjectResponse> bytesResp = getObject(s3Client, bucket, key);
             if (bytesResp != null) {
                 String str = new String(bytesResp.asByteArray());
                 if (log.isTraceEnabled()) {
@@ -353,12 +384,18 @@ public class S3ServiceImpl implements S3Service {
 
     @Override
     public void abortMultipartUpload(S3Client s3Client, String bucket, String key, String uploadId) {
-        AbortMultipartUploadRequest abortMultipartUploadRequest = AbortMultipartUploadRequest.builder()
-                        .bucket(bucket)
-                        .key(key)
-                        .uploadId(uploadId)
-                        .build();
-        s3Client.abortMultipartUpload(abortMultipartUploadRequest);
+        try {
+            AbortMultipartUploadRequest abortMultipartUploadRequest = AbortMultipartUploadRequest.builder()
+                            .bucket(bucket)
+                            .key(key)
+                            .uploadId(uploadId)
+                            .build();
+            s3Client.abortMultipartUpload(abortMultipartUploadRequest);
+        } catch (NoSuchUploadException e) {
+            if (log.isDebugEnabled()) {
+                log.debug("upload not exist");
+            }
+        }
     }
 
     @Override
@@ -498,7 +535,7 @@ public class S3ServiceImpl implements S3Service {
                 return getStsToken(s3, clientId, builder, (int) idToken.get("exp"));
             }
         } else if (StringUtils.isNotBlank(s3.getEndpoint())) {
-            if (StringUtils.isNotBlank(s3.getAccessKey())) {
+            if (StringUtils.isNotBlank(s3.getAccessSecret())) {
                 s3Client = S3Client.builder()
                         .httpClientBuilder(builder)
                         .region(Region.of(s3.getRegion()))
@@ -517,7 +554,7 @@ public class S3ServiceImpl implements S3Service {
                         .forcePathStyle(true)
                         .build();
             }
-        } else if (StringUtils.isNotBlank(s3.getAccessKey())) {
+        } else if (StringUtils.isNotBlank(s3.getAccessSecret())) {
             s3Client = S3Client.builder()
                     .httpClientBuilder(builder)
                     .region(Region.of(s3.getRegion()))

@@ -17,6 +17,7 @@
 package com.elpsykongroo.storage.service;
 
 import com.elpsykongroo.base.domain.storage.object.S3;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -41,7 +42,9 @@ public interface S3Service {
 
     void deleteObjectByPrefix(S3Client s3Client, String bucket, String prefix);
 
-    String getObject(S3Client s3Client, String bucket, String key);
+    ResponseBytes<GetObjectResponse> getObject(S3Client s3Client, String bucket, String key);
+
+    String getObjectString(S3Client s3Client, String bucket, String key);
 
     ResponseInputStream<GetObjectResponse> getObjectStream(S3Client s3Client, String bucket, String key, String offset);
 

@@ -20,14 +20,19 @@ import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.domain.message.Message;
 import com.elpsykongroo.base.domain.storage.object.ListObjectResult;
 import com.elpsykongroo.base.domain.storage.object.S3;
+import com.elpsykongroo.base.service.MessageService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.BytesUtils;
 import com.elpsykongroo.base.utils.EncryptUtils;
 import com.elpsykongroo.base.utils.MessageDigestUtils;
 import com.elpsykongroo.base.utils.NormalizedUtils;
 import com.elpsykongroo.base.utils.PkceUtils;
-import com.elpsykongroo.storage.service.ObjectService;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Base64;
+
+import com.elpsykongroo.storage.service.ObjectService;
 import com.elpsykongroo.storage.service.S3Service;
 import com.elpsykongroo.storage.service.StreamService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +42,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -46,6 +52,12 @@ import software.amazon.awssdk.services.s3.model.MultipartUpload;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.UploadPartResponse;
 import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -71,6 +83,9 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Autowired
     private S3Service s3Service;
+
+    @Autowired
+    private MessageService messageService;
 
     @Autowired
     private ApplicationContext ac;
@@ -101,7 +116,7 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public void download(S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException {
         s3Service.initClient(s3, "");
-        downloadStream(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getOffset(), request, response);
+        downloadStream(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getOffset(), s3.getSecret(), "", request, response);
     }
 
     @Override
@@ -112,7 +127,7 @@ public class ObjectServiceImpl implements ObjectService {
 
     @Override
     public List<ListObjectResult> list(S3 s3) {
-        S3Client s3Client = s3Service.initClient(s3, "");
+        s3Service.initClient(s3, "");
         List<ListObjectResult> objects = new ArrayList<>();
         ListObjectsV2Iterable listResp = null;
         try {
@@ -135,30 +150,35 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
-    public String getObjectUrl(S3 s3) throws IOException {
+    public String getObjectUrl(S3 s3) {
         s3Service.initClient(s3, "");
         String plainText = s3.getPlatform() + "*" + s3.getRegion() + "*" + s3.getBucket();
-        byte[] iv = BytesUtils.generateRandomByte(16);
-        byte[] ciphertext = EncryptUtils.encryptString(plainText, iv);
+        byte[] key = BytesUtils.generateRandomByte(16);
+        byte[] ciphertext = EncryptUtils.encryptString(plainText, key);
         String cipherBase64 = Base64.getUrlEncoder().encodeToString(ciphertext);
-        String ivBase64 = Base64.getUrlEncoder().encodeToString(iv);
-        String codeVerifier = PkceUtils.generateVerifier();
-        String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
-        redisService.set(s3.getKey() + "-challenge", codeChallenge, serviceconfig.getTimeout().getStorageUrl());
-        redisService.set(s3.getKey() + "-secret", ivBase64, serviceconfig.getTimeout().getStorageUrl());
+        String keyBase64 = Base64.getUrlEncoder().encodeToString(key);
+        String codeVerifier;
+        if(StringUtils.isBlank(s3.getSecret())) {
+            codeVerifier = PkceUtils.generateVerifier();
+            String codeChallenge = PkceUtils.generateChallenge(codeVerifier);
+            redisService.set("PKCE-" + codeVerifier, codeChallenge, serviceconfig.getTimeout().getPublicKey());
+        } else {
+            codeVerifier = s3.getSecret();
+        }
+        redisService.set(s3.getKey() + "-secret", keyBase64, serviceconfig.getTimeout().getStorageUrl());
         return serviceconfig.getUrl().getObject() +"?key="+ s3.getKey() + "&code=" + cipherBase64 + "&state=" + codeVerifier;
     }
 
     @Override
-    public void getObjectByCode(String code, String state, String key, String offset, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String codeChallenge = redisService.get(key + "-challenge");
+    public void getObjectByCode(String code, String state, String key, String offset, String secret, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String codeChallenge = redisService.get("PKCE-" + state);
         if(StringUtils.isNotBlank(codeChallenge) && codeChallenge.equals(PkceUtils.verifyChallenge(state))) {
-            String ivBase64 = redisService.get(key + "-secret");
+            String keyData = redisService.get(key + "-secret");
             byte[] ciphertext = Base64.getUrlDecoder().decode(code);
-            byte[] iv = Base64.getUrlDecoder().decode(ivBase64);
-            String plainText = EncryptUtils.decrypt(ciphertext, iv);
+            byte[] keyBytes = Base64.getUrlDecoder().decode(keyData);
+            String plainText = EncryptUtils.decrypt(ciphertext, keyBytes);
             String[] keys = plainText.split("\\*");
-            downloadStream(plainText, keys[2], key, offset, request, response);
+            downloadStream(plainText, keys[2], key, offset, secret, state, request, response);
         }
     }
 
@@ -191,7 +211,8 @@ public class ObjectServiceImpl implements ObjectService {
                 multipartUpload(s3);
             }
         }
-        return "0";    }
+        return "0";
+    }
 
     @Override
     public String obtainUploadId(S3 s3) {
@@ -254,7 +275,7 @@ public class ObjectServiceImpl implements ObjectService {
         if(!"stream".equals(s3.getMode())) {
             int startPart = 0;
             if ("minio".equals(s3.getPlatform())) {
-                String uploadId = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getConsumerGroupId() + "-uploadId");
+                String uploadId = s3Service.getObjectString(clientMap.get(s3.getClientId()), s3.getBucket(), s3.getConsumerGroupId() + "-uploadId");
                 if (log.isInfoEnabled()) {
                     log.info("uploadPart consumerGroupId:{}, uploadId:{}", s3.getConsumerGroupId(), uploadId);
                 }
@@ -287,7 +308,7 @@ public class ObjectServiceImpl implements ObjectService {
                 if(!flag) {
                     if (StringUtils.isNotBlank(s3.getConsumerGroupId())) {
                         String shaKey = s3.getConsumerGroupId() + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + (partNum - 1);
-                        String sha = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), shaKey);
+                        String sha = s3Service.getObjectString(clientMap.get(s3.getClientId()), s3.getBucket(), shaKey);
                         if (StringUtils.isNotBlank(sha) && !sha256.equals(sha)) {
                             if (log.isInfoEnabled()) {
                                 log.info("uploadPart sha256:{} not match with s3:{}, key:{}", sha256, sha, shaKey);
@@ -317,7 +338,7 @@ public class ObjectServiceImpl implements ObjectService {
         return completedParts;
     }
 
-    private void downloadStream(String clientId, String bucket, String key, String offset, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void downloadStream(String clientId, String bucket, String key, String offset, String secret, String state, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String range = request.getHeader("Range");
         if (StringUtils.isNotBlank(range)) {
             String[] ranges = range.replace("bytes=", "").split("-");
@@ -330,37 +351,69 @@ public class ObjectServiceImpl implements ObjectService {
             response.setHeader("Accept-Ranges", in.response().acceptRanges());
             response.setContentLengthLong(in.response().contentLength());
             response.setContentType(in.response().contentType());
+            log.debug("file type:{}", in.response().contentType());
+//            response.setHeader("Cache-Control", "public, max-age=31536000");
             response.setHeader("Content-Disposition", "attachment; filename=" + filename);
             response.setHeader("ETag", in.response().eTag());
+//            response.setHeader("Content-Encoding", "gzip");
             if (StringUtils.isNotBlank(offset) || StringUtils.isNotBlank(range)) {
                 response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                 response.setHeader("Content-Range", in.response().contentRange());
             }
             BufferedInputStream inputStream = new BufferedInputStream(in);
-            BufferedOutputStream out = null;
-            try {
-                out = new BufferedOutputStream(response.getOutputStream());
-                byte[] b = new byte[1024];
-                int len;
-                while ((len = inputStream.read(b)) != -1) {
-                    out.write(b, 0, len);
+            if (StringUtils.isNotBlank(secret)) {
+                String secretBase64 = messageService.getMessage(state);
+                if (StringUtils.isNotBlank(secretBase64)) {
+                    Cipher cipher = null;
+                    byte[] cipherResult = Base64.getDecoder().decode(secret);
+                    byte[] secretData = Base64.getDecoder().decode(secretBase64);
+                    byte[] secretOrigin = EncryptUtils.decryptAsByte(cipherResult, secretData);
+                    try {
+                        ResponseBytes<GetObjectResponse> responseBytes = s3Service.getObject(clientMap.get(clientId), bucket, "iv-" + key);
+                        if (responseBytes != null) {
+                            byte[] iv = responseBytes.asByteArray();
+                            SecretKey secretKey = new SecretKeySpec(MessageDigestUtils.sha256ByteArray(secretOrigin), "AES");
+                            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                            cipher = Cipher.getInstance("AES/CTR/NoPadding");
+                            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (cipher != null ) {
+                        CipherInputStream cipherInputStream = new CipherInputStream(inputStream, cipher);
+                        writeOutStream(cipherInputStream, response.getOutputStream(), in, inputStream);
+                    }
                 }
-            } finally {
-                if (out != null) {
-                    out.flush();
-                    out.close();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
+            } else {
+                writeOutStream(inputStream, response.getOutputStream(), in, inputStream);
             }
         }
     }
 
-//    private decrypt() {
-//
-//    }
+    private void writeOutStream(InputStream inputStream, OutputStream outputStream, ResponseInputStream in, BufferedInputStream bufferIn) throws IOException {
+        BufferedOutputStream out = null;
+        try {
+            out = new BufferedOutputStream(outputStream);
+            byte[] b = new byte[1024];
+            int len;
+            while ((len = inputStream.read(b)) != -1) {
+                out.write(b, 0, len);
+            }
+        } finally {
+            if (out != null) {
+                out.flush();
+                out.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (in != null) {
+                in.close();
+            }
+            if (bufferIn != null) {
+                bufferIn.close();
+            }
+        }
+    }
 }

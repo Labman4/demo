@@ -64,6 +64,8 @@ public class S3 {
 
     private String clientId;
 
+    private String secret;
+
     public S3(String bucket) {
         this.bucket = bucket;
     }

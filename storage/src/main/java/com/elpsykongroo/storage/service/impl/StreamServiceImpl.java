@@ -86,7 +86,7 @@ public class StreamServiceImpl implements StreamService {
             }
             if (StringUtils.isNotBlank(consumerGroupId)) {
                 String shaKey = consumerGroupId + "*" + s3.getKey() + "*" + s3.getPartCount() + "*" + s3.getPartNum();
-                String sha256 = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), shaKey);
+                String sha256 = s3Service.getObjectString(clientMap.get(s3.getClientId()), s3.getBucket(), shaKey);
                 if (sha256 != null && sha256.toLowerCase(Locale.US).equals(s3.getSha256())) {
                     return "";
                 } else {
@@ -187,7 +187,7 @@ public class StreamServiceImpl implements StreamService {
                     }
                 }
             } else {
-                String sha = s3Service.getObject(clientMap.get(clientId), s3.getBucket(), shaKey);
+                String sha = s3Service.getObjectString(clientMap.get(clientId), s3.getBucket(), shaKey);
                 if (sha256.equals(sha)) {
                     if (log.isInfoEnabled()) {
                         log.info("uploadPartByStream part:{} is completed", partNum);
@@ -354,12 +354,12 @@ public class StreamServiceImpl implements StreamService {
     private String getConsumerGroupIdFromS3(S3 s3, String consumerGroupS3Key, String consumerGroupKey) {
         HeadObjectResponse response = s3Service.headObject(clientMap.get(s3.getClientId()), s3.getBucket(), consumerGroupS3Key);
         if (response != null) {
-            String s3Id = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), consumerGroupS3Key);
+            String s3Id = s3Service.getObjectString(clientMap.get(s3.getClientId()), s3.getBucket(), consumerGroupS3Key);
             while (s3Id == null) {
                 if (log.isDebugEnabled()) {
                     log.debug("getConsumerGroupIdFromS3, try to fetch consumerGroupId from s3");
                 }
-                s3Id = s3Service.getObject(clientMap.get(s3.getClientId()), s3.getBucket(), consumerGroupS3Key);
+                s3Id = s3Service.getObjectString(clientMap.get(s3.getClientId()), s3.getBucket(), consumerGroupS3Key);
             }
             if (StringUtils.isNotBlank(s3Id)) {
                 List<String> consumerId = new ArrayList<>();

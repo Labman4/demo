@@ -98,33 +98,8 @@ public class ObjectController {
     }
 
     @PostMapping("download")
-    public void download(@RequestBody S3 s3, HttpServletRequest request, HttpServletResponse response) {
-        try {
-            objectService.download(s3, request, response);
-        } catch (IOException e) {
-            if (log.isErrorEnabled()) {
-                log.error("download error: {}", e.getMessage());
-            }
-        }
-    }
-
-    @GetMapping
-    public void getObjectByIdToken(@RequestParam String bucket,
-                                   @RequestParam String key,
-                                   @RequestParam(required = false) String idToken,
-                                   HttpServletRequest request,
-                                   HttpServletResponse response) {
-        try {
-            S3 s3 = new S3();
-            s3.setBucket(bucket);
-            s3.setKey(key);
-            s3.setIdToken(idToken);
-            objectService.download(s3, request, response);
-        } catch (IOException e) {
-            if (log.isErrorEnabled()) {
-                log.error("download error: {}", e.getMessage());
-            }
-        }
+    public void download(@RequestBody S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        objectService.download(s3, request, response);
     }
 
     @GetMapping("/url")
@@ -132,14 +107,9 @@ public class ObjectController {
                                 @RequestParam String state,
                                 @RequestParam String key,
                                 @RequestParam(required = false) String offset,
-                                HttpServletRequest request, HttpServletResponse response) {
-        try {
-            objectService.getObjectByCode(code, state, key, offset, request, response);
-        } catch (IOException e) {
-            if (log.isErrorEnabled()) {
-                log.error("getObjectByCode error: {}", e.getMessage());
-            }
-        }
+                                @RequestParam(required = false) String secret,
+                                HttpServletRequest request, HttpServletResponse response) throws IOException {
+        objectService.getObjectByCode(code, state, key, offset, secret, request, response);
     }
 
     @PostMapping("url")

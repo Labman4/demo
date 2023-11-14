@@ -33,9 +33,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private AuthorizationRepository authorizationRepository;
 
     @Override
-    public String getToken(String principalName, String timestamp) {
+    public String getToken(String principalName) {
         List<Authorization> authorizations = authorizationRepository
-                .findByPrincipalNameAndOidcIdTokenExpiresAtAfterOrderByAccessTokenIssuedAtDesc(principalName, Instant.ofEpochMilli(Long.parseLong(timestamp)));
+                .findByPrincipalNameAndOidcIdTokenExpiresAtAfterOrderByAccessTokenIssuedAtDesc(principalName, Instant.now());
         if (log.isDebugEnabled()) {
             log.debug("validated auth size: {}", authorizations.size());
         }

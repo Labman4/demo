@@ -42,7 +42,7 @@ public interface ObjectService {
 
     String getObjectUrl(S3 s3) throws IOException;
 
-    void getObjectByCode(String code, String state, String key, String offset, HttpServletRequest request, HttpServletResponse response) throws IOException;
+    void getObjectByCode(String code, String state, String key, String offset, String secret, HttpServletRequest request, HttpServletResponse response) throws IOException;
 
     String receiveMessage(Message message) throws IOException;
 }

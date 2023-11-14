@@ -245,7 +245,11 @@ public class IPMangerServiceImpl implements IPManagerService {
 			if (log.isDebugEnabled()) {
 				log.debug("feign error");
 			}
-			return 1;
+			if ("true".equals(isBlack))
+				return 1;
+			else {
+				return 0;
+			}
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("ip: {}, black: {}, size: {}", ad, isBlack, count);
