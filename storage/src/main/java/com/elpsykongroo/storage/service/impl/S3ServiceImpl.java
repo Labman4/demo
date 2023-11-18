@@ -485,10 +485,12 @@ public class S3ServiceImpl implements S3Service {
         }
         if (clientMap.containsKey(clientId) && clientMap.get(clientId) != null) {
             if (!stsClientMap.containsKey(clientId + "-timestamp")) {
-                if (log.isTraceEnabled()) {
-                    log.trace("skip init");
+                if (checkClient(s3, clientId, clientMap.get(clientId))) {
+                    if (log.isTraceEnabled()) {
+                        log.trace("skip init");
+                    }
+                    return clientMap.get(clientId);
                 }
-                return clientMap.get(clientId);
             } else {
                 String timestamp = stsClientMap.get(clientId + "-timestamp");
                 if (log.isDebugEnabled()) {
