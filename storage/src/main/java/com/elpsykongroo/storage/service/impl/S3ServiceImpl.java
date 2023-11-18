@@ -490,6 +490,8 @@ public class S3ServiceImpl implements S3Service {
                         log.trace("skip init");
                     }
                     return clientMap.get(clientId);
+                } else {
+                    clientMap.remove(clientId);
                 }
             } else {
                 String timestamp = stsClientMap.get(clientId + "-timestamp");
