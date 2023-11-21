@@ -20,6 +20,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 public class S3 {
@@ -65,6 +67,8 @@ public class S3 {
     private String clientId;
 
     private String secret;
+
+    private List<CorsRule> corsRules;
 
     public S3(String bucket) {
         this.bucket = bucket;

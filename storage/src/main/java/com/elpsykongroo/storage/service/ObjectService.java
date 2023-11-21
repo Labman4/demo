@@ -17,6 +17,7 @@
 package com.elpsykongroo.storage.service;
 
 import com.elpsykongroo.base.domain.message.Message;
+import com.elpsykongroo.base.domain.storage.object.CorsRule;
 import com.elpsykongroo.base.domain.storage.object.ListObjectResult;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,4 +46,9 @@ public interface ObjectService {
     void getObjectByCode(String code, String state, String key, String offset, String secret, HttpServletRequest request, HttpServletResponse response) throws IOException;
 
     String receiveMessage(Message message) throws IOException;
+
+    List<CorsRule> getCorsRule(S3 s3);
+
+    void putCorsRule(S3 s3);
+
 }

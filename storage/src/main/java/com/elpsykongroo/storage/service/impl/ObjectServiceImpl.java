@@ -18,6 +18,7 @@ package com.elpsykongroo.storage.service.impl;
 
 import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.domain.message.Message;
+import com.elpsykongroo.base.domain.storage.object.CorsRule;
 import com.elpsykongroo.base.domain.storage.object.ListObjectResult;
 import com.elpsykongroo.base.domain.storage.object.S3;
 import com.elpsykongroo.base.service.MessageService;
@@ -46,7 +47,9 @@ import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CORSRule;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
+import software.amazon.awssdk.services.s3.model.GetBucketCorsResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.MultipartUpload;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
@@ -147,6 +150,36 @@ public class ObjectServiceImpl implements ObjectService {
             }
         }
         return objects;
+    }
+
+    @Override
+    public List<CorsRule> getCorsRule(S3 s3) {
+        s3Service.initClient(s3, "");
+        List<CorsRule> corsRules = new ArrayList<>();
+        GetBucketCorsResponse response = s3Service.getCorsRule(clientMap.get(s3.getClientId()), s3.getBucket());
+        if (response != null && response.hasCorsRules()) {
+            response.corsRules().stream().forEach(cors -> corsRules.add(new CorsRule(
+                    cors.allowedHeaders(),
+                    cors.allowedMethods(),
+                    cors.allowedOrigins(),
+                    cors.exposeHeaders(),
+                    cors.maxAgeSeconds(),
+                    cors.id())));
+        }
+        return corsRules;
+    }
+
+    @Override
+    public void putCorsRule(S3 s3) {
+        s3Service.initClient(s3, "");
+        List<CORSRule> corsRules = new ArrayList<>();
+        s3.getCorsRules().stream().forEach(corsRule -> corsRules.add(
+                CORSRule.builder().allowedHeaders(corsRule.getAllowedHeaders())
+                        .allowedMethods(corsRule.getAllowedMethods())
+                        .allowedOrigins(corsRule.getAllowedOrigins())
+                        .exposeHeaders(corsRule.getExposeHeaders())
+                        .maxAgeSeconds(corsRule.getMaxAgeSeconds()).build()));
+        s3Service.putCorsRule(clientMap.get(s3.getClientId()), s3.getBucket(), corsRules);
     }
 
     @Override

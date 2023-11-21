@@ -39,6 +39,8 @@ import software.amazon.awssdk.http.apache.ProxyConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;
+import software.amazon.awssdk.services.s3.model.CORSConfiguration;
+import software.amazon.awssdk.services.s3.model.CORSRule;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadRequest;
 import software.amazon.awssdk.services.s3.model.CompleteMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.CompletedMultipartUpload;
@@ -50,6 +52,8 @@ import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
 import software.amazon.awssdk.services.s3.model.Delete;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
+import software.amazon.awssdk.services.s3.model.GetBucketCorsRequest;
+import software.amazon.awssdk.services.s3.model.GetBucketCorsResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
@@ -67,6 +71,8 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.NoSuchUploadException;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.Part;
+import software.amazon.awssdk.services.s3.model.PutBucketCorsRequest;
+import software.amazon.awssdk.services.s3.model.PutBucketCorsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.model.UploadPartRequest;
@@ -465,6 +471,26 @@ public class S3ServiceImpl implements S3Service {
         }
     }
 
+    @Override
+    public GetBucketCorsResponse getCorsRule(S3Client s3Client, String bucket) {
+        GetBucketCorsRequest getBucketCorsRequest = GetBucketCorsRequest.builder().bucket(bucket).build();
+        GetBucketCorsResponse response = null;
+        try {
+            response = s3Client.getBucketCors(getBucketCorsRequest);
+        } catch (S3Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("getCorsRule error: {}", e.getMessage());
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public PutBucketCorsResponse putCorsRule(S3Client s3Client, String bucket, List<CORSRule> corsRules) {
+        CORSConfiguration corsConfiguration = CORSConfiguration.builder().corsRules(corsRules).build();
+        PutBucketCorsRequest putBucketCorsRequest = PutBucketCorsRequest.builder().bucket(bucket).corsConfiguration(corsConfiguration).build();
+        return s3Client.putBucketCors(putBucketCorsRequest);
+    }
     @Override
     public S3Client initClient(S3 s3, String clientId) {
         S3Client s3Client = null;
