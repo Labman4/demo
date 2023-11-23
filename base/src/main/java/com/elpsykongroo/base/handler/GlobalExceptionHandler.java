@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 
 @Slf4j
@@ -31,14 +32,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FeignException.class)
     public void handleFeignException(FeignException ex) {
         if (log.isDebugEnabled()) {
-            log.debug("feign error");
+            log.debug("feign error:{}", ex);
         }
     }
 
     @ExceptionHandler(UnknownHostException.class)
     public void handleHostException(UnknownHostException ex) {
         if (log.isDebugEnabled()) {
-            log.debug("unknown host");
+            log.debug("unknown host:{}", ex);
+        }
+    }
+
+    @ExceptionHandler(IOException.class)
+    public void handleIOException(IOException ex) {
+        if (log.isDebugEnabled()) {
+            log.debug("io error:{}", ex);
         }
     }
 }

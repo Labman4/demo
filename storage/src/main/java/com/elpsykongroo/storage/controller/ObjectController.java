@@ -29,6 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,7 +51,7 @@ public class ObjectController {
         return objectService.obtainUploadId(s3);
     }
 
-    @PostMapping("/abort")
+    @PostMapping("abort")
     public void abortMultipartUpload(@RequestBody S3 s3) {
         objectService.abortMultipartUpload(s3);
     }
@@ -98,48 +99,18 @@ public class ObjectController {
     }
 
     @PostMapping("download")
-    public void download(@RequestBody S3 s3, HttpServletRequest request, HttpServletResponse response) {
-        try {
-            objectService.download(s3, request, response);
-        } catch (IOException e) {
-            if (log.isErrorEnabled()) {
-                log.error("download error: {}", e.getMessage());
-            }
-        }
+    public void download(@RequestBody S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        objectService.download(s3, request, response);
     }
 
-    @GetMapping
-    public void getObjectByIdToken(@RequestParam String bucket,
-                                   @RequestParam String key,
-                                   @RequestParam(required = false) String idToken,
-                                   HttpServletRequest request,
-                                   HttpServletResponse response) {
-        try {
-            S3 s3 = new S3();
-            s3.setBucket(bucket);
-            s3.setKey(key);
-            s3.setIdToken(idToken);
-            objectService.download(s3, request, response);
-        } catch (IOException e) {
-            if (log.isErrorEnabled()) {
-                log.error("download error: {}", e.getMessage());
-            }
-        }
-    }
-
-    @GetMapping("/url")
+    @GetMapping("url")
     public void getObjectByCode(@RequestParam String code,
                                 @RequestParam String state,
                                 @RequestParam String key,
                                 @RequestParam(required = false) String offset,
-                                HttpServletRequest request, HttpServletResponse response) {
-        try {
-            objectService.getObjectByCode(code, state, key, offset, request, response);
-        } catch (IOException e) {
-            if (log.isErrorEnabled()) {
-                log.error("getObjectByCode error: {}", e.getMessage());
-            }
-        }
+                                @RequestParam(required = false) String secret,
+                                HttpServletRequest request, HttpServletResponse response) throws IOException {
+        objectService.getObjectByCode(code, state, key, offset, secret, request, response);
     }
 
     @PostMapping("url")
@@ -148,10 +119,17 @@ public class ObjectController {
     }
 
     @PostMapping("list")
-    public String list (@RequestBody S3 s3) {
+    public String list(@RequestBody S3 s3) {
         return CommonResponse.data(objectService.list(s3));
     }
 
     @PostMapping("delete")
-    public void delete (@RequestBody S3 s3) { objectService.delete(s3); }
+    public void delete(@RequestBody S3 s3) { objectService.delete(s3); }
+
+    @PostMapping("cors")
+    public String getCors(@RequestBody S3 s3) { return CommonResponse.data(objectService.getCorsRule(s3)); }
+
+    @PutMapping("cors")
+    public void putCors(@RequestBody S3 s3) { objectService.putCorsRule(s3); }
+
 }

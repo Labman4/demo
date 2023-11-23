@@ -81,7 +81,7 @@ public final class EncryptUtils {
             SecretKey secretKey = new SecretKeySpec(key, "AES");
             GCMParameterSpec parameterSpec = new GCMParameterSpec(128, ciphertext, 0, 12);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
-             return cipher.doFinal(ciphertext, 12, ciphertext.length - 12);
+            return cipher.doFinal(ciphertext, 12, ciphertext.length - 12);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

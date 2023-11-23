@@ -62,9 +62,8 @@ public class PublicController {
 	@GetMapping("key")
 	public String generatePublicKey() {
 		String codeVerifier = PkceUtils.generateVerifier();
-		long timestamp = Instant.now().toEpochMilli();
-		redisService.set("PKCE-" + timestamp, PkceUtils.generateChallenge(codeVerifier), serviceConfig.getTimeout().getPublicKey());
-		return codeVerifier + "*" + timestamp;
+		redisService.set("PKCE-" + codeVerifier, PkceUtils.generateChallenge(codeVerifier), serviceConfig.getTimeout().getPublicKey());
+		return codeVerifier;
 	}
 
 	@GetMapping("token/qrcode")

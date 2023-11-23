@@ -17,15 +17,19 @@
 package com.elpsykongroo.storage.service;
 
 import com.elpsykongroo.base.domain.storage.object.S3;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CORSRule;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.CreateMultipartUploadResponse;
+import software.amazon.awssdk.services.s3.model.GetBucketCorsResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListMultipartUploadsResponse;
 import software.amazon.awssdk.services.s3.model.ListPartsResponse;
+import software.amazon.awssdk.services.s3.model.PutBucketCorsResponse;
 import software.amazon.awssdk.services.s3.model.UploadPartResponse;
 import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 
@@ -41,7 +45,13 @@ public interface S3Service {
 
     void deleteObjectByPrefix(S3Client s3Client, String bucket, String prefix);
 
-    String getObject(S3Client s3Client, String bucket, String key);
+    ResponseBytes<GetObjectResponse> getObject(S3Client s3Client, String bucket, String key);
+
+    String getObjectString(S3Client s3Client, String bucket, String key);
+
+    GetBucketCorsResponse getCorsRule(S3Client s3Client, String bucket);
+
+    PutBucketCorsResponse putCorsRule(S3Client s3Client, String bucket, List<CORSRule> corsRules);
 
     ResponseInputStream<GetObjectResponse> getObjectStream(S3Client s3Client, String bucket, String key, String offset);
 

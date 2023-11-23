@@ -134,16 +134,29 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String login(String username, HttpServletRequest servletRequest, HttpServletResponse response) {
-//        SecurityContext context = securityContextHolderStrategy.createEmptyContext();
-//        Authentication authentication =
-//                WebAuthnAuthenticationToken.authenticated(
-//                        username,
-//                        null,
-//                        null);
-//        context.setAuthentication(authentication);
-//        securityContextHolderStrategy.setContext(context);
-//        securityContextRepository.saveContext(context, servletRequest, response);
-//        return "200";
+//        DeferredSecurityContext securityContext = securityContextRepository.loadDeferredContext(servletRequest);
+//        if (securityContext.get().getAuthentication() != null) {
+//            if (log.isDebugEnabled()) {
+//                log.debug("already login");
+//            }
+//            if (username.equals(securityContext.get().getAuthentication().getName())) {
+//                return "200";
+//            } else {
+//                return "202";
+//            }
+//        } else {
+//            SecurityContext context = securityContextHolderStrategy.createEmptyContext();
+//            Authentication authentication =
+//                    WebAuthnAuthenticationToken.authenticated(
+//                            username,
+//                            null,
+//                            null);
+//            context.setAuthentication(authentication);
+//            securityContextHolderStrategy.setContext(context);
+//            securityContextRepository.saveContext(context, servletRequest, response);
+//            return "200";
+//        }
+
         try {
             DeferredSecurityContext securityContext = securityContextRepository.loadDeferredContext(servletRequest);
             if (securityContext.get().getAuthentication() != null) {
@@ -448,21 +461,16 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String setToken(String text) {
-        String[] texts= text.split("\\*");
-        String codeVerifier = texts[0];
-        String timestamp = texts[1];
-        String encodedVerifier = PkceUtils.verifyChallenge(codeVerifier);
-        String challenge = redisService.get("PKCE-" + timestamp);
+        String encodedVerifier = PkceUtils.verifyChallenge(text);
+        String challenge = redisService.get("PKCE-" + text);
         if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String token = authorizationService.getToken(authentication.getPrincipal().toString(), timestamp);
+            String token = authorizationService.getToken(authentication.getPrincipal().toString());
             if (StringUtils.isNotEmpty(token)) {
                 Message message = new Message();
                 message.setKey(text);
                 message.setValue(token);
                 messageService.setMessage(message);
-//                redisService.publish("QR_CODE-token-" + codeVerifier,codeVerifier + "*" + token, serviceConfig.getUrl().getQrcodeCallback());
-//                redisService.set("PKCE-" + timestamp , "", "1");
                 return "200";
             } else {
                 return "404";
