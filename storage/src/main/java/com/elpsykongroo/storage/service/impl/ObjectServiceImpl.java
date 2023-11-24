@@ -395,6 +395,8 @@ public class ObjectServiceImpl implements ObjectService {
             }
             BufferedInputStream inputStream = new BufferedInputStream(in);
             if (StringUtils.isNotBlank(secret)) {
+                BufferedOutputStream out = null;
+                CipherInputStream cipherInputStream = null;
                 try {
                     String secretBase64 = messageService.getMessage(state);
                     if (StringUtils.isNotBlank(secretBase64)) {
@@ -410,15 +412,33 @@ public class ObjectServiceImpl implements ObjectService {
                                 cipher = Cipher.getInstance("AES/CTR/NoPadding");
                                 cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
                             }
-
                         if (cipher != null ) {
-                            CipherInputStream cipherInputStream = new CipherInputStream(inputStream, cipher);
-                            writeOutStream(cipherInputStream, response.getOutputStream(), in, inputStream);
+                            cipherInputStream = new CipherInputStream(inputStream, cipher);
+                            out = new BufferedOutputStream(response.getOutputStream());
+                            byte[] b = new byte[1024];
+                            int len;
+                            while ((len = inputStream.read(b)) != -1) {
+                                out.write(b, 0, len);
+                            }
                         }
                     }
                 } catch (Exception e) {
                     if(log.isDebugEnabled()) {
                         log.debug("decrypt output error:{}", e);
+                    }
+                } finally {
+                    if (out != null) {
+                        out.flush();
+                        out.close();
+                    }
+                    if (cipherInputStream != null) {
+                        cipherInputStream.close();
+                    }
+                    if (in != null) {
+                        in.close();
+                    }
+                    if (inputStream != null) {
+                        inputStream.close();
                     }
                 }
             } else {
