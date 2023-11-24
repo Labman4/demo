@@ -417,7 +417,7 @@ public class ObjectServiceImpl implements ObjectService {
                             out = new BufferedOutputStream(response.getOutputStream());
                             byte[] b = new byte[1024];
                             int len;
-                            while ((len = inputStream.read(b)) != -1) {
+                            while ((len = cipherInputStream.read(b)) != -1) {
                                 out.write(b, 0, len);
                             }
                         }
