@@ -395,27 +395,30 @@ public class ObjectServiceImpl implements ObjectService {
             }
             BufferedInputStream inputStream = new BufferedInputStream(in);
             if (StringUtils.isNotBlank(secret)) {
-                String secretBase64 = messageService.getMessage(state);
-                if (StringUtils.isNotBlank(secretBase64)) {
-                    Cipher cipher = null;
-                    byte[] cipherResult = Base64.getDecoder().decode(secret);
-                    byte[] secretData = Base64.getDecoder().decode(secretBase64);
-                    byte[] secretOrigin = EncryptUtils.decryptAsByte(cipherResult, secretData);
-                    try {
-                        ResponseBytes<GetObjectResponse> responseBytes = s3Service.getObject(clientMap.get(clientId), bucket, "iv-" + key);
-                        if (responseBytes != null) {
-                            byte[] iv = responseBytes.asByteArray();
-                            SecretKey secretKey = new SecretKeySpec(MessageDigestUtils.sha256ByteArray(secretOrigin), "AES");
-                            IvParameterSpec ivSpec = new IvParameterSpec(iv);
-                            cipher = Cipher.getInstance("AES/CTR/NoPadding");
-                            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+                try {
+                    String secretBase64 = messageService.getMessage(state);
+                    if (StringUtils.isNotBlank(secretBase64)) {
+                        Cipher cipher = null;
+                        byte[] cipherResult = Base64.getDecoder().decode(secret);
+                        byte[] secretData = Base64.getDecoder().decode(secretBase64);
+                        byte[] secretOrigin = EncryptUtils.decryptAsByte(cipherResult, secretData);
+                            ResponseBytes<GetObjectResponse> responseBytes = s3Service.getObject(clientMap.get(clientId), bucket, "iv-" + key);
+                            if (responseBytes != null) {
+                                byte[] iv = responseBytes.asByteArray();
+                                SecretKey secretKey = new SecretKeySpec(MessageDigestUtils.sha256ByteArray(secretOrigin), "AES");
+                                IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                                cipher = Cipher.getInstance("AES/CTR/NoPadding");
+                                cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+                            }
+
+                        if (cipher != null ) {
+                            CipherInputStream cipherInputStream = new CipherInputStream(inputStream, cipher);
+                            writeOutStream(cipherInputStream, response.getOutputStream(), in, inputStream);
                         }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
                     }
-                    if (cipher != null ) {
-                        CipherInputStream cipherInputStream = new CipherInputStream(inputStream, cipher);
-                        writeOutStream(cipherInputStream, response.getOutputStream(), in, inputStream);
+                } catch (Exception e) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("decrypt output error:{}", e);
                     }
                 }
             } else {
