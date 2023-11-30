@@ -368,6 +368,9 @@ public class ObjectServiceImpl implements ObjectService {
 
     private void downloadStream(String clientId, String bucket, String key, String offset, String secret, String algorithm, String state, HttpServletRequest request, HttpServletResponse response) throws IOException {
         int chunkOffset = 1024 * 1024 * 5;
+        if (StringUtils.isNotBlank(offset)) {
+            chunkOffset = Integer.parseInt(offset);
+        }
         int start = 0;
         int end = 0;
         String range = request.getHeader("Range");
@@ -387,8 +390,7 @@ public class ObjectServiceImpl implements ObjectService {
             algorithm = "AES-GCM";
         }
         ResponseInputStream<GetObjectResponse> in = null;
-        if (StringUtils.isNotBlank(offset)) {
-            chunkOffset = Integer.parseInt(offset);
+        if (StringUtils.isNotBlank(secret)) {
             HeadObjectResponse headObjectResponse = s3Service.headObject(clientMap.get(clientId), bucket, key);
             int size = headObjectResponse.contentLength().intValue() / chunkOffset + 1;
             if ("AES-GCM".equals(algorithm)) {
@@ -398,13 +400,15 @@ public class ObjectServiceImpl implements ObjectService {
                 in = s3Service.getObjectStream(clientMap.get(clientId), bucket, key, start + 16 * startOffset, end);
                 response.setContentLengthLong(in.response().contentLength() - 16 * size);
             }
-            String contentRange = "";
-            if (startOffset != size) {
-                contentRange = "bytes " + (startOffset * chunkOffset) + "-" + ((startOffset + 1) * chunkOffset - 1) + "/" + headObjectResponse.contentLength();
-            } else {
-                contentRange = "bytes " + (startOffset * chunkOffset) + "-" + (headObjectResponse.contentLength() - 1) + "/" + headObjectResponse.contentLength();
+            if (StringUtils.isNotBlank(range)) {
+                String contentRange = "";
+                if (startOffset != size) {
+                    contentRange = "bytes " + (startOffset * chunkOffset) + "-" + ((startOffset + 1) * chunkOffset - 1) + "/" + headObjectResponse.contentLength();
+                } else {
+                    contentRange = "bytes " + (startOffset * chunkOffset) + "-" + (headObjectResponse.contentLength() - 1) + "/" + headObjectResponse.contentLength();
+                }
+                response.setHeader("Content-Range", contentRange);
             }
-            response.setHeader("Content-Range", contentRange);
         } else {
             in = s3Service.getObjectStream(clientMap.get(clientId), bucket, key, start, end);
             response.setHeader("Content-Range", in.response().contentRange());
