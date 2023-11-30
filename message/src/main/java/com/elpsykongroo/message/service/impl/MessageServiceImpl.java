@@ -17,6 +17,7 @@
 
 package com.elpsykongroo.message.service.impl;
 
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.base.domain.message.Message;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.PkceUtils;
@@ -31,17 +32,18 @@ public class MessageServiceImpl implements MessageService {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private ServiceConfig serviceConfig;
+
     @Override
     public String getMessageByPublicKey(String text) {
         if (StringUtils.isNotBlank(text)) {
-            String encodedVerifier = PkceUtils.verifyChallenge(text);
             String challenge = redisService.get("PKCE-" + text);
-            if (StringUtils.isNotBlank(challenge) && challenge.equals(encodedVerifier)) {
-                String message = redisService.get(text);
-//                if (StringUtils.isNotEmpty(message)) {
-//                    redisService.set("PKCE-" + text , "", "1");
-//                }
-                return message;
+            if (StringUtils.isNotBlank(challenge)) {
+                String encodedVerifier = PkceUtils.verifyChallenge(text);
+                if (challenge.equals(encodedVerifier)) {
+                    return redisService.get(text);
+                }
             }
         }
         return "";
@@ -49,6 +51,14 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void setMessage(Message message) {
-        redisService.set(message.getKey(), message.getValue(), "");
+        if (StringUtils.isNotBlank(message.getKey())) {
+            String challenge = redisService.get("PKCE-" + message.getKey());
+            if (StringUtils.isNotBlank(challenge)) {
+                String encodedVerifier = PkceUtils.verifyChallenge(message.getKey());
+                if (challenge.equals(encodedVerifier)) {
+                    redisService.set(message.getKey(), message.getValue(), serviceConfig.getTimeout().getPublicKey());
+                }
+            }
+        }
     }
 }
