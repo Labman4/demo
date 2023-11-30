@@ -231,16 +231,18 @@ public class S3ServiceImpl implements S3Service {
     }
 
     @Override
-    public ResponseInputStream<GetObjectResponse> getObjectStream(S3Client s3Client, String bucket, String key, String offset) {
+    public ResponseInputStream<GetObjectResponse> getObjectStream(S3Client s3Client, String bucket, String key, int start, int end) {
         try {
             GetObjectRequest objectRequest = null;
             GetObjectRequest.Builder builder = GetObjectRequest
                     .builder()
                     .bucket(bucket)
                     .key(key);
-            if (StringUtils.isNotBlank(offset)) {
-                long startPoint = Long.parseLong(offset);
-                objectRequest = builder.range("bytes=" + startPoint + "-").build();
+            if (start >= 0) {
+                objectRequest = builder.range("bytes=" + start + "-").build();
+                if (end > start) {
+                    objectRequest = builder.range("bytes=" + start + "-" + end).build();
+                }
             } else {
                 objectRequest = builder.build();
             }
@@ -546,10 +548,12 @@ public class S3ServiceImpl implements S3Service {
         }
 
         Long connect = serviceconfig.getTimeout().getConnect();
+        Long socket = serviceconfig.getTimeout().getSocket();
         Duration connectDuration = Duration.ofSeconds(connect);
+        Duration socketDuration = Duration.ofSeconds(socket);
         SdkHttpClient.Builder builder = ApacheHttpClient.builder()
                 .connectionTimeout(connectDuration)
-                .socketTimeout(connectDuration)
+                .socketTimeout(socketDuration)
                 .proxyConfiguration(ProxyConfiguration.builder()
                         .useSystemPropertyValues(true)
                         .build())

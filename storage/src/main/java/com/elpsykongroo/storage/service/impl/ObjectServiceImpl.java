@@ -29,8 +29,8 @@ import com.elpsykongroo.base.utils.MessageDigestUtils;
 import com.elpsykongroo.base.utils.NormalizedUtils;
 import com.elpsykongroo.base.utils.PkceUtils;
 
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Base64;
 
 import com.elpsykongroo.storage.service.ObjectService;
@@ -43,7 +43,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -51,16 +50,12 @@ import software.amazon.awssdk.services.s3.model.CORSRule;
 import software.amazon.awssdk.services.s3.model.CompletedPart;
 import software.amazon.awssdk.services.s3.model.GetBucketCorsResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.MultipartUpload;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.UploadPartResponse;
 import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -119,7 +114,7 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public void download(S3 s3, HttpServletRequest request, HttpServletResponse response) throws IOException {
         s3Service.initClient(s3, "");
-        downloadStream(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getOffset(), s3.getSecret(), "", request, response);
+        downloadStream(s3.getClientId(), s3.getBucket(), s3.getKey(), s3.getOffset(), s3.getSecret(), "", "", request, response);
     }
 
     @Override
@@ -203,7 +198,7 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
-    public void getObjectByCode(String code, String state, String key, String offset, String secret, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void getObjectByCode(String code, String state, String key, String offset, String secret, String algorithm, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String codeChallenge = redisService.get("PKCE-" + state);
         if(StringUtils.isNotBlank(codeChallenge) && codeChallenge.equals(PkceUtils.verifyChallenge(state))) {
             String keyData = redisService.get(key + "-secret");
@@ -211,7 +206,7 @@ public class ObjectServiceImpl implements ObjectService {
             byte[] keyBytes = Base64.getUrlDecoder().decode(keyData);
             String plainText = EncryptUtils.decrypt(ciphertext, keyBytes);
             String[] keys = plainText.split("\\*");
-            downloadStream(plainText, keys[2], key, offset, secret, state, request, response);
+            downloadStream(plainText, keys[2], key, offset, secret, algorithm, state, request, response);
         }
     }
 
@@ -371,104 +366,151 @@ public class ObjectServiceImpl implements ObjectService {
         return completedParts;
     }
 
-    private void downloadStream(String clientId, String bucket, String key, String offset, String secret, String state, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void downloadStream(String clientId, String bucket, String key, String offset, String secret, String algorithm, String state, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        int chunkOffset = 1024 * 1024 * 5;
+        int start = 0;
+        int end = 0;
         String range = request.getHeader("Range");
         if (StringUtils.isNotBlank(range)) {
             String[] ranges = range.replace("bytes=", "").split("-");
-            offset = ranges[0];
-        }
-        ResponseInputStream<GetObjectResponse> in =
-                s3Service.getObjectStream(clientMap.get(clientId), bucket, key, offset);
-        if (in != null) {
-            String filename = NormalizedUtils.topicNormalize(key);
-            response.setHeader("Accept-Ranges", in.response().acceptRanges());
-            response.setContentLengthLong(in.response().contentLength());
-            response.setContentType(in.response().contentType());
-            log.debug("file type:{}", in.response().contentType());
-//            response.setHeader("Cache-Control", "public, max-age=31536000");
-            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-            response.setHeader("ETag", in.response().eTag());
-//            response.setHeader("Content-Encoding", "gzip");
-            if (StringUtils.isNotBlank(offset) || StringUtils.isNotBlank(range)) {
-                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-                response.setHeader("Content-Range", in.response().contentRange());
+            start = Integer.parseInt(ranges[0]);
+            if (ranges.length > 1) {
+                end = Integer.parseInt(ranges[1]);
             }
-            BufferedInputStream inputStream = new BufferedInputStream(in);
-            if (StringUtils.isNotBlank(secret)) {
-                BufferedOutputStream out = null;
-                CipherInputStream cipherInputStream = null;
-                try {
-                    String secretBase64 = messageService.getMessage(state);
-                    if (StringUtils.isNotBlank(secretBase64)) {
-                        Cipher cipher = null;
-                        byte[] cipherResult = Base64.getDecoder().decode(secret);
-                        byte[] secretData = Base64.getDecoder().decode(secretBase64);
-                        byte[] secretOrigin = EncryptUtils.decryptAsByte(cipherResult, secretData);
-                            ResponseBytes<GetObjectResponse> responseBytes = s3Service.getObject(clientMap.get(clientId), bucket, "iv-" + key);
-                            if (responseBytes != null) {
-                                byte[] iv = responseBytes.asByteArray();
-                                SecretKey secretKey = new SecretKeySpec(MessageDigestUtils.sha256ByteArray(secretOrigin), "AES");
-                                IvParameterSpec ivSpec = new IvParameterSpec(iv);
-                                cipher = Cipher.getInstance("AES/CTR/NoPadding");
-                                cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
-                            }
-                        if (cipher != null ) {
-                            cipherInputStream = new CipherInputStream(inputStream, cipher);
-                            out = new BufferedOutputStream(response.getOutputStream());
-                            byte[] b = new byte[1024];
-                            int len;
-                            while ((len = cipherInputStream.read(b)) != -1) {
-                                out.write(b, 0, len);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("decrypt output error:{}", e);
-                    }
-                } finally {
-                    if (out != null) {
-                        out.flush();
-                        out.close();
-                    }
-                    if (cipherInputStream != null) {
-                        cipherInputStream.close();
-                    }
-                    if (in != null) {
-                        in.close();
-                    }
-                    if (inputStream != null) {
-                        inputStream.close();
-                    }
-                }
+            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
+        }
+        int startOffset = start / chunkOffset;
+        if (start != startOffset * chunkOffset) {
+            start = startOffset * chunkOffset;
+        }
+        ResponseInputStream<GetObjectResponse> in = null;
+        if (StringUtils.isNotBlank(offset)) {
+            chunkOffset = Integer.parseInt(offset);
+            HeadObjectResponse headObjectResponse = s3Service.headObject(clientMap.get(clientId), bucket, key);
+            int size = headObjectResponse.contentLength().intValue() / chunkOffset + 1;
+            if ("AES-GCM".equals(algorithm)) {
+                in = s3Service.getObjectStream(clientMap.get(clientId), bucket, key, start + ((12 + 16) * startOffset), end);
+                response.setContentLengthLong(in.response().contentLength() - ((12 + 16) * size));
             } else {
-                writeOutStream(inputStream, response.getOutputStream(), in, inputStream);
+                in = s3Service.getObjectStream(clientMap.get(clientId), bucket, key, start + 16 * startOffset, end);
+                response.setContentLengthLong(in.response().contentLength() - 16 * size);
+            }
+            String contentRange = "";
+            if (startOffset != size) {
+                contentRange = "bytes " + (startOffset * chunkOffset) + "-" + ((startOffset + 1) * chunkOffset - 1) + "/" + headObjectResponse.contentLength();
+            } else {
+                contentRange = "bytes " + (startOffset * chunkOffset) + "-" + (headObjectResponse.contentLength() - 1) + "/" + headObjectResponse.contentLength();
+            }
+            response.setHeader("Content-Range", contentRange);
+        } else {
+            in = s3Service.getObjectStream(clientMap.get(clientId), bucket, key, start, end);
+            response.setHeader("Content-Range", in.response().contentRange());
+        }
+        OutputStream out = response.getOutputStream();
+        response.setHeader("Accept-Ranges", "bytes");
+        response.setHeader("Content-Disposition", "attachment; filename=" + NormalizedUtils.topicNormalize(key));
+        response.setHeader("Content-Type", in.response().contentType());
+        /**
+         effect: content-length will be unknown
+         */
+//        response.setHeader("Content-Encoding", "gzip");
+        /**
+         * effect: need send extra byte change, chunkSize will change dynamic by byte[] length
+         */
+//        response.setHeader("Transfer-Encoding", "chunked");
+
+        try {
+            handleIn(in, out, response, secret, algorithm, state, chunkOffset);
+            out.flush();
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+            if (out != null) {
+                out.close();
             }
         }
     }
 
-    private void writeOutStream(InputStream inputStream, OutputStream outputStream, ResponseInputStream in, BufferedInputStream bufferIn) throws IOException {
-        BufferedOutputStream out = null;
-        try {
-            out = new BufferedOutputStream(outputStream);
-            byte[] b = new byte[1024];
-            int len;
-            while ((len = inputStream.read(b)) != -1) {
-                out.write(b, 0, len);
-            }
-        } finally {
-            if (out != null) {
-                out.flush();
-                out.close();
-            }
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (in != null) {
-                in.close();
-            }
-            if (bufferIn != null) {
-                bufferIn.close();
+    private void handleIn(ResponseInputStream<GetObjectResponse> in, OutputStream out, HttpServletResponse response, String secret, String algorithm, String state, int chunkOffset) throws IOException {
+        if (in != null) {
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(in);
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(out);
+            try {
+                if (StringUtils.isNotBlank(secret)) {
+//                    int startOffset = 0;
+//                    int endOffset = 0;
+//                    String[] respRanges = null;
+//                    if (StringUtils.isNotBlank(in.response().contentRange())) {
+//                        String respRange = "";
+//                        respRanges = in.response().contentRange().replace("bytes ", "").split("/");
+//                        String[] contentRange = respRanges[0].split("-");
+//                        startOffset = Integer.parseInt(contentRange[0]);
+//                        endOffset = Integer.parseInt(contentRange[1]);
+//                        if ("AES-GCM".equals(algorithm)) {
+//                            endOffset = endOffset - 12 - 16;
+//                        } else {
+//                            endOffset = endOffset - 16;
+//                        }
+//                        respRange = "bytes= " + startOffset + "-" + endOffset + "/" + respRanges[1];
+////                        response.setHeader("Content-Range", respRange);
+//                    }
+                    String secretBase64 = messageService.getMessage(state);
+                    if (StringUtils.isNotBlank(secretBase64)) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("start decrypt");
+                        }
+                        int chunkSize = 0;
+                        byte[] cipherResult = Base64.getDecoder().decode(secret);
+                        byte[] secretData = Base64.getDecoder().decode(secretBase64);
+                        byte[] secretOrigin = EncryptUtils.decryptAsByte(cipherResult, secretData);
+                        if ("AES-GCM".equals(algorithm)) {
+                            chunkSize = chunkOffset + 12 + 16;
+                        } else {
+                            chunkSize = chunkOffset + 16;
+                        }
+                        int totalBytesRead = 0;
+                        int bytesRead;
+                        int len = 0;
+                        byte[] b = new byte[chunkSize];
+                        while((bytesRead = in.read(b, len, chunkSize - len))!= -1) {
+                            if (bytesRead + len >= chunkSize) {
+                                byte[] decryptData = EncryptUtils.decryptAsByte(b, MessageDigestUtils.sha256ByteArray(secretOrigin));
+                                bufferedOutputStream.write(decryptData, 0, decryptData.length);
+                                totalBytesRead = 0;
+                                len = 0;
+                            }  else {
+                                len += bytesRead;
+                                totalBytesRead += bytesRead;
+                            }
+                        }
+                        if (bytesRead == -1) {
+                            byte[] truncatedArray = Arrays.copyOfRange(b, 0, totalBytesRead);
+                            byte[] decryptData = EncryptUtils.decryptAsByte(truncatedArray, MessageDigestUtils.sha256ByteArray(secretOrigin));
+                            bufferedOutputStream.write(decryptData, 0, decryptData.length);
+                        }
+                    }
+                } else {
+                    response.setHeader("ETag", in.response().eTag());
+                    response.setContentLengthLong(in.response().contentLength());
+                    byte[] bufferDirect = new byte[1024];
+                    int len;
+                    while ((len = bufferedInputStream.read(bufferDirect)) != -1) {
+                        bufferedOutputStream.write(bufferDirect, 0, len);
+                    }
+                }
+            } catch (Exception e) {
+                if (log.isDebugEnabled()) {
+                    log.debug("output error:{}", e);
+                }
+            } finally {
+                if (bufferedOutputStream != null) {
+                    bufferedOutputStream.flush();
+                    bufferedOutputStream.close();
+                }
+                if (bufferedInputStream != null) {
+                    bufferedInputStream.close();
+                }
             }
         }
     }

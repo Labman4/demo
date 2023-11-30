@@ -109,8 +109,9 @@ public class ObjectController {
                                 @RequestParam String key,
                                 @RequestParam(required = false) String offset,
                                 @RequestParam(required = false) String secret,
+                                @RequestParam(required = false) String algorithm,
                                 HttpServletRequest request, HttpServletResponse response) throws IOException {
-        objectService.getObjectByCode(code, state, key, offset, secret, request, response);
+        objectService.getObjectByCode(code, state, key, offset, secret, algorithm, request, response);
     }
 
     @PostMapping("url")

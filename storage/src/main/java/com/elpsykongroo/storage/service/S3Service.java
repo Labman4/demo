@@ -53,7 +53,7 @@ public interface S3Service {
 
     PutBucketCorsResponse putCorsRule(S3Client s3Client, String bucket, List<CORSRule> corsRules);
 
-    ResponseInputStream<GetObjectResponse> getObjectStream(S3Client s3Client, String bucket, String key, String offset);
+    ResponseInputStream<GetObjectResponse> getObjectStream(S3Client s3Client, String bucket, String key, int start, int end);
 
     ListObjectsV2Iterable listObject(S3Client s3Client, String bucket, String prefix);
 
