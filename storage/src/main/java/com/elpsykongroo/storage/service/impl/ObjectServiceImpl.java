@@ -383,6 +383,9 @@ public class ObjectServiceImpl implements ObjectService {
         if (start != startOffset * chunkOffset) {
             start = startOffset * chunkOffset;
         }
+        if (StringUtils.isBlank(algorithm)) {
+            algorithm = "AES-GCM";
+        }
         ResponseInputStream<GetObjectResponse> in = null;
         if (StringUtils.isNotBlank(offset)) {
             chunkOffset = Integer.parseInt(offset);
