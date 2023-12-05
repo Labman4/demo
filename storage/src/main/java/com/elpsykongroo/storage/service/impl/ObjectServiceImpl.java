@@ -393,25 +393,25 @@ public class ObjectServiceImpl implements ObjectService {
         if (StringUtils.isNotBlank(secret)) {
             HeadObjectResponse headObjectResponse = s3Service.headObject(clientMap.get(clientId), bucket, key);
             int size = headObjectResponse.contentLength().intValue() / chunkOffset + 1;
+            long contentLength = 0;
             if ("AES-GCM".equals(algorithm)) {
                 in = s3Service.getObjectStream(clientMap.get(clientId), bucket, key, start + ((12 + 16) * startOffset), end);
-                response.setContentLengthLong(in.response().contentLength() - ((12 + 16) * size));
+                contentLength = headObjectResponse.contentLength() - (12 + 16) * size;
             } else {
                 in = s3Service.getObjectStream(clientMap.get(clientId), bucket, key, start + 16 * startOffset, end);
-                response.setContentLengthLong(in.response().contentLength() - 16 * size);
+                contentLength = headObjectResponse.contentLength() - 16 * size;
             }
             if (StringUtils.isNotBlank(range)) {
                 String contentRange = "";
-                if (startOffset != size) {
-                    contentRange = "bytes " + (startOffset * chunkOffset) + "-" + ((startOffset + 1) * chunkOffset - 1) + "/" + headObjectResponse.contentLength();
+                if (startOffset != size - 1 ) {
+                    contentRange = "bytes " + (startOffset * chunkOffset) + "-" + ((startOffset + 1) * chunkOffset - 1) + "/" + contentLength;
                 } else {
-                    contentRange = "bytes " + (startOffset * chunkOffset) + "-" + (headObjectResponse.contentLength() - 1) + "/" + headObjectResponse.contentLength();
+                    contentRange = "bytes " + (startOffset * chunkOffset) + "-" + (contentLength - 1) + "/" + contentLength;
                 }
                 response.setHeader("Content-Range", contentRange);
             }
         } else {
             in = s3Service.getObjectStream(clientMap.get(clientId), bucket, key, start, end);
-            response.setHeader("Content-Range", in.response().contentRange());
         }
         OutputStream out = response.getOutputStream();
         response.setHeader("Accept-Ranges", "bytes");
@@ -428,12 +428,12 @@ public class ObjectServiceImpl implements ObjectService {
 
         try {
             handleIn(in, out, response, secret, algorithm, state, chunkOffset);
-            out.flush();
         } finally {
             if (in != null) {
                 in.close();
             }
             if (out != null) {
+                out.flush();
                 out.close();
             }
         }
