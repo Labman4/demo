@@ -21,6 +21,7 @@ import com.elpsykongroo.auth.entity.user.Group;
 import com.elpsykongroo.auth.entity.user.User;
 import com.elpsykongroo.auth.repository.user.AuthorityRepository;
 import com.elpsykongroo.auth.service.custom.AuthorityService;
+import com.elpsykongroo.auth.service.custom.GroupService;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,12 @@ public class AuthorityServiceImpl implements AuthorityService {
 
     @Autowired
     private AuthorityRepository authorityRepository;
+
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private GroupService groupService;
 
     @Override
     public String addAuthority(String authority) {
@@ -62,7 +67,12 @@ public class AuthorityServiceImpl implements AuthorityService {
 
     @Override
     public List<Authority> userAuthority(String id) {
-        return authorityRepository.findByUsers_Id(id);
+        List<Group> groups = groupService.userGroup(id);
+        List<Authority> authorities = authorityRepository.findByUsers_Id(id);
+        for (Group group : groups) {
+            authorities.addAll(group.getAuthorities());
+        }
+        return authorities.stream().distinct().collect(Collectors.toList());
     }
 
     @Transactional
