@@ -561,7 +561,9 @@ public class S3ServiceImpl implements S3Service {
                 .connectionMaxIdleTime(connectDuration)
                 .connectionTimeToLive(connectDuration);
 
-        if(StringUtils.isNotBlank(s3.getIdToken()) && StringUtils.isBlank(s3.getAccessSecret())) {
+        if(StringUtils.isNotBlank(s3.getIdToken())
+                && StringUtils.isBlank(s3.getAccessSecret())
+                && StringUtils.isBlank(serviceconfig.getS3().getAccessSecret())) {
             String[] jwtParts = s3.getIdToken().split("\\.");
             String payload = new String(Base64.getUrlDecoder().decode(jwtParts[1]));
             Map<String, Object> idToken = JsonUtils.toObject(payload, Map.class);
