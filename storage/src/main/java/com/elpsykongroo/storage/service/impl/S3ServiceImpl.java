@@ -505,7 +505,7 @@ public class S3ServiceImpl implements S3Service {
         }
 
         if (StringUtils.isBlank(clientId)) {
-            clientId = s3.getPlatform() + "*" + s3.getRegion() + "*" + s3.getBucket();
+            clientId = s3.getPlatform() + "*" + s3.getRegion() + "*" + s3.getBucket() + "*" + s3.getAccessKey();
             s3.setClientId(clientId);
         }
         if (log.isDebugEnabled()) {

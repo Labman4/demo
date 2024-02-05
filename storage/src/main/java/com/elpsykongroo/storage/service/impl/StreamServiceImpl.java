@@ -161,7 +161,7 @@ public class StreamServiceImpl implements StreamService {
             if (StringUtils.isNotBlank(s3.getPartNum())) {
                 partNum = Integer.parseInt(s3.getPartNum());
             }
-            String key = s3.getPlatform() + "*" + s3.getRegion() + "*" + consumerGroupId + "*" + s3.getKey() + "*" + partCount + "*" + partNum + "*" + uploadId;
+            String key = s3.getPlatform() + "*" + s3.getRegion() + "*" + consumerGroupId + "*" + s3.getKey() + "*" + partCount + "*" + partNum + "*" + uploadId + "*" + s3.getAccessKey();
             long startOffset = i * partSize;
             long endOffset = startOffset + Math.min(partSize, s3.getData()[0].getSize() - startOffset);
             output[i] = Arrays.copyOfRange(s3.getData()[0].getBytes(), (int) startOffset, (int) endOffset);
