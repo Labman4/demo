@@ -128,13 +128,13 @@ public class SearchServiceImpl implements SearchService {
             }
         } else {
             MatchAllQuery matchAllQuery = new MatchAllQuery.Builder().build();
-            nativeQuery = NativeQuery.builder().withQuery(q ->
-                    q.matchAll(matchAllQuery)).withPageable(pageable).build();
+            nativeQuery = NativeQuery.builder().withQuery(q -> q.matchAll(matchAllQuery)).build();
         }
         if (log.isDebugEnabled()) {
             log.debug("execute query:{}", nativeQuery.getQuery().toString());
         }
         nativeQuery.setMaxResults(10000);
+        nativeQuery.setPageable(pageable);
         return nativeQuery;
     }
 
