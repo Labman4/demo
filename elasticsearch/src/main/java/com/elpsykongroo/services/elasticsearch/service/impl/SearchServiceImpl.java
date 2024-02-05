@@ -134,7 +134,9 @@ public class SearchServiceImpl implements SearchService {
             log.debug("execute query:{}", nativeQuery.getQuery().toString());
         }
         nativeQuery.setMaxResults(10000);
-        nativeQuery.setPageable(pageable);
+        if (pageable != null) {
+            nativeQuery.setPageable(pageable);
+        }
         return nativeQuery;
     }
 
