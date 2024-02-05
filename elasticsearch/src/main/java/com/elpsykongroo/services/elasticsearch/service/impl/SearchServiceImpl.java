@@ -131,12 +131,12 @@ public class SearchServiceImpl implements SearchService {
             nativeQuery = NativeQuery.builder().withQuery(q -> q.matchAll(matchAllQuery)).build();
         }
         if (log.isDebugEnabled()) {
-            log.debug("execute query:{}", nativeQuery.getQuery().toString());
+            log.debug("execute query:{}, pageable:{}", nativeQuery.getQuery().toString(), pageable.toString());
         }
-        nativeQuery.setMaxResults(10000);
         if (pageable != null) {
             nativeQuery.setPageable(pageable);
         }
+        nativeQuery.setMaxResults(10000);
         return nativeQuery;
     }
 
@@ -193,16 +193,10 @@ public class SearchServiceImpl implements SearchService {
                 return String.valueOf(byQueryResponse.getTotal());
             } else {
                 searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                return SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()).toString();
             }
         } catch (NoSuchIndexException e) {
             return "";
-        }
-        if (pageable != null) {
-            SearchPage searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
-            Page page = (Page) SearchHitSupport.unwrapSearchHits(searchPage);
-            return JsonUtils.toJson(page.get().toList());
-        } else {
-            return SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()).toString();
         }
     }
 }
