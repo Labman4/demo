@@ -67,6 +67,7 @@ import java.util.Map;
 @Service
 public class ObjectServiceImpl implements ObjectService {
     private final ThreadLocal<Integer> count = new ThreadLocal<>();
+
     @Autowired
     private Map<String, S3Client> clientMap;
 
@@ -227,6 +228,7 @@ public class ObjectServiceImpl implements ObjectService {
             s3.setPartCount(keys[4]);
             s3.setPartNum(keys[5]);
             s3.setUploadId(keys[6]);
+            s3.setAccessKey(keys[7]);
             try {
                 if (count.get() == null) {
                     count.set(0);
@@ -413,38 +415,39 @@ public class ObjectServiceImpl implements ObjectService {
         } else {
             in = s3Service.getObjectStream(clientMap.get(clientId), bucket, key, start, end);
         }
-        OutputStream out = response.getOutputStream();
-        response.setHeader("Accept-Ranges", "bytes");
-        response.setHeader("Content-Disposition", "attachment; filename=" + NormalizedUtils.topicNormalize(key));
-        response.setHeader("Content-Type", in.response().contentType());
-        /**
-         effect: content-length will be unknown
-         */
+        if (in != null) {
+            OutputStream out = response.getOutputStream();
+            response.setHeader("Accept-Ranges", "bytes");
+            response.setHeader("Content-Disposition", "attachment; filename=" + NormalizedUtils.topicNormalize(key));
+            response.setHeader("Content-Type", in.response().contentType());
+            /**
+             effect: content-length will be unknown
+             */
 //        response.setHeader("Content-Encoding", "gzip");
-        /**
-         * effect: need send extra byte change, chunkSize will change dynamic by byte[] length
-         */
+            /**
+             * effect: need send extra byte change, chunkSize will change dynamic by byte[] length
+             */
 //        response.setHeader("Transfer-Encoding", "chunked");
 
-        try {
-            handleIn(in, out, response, secret, algorithm, state, chunkOffset);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-            if (out != null) {
-                out.flush();
-                out.close();
+            try {
+                handleIn(in, out, response, secret, algorithm, state, chunkOffset);
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+                if (out != null) {
+                    out.flush();
+                    out.close();
+                }
             }
         }
     }
 
     private void handleIn(ResponseInputStream<GetObjectResponse> in, OutputStream out, HttpServletResponse response, String secret, String algorithm, String state, int chunkOffset) throws IOException {
-        if (in != null) {
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(in);
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(out);
-            try {
-                if (StringUtils.isNotBlank(secret)) {
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(in);
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(out);
+        try {
+            if (StringUtils.isNotBlank(secret)) {
 //                    int startOffset = 0;
 //                    int endOffset = 0;
 //                    String[] respRanges = null;
@@ -462,62 +465,61 @@ public class ObjectServiceImpl implements ObjectService {
 //                        respRange = "bytes= " + startOffset + "-" + endOffset + "/" + respRanges[1];
 ////                        response.setHeader("Content-Range", respRange);
 //                    }
-                    String secretBase64 = messageService.getMessage(state);
-                    if (StringUtils.isNotBlank(secretBase64)) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("start decrypt");
-                        }
-                        int chunkSize = 0;
-                        byte[] cipherResult = Base64.getDecoder().decode(secret);
-                        byte[] secretData = Base64.getDecoder().decode(secretBase64);
-                        byte[] secretOrigin = EncryptUtils.decryptAsByte(cipherResult, secretData);
-                        if ("AES-GCM".equals(algorithm)) {
-                            chunkSize = chunkOffset + 12 + 16;
-                        } else {
-                            chunkSize = chunkOffset + 16;
-                        }
-                        int totalBytesRead = 0;
-                        int bytesRead;
-                        int len = 0;
-                        byte[] b = new byte[chunkSize];
-                        while((bytesRead = in.read(b, len, chunkSize - len))!= -1) {
-                            if (bytesRead + len >= chunkSize) {
-                                byte[] decryptData = EncryptUtils.decryptAsByte(b, MessageDigestUtils.sha256ByteArray(secretOrigin));
-                                bufferedOutputStream.write(decryptData, 0, decryptData.length);
-                                totalBytesRead = 0;
-                                len = 0;
-                            }  else {
-                                len += bytesRead;
-                                totalBytesRead += bytesRead;
-                            }
-                        }
-                        if (bytesRead == -1) {
-                            byte[] truncatedArray = Arrays.copyOfRange(b, 0, totalBytesRead);
-                            byte[] decryptData = EncryptUtils.decryptAsByte(truncatedArray, MessageDigestUtils.sha256ByteArray(secretOrigin));
+                String secretBase64 = messageService.getMessage(state);
+                if (StringUtils.isNotBlank(secretBase64)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("start decrypt");
+                    }
+                    int chunkSize = 0;
+                    byte[] cipherResult = Base64.getDecoder().decode(secret);
+                    byte[] secretData = Base64.getDecoder().decode(secretBase64);
+                    byte[] secretOrigin = EncryptUtils.decryptAsByte(cipherResult, secretData);
+                    if ("AES-GCM".equals(algorithm)) {
+                        chunkSize = chunkOffset + 12 + 16;
+                    } else {
+                        chunkSize = chunkOffset + 16;
+                    }
+                    int totalBytesRead = 0;
+                    int bytesRead;
+                    int len = 0;
+                    byte[] b = new byte[chunkSize];
+                    while((bytesRead = in.read(b, len, chunkSize - len))!= -1) {
+                        if (bytesRead + len >= chunkSize) {
+                            byte[] decryptData = EncryptUtils.decryptAsByte(b, MessageDigestUtils.sha256ByteArray(secretOrigin));
                             bufferedOutputStream.write(decryptData, 0, decryptData.length);
+                            totalBytesRead = 0;
+                            len = 0;
+                        }  else {
+                            len += bytesRead;
+                            totalBytesRead += bytesRead;
                         }
                     }
-                } else {
-                    response.setHeader("ETag", in.response().eTag());
-                    response.setContentLengthLong(in.response().contentLength());
-                    byte[] bufferDirect = new byte[1024];
-                    int len;
-                    while ((len = bufferedInputStream.read(bufferDirect)) != -1) {
-                        bufferedOutputStream.write(bufferDirect, 0, len);
+                    if (bytesRead == -1) {
+                        byte[] truncatedArray = Arrays.copyOfRange(b, 0, totalBytesRead);
+                        byte[] decryptData = EncryptUtils.decryptAsByte(truncatedArray, MessageDigestUtils.sha256ByteArray(secretOrigin));
+                        bufferedOutputStream.write(decryptData, 0, decryptData.length);
                     }
                 }
-            } catch (Exception e) {
-                if (log.isDebugEnabled()) {
-                    log.debug("output error:{}", e);
+            } else {
+                response.setHeader("ETag", in.response().eTag());
+                response.setContentLengthLong(in.response().contentLength());
+                byte[] bufferDirect = new byte[1024];
+                int len;
+                while ((len = bufferedInputStream.read(bufferDirect)) != -1) {
+                    bufferedOutputStream.write(bufferDirect, 0, len);
                 }
-            } finally {
-                if (bufferedOutputStream != null) {
-                    bufferedOutputStream.flush();
-                    bufferedOutputStream.close();
-                }
-                if (bufferedInputStream != null) {
-                    bufferedInputStream.close();
-                }
+            }
+        } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                log.debug("output error:{}", e);
+            }
+        } finally {
+            if (bufferedOutputStream != null) {
+                bufferedOutputStream.flush();
+                bufferedOutputStream.close();
+            }
+            if (bufferedInputStream != null) {
+                bufferedInputStream.close();
             }
         }
     }
