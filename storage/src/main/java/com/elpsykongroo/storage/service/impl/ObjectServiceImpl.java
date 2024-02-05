@@ -181,7 +181,7 @@ public class ObjectServiceImpl implements ObjectService {
     @Override
     public String getObjectUrl(S3 s3) {
         s3Service.initClient(s3, "");
-        String plainText = s3.getPlatform() + "*" + s3.getRegion() + "*" + s3.getBucket();
+        String plainText = s3.getPlatform() + "*" + s3.getRegion() + "*" + s3.getBucket() + "*" + s3.getAccessKey();
         byte[] key = BytesUtils.generateRandomByte(16);
         byte[] ciphertext = EncryptUtils.encryptString(plainText, key);
         String cipherBase64 = Base64.getUrlEncoder().encodeToString(ciphertext);
