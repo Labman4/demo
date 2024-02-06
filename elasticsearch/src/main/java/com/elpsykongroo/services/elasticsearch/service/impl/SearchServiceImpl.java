@@ -29,6 +29,7 @@ import com.elpsykongroo.services.elasticsearch.service.SearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,6 +39,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ScriptType;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.ByQueryResponse;
 import org.springframework.data.elasticsearch.core.query.Query;
@@ -131,7 +133,6 @@ public class SearchServiceImpl implements SearchService {
                     Integer.parseInt(queryParam.getPageSize()), sort);
         }
         query = getQuery(queryParam, pageable);
-        SearchHits searchHits;
         try {
             if ("count".equals(queryParam.getOperation())) {
                 long count = 0;
@@ -169,8 +170,14 @@ public class SearchServiceImpl implements SearchService {
                 ByQueryResponse byQueryResponse = operations.updateByQuery(updateQuery, IndexCoordinates.of(queryParam.getIndex()));
                 return String.valueOf(byQueryResponse.getTotal());
             } else {
-                searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
-                return JsonUtils.toJson(SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()));
+                SearchHits searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                if (pageable != null) {
+                    SearchPage searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
+                    Page page = (Page) SearchHitSupport.unwrapSearchHits(searchPage);
+                    return JsonUtils.toJson(page.get().toList());
+                } else {
+                    return SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()).toString();
+                }
             }
         } catch (NoSuchIndexException e) {
             return "";
