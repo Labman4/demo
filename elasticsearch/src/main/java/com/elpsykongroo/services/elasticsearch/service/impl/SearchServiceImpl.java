@@ -108,9 +108,6 @@ public class SearchServiceImpl implements SearchService {
             MatchAllQuery matchAllQuery = new MatchAllQuery.Builder().build();
             nativeQuery = NativeQuery.builder().withQuery(q -> q.matchAll(matchAllQuery)).build();
         }
-        if (log.isDebugEnabled()) {
-            log.debug("execute query:{}", nativeQuery.getQuery().toString());
-        }
         if (pageable != null) {
             nativeQuery.setPageable(pageable);
             log.debug("pageable:{}", pageable);
@@ -133,6 +130,9 @@ public class SearchServiceImpl implements SearchService {
                     Integer.parseInt(queryParam.getPageSize()), sort);
         }
         query = getQuery(queryParam, pageable);
+        if (log.isDebugEnabled()) {
+            log.debug("execute query:{}", query);
+        }
         try {
             if ("count".equals(queryParam.getOperation())) {
                 long count = 0;
@@ -174,7 +174,7 @@ public class SearchServiceImpl implements SearchService {
                 if (pageable != null) {
                     SearchPage searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
                     Page page = (Page) SearchHitSupport.unwrapSearchHits(searchPage);
-                    return JsonUtils.toJson(page.get().toList());
+                    return JsonUtils.toJson(page.getContent());
                 } else {
                     return SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()).toString();
                 }
