@@ -24,12 +24,10 @@ import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import com.elpsykongroo.base.domain.search.QueryParam;
-import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.services.elasticsearch.service.SearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -39,7 +37,6 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ScriptType;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.ByQueryResponse;
 import org.springframework.data.elasticsearch.core.query.Query;
@@ -131,10 +128,11 @@ public class SearchServiceImpl implements SearchService {
             nativeQuery = NativeQuery.builder().withQuery(q -> q.matchAll(matchAllQuery)).build();
         }
         if (log.isDebugEnabled()) {
-            log.debug("execute query:{}, pageable:{}", nativeQuery.getQuery().toString(), pageable.toString());
+            log.debug("execute query:{}", nativeQuery.getQuery().toString());
         }
         if (pageable != null) {
             nativeQuery.setPageable(pageable);
+            log.debug("pageable:{}", pageable);
         }
         nativeQuery.setMaxResults(10000);
         return nativeQuery;
