@@ -24,6 +24,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import com.elpsykongroo.base.domain.search.QueryParam;
+import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.services.elasticsearch.service.SearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -59,18 +60,12 @@ public class SearchServiceImpl implements SearchService {
                 (StringUtils.isNotEmpty(queryParam.getField()) && StringUtils.isNotEmpty(queryParam.getOperation())) ||
                 (queryParam.getQueryStringParam() != null && !queryParam.getQueryStringParam().isEmpty())) {
             if (queryParam.isFuzzy()) {
-                  MultiMatchQuery multiMatchQuery = new MultiMatchQuery.Builder()
-                          .query(queryParam.getParam())
-                          .fields(queryParam.getFields())
-                          .fuzziness("auto")
-                          .build();
-               if (pageable != null) {
-                   nativeQuery = NativeQuery.builder().withQuery(q ->
-                          q.multiMatch(multiMatchQuery)).withPageable(pageable).build();
-               } else {
-                   nativeQuery = NativeQuery.builder().withQuery(q ->
-                           q.multiMatch(multiMatchQuery)).build();
-               }
+              MultiMatchQuery multiMatchQuery = new MultiMatchQuery.Builder()
+                      .query(queryParam.getParam())
+                      .fields(queryParam.getFields())
+                      .fuzziness("auto")
+                      .build();
+              nativeQuery = NativeQuery.builder().withQuery(q -> q.multiMatch(multiMatchQuery)).build();
             } else if (queryParam.isBoolQuery()) {
                 List<co.elastic.clients.elasticsearch._types.query_dsl.Query> queries = new ArrayList<>();
                 if ("exist".equals(queryParam.getOperation())) {
@@ -97,31 +92,15 @@ public class SearchServiceImpl implements SearchService {
                 } else {
                     boolQuery = new BoolQuery.Builder().must(queries).build();
                 }
-                if (pageable != null) {
-                    nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).withPageable(pageable).build();
-                } else {
-                    nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
-                }
+                nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
             } else if (queryParam.isIdsQuery()) {
                 IdsQuery idsQuery = new IdsQuery.Builder().values(queryParam.getIds()).build();
-                if(pageable != null) {
-                    nativeQuery = NativeQuery.builder().withQuery(q ->
-                            q.ids(idsQuery)).withPageable(pageable).build();
-                } else{
-                    nativeQuery =  NativeQuery.builder().withQuery(q ->
-                            q.ids(idsQuery)).build();
-                }
+                nativeQuery =  NativeQuery.builder().withQuery(q -> q.ids(idsQuery)).build();
             } else {
                 TermQuery termQuery = new TermQuery.Builder()
                       .value(queryParam.getParam())
                       .field(queryParam.getField()).build();
-                if(pageable != null) {
-                    nativeQuery = NativeQuery.builder().withQuery(q ->
-                          q.term(termQuery)).withPageable(pageable).build();
-                } else{
-                    nativeQuery =  NativeQuery.builder().withQuery(q ->
-                          q.term(termQuery)).build();
-                }
+                nativeQuery =  NativeQuery.builder().withQuery(q -> q.term(termQuery)).build();
             }
         } else {
             MatchAllQuery matchAllQuery = new MatchAllQuery.Builder().build();
@@ -191,7 +170,7 @@ public class SearchServiceImpl implements SearchService {
                 return String.valueOf(byQueryResponse.getTotal());
             } else {
                 searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
-                return SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()).toString();
+                return JsonUtils.toJson(SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()));
             }
         } catch (NoSuchIndexException e) {
             return "";
