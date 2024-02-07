@@ -21,8 +21,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigInteger;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Stack;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -181,5 +184,33 @@ public class IPUtils {
             result = result << 8 | (b & 0xFF);
         }
         return result;
+    }
+
+
+    public static boolean isInRange(String ipAddress, String range) throws UnknownHostException {
+        InetAddress ip = InetAddress.getByName(ipAddress);
+        String[] rangeParts = range.split("/");
+        InetAddress start = InetAddress.getByName(rangeParts[0]);
+        int prefixLen = Integer.parseInt(rangeParts[1]);
+        byte[] ipBytes = ip.getAddress();
+        byte[] startBytes = start.getAddress();
+
+        int bytesToCheck = prefixLen / 8;
+        for (int i = 0; i < bytesToCheck; i++) {
+            if (ipBytes[i] != startBytes[i]) {
+                return false;
+            }
+        }
+
+        // If there are remaining bits, check them
+        int remainingBits = prefixLen % 8;
+        if (remainingBits > 0) {
+            int mask = (0xFF << (8 - remainingBits)) & 0xFF;
+            if ((ipBytes[bytesToCheck] & mask) != (startBytes[bytesToCheck] & mask)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

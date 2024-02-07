@@ -308,7 +308,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	@Override
 	public Boolean blackOrWhiteList(HttpServletRequest request, String isBlack, String ip) {
-		boolean flag = false;
 		if (StringUtils.isBlank(ip)) {
 			ip = accessIP(request, isBlack);
 		}
@@ -363,20 +362,31 @@ public class IPMangerServiceImpl implements IPManagerService {
 					}
 				}
 			}
-			if (list.contains(ip)) {
-				flag = true;
-			} else {
-				if (log.isWarnEnabled()) {
-					log.warn("try to query domain in cacheList");
-				}
-				for (String s: list.split(",")) {
-					if (log.isWarnEnabled()) {
-						log.warn("try to query domain: {}", s);
+
+			for (String d : list.split(",")) {
+				if (d.contains("/")) {
+					try {
+						if (IPUtils.isInRange(ip, d)) {
+							return true;
+						}
+					} catch (UnknownHostException e) {
+						if (log.isDebugEnabled()) {
+							log.debug("ip range unknown host");
+						}
 					}
-					if (IPUtils.validateHost(s)) {
+				} else if (ip.equals(d)) {
+					return true;
+				} else {
+					if (log.isWarnEnabled()) {
+						log.warn("try to query domain in cacheList");
+					}
+					if (log.isWarnEnabled()) {
+						log.warn("try to query domain: {}", d);
+					}
+					if (IPUtils.validateHost(d)) {
 						InetAddress[] inetAddress;
 						try {
-							inetAddress = InetAddress.getAllByName(s);
+							inetAddress = InetAddress.getAllByName(d);
 						} catch (UnknownHostException e) {
 							continue;
 						}
@@ -389,7 +399,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 									log.warn("update domain ip: {}", address.getHostAddress());
 								}
 								add(Collections.singleton(address.getHostAddress()).stream().toList(), isBlack);
-								flag = true;
+								return true;
 							}
 						}
 					}
@@ -415,10 +425,12 @@ public class IPMangerServiceImpl implements IPManagerService {
 		 *    query all domain in cache when request don't match cache
 		 */
 		if (exist(ip, isBlack) > 0) {
-			flag = true;
+			return true;
 		}
-		log.debug("flag:{}, black:{}", flag, isBlack);
-		return flag;
+		if (log.isDebugEnabled()) {
+			log.debug("black:{}, result false", isBlack);
+		}
+		return false;
     }
 
 	private void initWhite() {
