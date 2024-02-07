@@ -25,21 +25,22 @@ import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import com.elpsykongroo.base.domain.search.QueryParam;
 import com.elpsykongroo.base.utils.JsonUtils;
+import com.elpsykongroo.services.elasticsearch.dto.SearchResult;
 import com.elpsykongroo.services.elasticsearch.service.SearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.NoSuchIndexException;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
+import org.springframework.data.elasticsearch.core.AbstractElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ScriptType;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.SearchPage;
+import org.springframework.data.elasticsearch.core.SearchScrollHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.ByQueryResponse;
 import org.springframework.data.elasticsearch.core.query.Query;
@@ -55,7 +56,7 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     private ElasticsearchOperations operations;
 
-    private static Query getQuery(QueryParam queryParam, Pageable pageable) {
+    private static Query getQuery(QueryParam queryParam) {
         NativeQuery nativeQuery;
         if (StringUtils.isNotEmpty(queryParam.getParam()) ||
                 (queryParam.getIds() !=null && !queryParam.getIds().isEmpty()) ||
@@ -108,10 +109,6 @@ public class SearchServiceImpl implements SearchService {
             MatchAllQuery matchAllQuery = new MatchAllQuery.Builder().build();
             nativeQuery = NativeQuery.builder().withQuery(q -> q.matchAll(matchAllQuery)).build();
         }
-        if (pageable != null) {
-            nativeQuery.setPageable(pageable);
-            log.debug("pageable:{}", pageable);
-        }
         nativeQuery.setMaxResults(10000);
         return nativeQuery;
     }
@@ -129,7 +126,7 @@ public class SearchServiceImpl implements SearchService {
                     Integer.parseInt(queryParam.getPageNumber()),
                     Integer.parseInt(queryParam.getPageSize()), sort);
         }
-        query = getQuery(queryParam, pageable);
+        query = getQuery(queryParam);
         if (log.isDebugEnabled()) {
             log.debug("execute query:{}", query);
         }
@@ -148,7 +145,7 @@ public class SearchServiceImpl implements SearchService {
                 queryParam.getIds().forEach(id -> operations.delete(id, IndexCoordinates.of(queryParam.getIndex())));
                 return "";
             } else if ("deleteQuery".equals(queryParam.getOperation())) {
-                ByQueryResponse response = operations.delete(getQuery(queryParam, pageable), queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                ByQueryResponse response = operations.delete(getQuery(queryParam), queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
                 return String.valueOf(response.getDeleted());
             }
             else if ("save".equals(queryParam.getOperation())) {
@@ -161,7 +158,7 @@ public class SearchServiceImpl implements SearchService {
                         .build();
                 return operations.update(updateQuery, IndexCoordinates.of(queryParam.getIndex())).getResult().toString();
             } else if ("updateQuery".equals(queryParam.getOperation())) {
-                UpdateQuery updateQuery = UpdateQuery.builder(getQuery(queryParam, pageable))
+                UpdateQuery updateQuery = UpdateQuery.builder(getQuery(queryParam))
                         .withIndex(queryParam.getIndex())
                         .withParams(queryParam.getUpdateParam())
                         .withScriptType(ScriptType.INLINE)
@@ -170,12 +167,25 @@ public class SearchServiceImpl implements SearchService {
                 ByQueryResponse byQueryResponse = operations.updateByQuery(updateQuery, IndexCoordinates.of(queryParam.getIndex()));
                 return String.valueOf(byQueryResponse.getTotal());
             } else {
-                SearchHits searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
                 if (pageable != null) {
-                    SearchPage searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
-                    Page page = (Page) SearchHitSupport.unwrapSearchHits(searchPage);
-                    return JsonUtils.toJson(page.getContent());
+                    AbstractElasticsearchTemplate template = (AbstractElasticsearchTemplate)operations;
+                    query.setPageable(pageable);
+                    SearchScrollHits scroll;
+                    if (StringUtils.isNotBlank(queryParam.getScrollId())) {
+                        scroll = template.searchScrollContinue(queryParam.getScrollId(), 1000, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                    } else {
+                        scroll = template.searchScrollStart(1000, query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                    }
+                    String scrollId = scroll.getScrollId();
+                    if (!scroll.hasSearchHits()) {
+                        template.searchScrollClear(scrollId);
+                    }
+                    SearchResult searchResult = new SearchResult();
+                    searchResult.setScrollId(scroll.getScrollId());
+                    searchResult.setHits(SearchHitSupport.unwrapSearchHits(scroll.getSearchHits()));
+                    return JsonUtils.toJson(searchResult);
                 } else {
+                    SearchHits searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
                     return SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()).toString();
                 }
             }
