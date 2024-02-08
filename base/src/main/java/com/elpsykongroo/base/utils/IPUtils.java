@@ -21,11 +21,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.math.BigInteger;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Stack;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -55,12 +52,28 @@ public class IPUtils {
     }
 
     public static boolean isIpv6(String ip) {
-        String ipv6Regex="((([0-9a-fA-F]){1,4})\\:){7}([0-9a-fA-F]){1,4}";
-        Pattern p6 = Pattern.compile(ipv6Regex);
-        if (p6.matcher(ip).matches()) {
-            return true;
+        return isValidIPv6(ip) || isValidIPv6CIDR(ip);
+    }
+
+    public static boolean isValidIPv6(String ipAddress) {
+        try {
+            InetAddress ip = InetAddress.getByName(ipAddress);
+            return ip.getHostAddress().contains(":");
+        } catch (UnknownHostException e) {
+            return false;
         }
-        return false;
+    }
+
+    public static boolean isValidIPv6CIDR(String cidr) {
+        try {
+            String[] parts = cidr.split("/");
+            InetAddress cidrAddress = InetAddress.getByName(parts[0]);
+            int prefixLength = Integer.parseInt(parts[1]);
+
+            return cidrAddress.getHostAddress().contains(":") && prefixLength >= 0 && prefixLength <= 128;
+        } catch (UnknownHostException | NumberFormatException e) {
+            return false;
+        }
     }
 
     public static boolean validateHost(String ip) {

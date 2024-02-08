@@ -128,7 +128,7 @@ public class SearchServiceImpl implements SearchService {
         }
         query = getQuery(queryParam);
         if (log.isDebugEnabled()) {
-            log.debug("execute query:{}", query);
+            log.debug("execute query:{}", query.toString());
         }
         try {
             if ("count".equals(queryParam.getOperation())) {
