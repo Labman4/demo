@@ -80,7 +80,8 @@ public class IPMangerServiceImpl implements IPManagerService {
 	 * */
 
 	@Override
-	public String list(String isBlack, String pageNumber, String pageSize, String order) {QueryParam queryParam = new QueryParam();
+	public String list(String isBlack, String pageNumber, String pageSize, String order, String id) {
+		QueryParam queryParam = new QueryParam();
 		queryParam.setPageNumber(pageNumber);
 		queryParam.setPageSize(pageSize);
 		queryParam.setOrder(order);
@@ -89,6 +90,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		queryParam.setIndex("ip");
 		queryParam.setParam(isBlack);
 		queryParam.setField("black");
+		queryParam.setScrollId(id);
 		return searchService.query(queryParam);
 	}
 

@@ -61,11 +61,12 @@ public class IPManagerController {
 	public String ipPageList(@RequestParam String black,
 							 @RequestParam String pageNumber,
 							 @RequestParam String pageSize,
-							 @RequestParam String order) {
+							 @RequestParam String order,
+							 @RequestParam String id) {
 		if (log.isDebugEnabled()) {
 			log.debug("ipPageList black:{}, pageNumber:{}, pageSize:{}", black, pageNumber, pageSize);
 		}
-		return CommonResponse.string(ipManagerService.list(black, pageNumber, pageSize, order));
+		return CommonResponse.string(ipManagerService.list(black, pageNumber, pageSize, order, id));
 	}
 
 	@PatchMapping

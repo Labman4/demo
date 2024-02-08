@@ -130,7 +130,11 @@ public class IPUtils {
                 }
                 return inetAddress.isSiteLocalAddress();
             }
-            if(validateHost(ip)) {
+            if (ip.contains("/")) {
+                if (IPUtils.isInRange(accessIP, ip)) {
+                    return true;
+                }
+            } else if(validateHost(ip)) {
                 InetAddress[] inetAddresses = InetAddress.getAllByName(ip);
                 for (InetAddress addr: inetAddresses) {
                     if (accessIP.equals(addr.getHostAddress())) {

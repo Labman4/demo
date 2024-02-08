@@ -29,7 +29,7 @@ public interface IPManagerService {
 
 	int add(List<String> address, String isBlack) throws UnknownHostException;
 
-	String list(String isBlack, String pageNumber, String pageSize, String order);
+	String list(String isBlack, String pageNumber, String pageSize, String order, String id);
 
 	String patch(List<String> addresses, String isBlack, String ids) throws UnknownHostException;
 

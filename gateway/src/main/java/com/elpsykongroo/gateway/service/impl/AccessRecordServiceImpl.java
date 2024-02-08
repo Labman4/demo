@@ -104,7 +104,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	}
 
 	@Override
-	public String findAll(String pageNo, String pageSize, String order) {
+	public String findAll(String pageNo, String pageSize, String order, String id) {
 		QueryParam queryParam = new QueryParam();
 		queryParam.setOrder(order);
 		queryParam.setOrderBy("timestamp");
@@ -112,6 +112,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		queryParam.setPageSize(pageSize);
 		queryParam.setIndex("access_record");
 		queryParam.setType(AccessRecord.class);
+		queryParam.setScrollId(id);
 		return searchService.query(queryParam);
 	}
 
@@ -175,7 +176,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			queryParam.setFuzzy(true);
 			return searchService.query(queryParam);
 		} else {
-			return findAll(pageNo, pageSize, order);
+			return findAll(pageNo, pageSize, order, "");
 		}
 	}
 }

@@ -110,6 +110,9 @@ public class SearchServiceImpl implements SearchService {
             nativeQuery = NativeQuery.builder().withQuery(q -> q.matchAll(matchAllQuery)).build();
         }
         nativeQuery.setMaxResults(10000);
+        if (log.isDebugEnabled()) {
+            log.debug("execute query:{}", nativeQuery.getQuery().toString());
+        }
         return nativeQuery;
     }
 
@@ -127,9 +130,6 @@ public class SearchServiceImpl implements SearchService {
                     Integer.parseInt(queryParam.getPageSize()), sort);
         }
         query = getQuery(queryParam);
-        if (log.isDebugEnabled()) {
-            log.debug("execute query:{}", query.toString());
-        }
         try {
             if ("count".equals(queryParam.getOperation())) {
                 long count = 0;
