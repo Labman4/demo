@@ -49,7 +49,7 @@ public class AccessRecordController {
 	public String recordPageList(@RequestParam String pageNumber,
 								 @RequestParam String pageSize,
 								 @RequestParam String order,
-								 @RequestParam String id) {
+								 @RequestParam(required = false) String id) {
 		return CommonResponse.string(accessRecordService.findAll(pageNumber, pageSize, order, id));
 	}
 

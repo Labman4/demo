@@ -62,7 +62,7 @@ public class IPManagerController {
 							 @RequestParam String pageNumber,
 							 @RequestParam String pageSize,
 							 @RequestParam String order,
-							 @RequestParam String id) {
+							 @RequestParam(required = false) String id) {
 		if (log.isDebugEnabled()) {
 			log.debug("ipPageList black:{}, pageNumber:{}, pageSize:{}", black, pageNumber, pageSize);
 		}
