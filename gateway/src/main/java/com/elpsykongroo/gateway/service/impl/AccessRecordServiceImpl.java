@@ -133,8 +133,8 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				queryParam.setType(AccessRecord.class);
 				queryParam.setFields(Collections.singletonList("sourceIP"));
 				queryParam.setBoolQuery(true);
-				if (param.contains("::")) {
-					queryParam.setQueryStringParam(Collections.singletonList(param));
+				if (param.contains("::") && IPUtils.isIpv6(param)) {
+					queryParam.setQueryStringParam(Collections.singletonList("\"" + param + "\""));
 					addResult(ids, queryParam);
 				} else {
 					for (InetAddress addr : inetAddresses) {
