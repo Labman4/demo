@@ -65,15 +65,16 @@ public class IPUtils {
     }
 
     public static boolean isValidIPv6CIDR(String cidr) {
-        try {
-            String[] parts = cidr.split("/");
-            InetAddress cidrAddress = InetAddress.getByName(parts[0]);
-            int prefixLength = Integer.parseInt(parts[1]);
-
-            return cidrAddress.getHostAddress().contains(":") && prefixLength >= 0 && prefixLength <= 128;
-        } catch (UnknownHostException | NumberFormatException e) {
-            return false;
+        if (cidr.contains("/")) {
+            try {
+                String[] parts = cidr.split("/");
+                InetAddress cidrAddress = InetAddress.getByName(parts[0]);
+                int prefixLength = Integer.parseInt(parts[1]);
+                return cidrAddress.getHostAddress().contains(":") && prefixLength >= 0 && prefixLength <= 128;
+            } catch (UnknownHostException | NumberFormatException e) {
+            }
         }
+        return false;
     }
 
     public static boolean validateHost(String ip) {
