@@ -133,17 +133,17 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				queryParam.setType(AccessRecord.class);
 				queryParam.setFields(Collections.singletonList("sourceIP"));
 				queryParam.setBoolQuery(true);
-				for (InetAddress addr : inetAddresses) {
-					if (IPUtils.isIpv6(addr.getHostAddress())) {
-						queryParam.setQueryStringParam(Collections.singletonList("\"" + addr.getHostAddress() + "\""));
-					} else {
-						queryParam.setQueryStringParam(Collections.singletonList(addr.getHostAddress()));
-					}
-					String result = searchService.query(queryParam);
-					if (StringUtils.isNotEmpty(result)) {
-						List<String> idList = JsonUtils.toType(result, new TypeReference<>() {
-						});
-						ids.addAll(idList);
+				if (param.contains("/")) {
+					queryParam.setQueryStringParam(Collections.singletonList(param));
+					addResult(ids, queryParam);
+				} else {
+					for (InetAddress addr : inetAddresses) {
+						if (IPUtils.isIpv6(addr.getHostAddress())) {
+							queryParam.setQueryStringParam(Collections.singletonList("\"" + addr.getHostAddress() + "\""));
+						} else {
+							queryParam.setQueryStringParam(Collections.singletonList(addr.getHostAddress()));
+						}
+						addResult(ids, queryParam);
 					}
 				}
 			} else {
@@ -153,6 +153,15 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		deleteParam.setIds(ids);
 		deleteParam.setIdsQuery(true);
 		return searchService.query(deleteParam);
+	}
+
+	private void addResult(List<String> ids, QueryParam queryParam) {
+		String result = searchService.query(queryParam);
+		if (StringUtils.isNotEmpty(result)) {
+			List<String> idList = JsonUtils.toType(result, new TypeReference<>() {
+			});
+			ids.addAll(idList);
+		}
 	}
 
 
