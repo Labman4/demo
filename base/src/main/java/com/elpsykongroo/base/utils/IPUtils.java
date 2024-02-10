@@ -39,16 +39,16 @@ public class IPUtils {
     }
 
     public static boolean validate(String ip) {
-        String ipv4Regex = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
-        String ipv6Regex="((([0-9a-fA-F]){1,4})\\:){7}([0-9a-fA-F]){1,4}";
-        Pattern p4 = Pattern.compile(ipv4Regex);
-        Pattern p6 = Pattern.compile(ipv6Regex);
-        if(p4.matcher(ip).matches()) {
-            return true;
-        } else if (p6.matcher(ip).matches()) {
-            return true;
+        return isIpv4(ip) || isIpv6(ip);
+    }
+
+    public static boolean isIpv4(String ip) {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(ip);
+            return inetAddress.getHostAddress().contains(".");
+        } catch (UnknownHostException e) {
+            return false;
         }
-        return false;
     }
 
     public static boolean isIpv6(String ip) {
