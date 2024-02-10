@@ -133,7 +133,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				queryParam.setType(AccessRecord.class);
 				queryParam.setFields(Collections.singletonList("sourceIP"));
 				queryParam.setBoolQuery(true);
-				if (param.contains("/")) {
+				if (param.contains("::")) {
 					queryParam.setQueryStringParam(Collections.singletonList(param));
 					addResult(ids, queryParam);
 				} else {
@@ -160,6 +160,9 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		if (StringUtils.isNotEmpty(result)) {
 			List<String> idList = JsonUtils.toType(result, new TypeReference<>() {
 			});
+			if (log.isDebugEnabled()) {
+				log.debug("delete query string result: {}", idList.size());
+			}
 			ids.addAll(idList);
 		}
 	}
