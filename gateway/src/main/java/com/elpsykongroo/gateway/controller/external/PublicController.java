@@ -68,9 +68,9 @@ public class PublicController {
 
 	@GetMapping("token/qrcode")
 	public String qrToken(@RequestParam String text) throws InterruptedException {
-//		response.setHeader("Content-Type", MediaType.TEXT_EVENT_STREAM_VALUE);
-//		response.setHeader("Cache-Control", "no-cache");
-//		response.setHeader("Connection", "keep-alive");
+		response.setHeader("Content-Type", MediaType.TEXT_EVENT_STREAM_VALUE);
+		response.setHeader("Cache-Control", "no-cache");
+		response.setHeader("Connection", "keep-alive");
 		String message = messageService.getMessage(text);
 		int count = 0;
 		while (StringUtils.isEmpty(message)) {
