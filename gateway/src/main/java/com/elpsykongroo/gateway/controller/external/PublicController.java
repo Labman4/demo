@@ -22,6 +22,8 @@ import com.elpsykongroo.base.service.MessageService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.PkceUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import com.elpsykongroo.gateway.service.IPManagerService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +70,7 @@ public class PublicController {
 	}
 
 	@GetMapping("token/qrcode")
-	public String qrToken(@RequestParam String text) throws InterruptedException {
+	public String qrToken(@RequestParam String text, HttpServletResponse response) throws InterruptedException {
 		response.setHeader("Content-Type", MediaType.TEXT_EVENT_STREAM_VALUE);
 		response.setHeader("Cache-Control", "no-cache");
 		response.setHeader("Connection", "keep-alive");
