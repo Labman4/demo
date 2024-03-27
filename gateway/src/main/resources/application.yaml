@@ -82,8 +82,8 @@ management:
         enabled: true
     prometheus:
       enabled: true
-   httpexchanges:
-     enabled: true
+    httpexchanges:
+      enabled: true
   metrics:
     tags:
       application: ${METRICS_TAG:gateway}
