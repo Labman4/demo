@@ -73,9 +73,9 @@ management:
     enabled: ${TRACE_ENABLED:false}
     sampling:
       probability: ${TRACE_SAMPLING:1.0}
- httpexchanges:
-   recording:
-     enabled: ${HTTP_RECORD:true}
+  httpexchanges:
+    recording:
+      enabled: ${HTTP_RECORD:true}
   endpoint:
     health:
       probes:
