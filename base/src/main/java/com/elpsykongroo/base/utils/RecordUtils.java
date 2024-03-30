@@ -19,9 +19,15 @@ package com.elpsykongroo.base.utils;
 import com.elpsykongroo.base.config.RequestConfig;
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.GatewayService;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.vault.authentication.ClientAuthentication;
+import org.springframework.vault.client.VaultEndpoint;
+import org.springframework.vault.core.VaultTemplate;
+import org.springframework.vault.support.VaultResponse;
 
 import java.time.Instant;
 import java.util.Enumeration;
@@ -35,23 +41,45 @@ public class RecordUtils {
 
     private RequestConfig requestConfig;
 
+    private VaultEndpoint vaultEndpoint;
+
+    private ClientAuthentication clientAuthentication;
+
     public RecordUtils(GatewayService gatewayService, RequestConfig requestConfig) {
         this.requestConfig = requestConfig;
         this.gatewayService = gatewayService;
+    }
+
+    public RecordUtils(GatewayService gatewayService, RequestConfig requestConfig, VaultEndpoint vaultEndpoint, ClientAuthentication clientAuthentication) {
+        this.requestConfig = requestConfig;
+        this.gatewayService = gatewayService;
+        this.vaultEndpoint = vaultEndpoint;
+        this.clientAuthentication = clientAuthentication;
     }
 
     public RecordUtils(RequestConfig requestConfig) {
         this.requestConfig = requestConfig;
     }
 
+    public RecordUtils(RequestConfig requestConfig, VaultEndpoint vaultEndpoint, ClientAuthentication clientAuthentication) {
+        this.requestConfig = requestConfig;
+        this.vaultEndpoint = vaultEndpoint;
+        this.clientAuthentication = clientAuthentication;
+    }
+
     public boolean filterRecord(HttpServletRequest request) {
             IPUtils ipUtils = new IPUtils(requestConfig);
             String ip = ipUtils.accessIP(request, "record");
             RequestConfig.Record.Exclude recordExclude = requestConfig.getRecord().getExclude();
+            VaultTemplate vaultTemplate = new VaultTemplate(vaultEndpoint, clientAuthentication);
+            VaultResponse response = vaultTemplate.read("kv/data/app/base");
+            JsonNode jsonNode = JsonUtils.toJsonNode(JsonUtils.toJson(response.getData().get("data")));
+            String excludeIp = jsonNode.get("request.record.exclude.ip").asText();
+            log.info("RecordUtils exclude ip:{}", excludeIp);
             if (log.isTraceEnabled()) {
                 log.trace("RecordUtils exclude:{}", recordExclude);
             }
-            boolean recordFlag = IPUtils.filterByIpOrList(recordExclude.getIp(), ip);
+            boolean recordFlag = IPUtils.filterByIpOrList(excludeIp, ip);
             if (!(StringUtils.isNotEmpty(recordExclude.getPath())
                     && PathUtils.beginWithPath(recordExclude.getPath(), request.getRequestURI()))) {
                 if (!recordFlag) {

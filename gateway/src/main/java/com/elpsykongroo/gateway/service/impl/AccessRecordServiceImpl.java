@@ -37,13 +37,13 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.base.config.RequestConfig;
 import com.elpsykongroo.gateway.service.AccessRecordService;
-import com.elpsykongroo.gateway.service.IPManagerService;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.vault.authentication.ClientAuthentication;
+import org.springframework.vault.client.VaultEndpoint;
 
 @Service
 @Slf4j
@@ -53,19 +53,21 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	private SearchService searchService;
 
 	@Autowired
-	private IPManagerService ipMangerService;
-
-	@Autowired
 	private RequestConfig requestConfig;
 
-	public AccessRecordServiceImpl(IPManagerService ipMangerService, RequestConfig requestConfig) {
-		this.ipMangerService = ipMangerService;
+	@Autowired
+	private VaultEndpoint vaultEndpoint;
+
+	@Autowired
+    private ClientAuthentication clientAuthentication;
+
+	public AccessRecordServiceImpl(RequestConfig requestConfig) {
 		this.requestConfig = requestConfig;
 	}
 
 	@Override
 	public void saveAccessRecord(HttpServletRequest request) {
-		RecordUtils recordUtils = new RecordUtils(requestConfig);
+		RecordUtils recordUtils = new RecordUtils(requestConfig, vaultEndpoint, clientAuthentication);
 		if (recordUtils.filterRecord(request)) {
 			Map<String, String> result = new HashMap<>();
 			Enumeration<String> headerNames = request.getHeaderNames();

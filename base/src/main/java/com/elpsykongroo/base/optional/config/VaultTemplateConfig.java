@@ -17,6 +17,7 @@
 package com.elpsykongroo.base.optional.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.vault.annotation.VaultPropertySource;
 import org.springframework.vault.authentication.ClientAuthentication;
@@ -38,7 +39,7 @@ import java.net.URI;
 @VaultPropertySource("${SECRETS_APP_PATH}")
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
 
-    @Override
+    @Bean
     public ClientAuthentication clientAuthentication() {
          if ("prod".equals(getEnvironment().getProperty("ENV"))) {
             KubernetesAuthenticationOptions options = KubernetesAuthenticationOptions.builder()
@@ -48,7 +49,7 @@ public class VaultTemplateConfig extends AbstractVaultConfiguration  {
              return new TokenAuthentication(getEnvironment().getProperty("VAULT_TOKEN"));
          }
     }
-    @Override
+    @Bean
     public VaultEndpoint vaultEndpoint() {
         VaultEndpoint endpoint = new VaultEndpoint();
         URI uri = URI.create(getEnvironment().getProperty("VAULT_URI"));
