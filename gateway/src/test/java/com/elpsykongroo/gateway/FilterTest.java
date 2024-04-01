@@ -134,7 +134,7 @@ class FilterTest {
         requestConfig.setLimit(limit);
         requestConfig.setRecord(record);
         IPManagerService ipManagerService = new IPMangerServiceImpl(requestConfig, redisService, searchService);
-        AccessRecordService accessRecordService = new AccessRecordServiceImpl(ipManagerService, requestConfig);
+        AccessRecordService accessRecordService = new AccessRecordServiceImpl(requestConfig);
         ThrottlingFilter filter = new ThrottlingFilter(requestConfig, accessRecordService, ipManagerService);
         filter.init(new MockFilterConfig(servletContext));
         request.addHeader("x-real-ip", "test.elpsykongroo.com");
