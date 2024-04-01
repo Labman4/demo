@@ -35,6 +35,7 @@ import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.base.config.RequestConfig;
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	@Autowired
     private ClientAuthentication clientAuthentication;
+
+	@Autowired
+	private ServiceConfig serviceConfig;
 
 	public IPMangerServiceImpl(RequestConfig requestConfig,
 							   RedisService redisService,
@@ -305,7 +309,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 	public String accessIP(HttpServletRequest request, String headerType) {
 		IPUtils ipUtils = new IPUtils(requestConfig);
 		String ip = ipUtils.accessIP(request, "");
-		RecordUtils recordUtils = new RecordUtils(requestConfig, vaultEndpoint, clientAuthentication);
+		RecordUtils recordUtils = new RecordUtils(redisService, requestConfig, vaultEndpoint, clientAuthentication, serviceConfig.getRecordExcludeIpPath(), serviceConfig.getRecordExcludeIpKey());
 		if (recordUtils.filterRecord(request)) {
 			if (log.isInfoEnabled()) {
 				log.info("ip------------{}, type:{}", ip, headerType);

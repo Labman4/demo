@@ -19,8 +19,10 @@ package com.elpsykongroo.base.utils;
 import com.elpsykongroo.base.config.RequestConfig;
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
 import com.elpsykongroo.base.service.GatewayService;
+import com.elpsykongroo.base.service.RedisService;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -39,43 +41,72 @@ public class RecordUtils {
 
     private GatewayService gatewayService;
 
+    private RedisService redisService;
+
     private RequestConfig requestConfig;
 
     private VaultEndpoint vaultEndpoint;
 
     private ClientAuthentication clientAuthentication;
 
+    private String secretPath;
+
+    private String secretKey;
+
     public RecordUtils(GatewayService gatewayService, RequestConfig requestConfig) {
         this.requestConfig = requestConfig;
         this.gatewayService = gatewayService;
     }
 
-    public RecordUtils(GatewayService gatewayService, RequestConfig requestConfig, VaultEndpoint vaultEndpoint, ClientAuthentication clientAuthentication) {
+    public RecordUtils(GatewayService gatewayService, RedisService redisService, RequestConfig requestConfig, VaultEndpoint vaultEndpoint, ClientAuthentication clientAuthentication, String secretPath, String secretKey) {
         this.requestConfig = requestConfig;
         this.gatewayService = gatewayService;
         this.vaultEndpoint = vaultEndpoint;
         this.clientAuthentication = clientAuthentication;
+        this.secretKey = secretKey;
+        this.secretPath = secretPath;
+        this.redisService = redisService;
     }
 
     public RecordUtils(RequestConfig requestConfig) {
         this.requestConfig = requestConfig;
     }
 
-    public RecordUtils(RequestConfig requestConfig, VaultEndpoint vaultEndpoint, ClientAuthentication clientAuthentication) {
+    public RecordUtils(RedisService redisService, RequestConfig requestConfig, VaultEndpoint vaultEndpoint, ClientAuthentication clientAuthentication, String secretPath, String secretKey) {
         this.requestConfig = requestConfig;
         this.vaultEndpoint = vaultEndpoint;
         this.clientAuthentication = clientAuthentication;
+        this.secretKey = secretKey;
+        this.secretPath = secretPath;
+        this.redisService = redisService;
     }
 
     public boolean filterRecord(HttpServletRequest request) {
             IPUtils ipUtils = new IPUtils(requestConfig);
             String ip = ipUtils.accessIP(request, "record");
             RequestConfig.Record.Exclude recordExclude = requestConfig.getRecord().getExclude();
-            VaultTemplate vaultTemplate = new VaultTemplate(vaultEndpoint, clientAuthentication);
-            VaultResponse response = vaultTemplate.read("kv/data/app/base");
-            JsonNode jsonNode = JsonUtils.toJsonNode(JsonUtils.toJson(response.getData().get("data")));
-            String excludeIp = jsonNode.get("request.record.exclude.ip").asText();
-            log.info("RecordUtils exclude ip:{}", excludeIp);
+            String excludeIp = "";
+            if (vaultEndpoint != null && clientAuthentication != null) {
+                try {
+                    excludeIp = redisService.get(secretKey);
+                } catch (FeignException e) {
+                    log.error("get cache failed, skip");
+                }
+                if (StringUtils.isBlank(excludeIp)) {
+                    VaultTemplate vaultTemplate = new VaultTemplate(vaultEndpoint, clientAuthentication);
+                    VaultResponse response = vaultTemplate.read(secretPath);
+                    JsonNode jsonNode = JsonUtils.toJsonNode(JsonUtils.toJson(response.getData().get("data")));
+                    excludeIp = jsonNode.get(secretKey).asText();
+                    log.info("RecordUtils exclude ip:{}", excludeIp);
+                    try {
+                        redisService.set(secretKey, excludeIp, "60");
+                    } catch (FeignException e) {
+                        log.error("set cache failed, skip");
+                    }
+                }  
+            } else {
+                excludeIp = recordExclude.getIp();
+            }
             if (log.isTraceEnabled()) {
                 log.trace("RecordUtils exclude:{}", recordExclude);
             }

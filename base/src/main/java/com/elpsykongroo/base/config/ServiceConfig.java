@@ -24,6 +24,10 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "service")
 public class ServiceConfig {
+    private String recordExcludeIpPath;
+    
+    private String recordExcludeIpKey;
+
     private String initAdminAuth;
 
     private TimeOut timeout;
@@ -45,6 +49,7 @@ public class ServiceConfig {
     private Redis redis;
 
     private Elastic es;
+
     //public ca
     private SSL ssl;
 
