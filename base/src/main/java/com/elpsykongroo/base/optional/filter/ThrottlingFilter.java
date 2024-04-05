@@ -102,9 +102,7 @@ public class ThrottlingFilter implements Filter {
 		String limitPath = requestConfig.getPath().getLimit();
 		if (StringUtils.isNotEmpty(limitPath) && PathUtils.beginWithPath(limitPath, requestUri)) {
 			RecordUtils recordUtils = new RecordUtils(gatewayService, requestConfig);
-			if (recordUtils.filterRecord(httpRequest)) {
-				recordUtils.saveRecord(httpRequest);
-			}
+			recordUtils.saveRecord(httpRequest);
 			String filterPath = requestConfig.getPath().getFilter();
 			String excludePath = requestConfig.getPath().getExclude();
 			if (limitByBucket("global", httpResponse, session)) {

@@ -84,6 +84,9 @@ public class RecordUtils {
     public boolean filterRecord(HttpServletRequest request) {
             IPUtils ipUtils = new IPUtils(requestConfig);
             String ip = ipUtils.accessIP(request, "record");
+            if (log.isTraceEnabled()) {
+                log.trace("RecordUtils accessIp:{}", ip);
+            }
             if (ipUtils.isPrivate(ip)) {
                 return false;
             }
