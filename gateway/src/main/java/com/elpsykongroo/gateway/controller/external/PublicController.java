@@ -22,11 +22,14 @@ import com.elpsykongroo.base.service.MessageService;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.utils.PkceUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import com.elpsykongroo.gateway.service.IPManagerService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,10 +70,10 @@ public class PublicController {
 	}
 
 	@GetMapping("token/qrcode")
-	public String qrToken(@RequestParam String text) throws InterruptedException {
-//		response.setHeader("Content-Type", MediaType.TEXT_EVENT_STREAM_VALUE);
-//		response.setHeader("Cache-Control", "no-cache");
-//		response.setHeader("Connection", "keep-alive");
+	public String qrToken(@RequestParam String text, HttpServletResponse response) throws InterruptedException {
+		response.setHeader("Content-Type", MediaType.TEXT_EVENT_STREAM_VALUE);
+		response.setHeader("Cache-Control", "no-cache");
+		response.setHeader("Connection", "keep-alive");
 		String message = messageService.getMessage(text);
 		int count = 0;
 		while (StringUtils.isEmpty(message)) {

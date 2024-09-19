@@ -29,6 +29,7 @@ import java.util.Map;
 import com.elpsykongroo.base.domain.search.QueryParam;
 import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.domain.search.repo.AccessRecord;
+import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.service.SearchService;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.base.utils.RecordUtils;
@@ -36,14 +37,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.base.config.RequestConfig;
+import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.gateway.service.AccessRecordService;
-import com.elpsykongroo.gateway.service.IPManagerService;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.vault.authentication.ClientAuthentication;
+import org.springframework.vault.client.VaultEndpoint;
 
 @Service
 @Slf4j
@@ -53,19 +55,27 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	private SearchService searchService;
 
 	@Autowired
-	private IPManagerService ipMangerService;
+	private RedisService redisService;
 
 	@Autowired
 	private RequestConfig requestConfig;
+	
+	@Autowired
+	private ServiceConfig serviceConfig;
 
-	public AccessRecordServiceImpl(IPManagerService ipMangerService, RequestConfig requestConfig) {
-		this.ipMangerService = ipMangerService;
+	@Autowired
+	private VaultEndpoint vaultEndpoint;
+
+	@Autowired
+    private ClientAuthentication clientAuthentication; 
+
+	public AccessRecordServiceImpl(RequestConfig requestConfig) {
 		this.requestConfig = requestConfig;
 	}
 
 	@Override
 	public void saveAccessRecord(HttpServletRequest request) {
-		RecordUtils recordUtils = new RecordUtils(requestConfig);
+		RecordUtils recordUtils = new RecordUtils(redisService, requestConfig, vaultEndpoint, clientAuthentication, serviceConfig.getRecordExcludeIpPath(), serviceConfig.getRecordExcludeIpKey());
 		if (recordUtils.filterRecord(request)) {
 			Map<String, String> result = new HashMap<>();
 			Enumeration<String> headerNames = request.getHeaderNames();

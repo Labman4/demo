@@ -18,7 +18,6 @@ package com.elpsykongroo.auth.interceptor;
 
 import com.elpsykongroo.auth.entity.user.Authority;
 import com.elpsykongroo.auth.service.custom.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,7 +32,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Component
 public class CustomAuthoritiesOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     @Value("${spring.security.oauth2.resourceserver.opaque-token.introspection-uri}")

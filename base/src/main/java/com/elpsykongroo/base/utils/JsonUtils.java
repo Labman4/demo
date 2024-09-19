@@ -18,6 +18,7 @@ package com.elpsykongroo.base.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -53,6 +54,16 @@ public final class JsonUtils {
 	public static <T> T toType(String str, TypeReference<T> typeReference){
 		try {
 			return objectMapper.readValue(str, typeReference);
+		}
+		catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	public static JsonNode toJsonNode(String str){
+		try {
+			return objectMapper.readTree(str);
 		}
 		catch (JsonProcessingException e) {
 			throw new RuntimeException(e);

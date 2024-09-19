@@ -434,7 +434,7 @@ public class LoginServiceImpl implements LoginService {
             if (log.isDebugEnabled()) {
                 log.debug("introspect:{}", result.getAttribute("active").toString());
             }
-            if (result.getAttribute("active")) {
+            if ((boolean) result.getAttribute("active")) {
                 Jwt id = jwtDecoder.decode(idToken);
                 if (log.isDebugEnabled()) {
                     log.debug("token user:{}", id.getSubject());
