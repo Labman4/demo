@@ -35,7 +35,7 @@ import java.net.URI;
     name = "vault",
     havingValue = "true",
     matchIfMissing = false)
-@VaultPropertySource("${SECRETS_APP_BASE_PATH:kv/app/dev/base}")
+@VaultPropertySource(value = "${SECRETS_APP_BASE_PATH:kv/app/dev/base}", renewal = VaultPropertySource.Renewal.RENEW))
 @VaultPropertySource("${SECRETS_APP_PATH}")
 public class VaultTemplateConfig extends AbstractVaultConfiguration  {
 
