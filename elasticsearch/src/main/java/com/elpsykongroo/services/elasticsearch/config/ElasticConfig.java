@@ -19,6 +19,7 @@ package com.elpsykongroo.services.elasticsearch.config;
 import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.services.elasticsearch.utils.SSLUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -90,6 +91,15 @@ public class ElasticConfig extends ElasticsearchConfiguration {
                     .withConnectTimeout(Duration.ofSeconds(connect))
                     .withSocketTimeout(Duration.ofSeconds(socket))
                     .build();
+       } else if ("noVerify".equals(type)) {
+           SSLContext sslContext = SSLContexts.createDefault();
+           return ClientConfiguration.builder()
+                   .connectedTo(nodes)
+                   .usingSsl(sslContext, (hostname, session) -> true)
+                   .withBasicAuth(username, password)
+                   .withConnectTimeout(Duration.ofSeconds(connect))
+                   .withSocketTimeout(Duration.ofSeconds(socket))
+                   .build();
        } else if (StringUtils.isNotEmpty(username)){
            return ClientConfiguration.builder()
                     .connectedTo(nodes)
