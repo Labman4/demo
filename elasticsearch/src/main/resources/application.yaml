@@ -5,6 +5,7 @@ spring:
     timeout-per-shutdown-phase: 10s
 service:
   vault: ${VAULT_ENABLE:true}
+  limit: false
 logging:
   level:
     root: ${ROOT_LOG_LEVEL:info}
