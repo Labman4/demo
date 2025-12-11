@@ -19,19 +19,17 @@ package com.elpsykongroo.services.elasticsearch.config;
 import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.services.elasticsearch.utils.SSLUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hc.core5.ssl.SSLContexts;
-import org.opensearch.data.client.osc.OpenSearchConfiguration;
+import org.apache.http.ssl.SSLContexts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.vault.annotation.VaultPropertySource;
 
 import javax.net.ssl.SSLContext;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
 @ConditionalOnProperty(
@@ -41,15 +39,16 @@ import java.time.Duration;
         matchIfMissing = false)
 @VaultPropertySource(value = "${SECRETS_DATA_ES_PATH:database/creds/elastic}", renewal = VaultPropertySource.Renewal.ROTATE)
 @Configuration(proxyBeanMethods = false)
-public class ElasticConfig extends OpenSearchConfiguration {
+@EnableElasticsearchRepositories
+public class ElasticConfig extends ElasticsearchConfiguration {
 
     @Autowired
     Environment env;
     @Autowired
     private ServiceConfig serviceConfig;
 
-    @Override
-    public ClientConfiguration clientConfiguration(){
+   @Override
+   public ClientConfiguration clientConfiguration() {
        String username = env.getProperty("username");
        String password = env.getProperty("password");
        String type = serviceConfig.getEs().getSsl().getType();
@@ -92,28 +91,17 @@ public class ElasticConfig extends OpenSearchConfiguration {
                     .withConnectTimeout(Duration.ofSeconds(connect))
                     .withSocketTimeout(Duration.ofSeconds(socket))
                     .build();
-        } else if ("noVerify".equals(type)) {
-            SSLContext sslContext = null;
-            try {
-                sslContext = SSLContexts.custom()
-                        .loadTrustMaterial(null, (chain, authType) -> true) // 信任所有证书
-                        .build();
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            } catch (KeyManagementException e) {
-                throw new RuntimeException(e);
-            } catch (KeyStoreException e) {
-                throw new RuntimeException(e);
-            }
+       } else if ("noVerify".equals(type)) {
+           SSLContext sslContext = SSLContexts.createDefault();
            return ClientConfiguration.builder()
-                    .connectedTo(nodes)
-                    .usingSsl(sslContext, (hostname, session) -> true)
-                    .withBasicAuth(username, password)
-                    .withConnectTimeout(Duration.ofSeconds(connect))
-                    .withSocketTimeout(Duration.ofSeconds(socket))
-                    .build();
-        } else if (StringUtils.isNotEmpty(username)){
-            return  ClientConfiguration.builder()
+                   .connectedTo(nodes)
+                   .usingSsl(sslContext, (hostname, session) -> true)
+                   .withBasicAuth(username, password)
+                   .withConnectTimeout(Duration.ofSeconds(connect))
+                   .withSocketTimeout(Duration.ofSeconds(socket))
+                   .build();
+       } else if (StringUtils.isNotEmpty(username)){
+           return ClientConfiguration.builder()
                     .connectedTo(nodes)
                     .withBasicAuth(username, password)
                     .withConnectTimeout(Duration.ofSeconds(connect))
