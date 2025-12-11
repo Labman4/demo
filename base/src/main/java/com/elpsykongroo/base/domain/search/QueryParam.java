@@ -61,4 +61,6 @@ public class QueryParam {
     private List<String> ids;
 
     private Object entity;
+
+    private String scrollId;
 }

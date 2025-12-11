@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AccessRecordService {
 
-	String findAll(String pageNumber, String pageSize, String sort);
+	String findAll(String pageNumber, String pageSize, String sort, String id);
 
 	String filterByParams(String params, String pageNumber, String pageSize, String order);
 

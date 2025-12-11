@@ -114,7 +114,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 	}
 
 	@Override
-	public String findAll(String pageNo, String pageSize, String order) {
+	public String findAll(String pageNo, String pageSize, String order, String id) {
 		QueryParam queryParam = new QueryParam();
 		queryParam.setOrder(order);
 		queryParam.setOrderBy("timestamp");
@@ -122,6 +122,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		queryParam.setPageSize(pageSize);
 		queryParam.setIndex("access_record");
 		queryParam.setType(AccessRecord.class);
+		queryParam.setScrollId(id);
 		return searchService.query(queryParam);
 	}
 
@@ -142,17 +143,17 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 				queryParam.setType(AccessRecord.class);
 				queryParam.setFields(Collections.singletonList("sourceIP"));
 				queryParam.setBoolQuery(true);
-				for (InetAddress addr : inetAddresses) {
-					if (IPUtils.isIpv6(addr.getHostAddress())) {
-						queryParam.setQueryStringParam(Collections.singletonList("\"" + addr.getHostAddress() + "\""));
-					} else {
-						queryParam.setQueryStringParam(Collections.singletonList(addr.getHostAddress()));
-					}
-					String result = searchService.query(queryParam);
-					if (StringUtils.isNotEmpty(result)) {
-						List<String> idList = JsonUtils.toType(result, new TypeReference<>() {
-						});
-						ids.addAll(idList);
+				if (param.contains("::") && IPUtils.isIpv6(param)) {
+					queryParam.setQueryStringParam(Collections.singletonList("\"" + param + "\""));
+					addResult(ids, queryParam);
+				} else {
+					for (InetAddress addr : inetAddresses) {
+						if (IPUtils.isIpv6(addr.getHostAddress())) {
+							queryParam.setQueryStringParam(Collections.singletonList("\"" + addr.getHostAddress() + "\""));
+						} else {
+							queryParam.setQueryStringParam(Collections.singletonList(addr.getHostAddress()));
+						}
+						addResult(ids, queryParam);
 					}
 				}
 			} else {
@@ -162,6 +163,18 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 		deleteParam.setIds(ids);
 		deleteParam.setIdsQuery(true);
 		return searchService.query(deleteParam);
+	}
+
+	private void addResult(List<String> ids, QueryParam queryParam) {
+		String result = searchService.query(queryParam);
+		if (StringUtils.isNotEmpty(result)) {
+			List<String> idList = JsonUtils.toType(result, new TypeReference<>() {
+			});
+			if (log.isDebugEnabled()) {
+				log.debug("delete query string result: {}", idList.size());
+			}
+			ids.addAll(idList);
+		}
 	}
 
 
@@ -185,7 +198,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			queryParam.setFuzzy(true);
 			return searchService.query(queryParam);
 		} else {
-			return findAll(pageNo, pageSize, order);
+			return findAll(pageNo, pageSize, order, "");
 		}
 	}
 }
