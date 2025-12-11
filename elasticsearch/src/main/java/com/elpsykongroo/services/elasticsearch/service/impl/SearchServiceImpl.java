@@ -16,40 +16,38 @@
 
 package com.elpsykongroo.services.elasticsearch.service.impl;
 
-
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.ExistsQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.IdsQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.MatchAllQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import com.elpsykongroo.base.domain.search.QueryParam;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.services.elasticsearch.service.SearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.opensearch.client.opensearch._types.FieldValue;
-
-import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
-import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
-import org.opensearch.client.opensearch._types.query_dsl.MultiMatchQuery;
-import org.opensearch.client.opensearch._types.query_dsl.QueryStringQuery;
-import org.opensearch.client.opensearch._types.query_dsl.IdsQuery;
-import org.opensearch.client.opensearch._types.query_dsl.TermQuery;
-import org.opensearch.client.opensearch._types.query_dsl.MatchAllQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.NoSuchIndexException;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ScriptType;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchPage;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.ByQueryResponse;
-import org.springframework.data.elasticsearch.core.query.ScriptType;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
-import org.opensearch.data.client.osc.NativeQuery;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.data.elasticsearch.core.query.Query;
 
 @Service
 @Slf4j
@@ -77,10 +75,10 @@ public class SearchServiceImpl implements SearchService {
                            q.multiMatch(multiMatchQuery)).build();
                }
             } else if (queryParam.isBoolQuery()) {
-                List<org.opensearch.client.opensearch._types.query_dsl.Query> queries = new ArrayList<>();
+                List<co.elastic.clients.elasticsearch._types.query_dsl.Query> queries = new ArrayList<>();
                 if ("exist".equals(queryParam.getOperation())) {
                     ExistsQuery existsQuery = new ExistsQuery.Builder().field(queryParam.getField()).build();
-                    queries.add(existsQuery.toQuery());
+                    queries.add(existsQuery._toQuery());
                 } else {
                     List<String> fields = queryParam.getFields();
                     List<String> params = queryParam.getQueryStringParam();
@@ -90,7 +88,7 @@ public class SearchServiceImpl implements SearchService {
                                 .query(params.get(i)).fields(fields.get(i))
                                 .build());
                     }
-                    queryStringQueries.forEach(queryStringQuery -> queries.add(queryStringQuery.toQuery()));
+                    queryStringQueries.forEach(queryStringQuery -> queries.add(queryStringQuery._toQuery()));
                 }
                 BoolQuery boolQuery = null;
                 if ("filter".equals(queryParam.getBoolType())) {
@@ -103,9 +101,9 @@ public class SearchServiceImpl implements SearchService {
                     boolQuery = new BoolQuery.Builder().must(queries).build();
                 }
                 if (pageable != null) {
-                    nativeQuery = NativeQuery.builder().withQuery(boolQuery.toQuery()).withPageable(pageable).build();
+                    nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).withPageable(pageable).build();
                 } else {
-                    nativeQuery = NativeQuery.builder().withQuery(boolQuery.toQuery()).build();
+                    nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
                 }
             } else if (queryParam.isIdsQuery()) {
                 IdsQuery idsQuery = new IdsQuery.Builder().values(queryParam.getIds()).build();
@@ -118,7 +116,7 @@ public class SearchServiceImpl implements SearchService {
                 }
             } else {
                 TermQuery termQuery = new TermQuery.Builder()
-                      .value(FieldValue.of(queryParam.getParam()))
+                      .value(queryParam.getParam())
                       .field(queryParam.getField()).build();
                 if(pageable != null) {
                     nativeQuery = NativeQuery.builder().withQuery(q ->
@@ -132,6 +130,9 @@ public class SearchServiceImpl implements SearchService {
             MatchAllQuery matchAllQuery = new MatchAllQuery.Builder().build();
             nativeQuery = NativeQuery.builder().withQuery(q ->
                     q.matchAll(matchAllQuery)).withPageable(pageable).build();
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("execute query:{}", nativeQuery.getQuery().toString());
         }
         nativeQuery.setMaxResults(10000);
         return nativeQuery;
