@@ -58,7 +58,7 @@ public class SecurityConfig {
 				.csrf((csrf) -> csrf
 						.csrfTokenRepository(httpSessionCsrfTokenRepository())
 						.csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
-						.ignoringRequestMatchers("ip", "search", "record", "message/**", "redis/**", "storage/**")
+						.ignoringRequestMatchers("ip", "search", "record", "message/**", "redis/**", "storage/**", "app/**")
 				)
 				.addFilterAfter(csrfSessionFilter(), BasicAuthenticationFilter.class)
 //				.csrf(csrf -> csrf.disable())

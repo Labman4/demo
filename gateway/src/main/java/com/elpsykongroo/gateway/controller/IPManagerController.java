@@ -58,13 +58,13 @@ public class IPManagerController {
 		}
 	}
 	@GetMapping
-	public String ipPageList(@RequestParam String black,
-							 @RequestParam String pageNumber,
-							 @RequestParam String pageSize,
-							 @RequestParam String order,
+	public String ipList(@RequestParam String black,
+							 @RequestParam(required = false) String pageNumber,
+							 @RequestParam(required = false) String pageSize,
+							 @RequestParam(required = false) String order,
 							 @RequestParam(required = false) String id) {
 		if (log.isDebugEnabled()) {
-			log.debug("ipPageList black:{}, pageNumber:{}, pageSize:{}", black, pageNumber, pageSize);
+			log.debug("ipList black:{}, pageNumber:{}, pageSize:{}, order:{}, scrollId: {}", black, pageNumber, pageSize, order, id);
 		}
 		return CommonResponse.string(ipManagerService.list(black, pageNumber, pageSize, order, id));
 	}

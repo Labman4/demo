@@ -16,34 +16,31 @@
 
 package com.elpsykongroo.services.elasticsearch.service.impl;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.ExistsQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.IdsQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.MatchAllQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import com.elpsykongroo.base.domain.search.QueryParam;
 import com.elpsykongroo.base.utils.JsonUtils;
 import com.elpsykongroo.services.elasticsearch.dto.SearchResult;
 import com.elpsykongroo.services.elasticsearch.service.SearchService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.query_dsl.BoolQuery;
+import org.opensearch.client.opensearch._types.query_dsl.ExistsQuery;
+import org.opensearch.client.opensearch._types.query_dsl.IdsQuery;
+import org.opensearch.client.opensearch._types.query_dsl.MatchAllQuery;
+import org.opensearch.client.opensearch._types.query_dsl.MultiMatchQuery;
+import org.opensearch.client.opensearch._types.query_dsl.QueryStringQuery;
+import org.opensearch.client.opensearch._types.query_dsl.TermQuery;
+import org.opensearch.data.client.osc.NativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.NoSuchIndexException;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.AbstractElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ScriptType;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchScrollHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.ByQueryResponse;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.query.ScriptType;
 import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.stereotype.Service;
 
@@ -70,10 +67,10 @@ public class SearchServiceImpl implements SearchService {
                       .build();
               nativeQuery = NativeQuery.builder().withQuery(q -> q.multiMatch(multiMatchQuery)).build();
             } else if (queryParam.isBoolQuery()) {
-                List<co.elastic.clients.elasticsearch._types.query_dsl.Query> queries = new ArrayList<>();
+                List<org.opensearch.client.opensearch._types.query_dsl.Query> queries = new ArrayList<>();
                 if ("exist".equals(queryParam.getOperation())) {
                     ExistsQuery existsQuery = new ExistsQuery.Builder().field(queryParam.getField()).build();
-                    queries.add(existsQuery._toQuery());
+                    queries.add(existsQuery.toQuery());
                 } else {
                     List<String> fields = queryParam.getFields();
                     List<String> params = queryParam.getQueryStringParam();
@@ -83,7 +80,7 @@ public class SearchServiceImpl implements SearchService {
                                 .query(params.get(i)).fields(fields.get(i))
                                 .build());
                     }
-                    queryStringQueries.forEach(queryStringQuery -> queries.add(queryStringQuery._toQuery()));
+                    queryStringQueries.forEach(queryStringQuery -> queries.add(queryStringQuery.toQuery()));
                 }
                 BoolQuery boolQuery = null;
                 if ("filter".equals(queryParam.getBoolType())) {
@@ -95,13 +92,13 @@ public class SearchServiceImpl implements SearchService {
                 } else {
                     boolQuery = new BoolQuery.Builder().must(queries).build();
                 }
-                nativeQuery = NativeQuery.builder().withQuery(boolQuery._toQuery()).build();
+                nativeQuery = NativeQuery.builder().withQuery(boolQuery.toQuery()).build();
             } else if (queryParam.isIdsQuery()) {
                 IdsQuery idsQuery = new IdsQuery.Builder().values(queryParam.getIds()).build();
                 nativeQuery =  NativeQuery.builder().withQuery(q -> q.ids(idsQuery)).build();
             } else {
                 TermQuery termQuery = new TermQuery.Builder()
-                      .value(queryParam.getParam())
+                      .value(FieldValue.of(queryParam.getParam()))
                       .field(queryParam.getField()).build();
                 nativeQuery =  NativeQuery.builder().withQuery(q -> q.term(termQuery)).build();
             }
@@ -110,25 +107,22 @@ public class SearchServiceImpl implements SearchService {
             nativeQuery = NativeQuery.builder().withQuery(q -> q.matchAll(matchAllQuery)).build();
         }
         nativeQuery.setMaxResults(10000);
-        if (log.isDebugEnabled()) {
-            log.debug("execute query:{}", nativeQuery.getQuery().toString());
-        }
         return nativeQuery;
     }
 
     @Override
     public String query(QueryParam queryParam) {
         Query query;
-        Pageable pageable = null;
-        if (StringUtils.isNotBlank(queryParam.getOrder())) {
-            Sort sort = Sort.by(Sort.Direction.DESC, queryParam.getOrderBy());
-            if ("1".equals(queryParam.getOrder())) {
-                sort = Sort.by(Sort.Direction.ASC, queryParam.getOrderBy());
-            }
-            pageable = PageRequest.of(
-                    Integer.parseInt(queryParam.getPageNumber()),
-                    Integer.parseInt(queryParam.getPageSize()), sort);
-        }
+//        Pageable pageable = null;
+//        if (StringUtils.isNotBlank(queryParam.getOrder())) {
+//            Sort sort = Sort.by(Sort.Direction.DESC, queryParam.getOrderBy());
+//            if ("1".equals(queryParam.getOrder())) {
+//                sort = Sort.by(Sort.Direction.ASC, queryParam.getOrderBy());
+//            }
+//            pageable = PageRequest.of(
+//                    Integer.parseInt(queryParam.getPageNumber()),
+//                    Integer.parseInt(queryParam.getPageSize()), sort);
+//        }
         query = getQuery(queryParam);
         try {
             if ("count".equals(queryParam.getOperation())) {
@@ -167,14 +161,13 @@ public class SearchServiceImpl implements SearchService {
                 ByQueryResponse byQueryResponse = operations.updateByQuery(updateQuery, IndexCoordinates.of(queryParam.getIndex()));
                 return String.valueOf(byQueryResponse.getTotal());
             } else {
-                if (pageable != null) {
+//                if (pageable == null) {
                     AbstractElasticsearchTemplate template = (AbstractElasticsearchTemplate)operations;
-                    query.setPageable(pageable);
                     SearchScrollHits scroll;
                     if (StringUtils.isNotBlank(queryParam.getScrollId())) {
-                        scroll = template.searchScrollContinue(queryParam.getScrollId(), 1000, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                        scroll = template.searchScrollContinue(queryParam.getScrollId(), 10000, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
                     } else {
-                        scroll = template.searchScrollStart(1000, query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                        scroll = template.searchScrollStart(10000, query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
                     }
                     String scrollId = scroll.getScrollId();
                     if (!scroll.hasSearchHits()) {
@@ -184,10 +177,13 @@ public class SearchServiceImpl implements SearchService {
                     searchResult.setScrollId(scroll.getScrollId());
                     searchResult.setHits(SearchHitSupport.unwrapSearchHits(scroll.getSearchHits()));
                     return JsonUtils.toJson(searchResult);
-                } else {
-                    SearchHits searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
-                    return SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()).toString();
-                }
+//                } else {
+//                    query.setPageable(pageable);
+//                    SearchHits searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+//                    SearchPage searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
+//                    Page page = (Page) SearchHitSupport.unwrapSearchHits(searchPage);
+//                    return JsonUtils.toJson(page.get().toList());
+//                }
             }
         } catch (NoSuchIndexException e) {
             return "";
