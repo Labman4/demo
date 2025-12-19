@@ -115,6 +115,9 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 	@Override
 	public String findAll(String pageNo, String pageSize, String order, String id) {
+		if (StringUtils.isBlank(id)) {
+			id = "1";
+		}
 		QueryParam queryParam = new QueryParam();
 		queryParam.setOrder(order);
 		queryParam.setOrderBy("timestamp");
