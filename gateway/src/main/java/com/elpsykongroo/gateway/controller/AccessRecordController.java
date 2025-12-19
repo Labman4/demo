@@ -67,11 +67,12 @@ public class AccessRecordController {
 
 	@PostMapping
 	public String filter(@RequestParam String params,
-					  	 @RequestParam String pageNumber,
-					  	 @RequestParam String pageSize,
-					  	 @RequestParam String order) {
+						 @RequestParam(required = false) String pageNumber,
+						 @RequestParam(required = false) String pageSize,
+						 @RequestParam(required = false) String order,
+						 @RequestParam(required = false) String id) {
 		try {
-			return CommonResponse.string(accessRecordService.filterByParams(params, pageNumber, pageSize, order));
+			return CommonResponse.string(accessRecordService.filterByParams(params, pageNumber, pageSize, order, id));
 		} catch (Exception e) {
 			return CommonResponse.error(HttpStatus.SC_CLIENT_ERROR, e.getMessage());
 		}

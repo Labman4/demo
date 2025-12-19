@@ -29,7 +29,7 @@ public interface AccessRecordService {
 
 	String findAll(String pageNumber, String pageSize, String sort, String id);
 
-	String filterByParams(String params, String pageNumber, String pageSize, String order);
+	String filterByParams(String params, String pageNumber, String pageSize, String order, String scrollId);
 
 	String deleteRecord(List<String> param) throws UnknownHostException;
 

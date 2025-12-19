@@ -182,7 +182,10 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 
 
 	@Override
-	public String filterByParams(String params, String pageNo, String pageSize, String order){
+	public String filterByParams(String params, String pageNo, String pageSize, String order, String id){
+		if (StringUtils.isBlank(id)) {
+			id = "1";
+		}
 		if (StringUtils.isNotBlank(params)) {
 			List<String> fields = new ArrayList<>();
 			fields.add("sourceIP");
@@ -199,6 +202,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			queryParam.setParam(params);
 			queryParam.setFields(fields);
 			queryParam.setFuzzy(true);
+			queryParam.setScrollId(id);
 			return searchService.query(queryParam);
 		} else {
 			return findAll(pageNo, pageSize, order, "1");
