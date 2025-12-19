@@ -93,6 +93,9 @@ public class IPMangerServiceImpl implements IPManagerService {
 
 	@Override
 	public String list(String isBlack, String pageNumber, String pageSize, String order, String id) {
+		if (StringUtils.isBlank(id)) {
+			id = "1";
+		}
 		QueryParam queryParam = new QueryParam();
 		queryParam.setPageNumber(pageNumber);
 		queryParam.setPageSize(pageSize);
@@ -301,6 +304,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		queryParam.setType(IpManage.class);
 		queryParam.setField("black");
 		queryParam.setParam(isBlack);
+		queryParam.setScrollId("0");
 		String list = null;
 		try {
 			list = searchService.query(queryParam);
@@ -317,7 +321,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 		String[] ips = list.split(",");
 		for (String str: ips) {
 			if(str.contains("address")) {
-				ipList.append(str.split("=")[1]).append(",");
+				ipList.append(str.split(":")[1]).append(",");
 			}
 		}
 		return ipList.toString();

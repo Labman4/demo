@@ -36,6 +36,7 @@ import org.springframework.data.elasticsearch.NoSuchIndexException;
 import org.springframework.data.elasticsearch.core.AbstractElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchScrollHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.ByQueryResponse;
@@ -161,29 +162,26 @@ public class SearchServiceImpl implements SearchService {
                 ByQueryResponse byQueryResponse = operations.updateByQuery(updateQuery, IndexCoordinates.of(queryParam.getIndex()));
                 return String.valueOf(byQueryResponse.getTotal());
             } else {
-//                if (pageable == null) {
+                SearchResult searchResult = new SearchResult();
+                if (!"0".equals(queryParam.getScrollId())) {
                     AbstractElasticsearchTemplate template = (AbstractElasticsearchTemplate)operations;
                     SearchScrollHits scroll;
-                    if (StringUtils.isNotBlank(queryParam.getScrollId())) {
-                        scroll = template.searchScrollContinue(queryParam.getScrollId(), 10000, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
-                    } else {
+                    if ("1".equals(queryParam.getScrollId())) {
                         scroll = template.searchScrollStart(10000, query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                    } else {
+                        scroll = template.searchScrollContinue(queryParam.getScrollId(), 10000, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
                     }
                     String scrollId = scroll.getScrollId();
                     if (!scroll.hasSearchHits()) {
                         template.searchScrollClear(scrollId);
                     }
-                    SearchResult searchResult = new SearchResult();
                     searchResult.setScrollId(scroll.getScrollId());
                     searchResult.setHits(SearchHitSupport.unwrapSearchHits(scroll.getSearchHits()));
-                    return JsonUtils.toJson(searchResult);
-//                } else {
-//                    query.setPageable(pageable);
-//                    SearchHits searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
-//                    SearchPage searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
-//                    Page page = (Page) SearchHitSupport.unwrapSearchHits(searchPage);
-//                    return JsonUtils.toJson(page.get().toList());
-//                }
+                } else {
+                    SearchHits searchHits = operations.search(query, queryParam.getType(), IndexCoordinates.of(queryParam.getIndex()));
+                    searchResult.setHits(SearchHitSupport.unwrapSearchHits(searchHits.getSearchHits()));
+                }
+                return JsonUtils.toJson(searchResult);
             }
         } catch (NoSuchIndexException e) {
             return "";
