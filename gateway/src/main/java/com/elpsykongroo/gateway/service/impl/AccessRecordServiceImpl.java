@@ -198,7 +198,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
 			queryParam.setFuzzy(true);
 			return searchService.query(queryParam);
 		} else {
-			return findAll(pageNo, pageSize, order, "");
+			return findAll(pageNo, pageSize, order, "1");
 		}
 	}
 }

@@ -62,5 +62,8 @@ public class QueryParam {
 
     private Object entity;
 
+    /**
+     *  0:disable;1:enable;other:scrollId
+     */
     private String scrollId;
 }
