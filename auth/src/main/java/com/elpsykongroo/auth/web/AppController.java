@@ -16,9 +16,8 @@
 
 package com.elpsykongroo.auth.web;
 
+import com.elpsykongroo.auth.service.custom.AppService;
 import com.elpsykongroo.auth.service.custom.EmailService;
-import com.elpsykongroo.auth.service.custom.LoginService;
-
 import com.elpsykongroo.base.common.CommonResponse;
 import com.elpsykongroo.base.service.GatewayService;
 import com.elpsykongroo.base.service.RedisService;
@@ -42,7 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/app")
 public class AppController {
     @Autowired
-    private LoginService loginService;
+    private AppService appService;
 
     @Autowired
     private RedisService redisService;
@@ -57,7 +56,7 @@ public class AppController {
     @ResponseBody
     public String newUserRegistration(@RequestParam String username,
                                       @RequestParam String display) {
-        return CommonResponse.string(loginService.register(username, display));
+        return CommonResponse.string(appService.register(username, display));
     }
 
     @PostMapping("/finishAuth")
@@ -65,7 +64,7 @@ public class AppController {
     public String finishRegistration(@RequestParam String credential,
                                      @RequestParam String username,
                                      @RequestParam String credname) {
-        return CommonResponse.string(loginService.saveAuth(credential, username, credname));
+        return CommonResponse.string(appService.saveAuth(credential, username, credname));
     }
 
     @PostMapping("/login")
@@ -73,13 +72,13 @@ public class AppController {
     public String startLogin(@RequestParam String username,
                              HttpServletRequest request,
                              HttpServletResponse response) {
-        return CommonResponse.string(loginService.login(username, request, response));
+        return CommonResponse.string(appService.login(username, request, response));
     }
 
     @GetMapping("/login/tmp/{text}")
     public ModelAndView tmpLogin(@PathVariable String text,
                                  HttpServletRequest request, HttpServletResponse response) {
-        return new ModelAndView(loginService.tmpLogin(text, request, response));
+        return new ModelAndView(appService.tmpLogin(text, request, response));
     }
 
     @PostMapping("/login/token")
@@ -88,12 +87,12 @@ public class AppController {
                                  @RequestParam String idToken,
                                  HttpServletRequest request,
                                  HttpServletResponse response) {
-        return CommonResponse.string(loginService.loginWithToken(token, idToken, request, response));
+        return CommonResponse.string(appService.loginWithToken(token, idToken, request, response));
     }
 
     @GetMapping("/login/qrcode")
     public String setToken(@RequestParam String text) {
-        return loginService.setToken(text);
+        return appService.setToken(text);
     }
 
     @PostMapping("/access")
@@ -106,12 +105,12 @@ public class AppController {
     public String finishLogin(@RequestParam String credential,
                               @RequestParam String username,
                               HttpServletRequest request, HttpServletResponse response) {
-        return CommonResponse.string(loginService.handleLogin(credential, username, request, response));
+        return CommonResponse.string(appService.handleLogin(credential, username, request, response));
     }
 
     @PostMapping("/authenticator/add")
     public String addAuthenticator(@RequestParam String username) {
-        return CommonResponse.string(loginService.addAuthenticator(username));
+        return CommonResponse.string(appService.addAuthenticator(username));
     }
 
     @PostMapping("/email/tmp")
