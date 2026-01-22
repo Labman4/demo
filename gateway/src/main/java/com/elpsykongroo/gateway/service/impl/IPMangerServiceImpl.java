@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import com.elpsykongroo.base.domain.search.repo.IpManage;
 import com.elpsykongroo.base.domain.search.QueryParam;
+import com.elpsykongroo.base.optional.config.DynamicConfigManager;
 import com.elpsykongroo.base.utils.IPUtils;
 import com.elpsykongroo.base.service.RedisService;
 import com.elpsykongroo.base.service.SearchService;
@@ -35,7 +36,6 @@ import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.elpsykongroo.base.config.RequestConfig;
-import com.elpsykongroo.base.config.ServiceConfig;
 import com.elpsykongroo.gateway.service.IPManagerService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,9 +53,6 @@ public class IPMangerServiceImpl implements IPManagerService {
 	@Value("${REDIS_KEY_PREFIX:dev}")
 	private String env;
 
-	@Value("${service.whiteDomain:ip.elpsykongroo.com,localhost}")
-	private String whiteDomain = "localhost";
-
     @Autowired
 	private SearchService searchService;
 
@@ -69,7 +66,10 @@ public class IPMangerServiceImpl implements IPManagerService {
     private ClientAuthentication clientAuthentication;
 
 	@Autowired
-	private ServiceConfig serviceConfig;
+	private DynamicConfigManager dynamicConfigManager;
+
+	@Value("${service.whiteDomain:ip.elpsykongroo.com,localhost}")
+	private String whiteDomain = "localhost";
 
 	public IPMangerServiceImpl(RequestConfig requestConfig,
 							   RedisService redisService,
@@ -331,7 +331,7 @@ public class IPMangerServiceImpl implements IPManagerService {
 	public String accessIP(HttpServletRequest request, String headerType) {
 		IPUtils ipUtils = new IPUtils(requestConfig);
 		String ip = ipUtils.accessIP(request, "");
-		RecordUtils recordUtils = new RecordUtils(redisService, requestConfig, vaultEndpoint, clientAuthentication, serviceConfig.getRecordExcludeIpPath(), serviceConfig.getRecordExcludeIpKey());
+		RecordUtils recordUtils = new RecordUtils(redisService, requestConfig, vaultEndpoint, clientAuthentication, dynamicConfigManager.get().getRecordExcludeIpPath(), dynamicConfigManager.get().getRecordExcludeIpKey());
 		if (recordUtils.filterRecord(request)) {
 			if (log.isInfoEnabled()) {
 				log.info("ip------------{}, type:{}", ip, headerType);
@@ -367,9 +367,13 @@ public class IPMangerServiceImpl implements IPManagerService {
 		}
 		if (StringUtils.isBlank(list)) {
 			list = getIpList(isBlack);
+			if (StringUtils.isBlank(list)) {
+				return false;
+			}
 		}
 		if (StringUtils.isNotBlank(list)) {
 			if ("false".equals(isBlack)) {
+				String whiteDomain = dynamicConfigManager.get().getWhiteDomain();
 				if (log.isDebugEnabled()) {
 					log.debug("whiteDomain:{}", whiteDomain);
 				}
